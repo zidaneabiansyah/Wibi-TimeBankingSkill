@@ -39,6 +39,7 @@ export interface UserProfile {
     major: string;
     bio: string;
     avatar: string;
+    phone_number: string;
     location: string;
     credit_balance: number;
     is_active: boolean;
@@ -58,38 +59,108 @@ export interface Skill {
     total_teachers: number;
     total_learners: number;
     created_at: string;
-    updated_at: string;
 }
 
+export interface SkillListResponse {
+    skills: Skill[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
+// User Skill Types
 export interface UserSkill {
     id: number;
     user_id: number;
+    skill_id: number;
+    skill: Skill;
+    level: SkillLevel;
+    description: string;
+    years_of_experience: number;
+    proof_url: string;
+    proof_type: string;
+    hourly_rate: number;
+    online_only: boolean;
+    offline_only: boolean;
+    is_available: boolean;
+    total_sessions: number;
+    average_rating: number;
+    total_reviews: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateUserSkillRequest {
     skill_id: number;
     level: SkillLevel;
     description: string;
     years_of_experience: number;
     proof_url: string;
     proof_type: string;
-    is_available: boolean;
     hourly_rate: number;
     online_only: boolean;
     offline_only: boolean;
-    total_sessions: number;
-    average_rating: number;
-    total_reviews: number;
-    user?: UserProfile;
-    skill?: Skill;
+    is_available: boolean;
 }
 
+export interface UpdateUserSkillRequest {
+    level?: SkillLevel;
+    description?: string;
+    years_of_experience?: number;
+    proof_url?: string;
+    proof_type?: string;
+    hourly_rate?: number;
+    online_only?: boolean;
+    offline_only?: boolean;
+    is_available?: boolean;
+}
+
+// Learning Skill Types
 export interface LearningSkill {
     id: number;
     user_id: number;
     skill_id: number;
+    skill: Skill;
     desired_level: SkillLevel;
     priority: number;
     notes: string;
-    user?: UserProfile;
-    skill?: Skill;
+    created_at: string;
+}
+
+export interface CreateLearningSkillRequest {
+    skill_id: number;
+    desired_level: SkillLevel;
+    priority: number;
+    notes: string;
+}
+
+// User Profile Extended Types
+export interface UserStats {
+    credit_balance: number;
+    total_credits_earned: number;
+    total_credits_spent: number;
+    total_sessions_as_teacher: number;
+    total_sessions_as_student: number;
+    average_rating_as_teacher: number;
+    average_rating_as_student: number;
+    total_teaching_hours: number;
+    total_learning_hours: number;
+}
+
+export interface UpdateProfileRequest {
+    full_name?: string;
+    username?: string;
+    school?: string;
+    grade?: string;
+    major?: string;
+    bio?: string;
+    phone_number?: string;
+    location?: string;
+}
+
+export interface ChangePasswordRequest {
+    current_password: string;
+    new_password: string;
 }
 
 // Session Types
