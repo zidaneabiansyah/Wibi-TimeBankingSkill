@@ -1,25 +1,20 @@
 package models
 
 import (
-	"gorm.io/gorm"
+  "gorm.io/gorm"
 )
 
-// AllModels returns all models for auto-migration
-func AllModels() []interface{} {
-	return []interface{}{
-		&User{},
-		&Skill{},
-		&UserSkill{},
-		&LearningSkill{},
-		&Session{},
-		&Transaction{},
-		&Review{},
-		&Badge{},
-		&UserBadge{},
-	}
-}
-
-// AutoMigrate runs auto-migration for all models
+// AutoMigrate runs all model migrations
 func AutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(AllModels()...)
+  return db.AutoMigrate(
+    &User{},
+    &Skill{},
+    &UserSkill{},
+    &LearningSkill{},
+    &Session{},
+    &Review{},
+    &Badge{},
+    &UserBadge{},
+    &Transaction{},
+  )
 }
