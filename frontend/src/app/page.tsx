@@ -100,24 +100,24 @@ export default function Home() {
               Exchange your skills without money. 1 hour teaching = 1 Time Credit = 1 hour learning.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 lg:gap-12">
-            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4 mx-auto">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
+            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors h-full">
+              <CardHeader className="pb-4 flex-1 flex flex-col items-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary">
                     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
                     <polyline points="14 2 14 8 20 8"/>
                   </svg>
                 </div>
-                <CardTitle className="text-lg">1. List Your Skills</CardTitle>
+                <CardTitle className="text-lg whitespace-nowrap">1. List Your Skills</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 <p className="text-muted-foreground text-sm leading-relaxed">Create your profile and list skills you can teach others. Set your availability and teaching preferences.</p>
               </CardContent>
             </Card>
-            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4 mx-auto">
+            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors h-full">
+              <CardHeader className="pb-4 flex-1 flex flex-col items-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary">
                     <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
                     <line x1="16" x2="16" y1="2" y2="6"/>
@@ -125,23 +125,23 @@ export default function Home() {
                     <line x1="3" x2="21" y1="10" y2="10"/>
                   </svg>
                 </div>
-                <CardTitle className="text-lg">2. Book Sessions</CardTitle>
+                <CardTitle className="text-lg whitespace-nowrap">2. Book Sessions</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 <p className="text-muted-foreground text-sm leading-relaxed">Browse the marketplace and book sessions with tutors. Use your time credits to learn new skills.</p>
               </CardContent>
             </Card>
-            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4 mx-auto">
+            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors h-full">
+              <CardHeader className="pb-4 flex-1 flex flex-col items-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary">
                     <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
                 </div>
-                <CardTitle className="text-lg">3. Earn & Spend Credits</CardTitle>
+                <CardTitle className="text-lg whitespace-nowrap">3. Earn & Spend Credits</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 <p className="text-muted-foreground text-sm leading-relaxed">Earn time credits by teaching others. Spend your credits to learn new skills from other tutors.</p>
               </CardContent>
             </Card>
