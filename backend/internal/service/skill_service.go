@@ -30,6 +30,15 @@ func (s *SkillService) GetSkillByID(id uint) (*models.Skill, error) {
 	return s.skillRepo.GetByID(id)
 }
 
+// GetSkillTeachers retrieves all teachers for a specific skill
+func (s *SkillService) GetSkillTeachers(skillID uint) ([]models.UserSkill, error) {
+	// Use type assertion to access the concrete method
+	if repo, ok := s.skillRepo.(*repository.SkillRepository); ok {
+		return repo.GetTeachersBySkillID(skillID)
+	}
+	return nil, errors.New("repository does not support this operation")
+}
+
 // CreateSkill creates a new skill (admin only)
 func (s *SkillService) CreateSkill(skill *models.Skill) error {
 	// Validate required fields

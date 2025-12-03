@@ -83,6 +83,30 @@ func (h *SkillHandler) GetSkillByID(c *gin.Context) {
 	utils.SendSuccess(c, http.StatusOK, "Skill retrieved successfully", response)
 }
 
+// GetSkillTeachers handles GET /api/v1/skills/:id/teachers
+func (h *SkillHandler) GetSkillTeachers(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid skill ID", err)
+		return
+	}
+
+	teachers, err := h.skillService.GetSkillTeachers(uint(id))
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch teachers", err)
+		return
+	}
+
+	// Convert to response DTOs
+	responses := make([]dto.UserSkillResponse, len(teachers))
+	for i, t := range teachers {
+		responses[i] = dto.ToUserSkillResponse(&t)
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Teachers retrieved successfully", responses)
+}
+
 // CreateSkill handles POST /api/v1/skills (admin only)
 func (h *SkillHandler) CreateSkill(c *gin.Context) {
 	var req dto.CreateSkillRequest
@@ -273,7 +297,7 @@ func (h *SkillHandler) UpdateUserSkill(c *gin.Context) {
 		OnlineOnly:        req.OnlineOnly,
 		OfflineOnly:       req.OfflineOnly,
 	}
-	
+
 	if req.IsAvailable != nil {
 		updates.IsAvailable = *req.IsAvailable
 	}

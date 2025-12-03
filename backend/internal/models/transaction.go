@@ -10,12 +10,13 @@ import (
 type TransactionType string
 
 const (
-	TransactionEarned  TransactionType = "earned"   // Earned from teaching
-	TransactionSpent   TransactionType = "spent"    // Spent on learning
-	TransactionBonus   TransactionType = "bonus"    // Bonus credits (achievements, etc)
-	TransactionRefund  TransactionType = "refund"   // Refunded from cancelled session
-	TransactionPenalty TransactionType = "penalty"  // Penalty for no-show, etc
-	TransactionInitial TransactionType = "initial"  // Initial free credits
+	TransactionEarned  TransactionType = "earned"  // Earned from teaching
+	TransactionSpent   TransactionType = "spent"   // Spent on learning
+	TransactionBonus   TransactionType = "bonus"   // Bonus credits (achievements, etc)
+	TransactionRefund  TransactionType = "refund"  // Refunded from cancelled session
+	TransactionPenalty TransactionType = "penalty" // Penalty for no-show, etc
+	TransactionInitial TransactionType = "initial" // Initial free credits
+	TransactionHold    TransactionType = "hold"    // Credits held in escrow for pending session
 )
 
 // Transaction represents a credit transaction history
@@ -27,20 +28,20 @@ type Transaction struct {
 
 	// User
 	UserID uint `gorm:"not null;index" json:"user_id"`
-	
+
 	// Transaction Details
-	Type        TransactionType `gorm:"not null;index" json:"type"`
-	Amount      float64         `gorm:"not null" json:"amount"`      // Positive for credit, negative for debit
-	BalanceBefore float64       `gorm:"not null" json:"balance_before"`
-	BalanceAfter  float64       `gorm:"not null" json:"balance_after"`
-	
+	Type          TransactionType `gorm:"not null;index" json:"type"`
+	Amount        float64         `gorm:"not null" json:"amount"` // Positive for credit, negative for debit
+	BalanceBefore float64         `gorm:"not null" json:"balance_before"`
+	BalanceAfter  float64         `gorm:"not null" json:"balance_after"`
+
 	// Reference
-	SessionID   *uint  `gorm:"index" json:"session_id"`   // Related session (if applicable)
+	SessionID   *uint  `gorm:"index" json:"session_id"` // Related session (if applicable)
 	Description string `gorm:"type:text" json:"description"`
-	
+
 	// Metadata
 	Metadata string `gorm:"type:jsonb" json:"metadata"` // Additional data in JSON format
-	
+
 	// Relationships
 	User    User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	Session *Session `gorm:"foreignKey:SessionID" json:"session,omitempty"`

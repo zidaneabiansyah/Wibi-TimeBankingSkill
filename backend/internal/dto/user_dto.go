@@ -45,31 +45,41 @@ type UserProfileResponse struct {
 }
 
 type PublicProfileResponse struct {
-	ID                    uint      `json:"id"`
-	FullName             string    `json:"full_name"`
-	Username             string    `json:"username"`
-	School               string    `json:"school"`
-	Grade                string    `json:"grade"`
-	Major                string    `json:"major"`
-	Bio                  string    `json:"bio"`
-	Avatar               string    `json:"avatar"`
-	Location             string    `json:"location"`
+	ID                     uint      `json:"id"`
+	FullName               string    `json:"full_name"`
+	Username               string    `json:"username"`
+	School                 string    `json:"school"`
+	Grade                  string    `json:"grade"`
+	Major                  string    `json:"major"`
+	Bio                    string    `json:"bio"`
+	Avatar                 string    `json:"avatar"`
+	Location               string    `json:"location"`
 	TotalSessionsAsTeacher int       `json:"total_sessions_as_teacher"`
 	AverageRatingAsTeacher float64   `json:"average_rating_as_teacher"`
-	TotalTeachingHours   float64   `json:"total_teaching_hours"`
-	CreatedAt            time.Time `json:"created_at"`
+	TotalTeachingHours     float64   `json:"total_teaching_hours"`
+	CreatedAt              time.Time `json:"created_at"`
+}
+
+// UserPublicProfile is a minimal user profile for embedding in other responses
+type UserPublicProfile struct {
+	ID       uint   `json:"id"`
+	FullName string `json:"full_name"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
+	School   string `json:"school"`
+	Grade    string `json:"grade"`
 }
 
 type UserStatsResponse struct {
-	CreditBalance         int     `json:"credit_balance"`
-	TotalCreditsEarned   int     `json:"total_credits_earned"`
-	TotalCreditsSpent    int     `json:"total_credits_spent"`
+	CreditBalance          int     `json:"credit_balance"`
+	TotalCreditsEarned     int     `json:"total_credits_earned"`
+	TotalCreditsSpent      int     `json:"total_credits_spent"`
 	TotalSessionsAsTeacher int     `json:"total_sessions_as_teacher"`
 	TotalSessionsAsStudent int     `json:"total_sessions_as_student"`
 	AverageRatingAsTeacher float64 `json:"average_rating_as_teacher"`
 	AverageRatingAsStudent float64 `json:"average_rating_as_student"`
-	TotalTeachingHours   float64 `json:"total_teaching_hours"`
-	TotalLearningHours   float64 `json:"total_learning_hours"`
+	TotalTeachingHours     float64 `json:"total_teaching_hours"`
+	TotalLearningHours     float64 `json:"total_learning_hours"`
 }
 
 // Helper functions for conversion
