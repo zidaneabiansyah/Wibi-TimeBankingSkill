@@ -245,6 +245,15 @@ export interface Review {
     updated_at: string;
 }
 
+export interface RatingSummary {
+    average_rating: number;
+    total_reviews: number;
+    average_teacher_rating: number;
+    teacher_review_count: number;
+    average_student_rating: number;
+    student_review_count: number;
+}
+
 // Session Request Types
 export interface CreateSessionRequest {
     user_skill_id: number;
