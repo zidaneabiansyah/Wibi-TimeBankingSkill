@@ -30,7 +30,7 @@ import {
     Target,
     Loader2
 } from 'lucide-react'
-import { useSkillStore } from '@/store/useSkillStore'
+import { useSkillStore } from '@/stores'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -228,8 +228,8 @@ export default function LearningSkillList({
 }: LearningSkillListProps) {
     const {
         learningSkills,
-        learningSkillsLoading,
-        learningSkillsError,
+        isLoadingLearningSkills,
+        error,
         fetchLearningSkills,
         deleteLearningSkill
     } = useSkillStore()
@@ -276,7 +276,7 @@ export default function LearningSkillList({
         }
     }
 
-    if (learningSkillsLoading) {
+    if (isLoadingLearningSkills) {
         return (
             <Card>
                 <CardHeader>
@@ -291,7 +291,7 @@ export default function LearningSkillList({
         )
     }
 
-    if (learningSkillsError) {
+    if (error) {
         return (
             <Card>
                 <CardHeader>
@@ -299,7 +299,7 @@ export default function LearningSkillList({
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-8">
-                        <p className="text-muted-foreground">{learningSkillsError}</p>
+                        <p className="text-muted-foreground">{error}</p>
                         <Button 
                             variant="outline" 
                             className="mt-4"

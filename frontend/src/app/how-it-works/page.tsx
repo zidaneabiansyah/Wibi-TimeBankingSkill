@@ -35,7 +35,7 @@ export default function HowItWorksPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-background to-muted/30">
+      <section className="w-full py-16 md:py-24 lg:py-32 bg-linear-to-b from-background to-muted/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center text-center space-y-6">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
@@ -373,7 +373,7 @@ export default function HowItWorksPage() {
 
       {/* CTA Section */}
       <section className="relative w-full py-16 md:py-24 lg:py-32 overflow-hidden border-t border-border/40">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-accent/5" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-6 text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">

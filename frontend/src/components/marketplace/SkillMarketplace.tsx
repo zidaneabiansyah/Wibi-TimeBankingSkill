@@ -26,7 +26,7 @@ import {
     ChevronRight,
     SlidersHorizontal
 } from 'lucide-react'
-import { useSkillStore } from '@/store/useSkillStore'
+import { useSkillStore } from '@/stores'
 import type { SkillCategory, Skill } from '@/types'
 
 const categories: { value: SkillCategory; label: string; icon: string }[] = [
@@ -45,13 +45,10 @@ export default function SkillMarketplace() {
     
     const {
         skills,
-        skillsLoading,
-        skillsError,
+        isLoading,
+        error,
         skillsTotal,
-        skillsPage,
-        skillsLimit,
-        fetchSkills,
-        setFilters
+        fetchSkills
     } = useSkillStore()
 
     // Load initial skills
@@ -62,22 +59,24 @@ export default function SkillMarketplace() {
     // Handle search dengan debounce
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            setFilters({
+            fetchSkills({
                 search: searchQuery || undefined,
                 category: selectedCategory === 'all' ? undefined : selectedCategory
             })
         }, 500)
 
         return () => clearTimeout(timeoutId)
-    }, [searchQuery, selectedCategory, setFilters])
+    }, [searchQuery, selectedCategory, fetchSkills])
 
-    const handlePageChange = (page: number) => {
-        fetchSkills({ page })
+    const handlePageChange = (offset: number) => {
+        fetchSkills({ offset })
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
-    const totalPages = Math.ceil(skillsTotal / skillsLimit)
+    const limit = 10
+    const totalPages = Math.ceil(skillsTotal / limit)
+    const currentPage = Math.floor((skills.length / limit)) + 1
 
     const SkillCard = ({ skill }: { skill: Skill }) => (
         <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
@@ -263,7 +262,7 @@ export default function SkillMarketplace() {
             {/* Results Summary */}
             <div className="flex items-center justify-between mb-6">
                 <div className="text-muted-foreground">
-                    {skillsLoading ? (
+                    {isLoading ? (
                         "Loading skills..."
                     ) : (
                         `Showing ${skills.length} of ${skillsTotal} skills`
@@ -271,12 +270,12 @@ export default function SkillMarketplace() {
                 </div>
                 
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>Page {skillsPage} of {totalPages}</span>
+                    <span>Page {currentPage} of {totalPages}</span>
                 </div>
             </div>
 
             {/* Skills Grid */}
-            {skillsLoading ? (
+            {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {Array.from({ length: 8 }).map((_, index) => (
                         <Card key={index} className="animate-pulse">
@@ -298,10 +297,10 @@ export default function SkillMarketplace() {
                         </Card>
                     ))}
                 </div>
-            ) : skillsError ? (
+            ) : error ? (
                 <Card>
                     <CardContent className="text-center py-8">
-                        <p className="text-muted-foreground mb-4">{skillsError}</p>
+                        <p className="text-muted-foreground mb-4">{error}</p>
                         <Button onClick={() => fetchSkills()}>Try Again</Button>
                     </CardContent>
                 </Card>
@@ -338,8 +337,8 @@ export default function SkillMarketplace() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                disabled={skillsPage <= 1}
-                                onClick={() => handlePageChange(skillsPage - 1)}
+                                disabled={currentPage <= 1}
+                                onClick={() => handlePageChange((currentPage - 2) * limit)}
                             >
                                 <ChevronLeft className="w-4 h-4" />
                                 Previous
@@ -350,20 +349,20 @@ export default function SkillMarketplace() {
                                     let pageNumber;
                                     if (totalPages <= 5) {
                                         pageNumber = i + 1;
-                                    } else if (skillsPage <= 3) {
+                                    } else if (currentPage <= 3) {
                                         pageNumber = i + 1;
-                                    } else if (skillsPage >= totalPages - 2) {
+                                    } else if (currentPage >= totalPages - 2) {
                                         pageNumber = totalPages - 4 + i;
                                     } else {
-                                        pageNumber = skillsPage - 2 + i;
+                                        pageNumber = currentPage - 2 + i;
                                     }
 
                                     return (
                                         <Button
                                             key={pageNumber}
-                                            variant={skillsPage === pageNumber ? "default" : "outline"}
+                                            variant={currentPage === pageNumber ? "default" : "outline"}
                                             size="sm"
-                                            onClick={() => handlePageChange(pageNumber)}
+                                            onClick={() => handlePageChange((pageNumber - 1) * limit)}
                                         >
                                             {pageNumber}
                                         </Button>
@@ -374,8 +373,8 @@ export default function SkillMarketplace() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                disabled={skillsPage >= totalPages}
-                                onClick={() => handlePageChange(skillsPage + 1)}
+                                disabled={currentPage >= totalPages}
+                                onClick={() => handlePageChange(currentPage * limit)}
                             >
                                 Next
                                 <ChevronRight className="w-4 h-4" />

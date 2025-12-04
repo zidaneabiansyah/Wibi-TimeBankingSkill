@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Loader2 } from 'lucide-react'
-import { useSkillStore } from '@/store/useSkillStore'
+import { useSkillStore } from '@/stores'
 import { toast } from 'sonner'
 import type { CreateUserSkillRequest, SkillLevel } from '@/types'
 

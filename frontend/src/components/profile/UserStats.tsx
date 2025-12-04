@@ -14,16 +14,16 @@ import {
     Target,
     Zap
 } from 'lucide-react'
-import { useUserStore } from '@/store/useUserStore'
+import { useUserStore } from '@/stores'
 
 export default function UserStats() {
-    const { stats, statsLoading, statsError, fetchStats } = useUserStore()
+    const { stats, isLoading, error, fetchStats } = useUserStore()
 
     useEffect(() => {
         fetchStats()
     }, [fetchStats])
 
-    if (statsLoading) {
+    if (isLoading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {Array.from({ length: 8 }).map((_, index) => (
@@ -41,12 +41,12 @@ export default function UserStats() {
         )
     }
 
-    if (statsError || !stats) {
+    if (error || !stats) {
         return (
             <Card>
                 <CardContent className="text-center py-8">
                     <p className="text-muted-foreground">
-                        {statsError || 'Failed to load user statistics'}
+                        {error || 'Failed to load user statistics'}
                     </p>
                 </CardContent>
             </Card>

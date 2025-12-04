@@ -15,7 +15,7 @@ import {
     Home,
     Zap
 } from 'lucide-react'
-import { useSkillStore } from '@/store/useSkillStore'
+import { useSkillStore } from '@/stores'
 import { toast } from 'sonner'
 import AddSkillForm from './AddSkillForm'
 import type { UserSkill } from '@/types'
@@ -31,8 +31,8 @@ export default function UserSkillList({
 }: UserSkillListProps) {
     const {
         userSkills,
-        userSkillsLoading,
-        userSkillsError,
+        isLoadingUserSkills,
+        error,
         fetchUserSkills,
         deleteUserSkill
     } = useSkillStore()
@@ -72,7 +72,7 @@ export default function UserSkillList({
         }
     }
 
-    if (userSkillsLoading) {
+    if (isLoadingUserSkills) {
         return (
             <Card>
                 <CardHeader>
@@ -87,7 +87,7 @@ export default function UserSkillList({
         )
     }
 
-    if (userSkillsError) {
+    if (error) {
         return (
             <Card>
                 <CardHeader>
@@ -95,7 +95,7 @@ export default function UserSkillList({
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-8">
-                        <p className="text-muted-foreground">{userSkillsError}</p>
+                        <p className="text-muted-foreground">{error}</p>
                         <Button
                             variant="outline"
                             className="mt-4"

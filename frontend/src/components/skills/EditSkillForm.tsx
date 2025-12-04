@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
-import { useSkillStore } from '@/store/useSkillStore'
+import { useSkillStore } from '@/stores'
 import { toast } from 'sonner'
 import type { UpdateUserSkillRequest, SkillLevel, UserSkill } from '@/types'
 
