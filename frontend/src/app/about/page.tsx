@@ -36,7 +36,7 @@ export default function AboutPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-background to-muted/30">
+      <section className="w-full py-16 md:py-24 lg:py-32 bg-linear-to-b from-background to-muted/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center text-center space-y-6">
             <Badge variant="outline" className="px-4 py-1.5 text-sm border-primary/30 text-primary bg-primary/5">
@@ -103,7 +103,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-8 flex items-center justify-center">
+              <div className="aspect-square rounded-2xl bg-linear-to-br from-primary/20 via-primary/10 to-transparent p-8 flex items-center justify-center">
                 <div className="text-center space-y-4">
                   <div className="text-7xl">🎓</div>
                   <p className="text-xl font-semibold text-primary">Learn Together, Grow Together</p>
@@ -229,7 +229,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center">
               <CardContent className="pt-8">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 mx-auto mb-4 flex items-center justify-center text-4xl">
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-primary/5 mx-auto mb-4 flex items-center justify-center text-4xl">
                   👨‍💻
                 </div>
                 <h3 className="font-semibold text-lg">Wibi Team</h3>
@@ -241,7 +241,7 @@ export default function AboutPage() {
             </Card>
             <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center">
               <CardContent className="pt-8">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 mx-auto mb-4 flex items-center justify-center text-4xl">
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-500/20 to-blue-500/5 mx-auto mb-4 flex items-center justify-center text-4xl">
                   👩‍🎨
                 </div>
                 <h3 className="font-semibold text-lg">Design Team</h3>
@@ -253,7 +253,7 @@ export default function AboutPage() {
             </Card>
             <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center">
               <CardContent className="pt-8">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/5 mx-auto mb-4 flex items-center justify-center text-4xl">
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-green-500/20 to-green-500/5 mx-auto mb-4 flex items-center justify-center text-4xl">
                   🤝
                 </div>
                 <h3 className="font-semibold text-lg">Community</h3>
@@ -269,7 +269,7 @@ export default function AboutPage() {
 
       {/* CTA Section */}
       <section className="relative w-full py-16 md:py-24 lg:py-32 overflow-hidden border-t border-border/40">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-accent/5" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-6 text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">

@@ -107,11 +107,11 @@ export default function SkillDetailPage() {
                     </nav>
 
                     {/* Skill Header Card */}
-                    <Card className="overflow-hidden bg-gradient-to-br from-card/80 to-card border-border/50">
+                    <Card className="overflow-hidden bg-linear-to-br from-card/80 to-card border-border/50">
                         <div className="flex flex-col md:flex-row">
                             {/* Skill Icon/Image */}
                             <div className="w-full md:w-72 lg:w-80 shrink-0">
-                                <div className="aspect-square md:h-full w-full overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                                <div className="aspect-square md:h-full w-full overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center">
                                     {skill.icon ? (
                                         <span className="text-8xl">{skill.icon}</span>
                                     ) : (
@@ -231,7 +231,7 @@ export default function SkillDetailPage() {
                                     <Card key={teacher.id} className="group bg-card/50 border-border/50 hover:border-primary/30 hover:bg-card/80 transition-all duration-300">
                                         <CardHeader className="pb-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary text-xl font-semibold ring-2 ring-border group-hover:ring-primary/30 transition-all">
+                                                <div className="h-14 w-14 rounded-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary text-xl font-semibold ring-2 ring-border group-hover:ring-primary/30 transition-all">
                                                     {teacher.user?.full_name?.charAt(0).toUpperCase() || 'T'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -244,7 +244,7 @@ export default function SkillDetailPage() {
                                             </div>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
-                                            <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+                                            <p className="text-sm text-muted-foreground line-clamp-2 min-h-q0">
                                                 {teacher.description || 'Ready to help you learn this skill!'}
                                             </p>
                                             
