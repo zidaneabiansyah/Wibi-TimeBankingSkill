@@ -5,31 +5,29 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/timebankingskill/backend/internal/repository"
+	"github.com/timebankingskill/backend/internal/service"
+	"github.com/timebankingskill/backend/internal/utils"
 )
 
 // TransactionHandler handles transaction-related HTTP requests
 type TransactionHandler struct {
-	transactionRepo *repository.TransactionRepository
+	transactionService *service.TransactionService
 }
 
 // NewTransactionHandler creates a new transaction handler
-func NewTransactionHandler(transactionRepo *repository.TransactionRepository) *TransactionHandler {
+func NewTransactionHandler(transactionService *service.TransactionService) *TransactionHandler {
 	return &TransactionHandler{
-		transactionRepo: transactionRepo,
+		transactionService: transactionService,
 	}
 }
 
-// GetUserTransactions gets transaction history for the authenticated user
-// GET /api/v1/user/transactions
+// GetUserTransactions retrieves transaction history for the authenticated user
+// GET /api/v1/user/transactions?limit=10&offset=0
 func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 	// Get user ID from context (set by auth middleware)
 	userID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "Unauthorized",
-		})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
@@ -38,7 +36,7 @@ func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 	offsetStr := c.DefaultQuery("offset", "0")
 
 	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit < 1 {
+	if err != nil || limit < 1 || limit > 100 {
 		limit = 10
 	}
 
@@ -48,25 +46,21 @@ func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 	}
 
 	// Get transactions
-	transactions, total, err := h.transactionRepo.GetUserTransactionHistory(userID.(uint), limit, offset)
+	transactions, total, err := h.transactionService.GetUserTransactionHistory(userID.(uint), limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Failed to fetch transactions",
-		})
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch transactions", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Transactions retrieved successfully",
-		"data": gin.H{
-			"transactions": transactions,
-			"total":        total,
-			"limit":        limit,
-			"offset":       offset,
-		},
-	})
+	// Return response
+	response := gin.H{
+		"transactions": transactions,
+		"total":        total,
+		"limit":        limit,
+		"offset":       offset,
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Transactions retrieved successfully", response)
 }
 
 // GetTransactionByID gets a specific transaction by ID

@@ -7,9 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/service"
+	"github.com/timebankingskill/backend/internal/utils"
 )
 
-// getUserID extracts user ID from context
+// getUserID extracts user ID from context set by auth middleware.
+// Returns the user ID and a boolean indicating if it was found.
 func getUserID(c *gin.Context) (uint, bool) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -18,72 +20,70 @@ func getUserID(c *gin.Context) (uint, bool) {
 	return userID.(uint), true
 }
 
+// SessionHandler handles session-related HTTP requests
 type SessionHandler struct {
 	sessionService *service.SessionService
 }
 
+// NewSessionHandler creates a new session handler
 func NewSessionHandler(sessionService *service.SessionService) *SessionHandler {
 	return &SessionHandler{sessionService: sessionService}
 }
 
 // BookSession handles POST /api/v1/sessions
+// Creates a new session request from student to teacher
 func (h *SessionHandler) BookSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	var req dto.CreateSessionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
 		return
 	}
 
 	session, err := h.sessionService.BookSession(userID, &req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-		"message": "Session booked successfully",
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusCreated, "Session booked successfully", session)
 }
 
 // GetSession handles GET /api/v1/sessions/:id
+// Retrieves a specific session by ID
 func (h *SessionHandler) GetSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid session ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
 		return
 	}
 
 	session, err := h.sessionService.GetSession(userID, uint(sessionID))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusNotFound, "Session not found", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Session retrieved successfully", session)
 }
 
 // GetUserSessions handles GET /api/v1/sessions
+// Retrieves all sessions for the authenticated user with optional filtering
 func (h *SessionHandler) GetUserSessions(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
@@ -99,21 +99,19 @@ func (h *SessionHandler) GetUserSessions(c *gin.Context) {
 
 	sessions, err := h.sessionService.GetUserSessions(userID, role, status, limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch sessions", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    sessions,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Sessions retrieved successfully", sessions)
 }
 
 // GetUpcomingSessions handles GET /api/v1/sessions/upcoming
+// Retrieves upcoming sessions for the authenticated user
 func (h *SessionHandler) GetUpcomingSessions(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
@@ -124,47 +122,43 @@ func (h *SessionHandler) GetUpcomingSessions(c *gin.Context) {
 
 	sessions, err := h.sessionService.GetUpcomingSessions(userID, limit)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch upcoming sessions", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    sessions,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Upcoming sessions retrieved successfully", sessions)
 }
 
 // GetPendingRequests handles GET /api/v1/sessions/pending
+// Retrieves pending session requests for the authenticated teacher
 func (h *SessionHandler) GetPendingRequests(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessions, err := h.sessionService.GetPendingRequests(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch pending requests", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    sessions,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Pending requests retrieved successfully", sessions)
 }
 
 // ApproveSession handles POST /api/v1/sessions/:id/approve
+// Teacher approves a pending session request
 func (h *SessionHandler) ApproveSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid session ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
 		return
 	}
 
@@ -176,88 +170,79 @@ func (h *SessionHandler) ApproveSession(c *gin.Context) {
 
 	session, err := h.sessionService.ApproveSession(userID, uint(sessionID), &req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Session approved successfully",
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Session approved successfully", session)
 }
 
 // RejectSession handles POST /api/v1/sessions/:id/reject
+// Teacher rejects a pending session request
 func (h *SessionHandler) RejectSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid session ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
 		return
 	}
 
 	var req dto.RejectSessionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
 		return
 	}
 
 	session, err := h.sessionService.RejectSession(userID, uint(sessionID), &req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Session rejected",
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Session rejected", session)
 }
 
 // StartSession handles POST /api/v1/sessions/:id/start
+// Marks a session as started (check-in for both participants)
 func (h *SessionHandler) StartSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid session ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
 		return
 	}
 
 	session, err := h.sessionService.StartSession(userID, uint(sessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Session started",
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Session started", session)
 }
 
 // ConfirmCompletion handles POST /api/v1/sessions/:id/complete
+// Marks a session as completed and releases credits to teacher
 func (h *SessionHandler) ConfirmCompletion(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid session ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
 		return
 	}
 
@@ -268,46 +253,39 @@ func (h *SessionHandler) ConfirmCompletion(c *gin.Context) {
 
 	session, err := h.sessionService.ConfirmCompletion(userID, uint(sessionID), &req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Completion confirmed",
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Session completed successfully", session)
 }
 
 // CancelSession handles POST /api/v1/sessions/:id/cancel
+// Cancels a session and refunds credits to student
 func (h *SessionHandler) CancelSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized"})
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
 	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid session ID"})
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
 		return
 	}
 
 	var req dto.CancelSessionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
 		return
 	}
 
 	session, err := h.sessionService.CancelSession(userID, uint(sessionID), &req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Session cancelled",
-		"data":    session,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Session cancelled", session)
 }
