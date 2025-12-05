@@ -176,9 +176,9 @@ function EditProfileContent() {
                             <CardTitle>Personal Information</CardTitle>
                             <CardDescription>Update your basic information</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
+                        <CardContent className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
                                     <Label htmlFor="full_name">Full Name *</Label>
                                     <Input
                                         id="full_name"
@@ -190,7 +190,7 @@ function EditProfileContent() {
                                     )}
                                 </div>
 
-                                <div>
+                                <div className="space-y-2">
                                     <Label htmlFor="username">Username *</Label>
                                     <Input
                                         id="username"
@@ -202,7 +202,7 @@ function EditProfileContent() {
                                     )}
                                 </div>
 
-                                <div>
+                                <div className="space-y-2">
                                     <Label htmlFor="phone_number">Phone Number</Label>
                                     <Input
                                         id="phone_number"
@@ -211,7 +211,7 @@ function EditProfileContent() {
                                     />
                                 </div>
 
-                                <div>
+                                <div className="space-y-2">
                                     <Label htmlFor="location">Location</Label>
                                     <Input
                                         id="location"
@@ -220,7 +220,7 @@ function EditProfileContent() {
                                 </div>
                             </div>
 
-                            <div>
+                            <div className="space-y-2">
                                 <Label htmlFor="bio">Bio</Label>
                                 <Textarea
                                     id="bio"
@@ -241,9 +241,9 @@ function EditProfileContent() {
                             <CardTitle>Education</CardTitle>
                             <CardDescription>Update your education details</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
+                        <CardContent className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
                                     <Label htmlFor="school">School *</Label>
                                     <Input
                                         id="school"
@@ -255,7 +255,7 @@ function EditProfileContent() {
                                     )}
                                 </div>
 
-                                <div>
+                                <div className="space-y-2">
                                     <Label htmlFor="grade">Grade *</Label>
                                     <Input
                                         id="grade"
@@ -267,7 +267,7 @@ function EditProfileContent() {
                                     )}
                                 </div>
 
-                                <div className="md:col-span-2">
+                                <div className="md:col-span-2 space-y-2">
                                     <Label htmlFor="major">Major/Field of Study</Label>
                                     <Input
                                         id="major"
