@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { ProtectedRoute } from "@/components/auth";
 import { useAuthStore } from "@/stores/auth.store";
 import { useUserStore } from "@/stores/user.store";
 import { useSessionStore } from "@/stores/session.store";
+import { useBadgeStore } from "@/stores/badge.store";
+import SessionApprovalModal from "@/components/session/SessionApprovalModal";
 import type { Transaction, Session } from "@/types";
 
 // Format date
@@ -45,13 +47,29 @@ function DashboardContent() {
     const { user } = useAuthStore();
     const { stats, transactions, isLoading, fetchStats, fetchTransactions } = useUserStore();
     const { upcomingSessions, pendingRequests, fetchUpcomingSessions, fetchPendingRequests } = useSessionStore();
+    const { userBadges, fetchUserBadges } = useBadgeStore();
+    const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         fetchStats().catch(console.error);
         fetchTransactions(5, 0).catch(console.error);
         fetchUpcomingSessions(3).catch(console.error);
         fetchPendingRequests().catch(console.error);
-    }, [fetchStats, fetchTransactions, fetchUpcomingSessions, fetchPendingRequests]);
+        fetchUserBadges().catch(console.error);
+    }, [fetchStats, fetchTransactions, fetchUpcomingSessions, fetchPendingRequests, fetchUserBadges]);
+
+    const handleOpenApprovalModal = (session: Session) => {
+        setSelectedSession(session);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedSession(null);
+        // Refresh pending requests
+        fetchPendingRequests().catch(console.error);
+    };
 
     const firstName = user?.full_name?.split(' ')[0] || 'User';
     return (
@@ -146,11 +164,28 @@ function DashboardContent() {
                                     {pendingRequests.length} Pending Request{pendingRequests.length > 1 ? 's' : ''}
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="space-y-3">
                                 <p className="text-sm text-muted-foreground">Students are waiting for your approval</p>
-                                <Link href="/dashboard/sessions">
-                                    <Button size="sm" className="mt-2">Review Requests</Button>
-                                </Link>
+                                <div className="space-y-2">
+                                    {pendingRequests.slice(0, 3).map((session: Session) => (
+                                        <div key={session.id} className="flex items-center justify-between p-2 bg-white dark:bg-slate-900 rounded">
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium">{session.student?.full_name}</p>
+                                                <p className="text-xs text-muted-foreground">{session.title}</p>
+                                            </div>
+                                            <Button size="sm" variant="outline" onClick={() => handleOpenApprovalModal(session)}>
+                                                Review
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                                {pendingRequests.length > 3 && (
+                                    <Link href="/dashboard/sessions">
+                                        <Button size="sm" variant="ghost" className="w-full">
+                                            View All ({pendingRequests.length})
+                                        </Button>
+                                    </Link>
+                                )}
                             </CardContent>
                         </Card>
                     )}
@@ -280,50 +315,61 @@ function DashboardContent() {
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Your Badges</h2>
-                            <Link href="/dashboard/badges">
+                            <Link href="/badges">
                                 <Button variant="ghost" size="sm">View All</Button>
                             </Link>
                         </div>
-                        <div className="flex flex-wrap gap-4">
-                            <div className="flex flex-col items-center">
-                                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
-                                        <path d="M6 10c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8h-8" />
-                                        <polyline points="15 14 18 10 21 14" />
-                                        <path d="M6 14H3" />
-                                        <path d="M6 18H3" />
-                                        <path d="M6 22H3" />
-                                    </svg>
-                                </div>
-                                <span className="text-sm font-medium mt-2">Early Bird</span>
+                        {userBadges.length === 0 ? (
+                            <Card>
+                                <CardContent className="py-12">
+                                    <div className="text-center text-muted-foreground">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 opacity-50">
+                                            <path d="M6 10c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8h-8" />
+                                            <polyline points="15 14 18 10 21 14" />
+                                            <path d="M6 14H3" />
+                                            <path d="M6 18H3" />
+                                            <path d="M6 22H3" />
+                                        </svg>
+                                        <p className="text-lg font-medium">No badges yet</p>
+                                        <p className="text-sm mt-1">Complete sessions and achievements to earn badges!</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <div className="flex flex-wrap gap-4">
+                                {userBadges.slice(0, 6).map((userBadge: any) => (
+                                    <div key={userBadge.id} className="flex flex-col items-center">
+                                        <div 
+                                            className={`h-16 w-16 rounded-full flex items-center justify-center text-2xl ${userBadge.is_pinned ? 'ring-2 ring-yellow-400' : ''}`}
+                                            style={{ backgroundColor: userBadge.badge?.color || '#e5e7eb' }}
+                                        >
+                                            {userBadge.badge?.icon || '🏆'}
+                                        </div>
+                                        <span className="text-sm font-medium mt-2 text-center">{userBadge.badge?.name}</span>
+                                        <Badge className="mt-1 text-xs">{userBadge.badge?.type}</Badge>
+                                    </div>
+                                ))}
+                                {userBadges.length > 6 && (
+                                    <div className="flex flex-col items-center justify-center">
+                                        <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+                                            <span className="text-sm font-medium">+{userBadges.length - 6}</span>
+                                        </div>
+                                        <span className="text-xs text-muted-foreground mt-2">More badges</span>
+                                    </div>
+                                )}
                             </div>
-                            <div className="flex flex-col items-center">
-                                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
-                                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                                        <polyline points="14 2 14 8 20 8" />
-                                        <path d="M16 13H8" />
-                                        <path d="M16 17H8" />
-                                        <path d="M10 9H8" />
-                                    </svg>
-                                </div>
-                                <span className="text-sm font-medium mt-2">Quick Learner</span>
-                            </div>
-                            <div className="flex flex-col items-center opacity-40">
-                                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
-                                        <path d="M12 20h9" />
-                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                        <path d="m15 5 3 3" />
-                                    </svg>
-                                </div>
-                                <span className="text-sm font-medium mt-2">Top Tutor</span>
-                                <span className="text-xs text-muted-foreground">In progress</span>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </main>
+
+            {/* Session Approval Modal */}
+            <SessionApprovalModal
+                session={selectedSession}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onApproved={handleCloseModal}
+            />
         </div>
     );
 }
