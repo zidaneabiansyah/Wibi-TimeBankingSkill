@@ -191,18 +191,28 @@ function ProfileContent() {
 
             {/* Teaching Skills Tab */}
             <TabsContent value="teaching" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {isLoadingUserSkills ? (
-                  <div className="col-span-2 text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-2 text-muted-foreground">Loading skills...</p>
-                  </div>
-                ) : userSkills.length === 0 ? (
-                  <div className="col-span-2 text-center py-8 text-muted-foreground">
-                    <p>You haven't added any teaching skills yet.</p>
-                  </div>
-                ) : (
-                  userSkills.map((skill: UserSkill) => (
+              {isLoadingUserSkills ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-muted-foreground">Loading skills...</p>
+                </div>
+              ) : userSkills.length === 0 ? (
+                <div className="flex justify-center">
+                  <Card className="border-dashed flex flex-col items-center justify-center p-8 w-full max-w-sm">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                      </svg>
+                    </div>
+                    <h3 className="font-medium mb-1">Add New Skill</h3>
+                    <p className="text-sm text-muted-foreground text-center mb-4">Share your knowledge and earn time credits</p>
+                    <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
+                  </Card>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userSkills.map((skill: UserSkill) => (
                     <Card key={skill.id}>
                       <CardHeader>
                         <div className="flex justify-between items-start">
@@ -244,36 +254,46 @@ function ProfileContent() {
                         </div>
                       </CardFooter>
                     </Card>
-                  ))
-                )}
-                <Card className="border-dashed flex flex-col items-center justify-center p-6">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
-                      <path d="M12 5v14" />
-                      <path d="M5 12h14" />
-                    </svg>
-                  </div>
-                  <h3 className="font-medium mb-1">Add New Skill</h3>
-                  <p className="text-sm text-muted-foreground text-center mb-4">Share your knowledge and earn time credits</p>
-                  <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
-                </Card>
-              </div>
+                  ))}
+                  <Card className="border-dashed flex flex-col items-center justify-center p-6">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                      </svg>
+                    </div>
+                    <h3 className="font-medium mb-1">Add New Skill</h3>
+                    <p className="text-sm text-muted-foreground text-center mb-4">Share your knowledge and earn time credits</p>
+                    <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
+                  </Card>
+                </div>
+              )}
             </TabsContent>
 
             {/* Learning Wishlist Tab */}
             <TabsContent value="learning" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {isLoadingLearningSkills ? (
-                  <div className="col-span-2 text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-2 text-muted-foreground">Loading learning skills...</p>
-                  </div>
-                ) : learningSkills.length === 0 ? (
-                  <div className="col-span-2 text-center py-8 text-muted-foreground">
-                    <p>You haven't added any learning goals yet.</p>
-                  </div>
-                ) : (
-                  learningSkills.map((skill: LearningSkill) => (
+              {isLoadingLearningSkills ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-muted-foreground">Loading learning skills...</p>
+                </div>
+              ) : learningSkills.length === 0 ? (
+                <div className="flex justify-center">
+                  <Card className="border-dashed flex flex-col items-center justify-center p-8 w-full max-w-sm">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                      </svg>
+                    </div>
+                    <h3 className="font-medium mb-1">Add Learning Goal</h3>
+                    <p className="text-sm text-muted-foreground text-center mb-4">What skills would you like to learn?</p>
+                    <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
+                  </Card>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {learningSkills.map((skill: LearningSkill) => (
                     <Card key={skill.id}>
                       <CardHeader>
                         <div className="flex justify-between items-start">
@@ -292,20 +312,20 @@ function ProfileContent() {
                         <Button size="sm" onClick={() => handleFindTutors(skill.id, skill.skill?.name || '')}>Find Tutors</Button>
                       </CardFooter>
                     </Card>
-                  ))
-                )}
-                <Card className="border-dashed flex flex-col items-center justify-center p-6">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
-                      <path d="M12 5v14" />
-                      <path d="M5 12h14" />
-                    </svg>
-                  </div>
-                  <h3 className="font-medium mb-1">Add Learning Goal</h3>
-                  <p className="text-sm text-muted-foreground text-center mb-4">What skills would you like to learn?</p>
-                  <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
-                </Card>
-              </div>
+                  ))}
+                  <Card className="border-dashed flex flex-col items-center justify-center p-6">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                      </svg>
+                    </div>
+                    <h3 className="font-medium mb-1">Add Learning Goal</h3>
+                    <p className="text-sm text-muted-foreground text-center mb-4">What skills would you like to learn?</p>
+                    <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
+                  </Card>
+                </div>
+              )}
             </TabsContent>
 
             {/* Reviews Tab */}
