@@ -12,6 +12,7 @@ import { useUserStore } from "@/stores/user.store";
 import { useSessionStore } from "@/stores/session.store";
 import { useBadgeStore } from "@/stores/badge.store";
 import SessionApprovalModal from "@/components/session/SessionApprovalModal";
+import TransactionDetailModal from "@/components/transaction/TransactionDetailModal";
 import type { Transaction, Session } from "@/types";
 
 // Format date
@@ -50,6 +51,8 @@ function DashboardContent() {
     const { userBadges, fetchUserBadges } = useBadgeStore();
     const [selectedSession, setSelectedSession] = useState<Session | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+    const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
 
     useEffect(() => {
         fetchStats().catch(console.error);
@@ -294,7 +297,14 @@ function DashboardContent() {
                                             </thead>
                                             <tbody>
                                                 {transactions.map((transaction: Transaction) => (
-                                                    <tr key={transaction.id} className="border-b last:border-0 hover:bg-muted/50">
+                                                    <tr 
+                                                        key={transaction.id} 
+                                                        className="border-b last:border-0 hover:bg-muted/50 cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedTransaction(transaction);
+                                                            setIsTransactionModalOpen(true);
+                                                        }}
+                                                    >
                                                         <td className="p-4">{formatDate(transaction.created_at)}</td>
                                                         <td className="p-4">{transaction.description}</td>
                                                         <td className={`p-4 text-right ${getTransactionTypeColor(transaction.type)}`}>
@@ -369,6 +379,13 @@ function DashboardContent() {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onApproved={handleCloseModal}
+            />
+
+            {/* Transaction Detail Modal */}
+            <TransactionDetailModal
+                transaction={selectedTransaction}
+                isOpen={isTransactionModalOpen}
+                onClose={() => setIsTransactionModalOpen(false)}
             />
         </div>
     );
