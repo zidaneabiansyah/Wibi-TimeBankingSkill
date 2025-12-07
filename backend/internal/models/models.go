@@ -17,5 +17,11 @@ func AutoMigrate(db *gorm.DB) error {
 		&UserBadge{},
 		&Transaction{},
 		&Notification{},
+		&ForumCategory{},
+		&ForumThread{},
+		&ForumReply{},
+		&SuccessStory{},
+		&StoryComment{},
+		&Endorsement{},
 	)
 }
