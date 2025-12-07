@@ -67,3 +67,11 @@ func InitializeBadgeHandler(db *gorm.DB) *handler.BadgeHandler {
 	badgeService := service.NewBadgeService(badgeRepo, userRepo, sessionRepo)
 	return handler.NewBadgeHandler(badgeService)
 }
+
+// InitializeNotificationHandler initializes notification handler with dependencies
+func InitializeNotificationHandler(db *gorm.DB) *handler.NotificationHandler {
+	notificationRepo := repository.NewNotificationRepository(db)
+	userRepo := repository.NewUserRepository(db)
+	notificationService := service.NewNotificationService(notificationRepo, userRepo)
+	return handler.NewNotificationHandler(notificationService)
+}

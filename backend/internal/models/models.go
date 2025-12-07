@@ -6,15 +6,16 @@ import (
 
 // AutoMigrate runs all model migrations
 func AutoMigrate(db *gorm.DB) error {
-  return db.AutoMigrate(
-    &User{},
-    &Skill{},
-    &UserSkill{},
-    &LearningSkill{},
-    &Session{},
-    &Review{},
-    &Badge{},
-    &UserBadge{},
-    &Transaction{},
-  )
+	return db.AutoMigrate(
+		&User{},
+		&Skill{},
+		&UserSkill{},
+		&LearningSkill{},
+		&Session{},
+		&Review{},
+		&Badge{},
+		&UserBadge{},
+		&Transaction{},
+		&Notification{},
+	)
 }

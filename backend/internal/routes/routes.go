@@ -16,6 +16,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 	sessionHandler := InitializeSessionHandler(db)
 	reviewHandler := InitializeReviewHandler(db)
 	badgeHandler := InitializeBadgeHandler(db)
+	notificationHandler := InitializeNotificationHandler(db)
 
 	// API v1 group
 	v1 := router.Group("/api/v1")
@@ -140,6 +141,18 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 				userBadges.GET("/:type", badgeHandler.GetUserBadgesByType)        // GET /api/v1/user/badges/achievement
 				userBadges.POST("/check", badgeHandler.CheckAndAwardBadges)       // POST /api/v1/user/badges/check
 				userBadges.POST("/:id/pin", badgeHandler.PinBadge)                // POST /api/v1/user/badges/1/pin
+			}
+
+			// Notifications routes
+			notifications := protected.Group("/notifications")
+			{
+				notifications.GET("", notificationHandler.GetNotifications)                    // GET /api/v1/notifications
+				notifications.GET("/unread", notificationHandler.GetUnreadNotifications)      // GET /api/v1/notifications/unread
+				notifications.GET("/unread/count", notificationHandler.GetUnreadCount)        // GET /api/v1/notifications/unread/count
+				notifications.GET("/type/:type", notificationHandler.GetNotificationsByType)  // GET /api/v1/notifications/type/session
+				notifications.PUT("/:id/read", notificationHandler.MarkAsRead)                // PUT /api/v1/notifications/1/read
+				notifications.PUT("/read-all", notificationHandler.MarkAllAsRead)             // PUT /api/v1/notifications/read-all
+				notifications.DELETE("/:id", notificationHandler.DeleteNotification)          // DELETE /api/v1/notifications/1
 			}
 		}
 	}
