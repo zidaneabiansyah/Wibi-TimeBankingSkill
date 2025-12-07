@@ -68,7 +68,9 @@ func InitializeBadgeHandler(db *gorm.DB) *handler.BadgeHandler {
 	badgeRepo := repository.NewBadgeRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	sessionRepo := repository.NewSessionRepository(db)
-	badgeService := service.NewBadgeService(badgeRepo, userRepo, sessionRepo)
+	notificationRepo := repository.NewNotificationRepository(db)
+	notificationService := service.NewNotificationService(notificationRepo, userRepo)
+	badgeService := service.NewBadgeService(badgeRepo, userRepo, sessionRepo, notificationService)
 	return handler.NewBadgeHandler(badgeService)
 }
 

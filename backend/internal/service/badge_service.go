@@ -13,9 +13,10 @@ import (
 
 // BadgeService handles badge business logic
 type BadgeService struct {
-	badgeRepo   *repository.BadgeRepository
-	userRepo    *repository.UserRepository
-	sessionRepo *repository.SessionRepository
+	badgeRepo           *repository.BadgeRepository
+	userRepo            *repository.UserRepository
+	sessionRepo         *repository.SessionRepository
+	notificationService *NotificationService
 }
 
 // NewBadgeService creates a new badge service
@@ -23,11 +24,13 @@ func NewBadgeService(
 	badgeRepo *repository.BadgeRepository,
 	userRepo *repository.UserRepository,
 	sessionRepo *repository.SessionRepository,
+	notificationService *NotificationService,
 ) *BadgeService {
 	return &BadgeService{
-		badgeRepo:   badgeRepo,
-		userRepo:    userRepo,
-		sessionRepo: sessionRepo,
+		badgeRepo:           badgeRepo,
+		userRepo:            userRepo,
+		sessionRepo:         sessionRepo,
+		notificationService: notificationService,
 	}
 }
 
@@ -155,6 +158,21 @@ func (s *BadgeService) CheckAndAwardBadges(userID uint) ([]dto.UserBadgeResponse
 					_ = s.userRepo.Update(user)
 				}
 				awardedBadges = append(awardedBadges, *userBadge)
+
+				// Send badge achievement notification
+				notificationData := map[string]interface{}{
+					"badgeID":   badge.ID,
+					"badgeName": badge.Name,
+					"rarity":    badge.Rarity,
+					"bonus":     badge.BonusCredits,
+				}
+				_, _ = s.notificationService.CreateNotification(
+					userID,
+					models.NotificationTypeAchievement,
+					"Badge Unlocked! 🏆",
+					fmt.Sprintf("You unlocked the %s badge! Rarity: %d/5", badge.Name, badge.Rarity),
+					notificationData,
+				)
 			}
 		}
 	}
