@@ -34,7 +34,9 @@ export function CreateThreadForm({ categoryId, onSuccess }: CreateThreadFormProp
                 .filter((t) => t);
 
             const thread = await communityService.createThread(categoryId, title, content, tagArray);
-            addThread(thread);
+            if (thread) {
+                addThread(thread);
+            }
             setTitle('');
             setContent('');
             setTags('');
