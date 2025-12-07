@@ -11,9 +11,10 @@ import (
 
 // ReviewService handles review business logic
 type ReviewService struct {
-	reviewRepo  *repository.ReviewRepository
-	sessionRepo *repository.SessionRepository
-	userRepo    *repository.UserRepository
+	reviewRepo          *repository.ReviewRepository
+	sessionRepo         *repository.SessionRepository
+	userRepo            *repository.UserRepository
+	notificationService *NotificationService
 }
 
 // NewReviewService creates a new review service
@@ -21,11 +22,13 @@ func NewReviewService(
 	reviewRepo *repository.ReviewRepository,
 	sessionRepo *repository.SessionRepository,
 	userRepo *repository.UserRepository,
+	notificationService *NotificationService,
 ) *ReviewService {
 	return &ReviewService{
-		reviewRepo:  reviewRepo,
-		sessionRepo: sessionRepo,
-		userRepo:    userRepo,
+		reviewRepo:          reviewRepo,
+		sessionRepo:         sessionRepo,
+		userRepo:            userRepo,
+		notificationService: notificationService,
 	}
 }
 
@@ -97,6 +100,21 @@ func (s *ReviewService) CreateReview(reviewerID uint, req *dto.CreateReviewReque
 	if err != nil {
 		return nil, err
 	}
+
+	// Send review notification to reviewee
+	reviewer, _ := s.userRepo.FindByID(reviewerID)
+	notificationData := map[string]interface{}{
+		"reviewID":   review.ID,
+		"rating":     req.Rating,
+		"reviewerName": reviewer.FullName,
+	}
+	_, _ = s.notificationService.CreateNotification(
+		revieweeID,
+		models.NotificationTypeReview,
+		"New Review Received! ⭐",
+		fmt.Sprintf("%s gave you a %d-star review", reviewer.FullName, req.Rating),
+		notificationData,
+	)
 
 	return dto.MapReviewToResponse(review), nil
 }
