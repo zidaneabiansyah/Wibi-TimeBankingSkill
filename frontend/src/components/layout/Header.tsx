@@ -1,14 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth.store";
+import { NotificationBell, NotificationDropdown } from "@/components/notification";
 
 export function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
+    const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
 
     const handleLogout = async () => {
         await logout();
@@ -63,13 +66,19 @@ export function Header() {
                     <div className="flex items-center gap-3">
                         {isAuthenticated && user ? (
                             <>
-                                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                                    </svg>
-                                    <span className="sr-only">Notifications</span>
-                                </Button>
+                                {/* Notification Bell with Dropdown */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
+                                        className="p-2 text-gray-600 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-gray-200"
+                                    >
+                                        <NotificationBell />
+                                    </button>
+                                    <NotificationDropdown
+                                        isOpen={isNotificationDropdownOpen}
+                                        onClose={() => setIsNotificationDropdownOpen(false)}
+                                    />
+                                </div>
 
                                 <div className="flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-3 py-1.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
