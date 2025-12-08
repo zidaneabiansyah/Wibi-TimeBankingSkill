@@ -566,6 +566,74 @@ export interface ProgressSummary {
     skills_progresses: SkillProgress[];
 }
 
+// Analytics types
+export interface UserAnalytics {
+    user_id: number;
+    username: string;
+    total_sessions: number;
+    completed_sessions: number;
+    total_credits_earned: number;
+    total_credits_spent: number;
+    current_balance: number;
+    average_rating: number;
+    total_reviews: number;
+    total_badges: number;
+    total_hours_taught: number;
+    total_hours_learned: number;
+    skills_teaching: number;
+    skills_learning: number;
+    joined_at: number;
+    last_activity_at: number;
+}
+
+export interface PlatformAnalytics {
+    total_users: number;
+    active_users: number;
+    total_sessions: number;
+    completed_sessions: number;
+    total_credits_in_flow: number;
+    average_session_rating: number;
+    total_skills: number;
+    top_skills: SkillStatistic[];
+    user_growth: DateStatistic[];
+    session_trend: DateStatistic[];
+    credit_flow: DateStatistic[];
+}
+
+export interface SkillStatistic {
+    skill_id: number;
+    skill_name: string;
+    teacher_count: number;
+    learner_count: number;
+    session_count: number;
+    average_rating: number;
+}
+
+export interface DateStatistic {
+    date: string;
+    value: number | string;
+}
+
+export interface SessionStatistic {
+    total_sessions: number;
+    completed_sessions: number;
+    cancelled_sessions: number;
+    pending_sessions: number;
+    average_duration: number;
+    average_rating: number;
+    online_sessions: number;
+    offline_sessions: number;
+}
+
+export interface CreditStatistic {
+    total_earned: number;
+    total_spent: number;
+    total_held: number;
+    average_earned: number;
+    average_spent: number;
+    transaction_count: number;
+}
+
 // Whiteboard Types
 export interface Point {
     x: number;
