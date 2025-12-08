@@ -135,8 +135,10 @@ export function WhiteboardCanvas({ sessionId, isReadOnly = false }: WhiteboardCa
         if (!fabricCanvasRef.current) return;
 
         const dataURL = fabricCanvasRef.current.toDataURL({
-            format: 'png',
+            format: 'png' as const,
             quality: 1,
+            multiplier: 1,
+            enableRetinaScaling: false,
         });
 
         const link = document.createElement('a');
