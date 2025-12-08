@@ -186,14 +186,14 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			stories := protected.Group("/stories")
 			{
 				stories.POST("", storyHandler.CreateStory)                                    // POST /api/v1/stories
-				stories.GET("/:id", storyHandler.GetStory)                                    // GET /api/v1/stories/:id
-				stories.GET("/published", storyHandler.GetPublishedStories)                   // GET /api/v1/stories/published
+				stories.GET("/published", storyHandler.GetPublishedStories)                   // GET /api/v1/stories/published (specific routes first)
 				stories.GET("/user/:user_id", storyHandler.GetUserStories)                    // GET /api/v1/stories/user/:user_id
+				stories.POST("/comments", storyHandler.CreateComment)                         // POST /api/v1/stories/comments
+				stories.DELETE("/comments/:id", storyHandler.DeleteComment)                   // DELETE /api/v1/stories/comments/:id
+				stories.GET("/:id", storyHandler.GetStory)                                    // GET /api/v1/stories/:id (generic routes last)
+				stories.GET("/:id/comments", storyHandler.GetComments)                        // GET /api/v1/stories/:id/comments
 				stories.PUT("/:id", storyHandler.UpdateStory)                                 // PUT /api/v1/stories/:id
 				stories.DELETE("/:id", storyHandler.DeleteStory)                              // DELETE /api/v1/stories/:id
-				stories.POST("/comments", storyHandler.CreateComment)                         // POST /api/v1/stories/comments
-				stories.GET("/:story_id/comments", storyHandler.GetComments)                  // GET /api/v1/stories/:story_id/comments
-				stories.DELETE("/comments/:id", storyHandler.DeleteComment)                   // DELETE /api/v1/stories/comments/:id
 				stories.POST("/:id/like", storyHandler.LikeStory)                             // POST /api/v1/stories/:id/like
 				stories.POST("/:id/unlike", storyHandler.UnlikeStory)                         // POST /api/v1/stories/:id/unlike
 			}
