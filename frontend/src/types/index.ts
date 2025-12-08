@@ -455,3 +455,43 @@ export interface Endorsement {
     created_at: string;
     updated_at: string;
 }
+
+// Video Call Types
+export interface VideoSession {
+    id: number;
+    session_id: number;
+    room_id: string;
+    started_at: string;
+    ended_at?: string;
+    duration: number;
+    participant_count: number;
+    recording_url?: string;
+    status: 'active' | 'completed' | 'cancelled';
+    metadata?: Record<string, any>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface VideoSessionResponse {
+    id: number;
+    session_id: number;
+    room_id: string;
+    started_at: string;
+    ended_at?: string;
+    duration: number;
+    participant_count: number;
+    recording_url?: string;
+    status: 'active' | 'completed' | 'cancelled';
+    jitsi_token?: string;
+    jitsi_url?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface StartVideoSessionRequest {
+    session_id: number;
+}
+
+export interface EndVideoSessionRequest {
+    duration: number;
+}
