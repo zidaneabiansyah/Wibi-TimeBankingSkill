@@ -7,10 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Header } from '@/components/layout'
 import { ProtectedRoute } from '@/components/auth'
+import { VideoCallModal } from '@/components/video'
 import { useSessionStore } from '@/stores/session.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { toast } from 'sonner'
-import { ArrowLeft, Calendar, Clock, User, MapPin, Link as LinkIcon, FileText, Loader2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, User, MapPin, Link as LinkIcon, FileText, Loader2, Video } from 'lucide-react'
 import type { Session } from '@/types'
 
 function SessionDetailContent() {
@@ -24,6 +25,7 @@ function SessionDetailContent() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [cancelReason, setCancelReason] = useState('')
     const [showCancelForm, setShowCancelForm] = useState(false)
+    const [showVideoCall, setShowVideoCall] = useState(false)
 
     useEffect(() => {
         // Fetch session details
@@ -276,10 +278,21 @@ function SessionDetailContent() {
                             {!showCancelForm ? (
                                 <div className="flex flex-wrap gap-2">
                                     {canStart && (
-                                        <Button onClick={handleStartSession} disabled={isSubmitting}>
-                                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            Start Session
-                                        </Button>
+                                        <>
+                                            <Button onClick={handleStartSession} disabled={isSubmitting}>
+                                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Start Session
+                                            </Button>
+                                            <Button
+                                                onClick={() => setShowVideoCall(true)}
+                                                disabled={isSubmitting}
+                                                variant="secondary"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                            >
+                                                <Video className="mr-2 h-4 w-4" />
+                                                Start Video Call
+                                            </Button>
+                                        </>
                                     )}
 
                                     {canConfirmCompletion && (
@@ -337,6 +350,16 @@ function SessionDetailContent() {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Video Call Modal */}
+                {session && (
+                    <VideoCallModal
+                        isOpen={showVideoCall}
+                        onClose={() => setShowVideoCall(false)}
+                        sessionId={session.id}
+                        partnerName={isTeacher ? session.student?.full_name || 'Student' : session.teacher?.full_name || 'Teacher'}
+                    />
+                )}
             </main>
         </div>
     )
