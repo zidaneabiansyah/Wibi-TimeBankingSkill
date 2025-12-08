@@ -531,3 +531,39 @@ export interface FileStats {
     total_size: number;
     total_size_mb: number;
 }
+
+// Whiteboard Types
+export interface Point {
+    x: number;
+    y: number;
+}
+
+export interface DrawingStroke {
+    id: string;
+    type: 'pen' | 'eraser' | 'line' | 'rect' | 'circle' | 'text';
+    points: Point[];
+    color: string;
+    thickness: number;
+    text?: string;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    timestamp: number;
+}
+
+export interface Whiteboard {
+    id: number;
+    session_id: number;
+    drawing_data: Record<string, any>;
+    created_at: number;
+    updated_at: number;
+}
+
+export interface DrawingEventMessage {
+    type: 'draw' | 'erase' | 'clear' | 'undo';
+    stroke?: DrawingStroke;
+    user_id: number;
+    session_id: number;
+    timestamp: number;
+}
