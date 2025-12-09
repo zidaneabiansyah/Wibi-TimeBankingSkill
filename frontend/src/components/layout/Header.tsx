@@ -68,12 +68,9 @@ export function Header() {
                             <>
                                 {/* Notification Bell with Dropdown */}
                                 <div className="relative">
-                                    <button
-                                        onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
-                                        className="p-2 text-gray-600 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:text-gray-200"
-                                    >
+                                    <div onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}>
                                         <NotificationBell />
-                                    </button>
+                                    </div>
                                     <NotificationDropdown
                                         isOpen={isNotificationDropdownOpen}
                                         onClose={() => setIsNotificationDropdownOpen(false)}

@@ -45,8 +45,11 @@ export function useNotificationWebSocket() {
         }
 
         try {
+            // Get the API URL from environment, defaulting to localhost:8080
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+            const baseUrl = apiUrl.replace('/api/v1', '').replace('http://', '').replace('https://', '');
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/notifications`;
+            const wsUrl = `${protocol}//${baseUrl}/api/v1/ws/notifications`;
 
             wsRef.current = new WebSocket(wsUrl);
 

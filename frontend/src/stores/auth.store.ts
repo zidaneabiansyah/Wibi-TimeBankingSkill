@@ -8,6 +8,7 @@ interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
+    isHydrated: boolean;
 
     // Actions
     login: (data: LoginRequest) => Promise<void>;
@@ -23,6 +24,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: false,
     isLoading: false,
     error: null,
+    isHydrated: false,
 
     // Login action
     login: async (data: LoginRequest) => {
@@ -110,7 +112,10 @@ export const useAuthStore = create<AuthState>((set) => ({
                 user,
                 token,
                 isAuthenticated: true,
+                isHydrated: true,
             });
+        } else {
+            set({ isHydrated: true });
         }
     },
 

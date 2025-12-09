@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
 
 interface AuthProviderProps {
@@ -8,19 +8,16 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-    const { loadUser, isAuthenticated } = useAuthStore();
-    const [isInitialized, setIsInitialized] = useState(false);
+    const { loadUser, isHydrated } = useAuthStore();
 
     useEffect(() => {
         // Load user from localStorage on mount
         console.log('🔐 AuthProvider: Loading user from localStorage...');
         loadUser();
-        setIsInitialized(true);
-        console.log('🔐 AuthProvider: Initialized. Authenticated:', isAuthenticated);
-    }, []);
+    }, [loadUser]);
 
-    // Show nothing while initializing to prevent flash
-    if (!isInitialized) {
+    // Show loading spinner while hydrating auth state from localStorage
+    if (!isHydrated) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
