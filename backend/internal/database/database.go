@@ -61,18 +61,9 @@ func AutoMigrate() error {
     return fmt.Errorf("database not connected")
   }
 
-  // Use a context with timeout to prevent slow queries from blocking
-  // Check if users table exists using raw SQL (faster than HasTable)
-  var exists int
-  if err := DB.Raw("SELECT 1 FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' LIMIT 1").Scan(&exists).Error; err == nil && exists == 1 {
-    log.Println("✅ Database tables already exist, skipping migrations")
-    // Still create indexes if they don't exist
-    if err := RunMigrations(DB); err != nil {
-      log.Printf("⚠️  Warning: Failed to create indexes: %v", err)
-    }
-    return nil
-  }
-
+  // GORM AutoMigrate is idempotent - safe to run multiple times
+  // It only creates tables that don't exist and adds missing columns
+  // This ensures new models (like Notification) are always created
   log.Println("🔄 Running database migrations...")
 
   err := models.AutoMigrate(DB)
@@ -82,7 +73,7 @@ func AutoMigrate() error {
 
   // Create performance indexes
   if err := RunMigrations(DB); err != nil {
-    return fmt.Errorf("failed to create indexes: %w", err)
+    log.Printf("⚠️  Warning: Failed to create indexes: %v", err)
   }
 
   log.Println("✅ Database migrations completed")

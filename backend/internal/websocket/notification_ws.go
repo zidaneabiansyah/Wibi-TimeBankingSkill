@@ -10,6 +10,7 @@ import (
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/service"
+	"github.com/timebankingskill/backend/internal/utils"
 )
 
 // NotificationWebSocket handles WebSocket connections for real-time notifications
@@ -57,6 +58,19 @@ func NewNotificationWebSocket(notificationService *service.NotificationService) 
 func (ws *NotificationWebSocket) HandleConnection(c *gin.Context) {
 	// Get user ID from context (set by auth middleware)
 	userID := c.GetUint("user_id")
+	
+	// If not set by middleware, try to get token from query param (WebSocket auth)
+	if userID == 0 {
+		token := c.Query("token")
+		if token != "" {
+			// Validate token manually
+			claims, err := utils.ValidateToken(token)
+			if err == nil {
+				userID = claims.UserID
+			}
+		}
+	}
+	
 	if userID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return

@@ -30,14 +30,14 @@ const (
 // Different notification types can have different data structures
 type Notification struct {
 	ID        uint                   `gorm:"primaryKey" json:"id"`
-	UserID    uint                   `gorm:"index:idx_notifications_user_unread;index:idx_notifications_user_created" json:"user_id"`
+	UserID    uint                   `gorm:"index" json:"user_id"`
 	Type      NotificationType `gorm:"type:varchar(50)" json:"type"`
 	Title     string           `gorm:"type:varchar(255)" json:"title"`
 	Message   string           `gorm:"type:text" json:"message"`
 	Data      json.RawMessage  `gorm:"type:jsonb" json:"data"`
-	IsRead    bool             `gorm:"default:false;index:idx_notifications_user_unread" json:"is_read"`
+	IsRead    bool             `gorm:"default:false;index" json:"is_read"`
 	ReadAt    *time.Time             `json:"read_at"`
-	CreatedAt time.Time              `gorm:"index:idx_notifications_user_unread;index:idx_notifications_user_created" json:"created_at"`
+	CreatedAt time.Time              `gorm:"index" json:"created_at"`
 	UpdatedAt time.Time              `json:"updated_at"`
 	DeletedAt gorm.DeletedAt         `gorm:"index" json:"deleted_at"`
 
