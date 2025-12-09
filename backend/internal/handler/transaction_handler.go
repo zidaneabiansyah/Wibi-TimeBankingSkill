@@ -25,7 +25,7 @@ func NewTransactionHandler(transactionService *service.TransactionService) *Tran
 // GET /api/v1/user/transactions?limit=10&offset=0
 func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 	// Get user ID from context (set by auth middleware)
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
@@ -67,7 +67,7 @@ func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 // GET /api/v1/user/transactions/:id
 func (h *TransactionHandler) GetTransactionByID(c *gin.Context) {
 	// Get user ID from context
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return

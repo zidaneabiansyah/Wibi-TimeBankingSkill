@@ -212,7 +212,7 @@ func (h *SkillHandler) DeleteSkill(c *gin.Context) {
 // AddUserSkill handles POST /api/v1/user/skills
 func (h *SkillHandler) AddUserSkill(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -259,7 +259,7 @@ func (h *SkillHandler) AddUserSkill(c *gin.Context) {
 // GetUserSkills handles GET /api/v1/user/skills
 func (h *SkillHandler) GetUserSkills(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -283,7 +283,7 @@ func (h *SkillHandler) GetUserSkills(c *gin.Context) {
 // UpdateUserSkill handles PUT /api/v1/user/skills/:skillId
 func (h *SkillHandler) UpdateUserSkill(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -343,7 +343,7 @@ func (h *SkillHandler) UpdateUserSkill(c *gin.Context) {
 // DeleteUserSkill handles DELETE /api/v1/user/skills/:skillId
 func (h *SkillHandler) DeleteUserSkill(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -374,7 +374,7 @@ func (h *SkillHandler) DeleteUserSkill(c *gin.Context) {
 // AddLearningSkill handles POST /api/v1/user/learning-skills
 func (h *SkillHandler) AddLearningSkill(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -415,7 +415,7 @@ func (h *SkillHandler) AddLearningSkill(c *gin.Context) {
 // GetLearningSkills handles GET /api/v1/user/learning-skills
 func (h *SkillHandler) GetLearningSkills(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -439,7 +439,7 @@ func (h *SkillHandler) GetLearningSkills(c *gin.Context) {
 // DeleteLearningSkill handles DELETE /api/v1/user/learning-skills/:skillId
 func (h *SkillHandler) DeleteLearningSkill(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return

@@ -13,7 +13,7 @@ import (
 // getUserID extracts user ID from context set by auth middleware.
 // Returns the user ID and a boolean indicating if it was found.
 func getUserID(c *gin.Context) (uint, bool) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		return 0, false
 	}

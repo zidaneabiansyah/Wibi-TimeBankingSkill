@@ -24,7 +24,7 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 // GetProfile handles GET /api/v1/user/profile
 func (h *UserHandler) GetProfile(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -43,7 +43,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 // UpdateProfile handles PUT /api/v1/user/profile
 func (h *UserHandler) UpdateProfile(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -86,7 +86,7 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 // ChangePassword handles POST /api/v1/user/change-password
 func (h *UserHandler) ChangePassword(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -114,7 +114,7 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 // GetStats handles GET /api/v1/user/stats
 func (h *UserHandler) GetStats(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
@@ -143,7 +143,7 @@ func (h *UserHandler) GetStats(c *gin.Context) {
 // UpdateAvatar handles POST /api/v1/user/avatar
 func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 	// Get user ID from JWT
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
 		return
