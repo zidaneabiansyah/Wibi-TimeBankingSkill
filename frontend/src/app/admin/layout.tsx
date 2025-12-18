@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useAdminStore } from '@/stores/admin.store';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
@@ -12,6 +13,7 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const pathname = usePathname();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const { loadAdmin } = useAdminStore();
 
@@ -19,6 +21,19 @@ export default function AdminLayout({
         loadAdmin();
     }, [loadAdmin]);
 
+    // Check if we're on the login page
+    const isLoginPage = pathname === '/admin/login';
+
+    // If we're on the login page, render without sidebar/header
+    if (isLoginPage) {
+        return (
+            <AdminProtectedRoute>
+                {children}
+            </AdminProtectedRoute>
+        );
+    }
+
+    // For all other admin pages, render with sidebar and header
     return (
         <AdminProtectedRoute>
             <div className="flex h-screen overflow-hidden bg-muted/10">
