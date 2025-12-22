@@ -1,220 +1,146 @@
 'use client';
 
 import { useState } from 'react';
+import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import * as z from 'zod';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAdminStore } from '@/stores/admin.store';
 import { toast } from 'sonner';
-import { Mail, Lock, Loader2, Eye, EyeOff, BarChart3, Users, TrendingUp, Shield } from 'lucide-react';
+import Dither from "@/components/Dither";
+import { ArrowLeft, Github } from 'lucide-react';
+import Image from 'next/image';
 
-const adminLoginSchema = z.object({
+const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-type AdminLoginFormData = z.infer<typeof adminLoginSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function AdminLoginPage() {
     const router = useRouter();
     const { login, isLoading } = useAdminStore();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [stayLoggedIn, setStayLoggedIn] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<AdminLoginFormData>({
-        resolver: zodResolver(adminLoginSchema),
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = async (data: AdminLoginFormData) => {
-        setIsSubmitting(true);
+    const onSubmit = async (data: LoginFormData) => {
         try {
+            setError(null);
             await login(data);
-            toast.success('Admin login successful!');
+            toast.success('Login successful!');
             router.push('/admin');
-        } catch (error: any) {
-            toast.error(error.message || 'Login failed');
-        } finally {
-            setIsSubmitting(false);
+        } catch (err: any) {
+            setError(err.message || 'Login failed');
+            toast.error(err.message || 'Login failed');
         }
     };
 
     return (
-        <div className="min-h-screen flex">
-            {/* Left Side - Orange Pattern Showcase */}
-            <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-orange-600 via-amber-500 to-orange-400 p-12 flex-col justify-between relative overflow-hidden">
-                {/* Dot Pattern Overlay */}
-                <div className="absolute inset-0 opacity-30" style={{
-                    backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
-                    backgroundSize: '20px 20px'
-                }}></div>
-
-                {/* Dark Geometric Shapes */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-black/40 transform rotate-45 translate-x-48 -translate-y-48"></div>
-                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-black/30 transform -rotate-12 -translate-x-32 translate-y-32"></div>
+        <div className="flex min-h-screen w-full">
+            {/* Left Side - Dither Background & Branding */}
+            <div className="hidden lg:flex w-1/2 relative bg-black flex-col justify-between p-12 text-white overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <Dither
+                        waveColor={[1, 0.5, 0.2]}
+                        disableAnimation={false}
+                        waveSpeed={0.05}
+                        enableMouseInteraction={true}
+                    />
                 </div>
 
-                {/* Back Button */}
                 <div className="relative z-10">
-                    <button 
-                        onClick={() => router.push('/')}
-                        className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                    <Link href="/" className="flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors">
+                        <ArrowLeft className="w-4 h-4" />
                         Back to Home
-                    </button>
+                    </Link>
                 </div>
 
-                {/* Main Content */}
-                <div className="relative z-10">
-                    <h1 className="text-5xl font-bold text-white mb-4 leading-tight">
-                        Exchange skills,<br />
-                        build community.
+                <div className="relative z-10 space-y-4 max-w-lg">
+                    <h1 className="text-4xl font-bold tracking-tight">
+                        Admin Dashboard
                     </h1>
-                    <p className="text-white/90 text-lg max-w-md">
-                        Connect with peers, share knowledge, and grow together using time as your currency.
+                    <p className="text-white/60 text-lg">
+                        Manage users, sessions, and skills.
                     </p>
-                </div>
-
-                {/* Footer */}
-                <div className="relative z-10 text-white/70 text-sm">
-                    2024 Wibi. Time Banking & Skill Exchange Platform
                 </div>
             </div>
 
-            {/* Right Side - Dark Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-950">
-                <div className="w-full max-w-md">
-                    {/* Mobile Logo */}
-                    <div className="lg:hidden flex items-center gap-3 mb-8">
-                        <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                            <Shield className="w-7 h-7 text-orange-500" />
+            {/* Right Side - Login Form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-8">
+                <div className="w-full max-w-md space-y-8">
+                    <div className="space-y-2 text-center lg:text-left">
+                        <div className="flex items-center justify-center lg:justify-start gap-2 mb-6">
+                            <Image
+                                src="/wibi.png"
+                                alt="Wibi Logo"
+                                width={32}
+                                height={32}
+                                className="rounded-lg"
+                            />
+                            <span className="text-xl font-bold">Waktu Indonesia Berbagi Ilmu</span>
                         </div>
-                        <span className="text-2xl font-bold text-white">Wibi Admin</span>
+                        <h2 className="text-2xl font-semibold tracking-tight">Admin Login</h2>
+                        <p className="text-sm text-muted-foreground">
+                            Sign in to your admin account to continue
+                        </p>
                     </div>
 
-                    {/* Logo for Desktop */}
-                    <div className="hidden lg:flex items-center gap-2 mb-8">
-                        <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                            <Shield className="w-5 h-5 text-orange-500" />
-                        </div>
-                        <span className="text-white font-semibold">Waktu Indonesia Berbagi Ilmu</span>
-                    </div>
+                    <div className="space-y-4">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            {error && (
+                                <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
+                                    {error}
+                                </div>
+                            )}
 
-                    {/* Form Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-white mb-2">Welcome back</h1>
-                        <p className="text-slate-400">Sign in to your account to continue your journey with Wibi</p>
-                    </div>
-
-                    {/* Login Form */}
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                        {/* Email Field */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-400">Email</label>
-                            <div className="relative">
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
                                 <Input
-                                    {...register('email')}
+                                    id="email"
                                     type="email"
                                     placeholder="Your Email"
-                                    className="h-12 bg-slate-900/50 border-slate-800 text-white placeholder:text-slate-600 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
-                                    disabled={isSubmitting}
+                                    {...register('email')}
+                                    disabled={isLoading}
+                                    className="bg-muted/50"
                                 />
+                                {errors.email && (
+                                    <p className="text-sm text-destructive">{errors.email.message}</p>
+                                )}
                             </div>
-                            {errors.email && (
-                                <p className="text-sm text-red-400 flex items-center gap-1">
-                                    <span className="inline-block w-1 h-1 rounded-full bg-red-400"></span>
-                                    {errors.email.message}
-                                </p>
-                            )}
-                        </div>
 
-                        {/* Password Field */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-400">Password</label>
-                            <div className="relative">
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password">Password</Label>
+                                </div>
                                 <Input
-                                    {...register('password')}
-                                    type={showPassword ? 'text' : 'password'}
+                                    id="password"
+                                    type="password"
                                     placeholder="Your Password"
-                                    className="h-12 pr-12 bg-slate-900/50 border-slate-800 text-white placeholder:text-slate-600 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
-                                    disabled={isSubmitting}
+                                    {...register('password')}
+                                    disabled={isLoading}
+                                    className="bg-muted/50"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                                    disabled={isSubmitting}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-5 w-5" />
-                                    ) : (
-                                        <Eye className="h-5 w-5" />
-                                    )}
-                                </button>
+                                {errors.password && (
+                                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                                )}
                             </div>
-                            {errors.password && (
-                                <p className="text-sm text-red-400 flex items-center gap-1">
-                                    <span className="inline-block w-1 h-1 rounded-full bg-red-400"></span>
-                                    {errors.password.message}
-                                </p>
-                            )}
-                        </div>
 
-                        {/* Divider */}
-                        <div className="relative my-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-slate-800"></div>
-                            </div>
-                            <div className="relative flex justify-center text-xs">
-                                <span className="bg-slate-950 px-2 text-slate-600">OR CONTINUE WITH</span>
-                            </div>
-                        </div>
-
-                        {/* Submit Button */}
-                        <Button
-                            type="submit"
-                            className="w-full h-12 bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg font-semibold transition-all shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30"
-                            disabled={isSubmitting || isLoading}
-                        >
-                            {isSubmitting || isLoading ? (
-                                <>
-                                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                    Signing in...
-                                </>
-                            ) : (
-                                'Sign in'
-                            )}
-                        </Button>
-                    </form>
-
-                    {/* Footer Link */}
-                    <div className="mt-8 text-center">
-                        <p className="text-slate-500 text-sm">
-                            Don't have an account?{' '}
-                            <button
-                                onClick={() => router.push('/register')}
-                                className="text-orange-500 hover:text-orange-400 font-medium transition-colors"
-                            >
-                                Sign up
-                            </button>
-                        </p>
-                        <button
-                            onClick={() => router.push('/login')}
-                            className="text-orange-500 hover:text-orange-400 font-medium text-sm mt-4 transition-colors block mx-auto"
-                        >
-                            Forgot password?
-                        </button>
+                            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10" type="submit" disabled={isLoading}>
+                                {isLoading ? 'Signing in...' : 'Sign in'}
+                            </Button>
+                        </form>
                     </div>
                 </div>
             </div>

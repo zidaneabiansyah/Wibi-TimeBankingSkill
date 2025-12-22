@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { sessionService } from '@/lib/services/session.service'
 import { toast } from 'sonner'
 import { ArrowLeft, Calendar, Clock, User, MapPin, Link as LinkIcon, FileText, Loader2, Video } from 'lucide-react'
+import { SessionTimer } from '@/components/session/SessionTimer'
 import type { Session } from '@/types'
 
 function SessionDetailContent() {
@@ -225,6 +226,14 @@ function SessionDetailContent() {
                                         <p>{session.location}</p>
                                     </CardContent>
                                 </Card>
+                            )}
+
+                            {session.status === 'in_progress' && session.started_at && (
+                                <SessionTimer
+                                    startTime={session.started_at}
+                                    durationHours={session.duration}
+                                    onTimeUp={() => toast.info('Session time is up!')}
+                                />
                             )}
                         </div>
 
