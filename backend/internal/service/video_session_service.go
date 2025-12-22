@@ -101,7 +101,7 @@ func (s *VideoSessionService) StartVideoSession(userID uint, sessionID uint) (*d
 
 	// Trigger notification
 	if s.notificationService != nil {
-		user, _ := s.userRepo.FindByID(userID)
+		user, _ := s.userRepo.GetByID(userID)
 		otherUserID := session.StudentID
 		if userID == session.StudentID {
 			otherUserID = session.TeacherID
@@ -155,7 +155,7 @@ func (s *VideoSessionService) EndVideoSession(userID uint, sessionID uint, durat
 
 	// Trigger notification
 	if s.notificationService != nil {
-		user, _ := s.userRepo.FindByID(userID)
+		user, _ := s.userRepo.GetByID(userID)
 		otherUserID := session.StudentID
 		if userID == session.StudentID {
 			otherUserID = session.TeacherID
@@ -217,7 +217,7 @@ func (s *VideoSessionService) GetVideoHistory(userID uint, limit int, offset int
 				partnerID = vs.Session.TeacherID
 			}
 
-			partner, _ := s.userRepo.FindByID(partnerID)
+			partner, _ := s.userRepo.GetByID(partnerID)
 			partnerName := "Unknown"
 			if partner != nil {
 				partnerName = partner.FullName

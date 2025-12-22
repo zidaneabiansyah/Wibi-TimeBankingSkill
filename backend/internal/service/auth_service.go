@@ -104,7 +104,7 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 // Login authenticates a user
 func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
   // Find user by email
-  user, err := s.userRepo.FindByEmail(strings.ToLower(req.Email))
+  user, err := s.userRepo.GetByEmail(strings.ToLower(req.Email))
   if err != nil {
     return nil, errors.New("invalid email or password")
   }
@@ -136,7 +136,7 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
 
 // GetProfile gets user profile by ID
 func (s *AuthService) GetProfile(userID uint) (*dto.UserProfile, error) {
-  user, err := s.userRepo.FindByID(userID)
+  user, err := s.userRepo.GetByID(userID)
   if err != nil {
     return nil, err
   }

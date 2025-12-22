@@ -119,7 +119,7 @@ func (s *BadgeService) CheckAndAwardBadges(userID uint) ([]dto.UserBadgeResponse
 	awardedBadges := []models.UserBadge{}
 
 	// Fetch user with current stats (teaching hours, learning hours, ratings, etc)
-	user, err := s.userRepo.FindByID(userID)
+	user, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
@@ -299,7 +299,7 @@ func (s *BadgeService) GetBadgeLeaderboard(limit int) ([]dto.LeaderboardEntry, e
 		userID := uint(result["user_id"].(float64))
 		badgeCount := int(result["badge_count"].(int64))
 
-		user, err := s.userRepo.FindByID(userID)
+		user, err := s.userRepo.GetByID(userID)
 		if err != nil {
 			continue
 		}
@@ -333,7 +333,7 @@ func (s *BadgeService) GetRarityLeaderboard(limit int) ([]dto.LeaderboardEntry, 
 		userID := uint(result["user_id"].(float64))
 		totalRarity := int(result["total_rarity"].(int64))
 
-		user, err := s.userRepo.FindByID(userID)
+		user, err := s.userRepo.GetByID(userID)
 		if err != nil {
 			continue
 		}

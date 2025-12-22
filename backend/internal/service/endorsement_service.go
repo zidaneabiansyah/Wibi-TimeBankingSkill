@@ -49,13 +49,13 @@ func NewEndorsementServiceWithNotification(
 // CreateEndorsement creates a new endorsement
 func (s *EndorsementService) CreateEndorsement(endorserID uint, req *dto.CreateEndorsementRequest) (*models.Endorsement, error) {
 	// Validate endorser exists
-	_, err := s.userRepo.FindByID(endorserID)
+	_, err := s.userRepo.GetByID(endorserID)
 	if err != nil {
 		return nil, errors.New("endorser not found")
 	}
 
 	// Validate user exists
-	_, err = s.userRepo.FindByID(req.UserID)
+	_, err = s.userRepo.GetByID(req.UserID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}

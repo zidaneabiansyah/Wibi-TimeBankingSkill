@@ -42,47 +42,24 @@ func (r *UserRepository) GetByID(id uint) (*models.User, error) {
   return &user, nil
 }
 
-// FindByID finds a user by ID (legacy method)
-func (r *UserRepository) FindByID(id uint) (*models.User, error) {
-  return r.GetByID(id)
-}
-
-// FindByEmail finds a user by email
-func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
-  var user models.User
-  err := r.db.Where("email = ?", email).First(&user).Error
-  if err != nil {
-    if errors.Is(err, gorm.ErrRecordNotFound) {
-      return nil, errors.New("user not found")
-    }
-    return nil, err
-  }
-  return &user, nil
-}
-
 // GetByEmail finds a user by email (implements interface)
 func (r *UserRepository) GetByEmail(email string) (*models.User, error) {
-  var user models.User
-  err := r.db.Where("email = ?", email).First(&user).Error
-  if err != nil {
-    return nil, err
-  }
-  return &user, nil
+	var user models.User
+	err := r.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 // GetByUsername finds a user by username (implements interface)
 func (r *UserRepository) GetByUsername(username string) (*models.User, error) {
-  var user models.User
-  err := r.db.Where("username = ?", username).First(&user).Error
-  if err != nil {
-    return nil, err
-  }
-  return &user, nil
-}
-
-// FindByUsername finds a user by username (legacy method)
-func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
-  return r.GetByUsername(username)
+	var user models.User
+	err := r.db.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 // Update updates a user

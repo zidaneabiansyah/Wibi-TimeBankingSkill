@@ -102,7 +102,7 @@ func (s *ReviewService) CreateReview(reviewerID uint, req *dto.CreateReviewReque
 	}
 
 	// Send review notification to reviewee
-	reviewer, _ := s.userRepo.FindByID(reviewerID)
+	reviewer, _ := s.userRepo.GetByID(reviewerID)
 	notificationData := map[string]interface{}{
 		"reviewID":   review.ID,
 		"rating":     req.Rating,

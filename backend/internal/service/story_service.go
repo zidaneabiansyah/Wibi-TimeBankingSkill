@@ -46,7 +46,7 @@ func NewStoryServiceWithNotification(
 // CreateStory creates a new success story
 func (s *StoryService) CreateStory(userID uint, req *dto.CreateStoryRequest) (*models.SuccessStory, error) {
 	// Validate user exists
-	_, err := s.userRepo.FindByID(userID)
+	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
@@ -146,7 +146,7 @@ func (s *StoryService) DeleteStory(storyID, userID uint) error {
 // CreateComment creates a new story comment
 func (s *StoryService) CreateComment(userID uint, req *dto.CreateCommentRequest) (*models.StoryComment, error) {
 	// Validate user exists
-	_, err := s.userRepo.FindByID(userID)
+	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}

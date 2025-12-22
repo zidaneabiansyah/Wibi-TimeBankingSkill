@@ -61,7 +61,7 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 	}
 
 	// Get student to check credit balance
-	student, err := s.userRepo.FindByID(studentID)
+	student, err := s.userRepo.GetByID(studentID)
 	if err != nil {
 		return nil, errors.New("student not found")
 	}
@@ -109,7 +109,7 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 	}
 
 	// Send notification to teacher about new session request
-	studentUser, _ := s.userRepo.FindByID(studentID)
+	studentUser, _ := s.userRepo.GetByID(studentID)
 	skill, _ := s.skillRepo.GetByID(userSkill.SkillID)
 	notificationData := map[string]interface{}{
 		"sessionID":   session.ID,
@@ -181,7 +181,7 @@ func (s *SessionService) ApproveSession(teacherID, sessionID uint, req *dto.Appr
 	}
 
 	// Fetch student to verify credit availability
-	student, err := s.userRepo.FindByID(session.StudentID)
+	student, err := s.userRepo.GetByID(session.StudentID)
 	if err != nil {
 		return nil, errors.New("student not found")
 	}
@@ -236,7 +236,7 @@ func (s *SessionService) ApproveSession(teacherID, sessionID uint, req *dto.Appr
 	}
 
 	// Send notification to student about session approval
-	teacher, _ := s.userRepo.FindByID(teacherID)
+	teacher, _ := s.userRepo.GetByID(teacherID)
 	skill, _ := s.skillRepo.GetByID(session.UserSkill.SkillID)
 	notificationData := map[string]interface{}{
 		"sessionID":   session.ID,
@@ -376,7 +376,7 @@ func (s *SessionService) completeSession(session *models.Session) error {
 
 	// CREDIT TRANSFER: Release held credits to teacher
 	// Fetch teacher from database
-	teacher, err := s.userRepo.FindByID(session.TeacherID)
+	teacher, err := s.userRepo.GetByID(session.TeacherID)
 	if err != nil {
 		return errors.New("teacher not found")
 	}
@@ -431,7 +431,7 @@ func (s *SessionService) CancelSession(userID, sessionID uint, req *dto.CancelSe
 
 	// If credits were held, refund them
 	if session.CreditHeld && !session.CreditReleased {
-		student, err := s.userRepo.FindByID(session.StudentID)
+		student, err := s.userRepo.GetByID(session.StudentID)
 		if err != nil {
 			return nil, errors.New("student not found")
 		}

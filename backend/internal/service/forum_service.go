@@ -53,7 +53,7 @@ func (s *ForumService) GetAllCategories() ([]models.ForumCategory, error) {
 // CreateThread creates a new forum thread
 func (s *ForumService) CreateThread(userID uint, req *dto.CreateThreadRequest) (*models.ForumThread, error) {
 	// Validate user exists
-	_, err := s.userRepo.FindByID(userID)
+	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
@@ -144,7 +144,7 @@ func (s *ForumService) UpdateThread(threadID, userID uint, req *dto.UpdateThread
 // CreateReply creates a new forum reply
 func (s *ForumService) CreateReply(userID uint, req *dto.CreateReplyRequest) (*models.ForumReply, error) {
 	// Validate user exists
-	_, err := s.userRepo.FindByID(userID)
+	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}

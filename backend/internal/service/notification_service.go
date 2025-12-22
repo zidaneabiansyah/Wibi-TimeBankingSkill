@@ -72,7 +72,7 @@ func (s *NotificationService) CreateNotification(
 	data map[string]interface{},
 ) (*models.Notification, error) {
 	// Verify user exists
-	_, err := s.userRepo.FindByID(userID)
+	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}

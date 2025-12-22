@@ -100,7 +100,7 @@ func (s *SharedFileService) UploadFile(
 			otherUserID = session.TeacherID
 		}
 
-		uploader, _ := s.userRepo.FindByID(userID)
+		uploader, _ := s.userRepo.GetByID(userID)
 		s.notificationService.CreateNotification(
 			otherUserID,
 			"social",
