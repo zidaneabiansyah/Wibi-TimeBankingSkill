@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,15 +14,44 @@ import {
     Globe,
     Home,
     Zap,
-    BookOpen
+    // Fix 1: Added BookOpen and Loader2 imports
+    BookOpen,
+    Loader2,
+    AlertCircle
 } from 'lucide-react'
 import { useSkillStore } from '@/stores'
 import { toast } from 'sonner'
 import AddSkillForm from './AddSkillForm'
-import type { UserSkill } from '@/types'
-import { LoadingSkeleton } from '../ui/loading'
-import { ErrorState } from '../ui/error-state'
-import { EmptyState } from '../ui/empty-state'
+
+// --- Local Component Definitions to Fix Missing References ---
+// You should likely move these to separate files in @/components/ui/ or @/components/common/
+
+const LoadingSpinner = ({ size = "default" }: { size?: "sm" | "default" | "lg" }) => {
+    const sizeMap = { sm: "h-4 w-4", default: "h-6 w-6", lg: "h-8 w-8" };
+    return <Loader2 className={`animate-spin text-primary ${sizeMap[size as keyof typeof sizeMap]}`} />;
+};
+
+const ErrorState = ({ message, onRetry }: { message: string, onRetry: () => void, variant?: string }) => (
+    <div className="flex flex-col items-center justify-center p-6 text-center text-red-500 gap-2">
+        <AlertCircle className="h-8 w-8" />
+        <p>{message}</p>
+        <Button variant="outline" onClick={onRetry} size="sm">Try Again</Button>
+    </div>
+);
+
+const EmptyState = ({ icon: Icon, title, description, action }: any) => (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="bg-muted p-4 rounded-full mb-4">
+            <Icon className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="font-semibold text-lg">{title}</h3>
+        <p className="text-muted-foreground text-sm max-w-sm mt-2 mb-6">{description}</p>
+        {action && (
+            <Button onClick={action.onClick}>{action.label}</Button>
+        )}
+    </div>
+);
+// -------------------------------------------------------------
 
 interface UserSkillListProps {
     title?: string
@@ -84,7 +113,7 @@ export default function UserSkillList({
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center justify-center py-8">
-                        <LoadingSkeleton className="h-8 w-8" />
+                        <LoadingSpinner size="lg" />
                     </div>
                 </CardContent>
             </Card>
@@ -116,7 +145,7 @@ export default function UserSkillList({
                 </CardHeader>
                 <CardContent>
                     <EmptyState
-                        icon={<BookOpen className="h-4 w-4" />}
+                        icon={BookOpen}
                         title="No skills added yet"
                         description="Add skills you can teach to start earning credits!"
                         action={showAddButton ? {
@@ -149,6 +178,7 @@ export default function UserSkillList({
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-2">
+                                                {/* Note: Ensure userSkill.skill.icon is a valid ReactNode or string */}
                                                 <span className="text-2xl">{userSkill.skill.icon}</span>
                                                 <div>
                                                     <h3 className="font-semibold text-sm">
@@ -261,7 +291,6 @@ export default function UserSkillList({
                     )}
                 </CardContent>
             </Card>
-
         </>
     )
 }
