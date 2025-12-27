@@ -24,6 +24,8 @@ const registerSchema = z.object({
   school: z.string().min(1, 'School is required'),
   grade: z.string().min(1, 'Grade is required'),
   major: z.string().optional(),
+  phone_number: z.string().optional(),
+  location: z.string().min(1, 'Location is required'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -223,6 +225,32 @@ export default function RegisterPage() {
                     disabled={isLoading}
                     className="bg-muted/50"
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phone_number">Phone Number</Label>
+                  <Input
+                    id="phone_number"
+                    placeholder="e.g., 081234..."
+                    {...register('phone_number')}
+                    disabled={isLoading}
+                    className="bg-muted/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location *</Label>
+                  <Input
+                    id="location"
+                    placeholder="e.g., Jakarta, Bandung"
+                    {...register('location')}
+                    disabled={isLoading}
+                    className="bg-muted/50"
+                  />
+                  {errors.location && (
+                    <p className="text-sm text-destructive">{errors.location.message}</p>
+                  )}
                 </div>
               </div>
 

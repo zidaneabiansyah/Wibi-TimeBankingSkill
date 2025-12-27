@@ -93,6 +93,7 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     Grade:         req.Grade,
     Major:         req.Major,
     PhoneNumber:   req.PhoneNumber,
+    Location:      req.Location,
     CreditBalance: 3.0, // Starting bonus
     IsActive:      true,
     IsVerified:    false,

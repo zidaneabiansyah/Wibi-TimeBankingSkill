@@ -10,6 +10,7 @@ type RegisterRequest struct {
   Grade       string `json:"grade" binding:"required"`
   Major       string `json:"major"`
   PhoneNumber string `json:"phone_number"`
+  Location    string `json:"location"`
 }
 
 // LoginRequest represents login request

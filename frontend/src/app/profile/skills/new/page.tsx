@@ -29,6 +29,8 @@ function AddSkillContent() {
         description: '',
         hourly_rate: '',
         years_of_experience: '',
+        proof_url: '',
+        proof_type: 'portfolio',
         is_available: true,
     });
 
@@ -77,8 +79,8 @@ function AddSkillContent() {
                 description: formData.description,
                 hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : 0,
                 years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : 0,
-                proof_url: '',
-                proof_type: '',
+                proof_url: formData.proof_url,
+                proof_type: formData.proof_type,
                 online_only: false,
                 offline_only: false,
                 is_available: formData.is_available,
@@ -178,6 +180,42 @@ function AddSkillContent() {
                                         min="0"
                                         step="0.5"
                                     />
+                                </div>
+
+                                {/* Portfolio/Proof */}
+                                <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
+                                    <div className="space-y-1">
+                                        <Label className="text-base">Portfolio / Proof of Experience</Label>
+                                        <p className="text-xs text-muted-foreground">
+                                            Showcase your work or provide a link to a certificate to build trust.
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <Label htmlFor="proof_url">Project or Certificate URL</Label>
+                                        <Input
+                                            id="proof_url"
+                                            name="proof_url"
+                                            placeholder="https://behance.net/your-work or https://drive.google.com/..."
+                                            value={formData.proof_url}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="proof_type">Type of Proof</Label>
+                                        <Select value={formData.proof_type} onValueChange={(value) => handleSelectChange('proof_type', value)}>
+                                            <SelectTrigger id="proof_type">
+                                                <SelectValue placeholder="Select type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="portfolio">Portfolio / Karya</SelectItem>
+                                                <SelectItem value="certificate">Certification</SelectItem>
+                                                <SelectItem value="experience">Detailed Work History</SelectItem>
+                                                <SelectItem value="other">Other</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
 
                                 {/* Actions */}

@@ -9,7 +9,7 @@ import (
 
 // SkillRepositoryInterface defines the contract for skill repository
 type SkillRepositoryInterface interface {
-	GetAllWithFilters(limit, offset int, category, search string, dayOfWeek *int) ([]models.Skill, int64, error)
+	GetAllWithFilters(limit, offset int, category, search string, dayOfWeek *int, minRating *float64, location, sortBy string) ([]models.Skill, int64, error)
 	GetByID(id uint) (*models.Skill, error)
 	Create(skill *models.Skill) error
 	Update(skill *models.Skill) error
@@ -79,12 +79,16 @@ func (r *SkillRepository) Create(skill *models.Skill) error {
 }
 
 // GetAllWithFilters returns skills with pagination and filters
-func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search string, dayOfWeek *int) ([]models.Skill, int64, error) {
+func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search string, dayOfWeek *int, minRating *float64, location, sortBy string) ([]models.Skill, int64, error) {
 	var skills []models.Skill
 	var total int64
 
 	query := r.db.Model(&models.Skill{}).
-		Select("skills.*, COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate").
+		Select("skills.*, " +
+			"COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, " +
+			"COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate, " +
+			"COALESCE(SUM(user_skills.total_sessions), 0) as aggregate_sessions, " +
+			"COALESCE(MAX(user_skills.average_rating), 0) as max_teacher_rating").
 		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
 		Group("skills.id")
 
@@ -99,15 +103,35 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 		query = query.Joins("JOIN availabilities ON availabilities.user_id = user_skills.user_id").
 			Where("availabilities.day_of_week = ? AND availabilities.is_active = ?", *dayOfWeek, true)
 	}
+	if location != "" {
+		query = query.Joins("JOIN users ON users.id = user_skills.user_id").
+			Where("users.location ILIKE ?", "%"+location+"%")
+	}
+	if minRating != nil {
+		query = query.Having("MAX(user_skills.average_rating) >= ?", *minRating)
+	}
 
 	// Count total
-	err := query.Count(&total).Error
-	if err != nil {
-		return nil, 0, err
+	// Note: Count with Group/Having can be tricky in GORM. 
+	// We might need to use a subquery for accurate total count of groups.
+	countQuery := r.db.Table("(?) as grouped", query).Count(&total)
+	if countQuery.Error != nil {
+		return nil, 0, countQuery.Error
+	}
+
+	// Apply sorting
+	sortOrder := "skills.created_at DESC"
+	switch sortBy {
+	case "popular":
+		sortOrder = "aggregate_sessions DESC"
+	case "rating":
+		sortOrder = "max_teacher_rating DESC"
+	case "newest":
+		sortOrder = "skills.created_at DESC"
 	}
 
 	// Apply pagination and get results
-	err = query.Limit(limit).Offset(offset).Order("created_at DESC").Find(&skills).Error
+	err := query.Limit(limit).Offset(offset).Order(sortOrder).Find(&skills).Error
 	return skills, total, err
 }
 

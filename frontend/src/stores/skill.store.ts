@@ -22,7 +22,16 @@ interface SkillState {
     error: string | null;
 
     // Actions - Master Skills
-    fetchSkills: (params?: { limit?: number; offset?: number; category?: string; search?: string; day?: number }) => Promise<void>;
+    fetchSkills: (params?: { 
+        limit?: number; 
+        offset?: number; 
+        category?: string; 
+        search?: string; 
+        day?: number;
+        rating?: number;
+        location?: string;
+        sort?: string;
+    }) => Promise<void>;
 
     // Actions - User Teaching Skills
     fetchUserSkills: () => Promise<void>;

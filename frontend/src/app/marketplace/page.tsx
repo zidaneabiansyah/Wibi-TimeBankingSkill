@@ -32,20 +32,43 @@ const days = [
     { value: '6', label: 'Saturday' },
 ];
 
+const ratings = [
+    { value: 'all', label: 'Any Rating' },
+    { value: '4', label: '4.0+ Stars' },
+    { value: '3', label: '3.0+ Stars' },
+];
+
+const sortOptions = [
+    { value: 'newest', label: 'Newest' },
+    { value: 'popular', label: 'Most Popular' },
+    { value: 'rating', label: 'Highest Rated' },
+];
+
 export default function MarketplacePage() {
     const { skills, skillsTotal, isLoading, fetchSkills } = useSkillStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedDay, setSelectedDay] = useState('all');
+    const [selectedRating, setSelectedRating] = useState('all');
+    const [locationQuery, setLocationQuery] = useState('');
+    const [sortBy, setSortBy] = useState('newest');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [debouncedLocation, setDebouncedLocation] = useState('');
 
-    // Debounce search
+    // Debounce search and location
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(searchQuery);
         }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedLocation(locationQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [locationQuery]);
 
     // Fetch skills when filters change
     useEffect(() => {
@@ -55,8 +78,11 @@ export default function MarketplacePage() {
             category: selectedCategory === 'all' ? undefined : selectedCategory,
             search: debouncedSearch || undefined,
             day: selectedDay === 'all' ? undefined : Number(selectedDay),
+            rating: selectedRating === 'all' ? undefined : Number(selectedRating),
+            location: debouncedLocation || undefined,
+            sort: sortBy,
         }).catch(console.error);
-    }, [fetchSkills, selectedCategory, debouncedSearch, selectedDay]);
+    }, [fetchSkills, selectedCategory, debouncedSearch, selectedDay, selectedRating, debouncedLocation, sortBy]);
 
     const handleCategoryChange = (category: string) => {
         setSelectedCategory(category);
@@ -75,9 +101,9 @@ export default function MarketplacePage() {
                         <p className="text-muted-foreground text-lg">Discover skills to learn or find students to teach</p>
                     </div>
 
-                    {/* Search and Filter */}
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1 relative">
+                    {/* Search and Filter Row 1 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        <div className="lg:col-span-2 relative">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="m21 21-4.3-4.3" />
@@ -89,6 +115,38 @@ export default function MarketplacePage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
+                        <div className="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <Input 
+                                placeholder="City or region..." 
+                                className="w-full pl-9 bg-muted/50 border-border/50 focus:bg-background" 
+                                value={locationQuery}
+                                onChange={(e) => setLocationQuery(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                                <Select value={sortBy} onValueChange={setSortBy}>
+                                    <SelectTrigger className="bg-muted/50 border-border/50">
+                                        <SelectValue placeholder="Sort by" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {sortOptions.map((opt) => (
+                                            <SelectItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Filter Row 2 */}
+                    <div className="flex flex-wrap items-center gap-4">
                         <div className="w-full md:w-48">
                             <Select value={selectedDay} onValueChange={setSelectedDay}>
                                 <SelectTrigger className="bg-muted/50 border-border/50">
@@ -103,7 +161,22 @@ export default function MarketplacePage() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="text-sm text-muted-foreground flex items-center bg-muted/50 px-4 py-2 rounded-lg whitespace-nowrap">
+                        <div className="w-full md:w-48">
+                            <Select value={selectedRating} onValueChange={setSelectedRating}>
+                                <SelectTrigger className="bg-muted/50 border-border/50">
+                                    <SelectValue placeholder="Rating" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {ratings.map((rating) => (
+                                        <SelectItem key={rating.value} value={rating.value}>
+                                            {rating.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="ml-auto text-sm text-muted-foreground flex items-center bg-muted/50 px-4 py-2 rounded-lg whitespace-nowrap">
                             <span className="font-medium text-foreground">{skillsTotal}</span>&nbsp;skills found
                         </div>
                     </div>

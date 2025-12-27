@@ -48,6 +48,9 @@ export const skillService = {
         category?: string;
         search?: string;
         day?: number;
+        rating?: number;
+        location?: string;
+        sort?: string;
     }): Promise<SkillsResponse> => {
         const queryParams = new URLSearchParams();
         if (params?.limit) queryParams.append('limit', params.limit.toString());
@@ -55,6 +58,9 @@ export const skillService = {
         if (params?.category) queryParams.append('category', params.category);
         if (params?.search) queryParams.append('search', params.search);
         if (params?.day !== undefined) queryParams.append('day', params.day.toString());
+        if (params?.rating) queryParams.append('rating', params.rating.toString());
+        if (params?.location) queryParams.append('location', params.location);
+        if (params?.sort) queryParams.append('sort', params.sort);
 
         const query = queryParams.toString();
         return apiClient.get<SkillsResponse>(`/skills${query ? `?${query}` : ''}`);

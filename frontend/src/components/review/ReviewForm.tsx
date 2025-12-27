@@ -32,9 +32,21 @@ export default function ReviewForm({ session, onSuccess, onCancel }: ReviewFormP
     const [communicationRating, setCommunicationRating] = useState<number | null>(null)
     const [punctualityRating, setPunctualityRating] = useState<number | null>(null)
     const [knowledgeRating, setKnowledgeRating] = useState<number | null>(null)
+    const [selectedTags, setSelectedTags] = useState<string[]>([])
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const { createReview } = useReviewStore()
+
+    const availableTags = [
+        "Patient", "Clear Explanation", "Engaging", 
+        "Punctual", "Well Prepared", "Knowledgeable"
+    ]
+
+    const toggleTag = (tag: string) => {
+        setSelectedTags(prev => 
+            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+        )
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -50,6 +62,7 @@ export default function ReviewForm({ session, onSuccess, onCancel }: ReviewFormP
                 session_id: session.id,
                 rating,
                 comment,
+                tags: selectedTags.join(','),
                 communication_rating: communicationRating,
                 punctuality_rating: punctualityRating,
                 knowledge_rating: knowledgeRating,
@@ -153,6 +166,27 @@ export default function ReviewForm({ session, onSuccess, onCancel }: ReviewFormP
                                     ))}
                                 </SelectContent>
                             </Select>
+                        </div>
+                    </div>
+
+                    {/* Tags Selection */}
+                    <div className="space-y-3">
+                        <Label className="text-base font-semibold">Highlight Strengths</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {availableTags.map((tag) => (
+                                <button
+                                    key={tag}
+                                    type="button"
+                                    onClick={() => toggleTag(tag)}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                                        selectedTags.includes(tag)
+                                            ? 'bg-primary text-primary-foreground scale-105 shadow-sm'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                >
+                                    {tag}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
