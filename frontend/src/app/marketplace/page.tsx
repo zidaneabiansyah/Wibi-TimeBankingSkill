@@ -168,16 +168,23 @@ export default function MarketplacePage() {
                                                         <span>{skill.total_learners || 0} learners</span>
                                                     </div>
                                                 </div>
-                                                <div className="mt-3 flex items-center text-primary">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <polyline points="12 6 12 12 16 14" />
-                                                    </svg>
-                                                    <span className="font-semibold text-sm">
-                                                        {skill.min_rate === skill.max_rate 
-                                                            ? `${skill.min_rate || 0} Credit/hour` 
-                                                            : `${skill.min_rate || 0} - ${skill.max_rate || 0} Credits/hour`}
-                                                    </span>
+                                                <div className="mt-3 flex items-center justify-between">
+                                                    <div className="flex items-center text-primary">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <polyline points="12 6 12 12 16 14" />
+                                                        </svg>
+                                                        <span className="font-semibold text-sm">
+                                                            {skill.min_rate === skill.max_rate 
+                                                                ? `${skill.min_rate || 0} Credit/hour` 
+                                                                : `${skill.min_rate || 0} - ${skill.max_rate || 0} Credits/hour`}
+                                                        </span>
+                                                    </div>
+                                                    {skill.max_rate >= 1.5 && (
+                                                        <Badge variant="secondary" className="text-[8px] h-3.5 px-1 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border-none font-bold uppercase tracking-tighter">
+                                                            Advanced
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="pt-0">
