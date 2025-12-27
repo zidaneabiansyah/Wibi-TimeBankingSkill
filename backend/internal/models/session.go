@@ -65,7 +65,13 @@ type Session struct {
 	CreditHeld      bool    `gorm:"default:false" json:"credit_held"`  // Is credit in escrow?
 	CreditReleased  bool    `gorm:"default:false" json:"credit_released"` // Has credit been transferred?
 	
-	// Confirmation
+	// Check-in tracking (for session start)
+	TeacherCheckedIn   bool       `gorm:"default:false" json:"teacher_checked_in"`   // Teacher checked in for session
+	StudentCheckedIn   bool       `gorm:"default:false" json:"student_checked_in"`   // Student checked in for session
+	TeacherCheckedInAt *time.Time `json:"teacher_checked_in_at"`                     // When teacher checked in
+	StudentCheckedInAt *time.Time `json:"student_checked_in_at"`                     // When student checked in
+
+	// Confirmation (for session completion)
 	TeacherConfirmed bool `gorm:"default:false" json:"teacher_confirmed"` // Teacher confirmed completion
 	StudentConfirmed bool `gorm:"default:false" json:"student_confirmed"` // Student confirmed completion
 	
@@ -102,6 +108,16 @@ func (s *Session) CanBeCompleted() bool {
 // IsBothConfirmed checks if both parties confirmed completion
 func (s *Session) IsBothConfirmed() bool {
 	return s.TeacherConfirmed && s.StudentConfirmed
+}
+
+// IsBothCheckedIn checks if both parties have checked in for the session
+func (s *Session) IsBothCheckedIn() bool {
+	return s.TeacherCheckedIn && s.StudentCheckedIn
+}
+
+// CanCheckIn checks if session is ready for check-in (approved and scheduled)
+func (s *Session) CanCheckIn() bool {
+	return s.Status == StatusApproved && s.ScheduledAt != nil
 }
 
 // BeforeCreate hook

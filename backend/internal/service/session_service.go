@@ -332,7 +332,137 @@ func (s *SessionService) RejectSession(teacherID, sessionID uint, req *dto.Rejec
 	return dto.MapSessionToResponse(session), nil
 }
 
+// CheckIn allows a participant to check in for the session
+// Both teacher and student must check in before session can start
+//
+// Flow:
+//   1. Validates user is part of the session (teacher or student)
+//   2. Validates session can be checked in (approved status)
+//   3. Marks user's check-in with timestamp
+//   4. If both checked in: automatically starts the session
+//   5. Sends notifications to other party
+//
+// Pre-conditions:
+//   - Session must be in "approved" status
+//   - Session must have a scheduled time
+//   - User must not have already checked in
+//
+// Parameters:
+//   - userID: ID of user checking in (teacher or student)
+//   - sessionID: ID of session to check in to
+//
+// Returns:
+//   - *SessionResponse: Updated session (may be in_progress if both checked in)
+//   - error: If user not authorized or session cannot be checked in
+func (s *SessionService) CheckIn(userID, sessionID uint) (*dto.SessionResponse, error) {
+	session, err := s.sessionRepo.GetByID(sessionID)
+	if err != nil {
+		return nil, errors.New("session not found")
+	}
+
+	// Verify user is part of this session
+	isTeacher := session.TeacherID == userID
+	isStudent := session.StudentID == userID
+	if !isTeacher && !isStudent {
+		return nil, errors.New("you are not part of this session")
+	}
+
+	// Verify session can be checked in
+	if !session.CanCheckIn() {
+		return nil, errors.New("session cannot be checked in yet")
+	}
+
+	now := time.Now()
+
+	// Mark user's check-in
+	if isTeacher {
+		if session.TeacherCheckedIn {
+			return nil, errors.New("you have already checked in")
+		}
+		session.TeacherCheckedIn = true
+		session.TeacherCheckedInAt = &now
+	}
+	if isStudent {
+		if session.StudentCheckedIn {
+			return nil, errors.New("you have already checked in")
+		}
+		session.StudentCheckedIn = true
+		session.StudentCheckedInAt = &now
+	}
+
+	// Check if both parties have now checked in
+	if session.IsBothCheckedIn() {
+		// Auto-start the session
+		session.Status = models.StatusInProgress
+		session.StartedAt = &now
+
+		// Send notification that session has started
+		teacher, _ := s.userRepo.GetByID(session.TeacherID)
+		student, _ := s.userRepo.GetByID(session.StudentID)
+		skill, _ := s.skillRepo.GetByID(session.UserSkill.SkillID)
+
+		notificationData := map[string]interface{}{
+			"sessionID": session.ID,
+			"skillName": skill.Name,
+		}
+
+		// Notify teacher
+		_, _ = s.notificationService.CreateNotification(
+			session.TeacherID,
+			models.NotificationTypeSession,
+			"Session Started",
+			"Both parties checked in. Your session with "+student.FullName+" has started!",
+			notificationData,
+		)
+
+		// Notify student
+		_, _ = s.notificationService.CreateNotification(
+			session.StudentID,
+			models.NotificationTypeSession,
+			"Session Started",
+			"Both parties checked in. Your session with "+teacher.FullName+" has started!",
+			notificationData,
+		)
+	} else {
+		// Notify the other party that one has checked in
+		var otherUserID uint
+		var checkedInUserName string
+
+		if isTeacher {
+			otherUserID = session.StudentID
+			teacher, _ := s.userRepo.GetByID(session.TeacherID)
+			checkedInUserName = teacher.FullName
+		} else {
+			otherUserID = session.TeacherID
+			student, _ := s.userRepo.GetByID(session.StudentID)
+			checkedInUserName = student.FullName
+		}
+
+		notificationData := map[string]interface{}{
+			"sessionID": session.ID,
+		}
+		_, _ = s.notificationService.CreateNotification(
+			otherUserID,
+			models.NotificationTypeSession,
+			"Partner Checked In",
+			checkedInUserName+" has checked in. Please check in to start the session.",
+			notificationData,
+		)
+	}
+
+	if err := s.sessionRepo.Update(session); err != nil {
+		return nil, errors.New("failed to check in")
+	}
+
+	// Reload session with relationships
+	session, _ = s.sessionRepo.GetByID(sessionID)
+	return dto.MapSessionToResponse(session), nil
+}
+
 // StartSession marks a session as in progress
+// NOTE: This is now primarily used as a fallback. The preferred flow is via CheckIn
+// which auto-starts when both parties check in.
+//
 // Can be called by either teacher or student to begin the session
 //
 // Flow:

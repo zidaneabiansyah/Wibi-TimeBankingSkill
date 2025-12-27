@@ -117,22 +117,29 @@ function SessionCard({ session, currentUserId, onAction }: {
                     </Button>
                 )}
 
-                {/* Approved - Both can start or cancel */}
+                {/* Approved - Both can go to room for check-in or cancel */}
                 {session.status === 'approved' && (
                     <>
-                        <Button size="sm" onClick={() => onAction('start', session.id)}>
-                            Start Session
-                        </Button>
+                        <Link href={`/dashboard/sessions/${session.id}/room`}>
+                            <Button size="sm">
+                                Join Room
+                            </Button>
+                        </Link>
                         <Button size="sm" variant="outline" onClick={() => onAction('cancel', session.id)}>
                             Cancel
                         </Button>
                     </>
                 )}
 
-                {/* In Progress - Both can confirm completion */}
+                {/* In Progress - Join room or confirm completion */}
                 {session.status === 'in_progress' && (
                     <>
-                        <Button size="sm" onClick={() => onAction('complete', session.id)}>
+                        <Link href={`/dashboard/sessions/${session.id}/room`}>
+                            <Button size="sm">
+                                Join Room
+                            </Button>
+                        </Link>
+                        <Button size="sm" variant="outline" onClick={() => onAction('complete', session.id)}>
                             {(isTeacher && session.teacher_confirmed) || (isStudent && session.student_confirmed)
                                 ? 'Waiting for other party...'
                                 : 'Confirm Completion'}

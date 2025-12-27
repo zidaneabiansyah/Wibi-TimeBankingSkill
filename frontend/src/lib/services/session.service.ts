@@ -92,7 +92,24 @@ export const sessionService = {
         return response.data.data!;
     },
 
-    // Start a session
+    /**
+     * Check in for a session
+     * Both teacher and student must check in before session can start
+     * 
+     * Check-in Flow:
+     * - First check-in: Marks user's check-in, notifies other party
+     * - Second check-in: Session automatically starts
+     * - Session status changes to "in_progress" when both checked in
+     * 
+     * @param id - Session ID to check in to
+     * @returns Updated session (may be in_progress if both checked in)
+     */
+    async checkIn(id: number): Promise<Session> {
+        const response = await api.post<ApiResponse<Session>>(`/sessions/${id}/checkin`);
+        return response.data.data!;
+    },
+
+    // Start a session (legacy fallback, prefer checkIn)
     async startSession(id: number): Promise<Session> {
         const response = await api.post<ApiResponse<Session>>(`/sessions/${id}/start`);
         return response.data.data!;

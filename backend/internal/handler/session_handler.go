@@ -207,8 +207,33 @@ func (h *SessionHandler) RejectSession(c *gin.Context) {
 	utils.SendSuccess(c, http.StatusOK, "Session rejected", session)
 }
 
+// CheckIn handles POST /api/v1/sessions/:id/checkin
+// Allows a participant to check in for a session
+// When both parties check in, session automatically starts
+func (h *SessionHandler) CheckIn(c *gin.Context) {
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
+
+	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
+		return
+	}
+
+	session, err := h.sessionService.CheckIn(userID, uint(sessionID))
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Checked in successfully", session)
+}
+
 // StartSession handles POST /api/v1/sessions/:id/start
-// Marks a session as started (check-in for both participants)
+// Marks a session as started (legacy fallback, prefer CheckIn flow)
 func (h *SessionHandler) StartSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {

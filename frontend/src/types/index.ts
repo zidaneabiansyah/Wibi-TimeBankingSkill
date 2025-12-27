@@ -65,7 +65,7 @@ export interface UserStats {
     total_teaching_hours: number;
     total_learning_hours: number;
 }
-
+    
 // Skill Types
 export type SkillCategory = 'academic' | 'technical' | 'creative' | 'language' | 'sports' | 'other';
 export type SkillLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
@@ -206,6 +206,10 @@ export interface Session {
     credit_amount: number;
     credit_held: boolean;
     credit_released: boolean;
+    teacher_checked_in: boolean;
+    student_checked_in: boolean;
+    teacher_checked_in_at: string | null;
+    student_checked_in_at: string | null;
     teacher_confirmed: boolean;
     student_confirmed: boolean;
     materials: string;

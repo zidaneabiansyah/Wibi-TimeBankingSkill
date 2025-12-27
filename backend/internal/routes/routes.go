@@ -197,7 +197,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				sessions.GET("/:id", sessionHandler.GetSession)                  // GET /api/v1/sessions/:id
 				sessions.POST("/:id/approve", sessionHandler.ApproveSession)     // POST /api/v1/sessions/:id/approve
 				sessions.POST("/:id/reject", sessionHandler.RejectSession)       // POST /api/v1/sessions/:id/reject
-				sessions.POST("/:id/start", sessionHandler.StartSession)         // POST /api/v1/sessions/:id/start
+				sessions.POST("/:id/checkin", sessionHandler.CheckIn)            // POST /api/v1/sessions/:id/checkin - Check in for session
+				sessions.POST("/:id/start", sessionHandler.StartSession)         // POST /api/v1/sessions/:id/start (legacy)
 				sessions.POST("/:id/complete", sessionHandler.ConfirmCompletion) // POST /api/v1/sessions/:id/complete
 				sessions.POST("/:id/cancel", sessionHandler.CancelSession)       // POST /api/v1/sessions/:id/cancel
 

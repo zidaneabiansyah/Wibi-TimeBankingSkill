@@ -27,6 +27,7 @@ interface SessionState {
     bookSession: (data: CreateSessionRequest) => Promise<Session>;
     approveSession: (id: number, data?: ApproveSessionRequest) => Promise<Session>;
     rejectSession: (id: number, data: RejectSessionRequest) => Promise<Session>;
+    checkIn: (id: number) => Promise<Session>;
     startSession: (id: number) => Promise<Session>;
     confirmCompletion: (id: number, data?: CompleteSessionRequest) => Promise<Session>;
     cancelSession: (id: number, data: CancelSessionRequest) => Promise<Session>;
@@ -168,6 +169,27 @@ export const useSessionStore = create<SessionState>((set, get) => ({
             return session;
         } catch (error: any) {
             const errorMessage = error.response?.data?.error || 'Failed to reject session';
+            set({ error: errorMessage, isLoading: false });
+            throw new Error(errorMessage);
+        }
+    },
+
+    checkIn: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            const session = await sessionService.checkIn(id);
+            set((state) => ({
+                sessions: state.sessions.map((s) => (s.id === id ? session : s)),
+                // If session started (both checked in), move from upcoming
+                upcomingSessions: session.status === 'in_progress' 
+                    ? state.upcomingSessions.filter((s) => s.id !== id)
+                    : state.upcomingSessions.map((s) => (s.id === id ? session : s)),
+                currentSession: state.currentSession?.id === id ? session : state.currentSession,
+                isLoading: false,
+            }));
+            return session;
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.error || 'Failed to check in';
             set({ error: errorMessage, isLoading: false });
             throw new Error(errorMessage);
         }
