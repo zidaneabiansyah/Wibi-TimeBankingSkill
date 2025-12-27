@@ -218,20 +218,44 @@ function ReviewCard({ review, onDelete }: { review: Review; onDelete: (id: numbe
                 </div>
             </CardHeader>
 
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
                 {/* Comment */}
                 {review.comment && (
-                    <p className="text-sm text-foreground">{review.comment}</p>
+                    <p className="text-sm text-foreground leading-relaxed">{review.comment}</p>
+                )}
+
+                {/* Tags */}
+                {review.tags && review.tags.split(',').filter(Boolean).length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {review.tags.split(',').filter(Boolean).map((tag, idx) => (
+                            <Badge key={idx} variant="outline" className="text-[10px] bg-primary/5 text-primary border-primary/20 font-semibold uppercase tracking-wider">
+                                {tag.trim()}
+                            </Badge>
+                        ))}
+                    </div>
                 )}
 
                 {/* Detailed Ratings */}
                 {getDetailedRatings().length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                        {getDetailedRatings().map((rating, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                                {rating}
-                            </Badge>
-                        ))}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                        {review.communication_rating && (
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-tighter">Communication</span>
+                                <div className="text-xs font-medium text-yellow-600">{'⭐'.repeat(review.communication_rating)}</div>
+                            </div>
+                        )}
+                        {review.punctuality_rating && (
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-tighter">Punctuality</span>
+                                <div className="text-xs font-medium text-yellow-600">{'⭐'.repeat(review.punctuality_rating)}</div>
+                            </div>
+                        )}
+                        {review.knowledge_rating && (
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-tighter">Knowledge</span>
+                                <div className="text-xs font-medium text-yellow-600">{'⭐'.repeat(review.knowledge_rating)}</div>
+                            </div>
+                        )}
                     </div>
                 )}
 
