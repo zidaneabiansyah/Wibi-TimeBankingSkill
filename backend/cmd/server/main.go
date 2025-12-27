@@ -11,6 +11,26 @@ import (
   "github.com/timebankingskill/backend/internal/routes"
 )
 
+// @title Wibi Time Banking Skill API
+// @version 1.0
+// @description This is the backend server for Wibi Time Banking Skill Platform.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name OwlDane
+// @contact.url https://github.com/OwlDane
+// @contact.email support@wibi.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer <your_token>" to authenticate.
+
 func main() {
   // Load configuration
   cfg, err := config.Load()

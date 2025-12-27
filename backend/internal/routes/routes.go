@@ -7,6 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/timebankingskill/backend/docs"
 	"github.com/timebankingskill/backend/internal/config"
 	"github.com/timebankingskill/backend/internal/middleware"
 	"github.com/timebankingskill/backend/internal/models"
@@ -92,6 +95,9 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				"message": "Time Banking API v1 is running",
 			})
 		})
+
+		// Swagger documentation
+		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 		// Auth routes (public)
 		auth := v1.Group("/auth")

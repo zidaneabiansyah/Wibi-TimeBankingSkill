@@ -22,7 +22,22 @@ func NewSkillHandler(skillService *service.SkillService) *SkillHandler {
 }
 
 // GetSkills handles GET /api/v1/skills
-// Implements caching for frequently accessed data
+// @Summary List all skills with filters
+// @Description Get a list of skills with pagination, search, category, rating, and location filters.
+// @Tags skills
+// @Accept json
+// @Produce json
+// @Param limit query int false "Limit (default 10)"
+// @Param page query int false "Page (default 1)"
+// @Param category query string false "Category filter"
+// @Param search query string false "Search query"
+// @Param day query int false "Available day filter (0-6)"
+// @Param rating query number false "Minimum rating filter"
+// @Param location query string false "Location filter"
+// @Param sort query string false "Sort by (popular, rating, newest)"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 500 {object} utils.ErrorResponse
+// @Router /skills [get]
 func (h *SkillHandler) GetSkills(c *gin.Context) {
 	// Parse query parameters
 	limitStr := c.DefaultQuery("limit", "10")
@@ -100,6 +115,15 @@ func (h *SkillHandler) GetSkills(c *gin.Context) {
 }
 
 // GetSkillByID handles GET /api/v1/skills/:id
+// @Summary Get skill by ID
+// @Description Get detailed information about a specific skill.
+// @Tags skills
+// @Accept json
+// @Produce json
+// @Param id path int true "Skill ID"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Router /skills/{id} [get]
 func (h *SkillHandler) GetSkillByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)

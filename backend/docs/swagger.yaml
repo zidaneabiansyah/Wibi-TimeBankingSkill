@@ -1,0 +1,343 @@
+basePath: /api/v1
+definitions:
+  dto.CreateSessionRequest:
+    properties:
+      description:
+        maxLength: 1000
+        type: string
+      duration:
+        maximum: 4
+        minimum: 0.5
+        type: number
+      location:
+        type: string
+      meeting_link:
+        type: string
+      mode:
+        enum:
+        - online
+        - offline
+        - hybrid
+        type: string
+      scheduled_at:
+        type: string
+      title:
+        maxLength: 200
+        minLength: 5
+        type: string
+      user_skill_id:
+        type: integer
+    required:
+    - duration
+    - mode
+    - scheduled_at
+    - title
+    - user_skill_id
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      grade:
+        type: string
+      location:
+        type: string
+      major:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone_number:
+        type: string
+      school:
+        type: string
+      username:
+        minLength: 3
+        type: string
+    required:
+    - email
+    - full_name
+    - grade
+    - password
+    - school
+    - username
+    type: object
+  utils.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@wibi.com
+    name: OwlDane
+    url: https://github.com/OwlDane
+  description: This is the backend server for Wibi Time Banking Skill Platform.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Wibi Time Banking Skill API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Login user
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout user
+      tags:
+      - auth
+  /auth/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Registration request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /sessions:
+    get:
+      consumes:
+      - application/json
+      description: Get a filtered list of sessions for the authenticated user.
+      parameters:
+      - description: Role (teacher/student)
+        in: query
+        name: role
+        type: string
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: List user's sessions
+      tags:
+      - sessions
+    post:
+      consumes:
+      - application/json
+      description: Book a new session as a student for a specific teacher's skill.
+      parameters:
+      - description: Booking request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Book a new session
+      tags:
+      - sessions
+  /skills:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of skills with pagination, search, category, rating,
+        and location filters.
+      parameters:
+      - description: Limit (default 10)
+        in: query
+        name: limit
+        type: integer
+      - description: Page (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Category filter
+        in: query
+        name: category
+        type: string
+      - description: Search query
+        in: query
+        name: search
+        type: string
+      - description: Available day filter (0-6)
+        in: query
+        name: day
+        type: integer
+      - description: Minimum rating filter
+        in: query
+        name: rating
+        type: number
+      - description: Location filter
+        in: query
+        name: location
+        type: string
+      - description: Sort by (popular, rating, newest)
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: List all skills with filters
+      tags:
+      - skills
+  /skills/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed information about a specific skill.
+      parameters:
+      - description: Skill ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get skill by ID
+      tags:
+      - skills
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer <your_token>" to authenticate.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

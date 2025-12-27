@@ -31,7 +31,17 @@ func NewSessionHandler(sessionService *service.SessionService) *SessionHandler {
 }
 
 // BookSession handles POST /api/v1/sessions
-// Creates a new session request from student to teacher
+// @Summary Book a new session
+// @Description Book a new session as a student for a specific teacher's skill.
+// @Tags sessions
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param request body dto.CreateSessionRequest true "Booking request"
+// @Success 201 {object} utils.SuccessResponse
+// @Failure 401 {object} utils.ErrorResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /sessions [post]
 func (h *SessionHandler) BookSession(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
@@ -79,7 +89,19 @@ func (h *SessionHandler) GetSession(c *gin.Context) {
 }
 
 // GetUserSessions handles GET /api/v1/sessions
-// Retrieves all sessions for the authenticated user with optional filtering
+// @Summary List user's sessions
+// @Description Get a filtered list of sessions for the authenticated user.
+// @Tags sessions
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param role query string false "Role (teacher/student)"
+// @Param status query string false "Filter by status"
+// @Param limit query int false "Limit"
+// @Param offset query int false "Offset"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 401 {object} utils.ErrorResponse
+// @Router /sessions [get]
 func (h *SessionHandler) GetUserSessions(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
