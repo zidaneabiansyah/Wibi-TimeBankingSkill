@@ -116,10 +116,18 @@ function DashboardContent() {
                                     {isLoading ? (
                                         <LoadingSkeleton className="h-9 w-20" />
                                     ) : (
-                                        user?.credit_balance?.toFixed(1) || '0.0'
+                                        ((user?.credit_balance || 0) - (user?.credit_held || 0)).toFixed(1)
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1">Available credits</p>
+                                <div className="flex flex-col gap-1 mt-1 text-xs">
+                                    <p className="text-muted-foreground">Available credits</p>
+                                    {(user?.credit_held || 0) > 0 && (
+                                        <p className="text-amber-500 font-medium flex items-center gap-1">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                            {user?.credit_held?.toFixed(1)} held in escrow
+                                        </p>
+                                    )}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>

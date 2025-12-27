@@ -15,6 +15,7 @@ import { useBadgeStore } from "@/stores/badge.store";
 import { useReviewStore } from "@/stores/review.store";
 import type { UserSkill, LearningSkill } from "@/types";
 import { toast } from 'sonner';
+import { AvailabilityForm } from '@/components/profile/AvailabilityForm';
 
 function getInitials(name: string) {
   return name
@@ -195,6 +196,7 @@ function ProfileContent() {
               <TabsTrigger value="learning">Learning Wishlist</TabsTrigger>
               <TabsTrigger value="reviews">Reviews</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
+              <TabsTrigger value="availability">Availability</TabsTrigger>
             </TabsList>
 
             {/* Teaching Skills Tab */}
@@ -403,6 +405,11 @@ function ProfileContent() {
                   ))}
                 </div>
               )}
+            </TabsContent>
+
+            {/* Availability Tab */}
+            <TabsContent value="availability" className="mt-6">
+              <AvailabilityForm />
             </TabsContent>
           </Tabs>
         </div>

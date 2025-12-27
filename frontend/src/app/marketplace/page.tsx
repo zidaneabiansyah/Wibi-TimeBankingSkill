@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Header } from "@/components/layout";
 import { useSkillStore } from "@/stores/skill.store";
 import type { Skill } from "@/types";
@@ -20,10 +21,22 @@ const categories = [
     { value: 'sports', label: 'Sports' },
 ];
 
+const days = [
+    { value: 'all', label: 'Any Day' },
+    { value: '0', label: 'Sunday' },
+    { value: '1', label: 'Monday' },
+    { value: '2', label: 'Tuesday' },
+    { value: '3', label: 'Wednesday' },
+    { value: '4', label: 'Thursday' },
+    { value: '5', label: 'Friday' },
+    { value: '6', label: 'Saturday' },
+];
+
 export default function MarketplacePage() {
     const { skills, skillsTotal, isLoading, fetchSkills } = useSkillStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedDay, setSelectedDay] = useState('all');
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
     // Debounce search
@@ -41,8 +54,9 @@ export default function MarketplacePage() {
             offset: 0,
             category: selectedCategory === 'all' ? undefined : selectedCategory,
             search: debouncedSearch || undefined,
+            day: selectedDay === 'all' ? undefined : Number(selectedDay),
         }).catch(console.error);
-    }, [fetchSkills, selectedCategory, debouncedSearch]);
+    }, [fetchSkills, selectedCategory, debouncedSearch, selectedDay]);
 
     const handleCategoryChange = (category: string) => {
         setSelectedCategory(category);
@@ -75,7 +89,21 @@ export default function MarketplacePage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <div className="text-sm text-muted-foreground flex items-center bg-muted/50 px-4 py-2 rounded-lg">
+                        <div className="w-full md:w-48">
+                            <Select value={selectedDay} onValueChange={setSelectedDay}>
+                                <SelectTrigger className="bg-muted/50 border-border/50">
+                                    <SelectValue placeholder="Available on" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {days.map((day) => (
+                                        <SelectItem key={day.value} value={day.value}>
+                                            {day.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="text-sm text-muted-foreground flex items-center bg-muted/50 px-4 py-2 rounded-lg whitespace-nowrap">
                             <span className="font-medium text-foreground">{skillsTotal}</span>&nbsp;skills found
                         </div>
                     </div>
@@ -145,7 +173,11 @@ export default function MarketplacePage() {
                                                         <circle cx="12" cy="12" r="10" />
                                                         <polyline points="12 6 12 12 16 14" />
                                                     </svg>
-                                                    <span className="font-semibold text-sm">1 Credit/hour</span>
+                                                    <span className="font-semibold text-sm">
+                                                        {skill.min_rate === skill.max_rate 
+                                                            ? `${skill.min_rate || 0} Credit/hour` 
+                                                            : `${skill.min_rate || 0} - ${skill.max_rate || 0} Credits/hour`}
+                                                    </span>
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="pt-0">

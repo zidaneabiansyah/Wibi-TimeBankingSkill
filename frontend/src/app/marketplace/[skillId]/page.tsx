@@ -10,6 +10,7 @@ import { Header } from '@/components/layout';
 import { skillService } from '@/lib/services';
 import { useAuthStore } from '@/stores/auth.store';
 import type { Skill, UserSkill } from '@/types';
+import { TeacherAvailability } from '@/components/marketplace/TeacherAvailability';
 
 export default function SkillDetailPage() {
     const params = useParams();
@@ -261,6 +262,10 @@ export default function SkillDetailPage() {
                                                 <Badge variant="outline" className="capitalize text-xs border-border/50">{teacher.level}</Badge>
                                             </div>
                                             
+                                            <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                                                <TeacherAvailability userId={teacher.user?.id || 0} compact />
+                                            </div>
+
                                             <div className="flex items-center justify-between pt-2 border-t border-border/50">
                                                 <div className="flex items-center gap-1.5 text-primary">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

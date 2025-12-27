@@ -47,12 +47,14 @@ export const skillService = {
         offset?: number;
         category?: string;
         search?: string;
+        day?: number;
     }): Promise<SkillsResponse> => {
         const queryParams = new URLSearchParams();
         if (params?.limit) queryParams.append('limit', params.limit.toString());
         if (params?.offset) queryParams.append('offset', params.offset.toString());
         if (params?.category) queryParams.append('category', params.category);
         if (params?.search) queryParams.append('search', params.search);
+        if (params?.day !== undefined) queryParams.append('day', params.day.toString());
 
         const query = queryParams.toString();
         return apiClient.get<SkillsResponse>(`/skills${query ? `?${query}` : ''}`);

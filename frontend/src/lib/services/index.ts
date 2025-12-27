@@ -5,6 +5,7 @@ export { sessionService } from './session.service';
 export { transactionService } from './transaction.service';
 export { reviewService } from './review.service';
 export { badgeService } from './badge.service';
+export { availabilityService } from './availability.service';
 
 export type { UpdateProfileRequest, ChangePasswordRequest, TransactionHistoryResponse } from './user.service';
 export type { SkillsResponse, AddUserSkillRequest, UpdateUserSkillRequest, AddLearningSkillRequest } from './skill.service';

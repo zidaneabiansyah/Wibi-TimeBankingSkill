@@ -42,6 +42,7 @@ export interface UserProfile {
     phone_number: string;
     location: string;
     credit_balance: number;
+    credit_held: number;
     is_active: boolean;
     is_verified: boolean;
     total_earned: number;
@@ -65,6 +66,29 @@ export interface UserStats {
     total_teaching_hours: number;
     total_learning_hours: number;
 }
+
+// Availability Types
+export interface AvailabilitySlot {
+    id?: number;
+    day_of_week: number;
+    day_name?: string;
+    start_time: string;
+    end_time: string;
+    is_active?: boolean;
+}
+
+export interface SetAvailabilityRequest {
+    slots: {
+        day_of_week: number;
+        start_time: string;
+        end_time: string;
+    }[];
+}
+
+export interface UserAvailabilityResponse {
+    user_id: number;
+    availability: AvailabilitySlot[];
+}
     
 // Skill Types
 export type SkillCategory = 'academic' | 'technical' | 'creative' | 'language' | 'sports' | 'other';
@@ -78,6 +102,8 @@ export interface Skill {
     icon: string;
     total_teachers: number;
     total_learners: number;
+    min_rate: number;
+    max_rate: number;
     created_at: string;
 }
 
