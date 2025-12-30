@@ -4,6 +4,7 @@ import { Sonner } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth";
 import { AdminProvider } from "@/components/auth/AdminProvider";
+import AchievementPopup from "@/components/gamification/AchievementPopup";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -47,6 +48,7 @@ export default function RootLayout({
               {children}
             </AuthProvider>
           </AdminProvider>
+          <AchievementPopup />
           <Sonner />
         </ThemeProvider>
       </body>

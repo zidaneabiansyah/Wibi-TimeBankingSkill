@@ -16,6 +16,8 @@ import { useReviewStore } from "@/stores/review.store";
 import type { UserSkill, LearningSkill } from "@/types";
 import { toast } from 'sonner';
 import { AvailabilityForm } from '@/components/profile/AvailabilityForm';
+import ReviewList from '@/components/review/ReviewList';
+import { BadgeCollection } from '@/components/badge/BadgeCollection';
 
 function getInitials(name: string) {
   return name
@@ -340,71 +342,12 @@ function ProfileContent() {
 
             {/* Reviews Tab */}
             <TabsContent value="reviews" className="mt-6">
-              {userReviews.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 opacity-50">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                  <p className="text-lg font-medium">No reviews yet</p>
-                  <p className="text-sm mt-1">Complete sessions to receive reviews from students!</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {userReviews.map((review: any) => (
-                    <Card key={review.id}>
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-base">{review.reviewer?.full_name || 'Anonymous'}</CardTitle>
-                            <CardDescription>{new Date(review.created_at).toLocaleDateString()}</CardDescription>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={i < review.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className={i < review.rating ? "text-yellow-400" : "text-gray-300"}>
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                              </svg>
-                            ))}
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm">{review.comment}</p>
-                        {review.tags && <div className="flex flex-wrap gap-2 mt-3">{review.tags.split(',').map((tag: string) => <Badge key={tag} variant="outline" className="text-xs">{tag.trim()}</Badge>)}</div>}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              <ReviewList userId={user.id} />
             </TabsContent>
 
             {/* Badges Tab */}
             <TabsContent value="badges" className="mt-6">
-              {userBadges.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 opacity-50">
-                    <path d="M6 10c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8h-8" />
-                    <polyline points="15 14 18 10 21 14" />
-                    <path d="M6 14H3" />
-                    <path d="M6 18H3" />
-                    <path d="M6 22H3" />
-                  </svg>
-                  <p className="text-lg font-medium">No badges yet</p>
-                  <p className="text-sm mt-1">Complete sessions and achievements to earn badges!</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {userBadges.map((userBadge: any) => (
-                    <div key={userBadge.id} className="flex flex-col items-center">
-                      <div className={`h-20 w-20 rounded-full flex items-center justify-center mb-3 ${userBadge.is_pinned ? 'ring-2 ring-yellow-400' : ''}`} style={{ backgroundColor: userBadge.badge?.color || '#e5e7eb' }}>
-                        <span className="text-3xl">{userBadge.badge?.icon || '🏆'}</span>
-                      </div>
-                      <h3 className="font-medium text-center text-sm">{userBadge.badge?.name}</h3>
-                      <Badge className="mt-2 text-xs">{userBadge.badge?.type}</Badge>
-                      <p className="text-xs text-muted-foreground mt-1">Earned {new Date(userBadge.earned_at).toLocaleDateString()}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <BadgeCollection userId={user.id} showPin={true} />
             </TabsContent>
 
             {/* Availability Tab */}

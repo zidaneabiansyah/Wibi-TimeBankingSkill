@@ -12,6 +12,7 @@ import { useUserStore } from "@/stores/user.store";
 import { useSessionStore } from "@/stores/session.store";
 import { useBadgeStore } from "@/stores/badge.store";
 import { useSkillStore } from "@/stores/skill.store";
+import { LeaderboardCard } from "@/components/dashboard/LeaderboardCard";
 import SessionApprovalModal from "@/components/session/SessionApprovalModal";
 import TransactionDetailModal from "@/components/transaction/TransactionDetailModal";
 import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
@@ -53,7 +54,7 @@ function DashboardContent() {
     const { user } = useAuthStore();
     const { stats, transactions, isLoading, fetchStats, fetchTransactions } = useUserStore();
     const { upcomingSessions, pendingRequests, fetchUpcomingSessions, fetchPendingRequests } = useSessionStore();
-    const { userBadges, fetchUserBadges } = useBadgeStore();
+    const { userBadges, fetchUserBadges, leaderboards, fetchLeaderboard } = useBadgeStore();
     const { skills, fetchSkills } = useSkillStore();
     const [selectedSession, setSelectedSession] = useState<Session | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,8 +67,11 @@ function DashboardContent() {
         fetchUpcomingSessions(3).catch(console.error);
         fetchPendingRequests().catch(console.error);
         fetchUserBadges().catch(console.error);
+        fetchUserBadges().catch(console.error);
         fetchSkills({ limit: 4 }).catch(console.error);
-    }, [fetchStats, fetchTransactions, fetchUpcomingSessions, fetchPendingRequests, fetchUserBadges, fetchSkills]);
+        fetchLeaderboard('rating', 5).catch(console.error);
+        fetchLeaderboard('sessions', 5).catch(console.error);
+    }, [fetchStats, fetchTransactions, fetchUpcomingSessions, fetchPendingRequests, fetchUserBadges, fetchSkills, fetchLeaderboard]);
 
     const handleOpenApprovalModal = (session: Session) => {
         setSelectedSession(session);
@@ -295,6 +299,51 @@ function DashboardContent() {
                                 ))}
                             </div>
                         )}
+                    </div>
+
+    {/* Leaderboard Section */}
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-bold">Top Rated Teachers</h2>
+                            <Link href="/badges">
+                                <Button variant="ghost" size="sm">View All</Button>
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <LeaderboardCard
+                                title="Highest Rated"
+                                valueLabel="Rating"
+                                entries={leaderboards['rating']?.slice(0, 5).map((entry, index) => ({
+                                    ...entry,
+                                    rank: entry.rank || index + 1,
+                                    user: {
+                                        id: entry.user_id,
+                                        name: entry.full_name,
+                                        username: entry.username,
+                                        avatar: entry.avatar
+                                    },
+                                    value: entry.score
+                                })) || []}
+                                onTimeRangeChange={(range) => fetchLeaderboard('rating', 5, range)}
+                            />
+                            <LeaderboardCard
+                                title="Most Active"
+                                valueLabel="Sessions"
+                                entries={leaderboards['sessions']?.slice(0, 5).map((entry, index) => ({
+                                    ...entry,
+                                    rank: entry.rank || index + 1,
+                                    user: {
+                                        id: entry.user_id,
+                                        name: entry.full_name,
+                                        username: entry.username,
+                                        avatar: entry.avatar
+                                    },
+                                    value: entry.score
+                                })) || []}
+                                icon={<Calendar className="h-4 w-4" />}
+                                onTimeRangeChange={(range) => fetchLeaderboard('sessions', 5, range)}
+                            />
+                        </div>
                     </div>
 
                     {/* Recommended Skills */}

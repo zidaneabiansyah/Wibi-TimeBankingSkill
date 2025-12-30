@@ -22,6 +22,7 @@ import {
     GraduationCap
 } from 'lucide-react'
 import type { ProgressSummary, SkillProgress, Milestone } from '@/types'
+import { ProgressMilestones } from '@/components/skills/ProgressMilestones';
 
 // Progress bar component
 function ProgressBar({ value, max = 100, className = '' }: { value: number; max?: number; className?: string }) {
@@ -86,24 +87,16 @@ function SkillProgressCard({ progress }: { progress: SkillProgress }) {
                 {/* Milestones */}
                 {progress.milestones && progress.milestones.length > 0 && (
                     <div className="space-y-2 pt-2 border-t">
-                        <p className="text-sm font-medium">Milestones</p>
-                        <div className="space-y-1">
-                            {progress.milestones.slice(0, 3).map((milestone) => (
-                                <div 
-                                    key={milestone.id} 
-                                    className={`flex items-center gap-2 text-sm ${
-                                        milestone.is_achieved ? 'text-green-600' : 'text-muted-foreground'
-                                    }`}
-                                >
-                                    {milestone.is_achieved ? (
-                                        <CheckCircle2 className="h-4 w-4" />
-                                    ) : (
-                                        <Circle className="h-4 w-4" />
-                                    )}
-                                    <span>{milestone.title}</span>
-                                </div>
-                            ))}
+                        <div className="flex justify-between items-center mb-1">
+                            <p className="text-sm font-medium">Milestones</p>
+                            <span className="text-xs text-muted-foreground">
+                                {progress.milestones.filter(m => m.is_achieved).length}/{progress.milestones.length} Achieved
+                            </span>
                         </div>
+                        <ProgressMilestones 
+                            milestones={progress.milestones} 
+                            currentProgress={progress.progress_percentage} 
+                        />
                     </div>
                 )}
             </CardContent>
