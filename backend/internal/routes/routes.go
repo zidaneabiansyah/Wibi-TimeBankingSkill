@@ -310,6 +310,9 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				forum.POST("/replies", forumHandler.CreateReply)                              // POST /api/v1/forum/replies
 				forum.GET("/threads/:id/replies", forumHandler.GetReplies)                    // GET /api/v1/forum/threads/:id/replies
 				forum.DELETE("/replies/:id", forumHandler.DeleteReply)                        // DELETE /api/v1/forum/replies/:id
+				forum.POST("/threads/:id/pin", forumHandler.PinThread)                        // POST /api/v1/forum/threads/:id/pin
+				forum.POST("/threads/:id/lock", forumHandler.LockThread)                      // POST /api/v1/forum/threads/:id/lock
+				forum.GET("/search", forumHandler.SearchThreads)                              // GET /api/v1/forum/search
 			}
 
 			// Stories routes
@@ -337,6 +340,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				endorsements.GET("/count/:user_id/:skill_id", endorsementHandler.GetEndorsementCount)         // GET /api/v1/endorsements/count/:user_id/:skill_id
 				endorsements.DELETE("/:id", endorsementHandler.DeleteEndorsement)             // DELETE /api/v1/endorsements/:id
 				endorsements.GET("/top-skills", endorsementHandler.GetTopEndorsedSkills)      // GET /api/v1/endorsements/top-skills
+				endorsements.GET("/user/:user_id/reputation", endorsementHandler.GetUserReputation) // GET /api/v1/endorsements/user/:user_id/reputation
 			}
 		}
 	}

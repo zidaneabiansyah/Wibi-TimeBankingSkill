@@ -80,7 +80,11 @@ func InitializeReviewHandler(db *gorm.DB) *handler.ReviewHandler {
 	userRepo := repository.NewUserRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
 	notificationService := service.NewNotificationService(notificationRepo, userRepo)
-	reviewService := service.NewReviewService(reviewRepo, sessionRepo, userRepo, notificationService)
+	
+	badgeRepo := repository.NewBadgeRepository(db)
+	badgeService := service.NewBadgeService(badgeRepo, userRepo, sessionRepo, notificationService)
+
+	reviewService := service.NewReviewService(reviewRepo, sessionRepo, userRepo, notificationService, badgeService)
 	return handler.NewReviewHandler(reviewService)
 }
 
