@@ -307,6 +307,12 @@ func (s *ReviewService) UpdateReview(reviewID, userID uint, req *dto.UpdateRevie
 		return nil, err
 	}
 
+	// TRIGGER BADGE CHECK:
+	go func() {
+		_, _ = s.badgeService.CheckAndAwardBadges(review.ReviewerID)
+		_, _ = s.badgeService.CheckAndAwardBadges(review.RevieweeID)
+	}()
+
 	return dto.MapReviewToResponse(review), nil
 }
 
