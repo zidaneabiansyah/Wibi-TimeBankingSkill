@@ -41,3 +41,15 @@ type UserProfile struct {
   IsActive      bool    `json:"is_active"`
   IsVerified    bool    `json:"is_verified"`
 }
+
+// ForgotPasswordRequest represents forgot password request
+type ForgotPasswordRequest struct {
+  Email string `json:"email" binding:"required,email"`
+}
+
+// ResetPasswordRequest represents reset password request
+type ResetPasswordRequest struct {
+  Token           string `json:"token" binding:"required"`
+  NewPassword     string `json:"new_password" binding:"required,min=6"`
+  ConfirmPassword string `json:"confirm_password" binding:"required"`
+}

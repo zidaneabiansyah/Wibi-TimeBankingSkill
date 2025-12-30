@@ -139,3 +139,52 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
   utils.SendSuccess(c, http.StatusOK, "Email verified successfully", nil)
 }
 
+// ForgotPassword handles password reset request
+// @Summary Initiate password reset
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body dto.ForgotPasswordRequest true "Email"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /auth/forgot-password [post]
+func (h *AuthHandler) ForgotPassword(c *gin.Context) {
+  var req dto.ForgotPasswordRequest
+  if err := c.ShouldBindJSON(&req); err != nil {
+    utils.SendError(c, http.StatusBadRequest, "Invalid request", nil)
+    return
+  }
+
+  err := h.authService.ForgotPassword(&req)
+  if err != nil {
+    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    return
+  }
+
+  utils.SendSuccess(c, http.StatusOK, "Password reset email has been sent to your email address", nil)
+}
+
+// ResetPassword handles password reset completion
+// @Summary Reset password with token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body dto.ResetPasswordRequest true "Reset password details"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /auth/reset-password [post]
+func (h *AuthHandler) ResetPassword(c *gin.Context) {
+  var req dto.ResetPasswordRequest
+  if err := c.ShouldBindJSON(&req); err != nil {
+    utils.SendError(c, http.StatusBadRequest, "Invalid request", nil)
+    return
+  }
+
+  err := h.authService.ResetPassword(&req)
+  if err != nil {
+    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    return
+  }
+
+  utils.SendSuccess(c, http.StatusOK, "Password has been reset successfully. You can now login with your new password", nil)
+}

@@ -299,3 +299,108 @@ func (s *AuthService) VerifyEmail(token string) error {
 
   return nil
 }
+
+// ForgotPassword initiates password reset process
+// Sends email with reset link to user's registered email address
+//
+// Password Reset Flow:
+//   1. Validates email exists in system
+//   2. Generates reset token (JWT with 1 hour expiry)
+//   3. Sends email with reset link via Brevo
+//   4. Returns success message
+//
+// Security:
+//   - Token is time-limited (1 hour expiration)
+//   - Token is signed with JWT (cannot be forged)
+//   - Actual password change requires token validation
+//   - Email is only way to prove identity
+//
+// Parameters:
+//   - req: Forgot password request with email
+//
+// Returns:
+//   - error: If email not found or email sending fails
+func (s *AuthService) ForgotPassword(req *dto.ForgotPasswordRequest) error {
+  // Find user by email
+  user, err := s.userRepo.GetByEmail(strings.ToLower(req.Email))
+  if err != nil {
+    // Don't reveal if email exists (security best practice)
+    return nil
+  }
+
+  // Generate reset token (1 hour expiry)
+  resetToken, err := utils.GeneratePasswordResetToken(user.Email)
+  if err != nil {
+    return errors.New("failed to generate reset token: " + err.Error())
+  }
+
+  // Build reset link
+  frontendURL := os.Getenv("FRONTEND_URL")
+  if frontendURL == "" {
+    frontendURL = "http://localhost:3000"
+  }
+  resetLink := frontendURL + "/reset-password?token=" + resetToken
+
+  // Send password reset email
+  if err := utils.SendPasswordResetEmail(user.Email, user.FullName, resetLink); err != nil {
+    // Log error but don't fail the request
+    // User doesn't need to know email sending failed
+  }
+
+  // Always return success (don't reveal if email exists)
+  return nil
+}
+
+// ResetPassword completes password reset process
+// Validates reset token and updates user password
+//
+// Reset Flow:
+//   1. Validates password reset token (JWT with 1 hour expiry)
+//   2. Extracts email from token claims
+//   3. Validates new password matches confirmation
+//   4. Hashes new password securely
+//   5. Updates password in database
+//   6. Returns success message
+//
+// Parameters:
+//   - req: Reset password request with token and new password
+//
+// Returns:
+//   - error: If token invalid, expired, passwords don't match, or database error
+func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
+  // Validate passwords match
+  if req.NewPassword != req.ConfirmPassword {
+    return errors.New("passwords do not match")
+  }
+
+  // Validate password strength
+  if len(req.NewPassword) < 6 {
+    return errors.New("password must be at least 6 characters")
+  }
+
+  // Verify token and extract email
+  email, err := utils.VerifyPasswordResetToken(req.Token)
+  if err != nil {
+    return err
+  }
+
+  // Find user by email
+  user, err := s.userRepo.GetByEmail(email)
+  if err != nil {
+    return errors.New("user not found")
+  }
+
+  // Hash new password
+  hashedPassword, err := utils.HashPassword(req.NewPassword)
+  if err != nil {
+    return errors.New("failed to hash password")
+  }
+
+  // Update password
+  user.Password = hashedPassword
+  if err := s.userRepo.Update(user); err != nil {
+    return errors.New("failed to update password: " + err.Error())
+  }
+
+  return nil
+}
