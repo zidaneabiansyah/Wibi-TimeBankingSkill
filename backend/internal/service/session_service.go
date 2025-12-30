@@ -10,13 +10,21 @@ import (
 	"github.com/timebankingskill/backend/internal/repository"
 )
 
+type NotificationServiceInterface interface {
+	CreateNotification(userID uint, notificationType models.NotificationType, title, message string, data map[string]interface{}) (*models.Notification, error)
+}
+
+type BadgeServiceInterface interface {
+	CheckAndAwardBadges(userID uint) ([]dto.UserBadgeResponse, error)
+}
+
 type SessionService struct {
-	sessionRepo     repository.SessionRepositoryInterface
-	userRepo        repository.UserRepositoryInterface
-	transactionRepo repository.TransactionRepositoryInterface
-	skillRepo       repository.SkillRepositoryInterface
-	badgeService    *BadgeService
-	notificationService *NotificationService
+	sessionRepo         repository.SessionRepositoryInterface
+	userRepo            repository.UserRepositoryInterface
+	transactionRepo     repository.TransactionRepositoryInterface
+	skillRepo           repository.SkillRepositoryInterface
+	badgeService        BadgeServiceInterface
+	notificationService NotificationServiceInterface
 }
 
 func NewSessionService(
@@ -24,20 +32,18 @@ func NewSessionService(
 	userRepo repository.UserRepositoryInterface,
 	transactionRepo repository.TransactionRepositoryInterface,
 	skillRepo repository.SkillRepositoryInterface,
-	badgeService *BadgeService,
-	notificationService *NotificationService,
+	badgeService BadgeServiceInterface,
+	notificationService NotificationServiceInterface,
 ) *SessionService {
 	return &SessionService{
 		sessionRepo:         sessionRepo,
 		userRepo:            userRepo,
-		skillRepo:           skillRepo,
 		transactionRepo:     transactionRepo,
+		skillRepo:           skillRepo,
 		badgeService:        badgeService,
 		notificationService: notificationService,
 	}
 }
-
-// BookSession creates a new session request from student to teacher
 // This is the entry point for students to request learning sessions with tutors
 //
 // Flow:
