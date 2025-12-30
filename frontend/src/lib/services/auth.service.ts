@@ -65,6 +65,20 @@ export const authService = {
     }
   },
 
+  // Request password reset email
+  forgotPassword: async (email: string): Promise<void> => {
+    return apiClient.post('/auth/forgot-password', { email });
+  },
+
+  // Reset password with token
+  resetPassword: async (token: string, newPassword: string, confirmPassword: string): Promise<void> => {
+    return apiClient.post('/auth/reset-password', {
+      token,
+      new_password: newPassword,
+      confirm_password: confirmPassword,
+    });
+  },
+
   // Save token to localStorage
   saveToken: (token: string): void => {
     if (typeof window !== 'undefined') {
