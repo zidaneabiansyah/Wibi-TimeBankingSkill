@@ -101,7 +101,8 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 
   // Save user
   if err := s.userRepo.Create(user); err != nil {
-    return nil, errors.New("failed to create user")
+    // Log detailed error for debugging
+    return nil, errors.New("failed to create user: " + err.Error())
   }
 
   // Create initial transaction for welcome bonus
