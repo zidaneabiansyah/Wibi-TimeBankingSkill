@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, Heart, MessageCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, Heart, MessageCircle, ArrowLeft, Reply, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { communityService } from '@/lib/services/community.service';
 import { useCommunityStore } from '@/stores/community.store';
@@ -20,6 +20,7 @@ export default function StoryDetailPage() {
     const [commentContent, setCommentContent] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [replyingTo, setReplyingTo] = useState<number | null>(null);
 
     useEffect(() => {
         fetchStory();
@@ -56,9 +57,10 @@ export default function StoryDetailPage() {
 
         try {
             setSubmitting(true);
-            const newComment = await communityService.createComment(storyId, commentContent);
+            const newComment = await communityService.createComment(storyId, commentContent, replyingTo);
             setStoryComments([newComment, ...storyComments]);
             setCommentContent('');
+            setReplyingTo(null);
             toast.success('Comment posted successfully!');
         } catch (err) {
             toast.error('Failed to post comment');
@@ -130,10 +132,10 @@ export default function StoryDetailPage() {
                 {/* Story */}
                 <div className="bg-card rounded-lg border border-border overflow-hidden mb-8">
                     {/* Image */}
-                    {selectedStory.images && selectedStory.images.length > 0 && (
+                    {(selectedStory.featured_image_url || (selectedStory.images && selectedStory.images.length > 0)) && (
                         <div className="relative h-96 w-full overflow-hidden bg-muted">
                             <img
-                                src={selectedStory.images[0]}
+                                src={selectedStory.featured_image_url || selectedStory.images[0]}
                                 alt={selectedStory.title}
                                 className="h-full w-full object-cover"
                             />
@@ -192,11 +194,17 @@ export default function StoryDetailPage() {
                 {/* Comment form */}
                 <div className="bg-card rounded-lg border border-border p-6 mb-8">
                     <h2 className="text-xl font-semibold mb-4">Leave a Comment</h2>
+                    {replyingTo && (
+                        <div className="flex items-center justify-between bg-muted/50 p-2 rounded mb-2 text-sm">
+                            <span>Replying to a comment...</span>
+                            <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="h-auto p-1">Cancel</Button>
+                        </div>
+                    )}
                     <textarea
                         value={commentContent}
                         onChange={(e) => setCommentContent(e.target.value)}
                         placeholder="Write your comment here..."
-                        className="w-full p-3 border border-border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full p-3 border border-border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
                         rows={4}
                     />
                     <Button onClick={handleComment} disabled={submitting}>
@@ -222,10 +230,21 @@ export default function StoryDetailPage() {
                                     <Button
                                         variant="ghost"
                                         size="sm"
+                                        onClick={() => {
+                                             setReplyingTo(comment.id);
+                                             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                        }}
+                                        className="text-muted-foreground hover:text-foreground"
+                                    >
+                                        <Reply className="h-4 w-4 mr-1" /> Reply
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
                                         onClick={() => handleDeleteComment(comment.id)}
                                         className="text-destructive hover:text-destructive"
                                     >
-                                        Delete
+                                        <Trash2 className="h-4 w-4 mr-1" /> Delete
                                     </Button>
                                 </div>
                                 <p className="text-muted-foreground">{comment.content}</p>
