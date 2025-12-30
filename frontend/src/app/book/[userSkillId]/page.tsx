@@ -63,40 +63,20 @@ function BookSessionContent() {
         const fetchUserSkill = async () => {
             try {
                 setIsLoading(true);
-                // We need to get user skill by ID - for now use a workaround
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/skills/${userSkillId}/teachers`);
-                // This is a temporary solution - ideally we'd have a direct endpoint
-                setError('Loading teacher information...');
+                const data = await skillService.getUserSkillById(userSkillId);
+                setUserSkill(data);
+                setError(null);
             } catch (err: any) {
                 setError(err.message || 'Failed to load teacher information');
+                toast.error('Failed to load teacher information');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        // For now, we'll create a mock userSkill based on the ID
-        // In production, you'd fetch this from the backend
-        setUserSkill({
-            id: userSkillId,
-            user_id: 0,
-            skill_id: 0,
-            skill: { id: 0, name: 'Loading...', category: 'academic', description: '', icon: '', total_teachers: 0, total_learners: 0, created_at: '', min_rate: 0, max_rate: 0 },
-            level: 'intermediate',
-            description: '',
-            years_of_experience: 0,
-            proof_url: '',
-            proof_type: '',
-            hourly_rate: 1,
-            online_only: false,
-            offline_only: false,
-            is_available: true,
-            total_sessions: 0,
-            average_rating: 0,
-            total_reviews: 0,
-            created_at: '',
-            updated_at: '',
-        });
-        setIsLoading(false);
+        if (userSkillId) {
+            fetchUserSkill();
+        }
     }, [userSkillId]);
 
     const onSubmit = async (data: BookingFormData) => {
@@ -138,12 +118,22 @@ function BookSessionContent() {
                         <CardHeader>
                             <CardTitle>Book a Session</CardTitle>
                             <CardDescription>
-                                Fill in the details to request a learning session
+                                Fill in the details to request a learning session with {userSkill?.user?.full_name || '...'}
                             </CardDescription>
                         </CardHeader>
 
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <CardContent className="space-y-6">
+                        {isLoading ? (
+                            <div className="flex justify-center py-12">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-12">
+                                <p className="text-red-500 mb-4">{error}</p>
+                                <Button onClick={() => window.location.reload()}>Retry</Button>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <CardContent className="space-y-6">
                                 {/* Credit Info */}
                                 <div className="bg-primary/10 rounded-lg p-4">
                                     <div className="flex justify-between items-center">
@@ -288,14 +278,16 @@ function BookSessionContent() {
                                     {isBooking ? 'Booking...' : `Book Session (${creditCost.toFixed(1)} credits)`}
                                 </Button>
                             </CardFooter>
-                        </form>
+                            </form>
+                        )}
                     </Card>
 
                     {/* Info */}
                     <div className="text-sm text-muted-foreground space-y-2">
-                        <p>• Credits will be held when the teacher approves your request</p>
+                        <p>• Credits will be held in escrow immediately upon booking</p>
+                        <p>• If the teacher rejects the request, credits will be refunded instantly</p>
                         <p>• You can cancel before the session starts for a full refund</p>
-                        <p>• Both parties must confirm completion for credits to transfer</p>
+                        <p>• Both parties must confirm completion for credits to transfer to the teacher</p>
                     </div>
                 </div>
             </main>
