@@ -45,7 +45,11 @@ const sortOptions = [
 ];
 
 export default function MarketplacePage() {
-    const { skills, skillsTotal, isLoading, fetchSkills } = useSkillStore();
+    const { 
+        skills, skillsTotal, recommendations, isLoading, 
+        currentPage, pageSize, 
+        fetchSkills, fetchRecommendations, setCurrentPage 
+    } = useSkillStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedDay, setSelectedDay] = useState('all');
@@ -70,11 +74,11 @@ export default function MarketplacePage() {
         return () => clearTimeout(timer);
     }, [locationQuery]);
 
-    // Fetch skills when filters change
+    // Fetch skills when filters or page changes
     useEffect(() => {
         fetchSkills({
-            limit: 20,
-            offset: 0,
+            limit: pageSize,
+            offset: (currentPage - 1) * pageSize,
             category: selectedCategory === 'all' ? undefined : selectedCategory,
             search: debouncedSearch || undefined,
             day: selectedDay === 'all' ? undefined : Number(selectedDay),
@@ -82,10 +86,16 @@ export default function MarketplacePage() {
             location: debouncedLocation || undefined,
             sort: sortBy,
         }).catch(console.error);
-    }, [fetchSkills, selectedCategory, debouncedSearch, selectedDay, selectedRating, debouncedLocation, sortBy]);
+    }, [fetchSkills, selectedCategory, debouncedSearch, selectedDay, selectedRating, debouncedLocation, sortBy, currentPage, pageSize]);
+
+    // Fetch recommendations on mount
+    useEffect(() => {
+        fetchRecommendations(3);
+    }, [fetchRecommendations]);
 
     const handleCategoryChange = (category: string) => {
         setSelectedCategory(category);
+        setCurrentPage(1); // Reset to first page on filter change
     };
 
     return (
@@ -96,10 +106,65 @@ export default function MarketplacePage() {
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex flex-col space-y-8">
                     {/* Page Title */}
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-bold tracking-tight">Skill Marketplace</h1>
-                        <p className="text-muted-foreground text-lg">Discover skills to learn or find students to teach</p>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div className="space-y-2">
+                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Skill Marketplace</h1>
+                            <p className="text-muted-foreground text-lg">Discover skills to learn or find students to teach</p>
+                        </div>
+                        <Link href="/dashboard/skills">
+                            <Button className="bg-primary/10 hover:bg-primary/20 text-primary border-primary/20 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                                    <path d="M5 12h14" />
+                                    <path d="M12 5v14" />
+                                </svg>
+                                Offer a Skill
+                            </Button>
+                        </Link>
                     </div>
+
+                    {/* Recommendations Section */}
+                    {recommendations.length > 0 && (
+                        <div className="space-y-4">
+                            <h2 className="text-xl font-semibold flex items-center gap-2">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                    </svg>
+                                </span>
+                                Recommended for You
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {recommendations.map((skill) => (
+                                    <Card key={`rec-${skill.id}`} className="group relative overflow-hidden bg-linear-to-br from-primary/5 to-transparent border-primary/10 hover:border-primary/30 transition-all duration-300">
+                                        <div className="absolute top-2 right-2">
+                                            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200 border-none text-[10px] uppercase font-bold tracking-wider">Top Rated</Badge>
+                                        </div>
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-12 w-12 rounded-xl bg-background/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm">
+                                                    {skill.icon || '🎓'}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-semibold truncate">{skill.name}</h3>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex items-center text-xs text-muted-foreground">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-yellow-500 mr-1">
+                                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                                            </svg>
+                                                            {(skill as any).max_teacher_rating?.toFixed(1) || '5.0'}
+                                                        </div>
+                                                        <span className="text-muted-foreground/30 text-[10px]">•</span>
+                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{skill.category}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <Link href={`/marketplace/${skill.id}`} className="absolute inset-0 z-0" />
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Search and Filter Row 1 */}
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -269,6 +334,50 @@ export default function MarketplacePage() {
                                             </CardFooter>
                                         </Card>
                                     ))}
+                                </div>
+                            )}
+
+                            {/* Pagination */}
+                            {skillsTotal > pageSize && (
+                                <div className="mt-12 flex items-center justify-center gap-2">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                        disabled={currentPage === 1 || isLoading}
+                                        className="border-border/50"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                                            <path d="m15 18-6-6 6-6" />
+                                        </svg>
+                                        Previous
+                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        {Array.from({ length: Math.ceil(skillsTotal / pageSize) }, (_, i) => i + 1).map((page) => (
+                                            <Button
+                                                key={page}
+                                                variant={currentPage === page ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => setCurrentPage(page)}
+                                                disabled={isLoading}
+                                                className={`h-8 w-8 p-0 ${currentPage === page ? "" : "border-border/50"}`}
+                                            >
+                                                {page}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => setCurrentPage(Math.min(Math.ceil(skillsTotal / pageSize), currentPage + 1))}
+                                        disabled={currentPage >= Math.ceil(skillsTotal / pageSize) || isLoading}
+                                        className="border-border/50"
+                                    >
+                                        Next
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2">
+                                            <path d="m9 18 6-6-6-6" />
+                                        </svg>
+                                    </Button>
                                 </div>
                             )}
                         </div>

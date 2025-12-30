@@ -14,12 +14,19 @@ interface SkillState {
     // User's learning wishlist
     learningSkills: LearningSkill[];
 
+    // Recommended skills
+    recommendations: Skill[];
+
     // Loading states
     isLoading: boolean;
     isLoadingUserSkills: boolean;
     isLoadingLearningSkills: boolean;
 
     error: string | null;
+
+    // Pagination
+    currentPage: number;
+    pageSize: number;
 
     // Actions - Master Skills
     fetchSkills: (params?: { 
@@ -32,6 +39,8 @@ interface SkillState {
         location?: string;
         sort?: string;
     }) => Promise<void>;
+    
+    fetchRecommendations: (limit?: number) => Promise<void>;
 
     // Actions - User Teaching Skills
     fetchUserSkills: () => Promise<void>;
@@ -44,6 +53,8 @@ interface SkillState {
     addLearningSkill: (data: AddLearningSkillRequest) => Promise<void>;
     deleteLearningSkill: (skillId: number) => Promise<void>;
 
+    setCurrentPage: (page: number) => void;
+
     clearError: () => void;
     reset: () => void;
 }
@@ -53,10 +64,13 @@ const initialState = {
     skillsTotal: 0,
     userSkills: [],
     learningSkills: [],
+    recommendations: [],
     isLoading: false,
     isLoadingUserSkills: false,
     isLoadingLearningSkills: false,
     error: null,
+    currentPage: 1,
+    pageSize: 12,
 };
 
 export const useSkillStore = create<SkillState>((set, get) => ({
@@ -74,6 +88,18 @@ export const useSkillStore = create<SkillState>((set, get) => ({
             });
         } catch (error: any) {
             set({ isLoading: false, error: error.message || 'Failed to fetch skills' });
+            throw error;
+        }
+    },
+
+    // Fetch recommended skills
+    fetchRecommendations: async (limit) => {
+        set({ isLoading: true, error: null });
+        try {
+            const recommendations = await skillService.getRecommendedSkills(limit);
+            set({ recommendations, isLoading: false });
+        } catch (error: any) {
+            set({ isLoading: false, error: error.message || 'Failed to fetch recommendations' });
             throw error;
         }
     },
@@ -178,6 +204,8 @@ export const useSkillStore = create<SkillState>((set, get) => ({
             throw error;
         }
     },
+
+    setCurrentPage: (page: number) => set({ currentPage: page }),
 
     clearError: () => set({ error: null }),
 

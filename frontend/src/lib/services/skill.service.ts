@@ -76,6 +76,11 @@ export const skillService = {
         return apiClient.get<UserSkill[]>(`/skills/${skillId}/teachers`);
     },
 
+    // Get recommended skills
+    getRecommendedSkills: async (limit?: number): Promise<Skill[]> => {
+        return apiClient.get<Skill[]>(`/skills/recommended${limit ? `?limit=${limit}` : ''}`);
+    },
+
     // Get current user's teaching skills
     getUserSkills: async (): Promise<UserSkill[]> => {
         return apiClient.get<UserSkill[]>('/user/skills');
