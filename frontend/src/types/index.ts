@@ -440,6 +440,7 @@ export interface ForumReply {
     author_id: number;
     author?: UserProfile;
     content: string;
+    parent_id?: number | null;
     like_count: number;
     created_at: string;
     updated_at: string;
@@ -452,6 +453,7 @@ export interface SuccessStory {
     user?: UserProfile;
     title: string;
     description: string;
+    featured_image_url?: string;
     images: string[];
     tags: string[];
     like_count: number;
@@ -468,6 +470,7 @@ export interface StoryComment {
     author_id: number;
     author?: UserProfile;
     content: string;
+    parent_id?: number | null;
     like_count: number;
     created_at: string;
     updated_at: string;

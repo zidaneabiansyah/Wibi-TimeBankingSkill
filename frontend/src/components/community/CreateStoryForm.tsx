@@ -14,6 +14,7 @@ export function CreateStoryForm({ onSuccess }: CreateStoryFormProps) {
     const { addStory } = useCommunityStore();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [featuredImageURL, setFeaturedImageURL] = useState('');
     const [tags, setTags] = useState('');
     const [isPublished, setIsPublished] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -33,10 +34,11 @@ export function CreateStoryForm({ onSuccess }: CreateStoryFormProps) {
                 .map((t) => t.trim())
                 .filter((t) => t);
 
-            const story = await communityService.createStory(title, description, [], tagArray, isPublished);
+            const story = await communityService.createStory(title, description, featuredImageURL, [], tagArray, isPublished);
             addStory(story);
             setTitle('');
             setDescription('');
+            setFeaturedImageURL('');
             setTags('');
             setIsPublished(false);
             toast.success('Story created successfully!');
@@ -68,6 +70,17 @@ export function CreateStoryForm({ onSuccess }: CreateStoryFormProps) {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Tell your success story..."
                     rows={6}
+                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-2">Featured Image URL (Optional)</label>
+                <input
+                    type="url"
+                    value={featuredImageURL}
+                    onChange={(e) => setFeaturedImageURL(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
                     className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
             </div>

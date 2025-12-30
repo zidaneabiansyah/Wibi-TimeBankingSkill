@@ -111,11 +111,11 @@ export const communityService = {
     /**
      * Create a forum reply
      */
-    async createReply(threadId: number, content: string): Promise<ForumReply> {
+    async createReply(threadId: number, content: string, parentId: number | null = null): Promise<ForumReply> {
         try {
             const response = await axios.post<ApiResponse<ForumReply>>(
                 `${API_BASE}/forum/replies`,
-                { thread_id: threadId, content },
+                { thread_id: threadId, content, parent_id: parentId },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             return response.data.data!;
@@ -160,6 +160,59 @@ export const communityService = {
         }
     },
 
+    /**
+     * Pin or unpin a thread
+     */
+    async pinThread(threadId: number, isPinned: boolean): Promise<void> {
+        try {
+            await axios.post(
+                `${API_BASE}/forum/threads/${threadId}/pin`,
+                { is_pinned: isPinned },
+                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+            );
+        } catch (error) {
+            console.error('Failed to pin thread:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Lock or unlock a thread
+     */
+    async lockThread(threadId: number, isLocked: boolean): Promise<void> {
+        try {
+            await axios.post(
+                `${API_BASE}/forum/threads/${threadId}/lock`,
+                { is_locked: isLocked },
+                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+            );
+        } catch (error) {
+            console.error('Failed to lock thread:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Search threads
+     */
+    async searchThreads(
+        query: string,
+        limit: number = 10,
+        offset: number = 0
+    ): Promise<{ threads: ForumThread[]; total: number }> {
+        try {
+            const response = await axios.get<
+                ApiResponse<{ threads: ForumThread[]; total: number }>
+            >(`${API_BASE}/forum/search`, {
+                params: { q: query, limit, offset },
+            });
+            return response.data.data || { threads: [], total: 0 };
+        } catch (error) {
+            console.error('Failed to search threads:', error);
+            throw error;
+        }
+    },
+
     // ===== STORY ENDPOINTS =====
 
     /**
@@ -168,6 +221,7 @@ export const communityService = {
     async createStory(
         title: string,
         description: string,
+        featuredImageURL: string = '',
         images: string[] = [],
         tags: string[] = [],
         isPublished: boolean = false
@@ -175,7 +229,7 @@ export const communityService = {
         try {
             const response = await axios.post<ApiResponse<SuccessStory>>(
                 `${API_BASE}/stories`,
-                { title, description, images, tags, is_published: isPublished },
+                { title, description, featured_image_url: featuredImageURL, images, tags, is_published: isPublished },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             return response.data.data!;
@@ -253,6 +307,7 @@ export const communityService = {
         storyId: number,
         title: string,
         description: string,
+        featuredImageURL: string = '',
         images: string[] = [],
         tags: string[] = [],
         isPublished: boolean = false
@@ -260,7 +315,7 @@ export const communityService = {
         try {
             const response = await axios.put<ApiResponse<SuccessStory>>(
                 `${API_BASE}/stories/${storyId}`,
-                { title, description, images, tags, is_published: isPublished },
+                { title, description, featured_image_url: featuredImageURL, images, tags, is_published: isPublished },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             return response.data.data!;
@@ -287,11 +342,11 @@ export const communityService = {
     /**
      * Create a story comment
      */
-    async createComment(storyId: number, content: string): Promise<StoryComment> {
+    async createComment(storyId: number, content: string, parentId: number | null = null): Promise<StoryComment> {
         try {
             const response = await axios.post<ApiResponse<StoryComment>>(
                 `${API_BASE}/stories/comments`,
-                { story_id: storyId, content },
+                { story_id: storyId, content, parent_id: parentId },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             return response.data.data!;
@@ -485,6 +540,21 @@ export const communityService = {
             console.error('Failed to fetch top endorsed skills:', error);
             // Return empty array instead of throwing to allow view-only access
             return [];
+        }
+    },
+
+    /**
+     * Get user reputation score
+     */
+    async getUserReputation(userId: number): Promise<number> {
+        try {
+            const response = await axios.get<ApiResponse<{ reputation: number }>>(
+                `${API_BASE}/endorsements/user/${userId}/reputation`
+            );
+            return response.data.data?.reputation || 0;
+        } catch (error) {
+            console.error('Failed to fetch user reputation:', error);
+            return 0;
         }
     },
 };
