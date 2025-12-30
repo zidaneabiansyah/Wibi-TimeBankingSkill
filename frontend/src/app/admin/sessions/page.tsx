@@ -29,7 +29,7 @@ interface Session {
     teacher_name: string;
     learner_name: string;
     skill_name: string;
-    status: 'pending' | 'approved' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+    status: 'pending' | 'approved' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
     mode: 'online' | 'offline';
     scheduled_date: string;
     duration: number;
@@ -43,6 +43,7 @@ const statusColors = {
     in_progress: 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300',
     completed: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
     cancelled: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
+    disputed: 'bg-red-200 text-red-900 dark:bg-red-900 dark:text-red-100 border-red-300',
 };
 
 export default function SessionsPage() {
@@ -73,6 +74,30 @@ export default function SessionsPage() {
             toast.error('Failed to load sessions');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleResolve = async (id: number, resolution: 'payout' | 'refund') => {
+        try {
+            const token = localStorage.getItem('admin_token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/sessions/${id}/resolve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ resolution }),
+            });
+
+            if (response.ok) {
+                toast.success(`Session resolved with ${resolution}`);
+                fetchSessions();
+            } else {
+                const error = await response.json();
+                toast.error(error.message || 'Failed to resolve session');
+            }
+        } catch (error) {
+            toast.error('An error occurred while resolving the session');
         }
     };
 
@@ -205,6 +230,9 @@ export default function SessionsPage() {
                                     <DropdownMenuItem onClick={() => setFilterStatus('cancelled')}>
                                         Cancelled
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setFilterStatus('disputed')}>
+                                        Disputed
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -280,6 +308,26 @@ export default function SessionsPage() {
                                                             <Clock className="mr-2 h-4 w-4" />
                                                             Mark as Completed
                                                         </DropdownMenuItem>
+                                                    )}
+                                                    {session.status === 'disputed' && (
+                                                        <>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuLabel>Dispute Resolution</DropdownMenuLabel>
+                                                            <DropdownMenuItem 
+                                                                className="text-green-600"
+                                                                onClick={() => handleResolve(session.id, 'payout')}
+                                                            >
+                                                                <CheckCircle className="mr-2 h-4 w-4" />
+                                                                Resolve (Payout Teacher)
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem 
+                                                                className="text-red-600"
+                                                                onClick={() => handleResolve(session.id, 'refund')}
+                                                            >
+                                                                <XCircle className="mr-2 h-4 w-4" />
+                                                                Resolve (Refund Student)
+                                                            </DropdownMenuItem>
+                                                        </>
                                                     )}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

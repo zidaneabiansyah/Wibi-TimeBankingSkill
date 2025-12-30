@@ -138,6 +138,12 @@ export const sessionService = {
         const response = await api.post<ApiResponse<Session>>(`/sessions/${id}/cancel`, data);
         return response.data.data!;
     },
+
+    // Dispute a session
+    async disputeSession(id: number, data: { reason: string }): Promise<Session> {
+        const response = await api.post<ApiResponse<Session>>(`/sessions/${id}/dispute`, data);
+        return response.data.data!;
+    },
 };
 
 export default sessionService;

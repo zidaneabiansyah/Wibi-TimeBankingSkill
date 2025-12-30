@@ -245,7 +245,10 @@ function SessionRoomContent() {
                                             Check-in Status
                                         </CardTitle>
                                         <CardDescription>
-                                            Both participants must check in to start the session
+                                            Both participants must check in to start the session.
+                                            <span className="block mt-1 text-xs font-semibold text-primary">
+                                                Check-in is available 15 minutes before and after the scheduled time.
+                                            </span>
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>

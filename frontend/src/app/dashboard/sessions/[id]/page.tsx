@@ -12,9 +12,73 @@ import { useSessionStore } from '@/stores/session.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { sessionService } from '@/lib/services/session.service'
 import { toast } from 'sonner'
-import { ArrowLeft, Calendar, Clock, User, MapPin, Link as LinkIcon, FileText, Loader2, Video } from 'lucide-react'
+import { 
+    ArrowLeft, Calendar, Clock, User, MapPin, Link as LinkIcon, 
+    FileText, Loader2, Video, CheckCircle2, Circle, AlertCircle
+} from 'lucide-react'
 import { SessionTimer } from '@/components/session/SessionTimer'
 import type { Session } from '@/types'
+
+function SessionTimeline({ session }: { session: Session }) {
+    const steps = [
+        { 
+            label: 'Booked', 
+            date: session.created_at, 
+            completed: true,
+            icon: <Circle className="h-4 w-4 fill-primary text-primary" />
+        },
+        { 
+            label: 'Approved', 
+            date: session.status !== 'pending' && session.status !== 'rejected' ? session.updated_at : null, 
+            completed: session.status !== 'pending' && session.status !== 'rejected',
+            icon: session.status === 'rejected' ? <AlertCircle className="h-4 w-4 text-destructive" /> : <Circle className={`h-4 w-4 ${session.status !== 'pending' ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+        },
+        { 
+            label: 'In Progress', 
+            date: session.started_at, 
+            completed: !!session.started_at,
+            icon: <Circle className={`h-4 w-4 ${session.started_at ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+        },
+        { 
+            label: 'Completed', 
+            date: session.completed_at, 
+            completed: session.status === 'completed',
+            icon: <CheckCircle2 className={`h-4 w-4 ${session.status === 'completed' ? 'text-green-500' : 'text-muted-foreground'}`} />
+        }
+    ];
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-base">Session Timeline</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="relative space-y-4">
+                    {steps.map((step, index) => (
+                        <div key={index} className="flex gap-4">
+                            <div className="flex flex-col items-center">
+                                <div className="z-10">{step.icon}</div>
+                                {index < steps.length - 1 && (
+                                    <div className={`w-0.5 h-full -mt-0.5 ${step.completed ? 'bg-primary' : 'bg-muted'}`} />
+                                )}
+                            </div>
+                            <div className="pb-4">
+                                <p className={`text-sm font-medium ${step.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                    {step.label}
+                                </p>
+                                {step.date && (
+                                    <p className="text-xs text-muted-foreground">
+                                        {new Date(step.date).toLocaleString()}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
 
 function SessionDetailContent() {
     const router = useRouter()
@@ -27,6 +91,8 @@ function SessionDetailContent() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [cancelReason, setCancelReason] = useState('')
     const [showCancelForm, setShowCancelForm] = useState(false)
+    const [showDisputeForm, setShowDisputeForm] = useState(false)
+    const [disputeReason, setDisputeReason] = useState('')
     const [showVideoCall, setShowVideoCall] = useState(false)
 
     useEffect(() => {
@@ -92,6 +158,27 @@ function SessionDetailContent() {
         }
     }
 
+    const handleDisputeSession = async () => {
+        if (!session || !disputeReason.trim()) {
+            toast.error('Please provide a dispute reason')
+            return
+        }
+        setIsSubmitting(true)
+        try {
+            const { disputeSession } = useSessionStore.getState();
+            await disputeSession(session.id, { reason: disputeReason })
+            toast.success('Session disputed. Admin will review.')
+            setShowDisputeForm(false)
+            // Reload session
+            const sessionData = await sessionService.getSession(parseInt(sessionId))
+            setSession(sessionData)
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to dispute session')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
@@ -129,6 +216,7 @@ function SessionDetailContent() {
     const canStart = session.status === 'approved' && (isTeacher || isStudent)
     const canConfirmCompletion = session.status === 'in_progress' && (isTeacher || isStudent)
     const canCancel = ['pending', 'approved'].includes(session.status) && (isTeacher || isStudent)
+    const canDispute = ['approved', 'in_progress'].includes(session.status) && (isTeacher || isStudent)
     // Allow video call for approved or in_progress sessions with online/hybrid mode
     const canJoinVideoCall = ['approved', 'in_progress'].includes(session.status) && 
                             ['online', 'hybrid'].includes(session.mode) && 
@@ -151,7 +239,14 @@ function SessionDetailContent() {
                             <h1 className="text-3xl font-bold">{session.title}</h1>
                             <p className="text-muted-foreground mt-1">{session.user_skill?.skill?.name}</p>
                         </div>
-                        <Badge className="text-base">{session.status}</Badge>
+                        <div className="flex items-center gap-2">
+                            <Badge className="text-base">{session.status}</Badge>
+                            {session.credit_held && (
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
+                                    Credits in Escrow
+                                </Badge>
+                            )}
+                        </div>
                     </div>
 
                     {/* Session Details */}
@@ -283,6 +378,8 @@ function SessionDetailContent() {
                                     </CardContent>
                                 </Card>
                             )}
+
+                            <SessionTimeline session={session} />
                         </div>
                     </div>
 
@@ -292,7 +389,7 @@ function SessionDetailContent() {
                             <CardTitle className="text-base">Actions</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {!showCancelForm ? (
+                            {!showCancelForm && !showDisputeForm ? (
                                 <div className="flex flex-wrap gap-2">
                                     {canStart && (
                                         <Button onClick={handleStartSession} disabled={isSubmitting}>
@@ -321,20 +418,32 @@ function SessionDetailContent() {
 
                                     {canCancel && (
                                         <Button
-                                            variant="destructive"
+                                            variant="outline"
                                             onClick={() => setShowCancelForm(true)}
                                             disabled={isSubmitting}
+                                            className="text-red-500 border-red-200 hover:bg-red-50"
                                         >
                                             Cancel Session
                                         </Button>
                                     )}
 
-                                    {!canStart && !canConfirmCompletion && !canCancel && (
+                                    {canDispute && (
+                                        <Button
+                                            variant="destructive"
+                                            onClick={() => setShowDisputeForm(true)}
+                                            disabled={isSubmitting}
+                                        >
+                                            Dispute Session
+                                        </Button>
+                                    )}
+
+                                    {!canStart && !canConfirmCompletion && !canCancel && !canDispute && (
                                         <p className="text-sm text-muted-foreground">No actions available for this session</p>
                                     )}
                                 </div>
-                            ) : (
+                            ) : showCancelForm ? (
                                 <div className="space-y-3">
+                                    {/* Cancellation Form */}
                                     <div>
                                         <label className="text-sm font-medium">Cancellation Reason</label>
                                         <textarea
@@ -342,7 +451,7 @@ function SessionDetailContent() {
                                             onChange={(e) => setCancelReason(e.target.value)}
                                             placeholder="Please explain why you're cancelling this session..."
                                             rows={3}
-                                            className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                                            className="w-full mt-1 px-3 py-2 border rounded-lg text-sm bg-background"
                                         />
                                     </div>
                                     <div className="flex gap-2">
@@ -360,6 +469,43 @@ function SessionDetailContent() {
                                         >
                                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                             Confirm Cancellation
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {/* Dispute Form */}
+                                    <div className="p-3 bg-red-50 border border-red-100 rounded-lg mb-4">
+                                        <p className="text-sm text-red-700 font-medium flex items-center gap-2">
+                                            <AlertCircle className="h-4 w-4" />
+                                            Disputing this session will notify an administrator to review the credits.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium">Issue Description</label>
+                                        <textarea
+                                            value={disputeReason}
+                                            onChange={(e) => setDisputeReason(e.target.value)}
+                                            placeholder="Please describe the issue you're having with this session..."
+                                            rows={3}
+                                            className="w-full mt-1 px-3 py-2 border rounded-lg text-sm bg-background"
+                                        />
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setShowDisputeForm(false)}
+                                            disabled={isSubmitting}
+                                        >
+                                            Back
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            onClick={handleDisputeSession}
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            Submit Dispute
                                         </Button>
                                     </div>
                                 </div>

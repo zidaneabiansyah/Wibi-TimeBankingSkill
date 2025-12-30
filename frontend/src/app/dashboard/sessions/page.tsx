@@ -11,6 +11,7 @@ import { ProtectedRoute } from '@/components/auth';
 import { useSessionStore } from '@/stores/session.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { toast } from 'sonner';
+import { Calendar } from 'lucide-react';
 import type { Session, SessionStatus } from '@/types';
 
 function formatDate(dateString: string | null) {
@@ -90,6 +91,11 @@ function SessionCard({ session, currentUserId, onAction }: {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                     <Badge variant="outline" className="capitalize">{session.mode}</Badge>
+                    {session.credit_held && (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
+                            Credits in Escrow
+                        </Badge>
+                    )}
                     {session.meeting_link && (
                         <a href={session.meeting_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                             Join Meeting
@@ -245,9 +251,17 @@ function SessionsContent() {
                             <h1 className="text-3xl font-bold">My Sessions</h1>
                             <p className="text-muted-foreground">Manage your teaching and learning sessions</p>
                         </div>
-                        <Link href="/marketplace">
-                            <Button>Find New Skills</Button>
-                        </Link>
+                        <div className="flex gap-2">
+                            <Link href="/dashboard/availability">
+                                <Button variant="outline" className="gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    Manage Availability
+                                </Button>
+                            </Link>
+                            <Link href="/marketplace">
+                                <Button>Find New Skills</Button>
+                            </Link>
+                        </div>
                     </div>
 
                     {/* Pending Requests Alert */}

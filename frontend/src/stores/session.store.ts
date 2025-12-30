@@ -31,6 +31,7 @@ interface SessionState {
     startSession: (id: number) => Promise<Session>;
     confirmCompletion: (id: number, data?: CompleteSessionRequest) => Promise<Session>;
     cancelSession: (id: number, data: CancelSessionRequest) => Promise<Session>;
+    disputeSession: (id: number, data: { reason: string }) => Promise<Session>;
     clearError: () => void;
     reset: () => void;
 }
@@ -244,6 +245,23 @@ export const useSessionStore = create<SessionState>((set, get) => ({
             return session;
         } catch (error: any) {
             const errorMessage = error.response?.data?.error || 'Failed to cancel session';
+            set({ error: errorMessage, isLoading: false });
+            throw new Error(errorMessage);
+        }
+    },
+
+    disputeSession: async (id, data) => {
+        set({ isLoading: true, error: null });
+        try {
+            const session = await sessionService.disputeSession(id, data);
+            set((state) => ({
+                sessions: state.sessions.map((s) => (s.id === id ? session : s)),
+                currentSession: state.currentSession?.id === id ? session : state.currentSession,
+                isLoading: false,
+            }));
+            return session;
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.error || 'Failed to dispute session';
             set({ error: errorMessage, isLoading: false });
             throw new Error(errorMessage);
         }
