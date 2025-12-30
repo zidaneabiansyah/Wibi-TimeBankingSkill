@@ -95,8 +95,44 @@ export default function ReviewList({ userId, reviewType, limit = 10 }: ReviewLis
     const totalPages = Math.ceil(total / limit)
     const currentPage = Math.floor(offset / limit) + 1
 
+    const averageRating = total > 0 
+        ? userReviews.reduce((acc, review) => acc + review.rating, 0) / userReviews.length 
+        : 0;
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
+            {/* Rating Summary */}
+            <Card className="bg-muted/30 border-none shadow-sm">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-6">
+                        <div className="text-center">
+                            <div className="text-4xl font-bold">{averageRating.toFixed(1)}</div>
+                            <div className="flex text-yellow-500 my-1 justify-center">
+                                {'★'.repeat(Math.round(averageRating))}
+                                <span className="text-gray-300">{'★'.repeat(5 - Math.round(averageRating))}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground">{total} reviews</div>
+                        </div>
+                        <div className="h-12 w-px bg-border" />
+                        <div className="flex-1 space-y-1">
+                            {[5, 4, 3, 2, 1].map((star) => {
+                                const count = userReviews.filter(r => Math.round(r.rating) === star).length;
+                                const percentage = total > 0 ? (count / total) * 100 : 0;
+                                return (
+                                    <div key={star} className="flex items-center text-xs gap-2">
+                                        <div className="w-8 flex items-center justify-end font-medium">{star} <span className="ml-0.5 text-yellow-500">★</span></div>
+                                        <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
+                                            <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${percentage}%` }} />
+                                        </div>
+                                        <div className="w-8 text-right text-muted-foreground">{count}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* Reviews */}
             {userReviews.map((review) => (
                 <ReviewCard key={review.id} review={review} onDelete={handleDelete} />
