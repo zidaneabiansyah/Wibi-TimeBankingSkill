@@ -200,6 +200,25 @@ func (h *SkillHandler) GetSkillTeachers(c *gin.Context) {
 	utils.SendSuccess(c, http.StatusOK, "Teachers retrieved successfully", responses)
 }
 
+// GetUserSkillByID handles GET /api/v1/skills/user-skills/:id
+func (h *SkillHandler) GetUserSkillByID(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid user skill ID", err)
+		return
+	}
+
+	userSkill, err := h.skillService.GetUserSkillByID(uint(id))
+	if err != nil {
+		utils.SendError(c, http.StatusNotFound, "User skill not found", err)
+		return
+	}
+
+	response := dto.ToUserSkillResponse(userSkill)
+	utils.SendSuccess(c, http.StatusOK, "User skill retrieved successfully", response)
+}
+
 // CreateSkill handles POST /api/v1/skills (admin only)
 func (h *SkillHandler) CreateSkill(c *gin.Context) {
 	var req dto.CreateSkillRequest

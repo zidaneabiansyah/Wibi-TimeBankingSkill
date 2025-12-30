@@ -5,6 +5,14 @@ import (
 	"gorm.io/gorm"
 )
 
+type TransactionRepositoryInterface interface {
+	Create(transaction *models.Transaction) error
+	FindByUserID(userID uint, limit int) ([]models.Transaction, error)
+	GetUserBalance(userID uint) (float64, error)
+	GetByID(id uint) (*models.Transaction, error)
+	GetUserTransactionHistory(userID uint, limit, offset int) ([]models.Transaction, int64, error)
+}
+
 // TransactionRepository handles database operations for transactions
 type TransactionRepository struct {
 	db *gorm.DB

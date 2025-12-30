@@ -126,6 +126,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		{
 			skills.GET("", skillHandler.GetSkills)                     // GET /api/v1/skills?limit=10&page=1&category=&search=
 			skills.GET("/recommended", skillHandler.GetRecommendedSkills) // GET /api/v1/skills/recommended
+			skills.GET("/user-skills/:id", skillHandler.GetUserSkillByID) // GET /api/v1/skills/user-skills/1
 			skills.GET("/:id/teachers", skillHandler.GetSkillTeachers) // GET /api/v1/skills/1/teachers
 			skills.GET("/:id", skillHandler.GetSkillByID)              // GET /api/v1/skills/1
 		}
@@ -205,6 +206,12 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				adminSkills.DELETE("/:id", skillHandler.DeleteSkill) // DELETE /api/v1/admin/skills/1
 			}
 
+			// Admin Session Management (requires admin middleware)
+			adminProtected := protected.Group("/admin")
+			{
+				adminProtected.POST("/sessions/:id/resolve", sessionHandler.AdminResolveSession) // POST /api/v1/admin/sessions/:id/resolve
+			}
+
 			// Sessions routes
 			sessions := protected.Group("/sessions")
 			{
@@ -219,6 +226,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				sessions.POST("/:id/start", sessionHandler.StartSession)         // POST /api/v1/sessions/:id/start (legacy)
 				sessions.POST("/:id/complete", sessionHandler.ConfirmCompletion) // POST /api/v1/sessions/:id/complete
 				sessions.POST("/:id/cancel", sessionHandler.CancelSession)       // POST /api/v1/sessions/:id/cancel
+				sessions.POST("/:id/dispute", sessionHandler.DisputeSession)     // POST /api/v1/sessions/:id/dispute
 
 				// Video session routes
 				sessions.POST("/:id/video/start", videoSessionHandler.StartVideoSession)     // POST /api/v1/sessions/:id/video/start

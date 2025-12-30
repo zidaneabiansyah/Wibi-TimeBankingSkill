@@ -336,3 +336,55 @@ func (h *SessionHandler) CancelSession(c *gin.Context) {
 
 	utils.SendSuccess(c, http.StatusOK, "Session cancelled", session)
 }
+
+// DisputeSession handles POST /api/v1/sessions/:id/dispute
+func (h *SessionHandler) DisputeSession(c *gin.Context) {
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
+
+	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
+		return
+	}
+
+	var req dto.CancelSessionRequest // Re-use the same structure for reason
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
+		return
+	}
+
+	session, err := h.sessionService.DisputeSession(userID, uint(sessionID), &req)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Session disputed and put under review", session)
+}
+
+// AdminResolveSession handles POST /api/v1/admin/sessions/:id/resolve
+func (h *SessionHandler) AdminResolveSession(c *gin.Context) {
+	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
+		return
+	}
+
+	resolution := c.Query("resolution") // "refund" or "payout"
+	if resolution == "" {
+		utils.SendError(c, http.StatusBadRequest, "Resolution query parameter is required", nil)
+		return
+	}
+
+	session, err := h.sessionService.AdminResolveSession(uint(sessionID), resolution)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Session dispute resolved: "+resolution, session)
+}

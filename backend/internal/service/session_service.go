@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/timebankingskill/backend/internal/dto"
@@ -10,18 +11,20 @@ import (
 )
 
 type SessionService struct {
-	sessionRepo        *repository.SessionRepository
-	userRepo           *repository.UserRepository
-	skillRepo          *repository.SkillRepository
-	transactionRepo    *repository.TransactionRepository
+	sessionRepo     repository.SessionRepositoryInterface
+	userRepo        repository.UserRepositoryInterface
+	transactionRepo repository.TransactionRepositoryInterface
+	skillRepo       repository.SkillRepositoryInterface
+	badgeService    *BadgeService
 	notificationService *NotificationService
 }
 
 func NewSessionService(
-	sessionRepo *repository.SessionRepository,
-	userRepo *repository.UserRepository,
-	skillRepo *repository.SkillRepository,
-	transactionRepo *repository.TransactionRepository,
+	sessionRepo repository.SessionRepositoryInterface,
+	userRepo repository.UserRepositoryInterface,
+	transactionRepo repository.TransactionRepositoryInterface,
+	skillRepo repository.SkillRepositoryInterface,
+	badgeService *BadgeService,
 	notificationService *NotificationService,
 ) *SessionService {
 	return &SessionService{
@@ -29,6 +32,7 @@ func NewSessionService(
 		userRepo:            userRepo,
 		skillRepo:           skillRepo,
 		transactionRepo:     transactionRepo,
+		badgeService:        badgeService,
 		notificationService: notificationService,
 	}
 }
@@ -111,6 +115,13 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		return nil, errors.New("scheduled time must be in the future")
 	}
 
+	// CREDIT HOLD PHASE: Mark credits as held immediately upon booking
+	// These credits are now in escrow and cannot be used for other sessions
+	student.CreditHeld += creditAmount
+	if err := s.userRepo.Update(student); err != nil {
+		return nil, errors.New("failed to hold credits")
+	}
+
 	// Create session
 	session := &models.Session{
 		TeacherID:    userSkill.UserID,
@@ -125,11 +136,27 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		MeetingLink:  req.MeetingLink,
 		CreditAmount: creditAmount,
 		Status:       models.StatusPending,
+		CreditHeld:   true, // Credits are now held
 	}
 
 	if err := s.sessionRepo.Create(session); err != nil {
+		// Rollback credit hold if session creation fails
+		student.CreditHeld -= creditAmount
+		_ = s.userRepo.Update(student)
 		return nil, errors.New("failed to create session")
 	}
+
+	// Record the hold transaction for audit trail
+	holdTransaction := &models.Transaction{
+		UserID:        studentID,
+		Type:          models.TransactionHold,
+		Amount:        creditAmount,
+		BalanceBefore: student.CreditBalance,
+		BalanceAfter:  student.CreditBalance,
+		Description:   "Credit hold for session booking: " + session.Title,
+		SessionID:     &session.ID,
+	}
+	_ = s.transactionRepo.Create(holdTransaction)
 
 	// Reload session with relationships
 	session, err = s.sessionRepo.GetByID(session.ID)
@@ -209,41 +236,8 @@ func (s *SessionService) ApproveSession(teacherID, sessionID uint, req *dto.Appr
 		return nil, errors.New("session is not pending approval")
 	}
 
-	// Fetch student to verify credit availability
-	student, err := s.userRepo.GetByID(session.StudentID)
-	if err != nil {
-		return nil, errors.New("student not found")
-	}
-
-	// Credit validation: ensure student still has enough available credits
-	// Available = Total - Held
-	availableBalance := student.CreditBalance - student.CreditHeld
-	if availableBalance < session.CreditAmount {
-		return nil, errors.New("student has insufficient available credits")
-	}
-
-	// CREDIT HOLD PHASE: Mark credits as held
-	// These credits are now in escrow and cannot be used for other sessions
-	student.CreditHeld += session.CreditAmount
-	if err := s.userRepo.Update(student); err != nil {
-		return nil, errors.New("failed to hold credits")
-	}
-
-	// Record the hold transaction for audit trail
-	holdTransaction := &models.Transaction{
-		UserID:        session.StudentID,
-		Type:          models.TransactionHold,
-		Amount:        session.CreditAmount, // Positive amount stored as "held"
-		BalanceBefore: student.CreditBalance,
-		BalanceAfter:  student.CreditBalance,
-		Description:   "Credit hold for session: " + session.Title,
-		SessionID:     &session.ID,
-	}
-	_ = s.transactionRepo.Create(holdTransaction)
-
-	// Update session status to approved and mark credits as held
+	// Update session status to approved
 	session.Status = models.StatusApproved
-	session.CreditHeld = true
 
 	// Allow teacher to provide additional details (optional)
 	if req.ScheduledAt != nil {
@@ -319,6 +313,31 @@ func (s *SessionService) RejectSession(teacherID, sessionID uint, req *dto.Rejec
 	// Verify session is pending
 	if session.Status != models.StatusPending {
 		return nil, errors.New("session is not pending")
+	}
+
+	// If credits were held, release them back to student's available balance
+	if session.CreditHeld && !session.CreditReleased {
+		student, err := s.userRepo.GetByID(session.StudentID)
+		if err != nil {
+			return nil, errors.New("student not found")
+		}
+
+		student.CreditHeld -= session.CreditAmount
+		if err := s.userRepo.Update(student); err != nil {
+			return nil, errors.New("failed to release held credits")
+		}
+
+		// Record refund transaction (release held credits)
+		refundTransaction := &models.Transaction{
+			UserID:        session.StudentID,
+			Type:          models.TransactionRefund,
+			Amount:        -session.CreditAmount, // release from held
+			BalanceBefore: student.CreditBalance,
+			BalanceAfter:  student.CreditBalance,
+			Description:   "Credit hold released for rejected session: " + session.Title,
+			SessionID:     &session.ID,
+		}
+		_ = s.transactionRepo.Create(refundTransaction)
 	}
 
 	// Update session
@@ -811,4 +830,82 @@ func (s *SessionService) GetPendingRequests(teacherID uint) ([]dto.SessionRespon
 		return nil, err
 	}
 	return dto.MapSessionsToResponse(sessions), nil
+}
+
+// DisputeSession allows a user to report an issue with the session
+// This halts the credit transfer and marks the session for admin review
+func (s *SessionService) DisputeSession(userID, sessionID uint, req *dto.CancelSessionRequest) (*dto.SessionResponse, error) {
+	session, err := s.sessionRepo.GetByID(sessionID)
+	if err != nil {
+		return nil, errors.New("session not found")
+	}
+
+	// Verify user is part of this session
+	if session.TeacherID != userID && session.StudentID != userID {
+		return nil, errors.New("you are not part of this session")
+	}
+
+	// Can only dispute if in progress, pending confirmation, or approved
+	if session.Status == models.StatusCompleted || session.Status == models.StatusCancelled || session.Status == models.StatusRejected {
+		return nil, errors.New("session is already finalized and cannot be disputed")
+	}
+
+	// Update session
+	session.Status = models.StatusDisputed
+	session.Notes += "\n\n[DISPUTE] By User ID " + strconv.Itoa(int(userID)) + ": " + req.Reason
+
+	if err := s.sessionRepo.Update(session); err != nil {
+		return nil, errors.New("failed to dispute session")
+	}
+
+	return dto.MapSessionToResponse(session), nil
+}
+
+// AdminResolveSession allows an admin to finalize a disputed session
+// resolution: "refund" (to student) or "payout" (to teacher)
+func (s *SessionService) AdminResolveSession(sessionID uint, resolution string) (*dto.SessionResponse, error) {
+	session, err := s.sessionRepo.GetByID(sessionID)
+	if err != nil {
+		return nil, errors.New("session not found")
+	}
+
+	if session.Status != models.StatusDisputed {
+		return nil, errors.New("only disputed sessions can be resolved by admin")
+	}
+
+	if resolution == "refund" {
+		// Refund to student
+		if session.CreditHeld && !session.CreditReleased {
+			student, _ := s.userRepo.GetByID(session.StudentID)
+			student.CreditHeld -= session.CreditAmount
+			_ = s.userRepo.Update(student)
+
+			// Record refund
+			refundTx := &models.Transaction{
+				UserID:        session.StudentID,
+				Type:          models.TransactionRefund,
+				Amount:        -session.CreditAmount,
+				BalanceBefore: student.CreditBalance,
+				BalanceAfter:  student.CreditBalance,
+				Description:   "Admin Dispute Resolution: Refunded for session " + session.Title,
+				SessionID:     &session.ID,
+			}
+			_ = s.transactionRepo.Create(refundTx)
+		}
+		session.Status = models.StatusCancelled
+	} else if resolution == "payout" {
+		// Payout to teacher
+		if err := s.completeSession(session); err != nil {
+			return nil, err
+		}
+		// completeSession already sets StatusCompleted
+	} else {
+		return nil, errors.New("invalid resolution (must be 'refund' or 'payout')")
+	}
+
+	if err := s.sessionRepo.Update(session); err != nil {
+		return nil, errors.New("failed to resolve dispute")
+	}
+
+	return dto.MapSessionToResponse(session), nil
 }

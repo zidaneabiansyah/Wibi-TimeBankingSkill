@@ -19,8 +19,10 @@ type SkillRepositoryInterface interface {
 	CreateUserSkill(userSkill *models.UserSkill) error
 	GetUserSkills(userID uint) ([]models.UserSkill, error)
 	GetUserSkill(userID, skillID uint) (*models.UserSkill, error)
+	GetUserSkillByID(id uint) (*models.UserSkill, error)
 	UpdateUserSkill(userSkill *models.UserSkill) error
 	DeleteUserSkill(userID, skillID uint) error
+	GetTeachersBySkillID(skillID uint) ([]models.UserSkill, error)
 
 	// Learning Skills
 	CreateLearningSkill(learningSkill *models.LearningSkill) error

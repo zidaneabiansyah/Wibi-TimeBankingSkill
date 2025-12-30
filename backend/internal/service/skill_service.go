@@ -171,6 +171,15 @@ func (s *SkillService) GetUserSkills(userID uint) ([]models.UserSkill, error) {
 	return s.skillRepo.GetUserSkills(userID)
 }
 
+// GetUserSkillByID retrieves a user skill by its ID
+func (s *SkillService) GetUserSkillByID(id uint) (*models.UserSkill, error) {
+	// Use type assertion to access the concrete method
+	if repo, ok := s.skillRepo.(*repository.SkillRepository); ok {
+		return repo.GetUserSkillByID(id)
+	}
+	return nil, errors.New("repository does not support this operation")
+}
+
 // UpdateUserSkill updates user's skill details
 func (s *SkillService) UpdateUserSkill(userID uint, skillID uint, updates *models.UserSkill) error {
 	// Get existing user skill
