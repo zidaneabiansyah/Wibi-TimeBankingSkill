@@ -25,9 +25,29 @@ func RunMigrations(db *gorm.DB) error {
 	// Create all tables (already done in database.go)
 	// This file focuses on adding indexes for optimization
 
+	// Add missing columns to existing tables
+	if err := addMissingColumns(db); err != nil {
+		return fmt.Errorf("failed to add missing columns: %w", err)
+	}
+
 	// Add performance indexes
 	if err := createPerformanceIndexes(db); err != nil {
 		return fmt.Errorf("failed to create indexes: %w", err)
+	}
+
+	return nil
+}
+
+// addMissingColumns adds columns to existing tables that may be missing
+// This handles schema evolution when new fields are added to models
+func addMissingColumns(db *gorm.DB) error {
+	// Add credit_held column to users table if it doesn't exist
+	if !db.Migrator().HasColumn("users", "credit_held") {
+		fmt.Println("  Adding credit_held column to users table...")
+		if err := db.Exec("ALTER TABLE users ADD COLUMN credit_held numeric DEFAULT 0").Error; err != nil {
+			return fmt.Errorf("failed to add credit_held column: %w", err)
+		}
+		fmt.Println("  ✓ credit_held column added")
 	}
 
 	return nil
