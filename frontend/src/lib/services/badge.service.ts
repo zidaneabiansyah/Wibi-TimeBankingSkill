@@ -70,36 +70,36 @@ export const badgeService = {
     /**
      * Get badge leaderboard (top users by badge count)
      */
-    getBadgeLeaderboard: async (limit = 10): Promise<LeaderboardResponse> => {
-        return apiClient.get<LeaderboardResponse>(`/leaderboard/badges?limit=${limit}`);
+    getBadgeLeaderboard: async (limit = 10, timeRange = 'all-time'): Promise<LeaderboardResponse> => {
+        return apiClient.get<LeaderboardResponse>(`/leaderboard/badges?limit=${limit}&range=${timeRange}`);
     },
 
     /**
      * Get rarity leaderboard (top users by badge rarity)
      */
-    getRarityLeaderboard: async (limit = 10): Promise<LeaderboardResponse> => {
-        return apiClient.get<LeaderboardResponse>(`/leaderboard/rarity?limit=${limit}`);
+    getRarityLeaderboard: async (limit = 10, timeRange = 'all-time'): Promise<LeaderboardResponse> => {
+        return apiClient.get<LeaderboardResponse>(`/leaderboard/rarity?limit=${limit}&range=${timeRange}`);
     },
 
     /**
      * Get session leaderboard (top users by session count)
      */
-    getSessionLeaderboard: async (limit = 10): Promise<LeaderboardResponse> => {
-        return apiClient.get<LeaderboardResponse>(`/leaderboard/sessions?limit=${limit}`);
+    getSessionLeaderboard: async (limit = 10, timeRange = 'all-time'): Promise<LeaderboardResponse> => {
+        return apiClient.get<LeaderboardResponse>(`/leaderboard/sessions?limit=${limit}&range=${timeRange}`);
     },
 
     /**
      * Get rating leaderboard (top users by average rating)
      */
-    getRatingLeaderboard: async (limit = 10): Promise<LeaderboardResponse> => {
-        return apiClient.get<LeaderboardResponse>(`/leaderboard/rating?limit=${limit}`);
+    getRatingLeaderboard: async (limit = 10, timeRange = 'all-time'): Promise<LeaderboardResponse> => {
+        return apiClient.get<LeaderboardResponse>(`/leaderboard/rating?limit=${limit}&range=${timeRange}`);
     },
 
     /**
      * Get credit leaderboard (top users by credits earned)
      */
-    getCreditLeaderboard: async (limit = 10): Promise<LeaderboardResponse> => {
-        return apiClient.get<LeaderboardResponse>(`/leaderboard/credits?limit=${limit}`);
+    getCreditLeaderboard: async (limit = 10, timeRange = 'all-time'): Promise<LeaderboardResponse> => {
+        return apiClient.get<LeaderboardResponse>(`/leaderboard/credits?limit=${limit}&range=${timeRange}`);
     },
 
     /**

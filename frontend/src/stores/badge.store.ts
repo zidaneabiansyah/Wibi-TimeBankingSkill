@@ -7,6 +7,7 @@ interface BadgeState {
     // State
     badges: Badge[];
     userBadges: UserBadge[];
+    newBadges: UserBadge[];
     leaderboards: Record<string, LeaderboardEntry[]>;
     isLoading: boolean;
     error: string | null;
@@ -17,7 +18,8 @@ interface BadgeState {
     fetchUserBadgesByType: (type: 'achievement' | 'milestone' | 'quality' | 'special') => Promise<void>;
     checkAndAwardBadges: () => Promise<UserBadge[]>;
     pinBadge: (badgeId: number, isPinned: boolean) => Promise<void>;
-    fetchLeaderboard: (type: 'badges' | 'rarity' | 'sessions' | 'rating' | 'credits', limit?: number) => Promise<void>;
+    fetchLeaderboard: (type: 'badges' | 'rarity' | 'sessions' | 'rating' | 'credits', limit?: number, timeRange?: 'weekly' | 'monthly' | 'all-time') => Promise<void>;
+    clearNewBadges: () => void;
     clearError: () => void;
     reset: () => void;
 }
@@ -25,6 +27,7 @@ interface BadgeState {
 const initialState = {
     badges: [],
     userBadges: [],
+    newBadges: [],
     leaderboards: {},
     isLoading: false,
     error: null,
@@ -88,7 +91,10 @@ export const useBadgeStore = create<BadgeState>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const awardedBadges = await badgeService.checkAndAwardBadges();
-            set({ isLoading: false });
+            set((state) => ({ 
+                isLoading: false,
+                newBadges: [...state.newBadges, ...awardedBadges]
+            }));
             return awardedBadges;
         } catch (error: any) {
             const errorMessage = error.message || 'Failed to check badges';
@@ -120,26 +126,26 @@ export const useBadgeStore = create<BadgeState>((set) => ({
     /**
      * Fetch leaderboard
      */
-    fetchLeaderboard: async (type, limit = 10) => {
+    fetchLeaderboard: async (type, limit = 10, timeRange = 'all-time') => {
         set({ isLoading: true, error: null });
         try {
             let response: LeaderboardResponse;
 
             switch (type) {
                 case 'badges':
-                    response = await badgeService.getBadgeLeaderboard(limit);
+                    response = await badgeService.getBadgeLeaderboard(limit, timeRange);
                     break;
                 case 'rarity':
-                    response = await badgeService.getRarityLeaderboard(limit);
+                    response = await badgeService.getRarityLeaderboard(limit, timeRange);
                     break;
                 case 'sessions':
-                    response = await badgeService.getSessionLeaderboard(limit);
+                    response = await badgeService.getSessionLeaderboard(limit, timeRange);
                     break;
                 case 'rating':
-                    response = await badgeService.getRatingLeaderboard(limit);
+                    response = await badgeService.getRatingLeaderboard(limit, timeRange);
                     break;
                 case 'credits':
-                    response = await badgeService.getCreditLeaderboard(limit);
+                    response = await badgeService.getCreditLeaderboard(limit, timeRange);
                     break;
                 default:
                     throw new Error('Invalid leaderboard type');
@@ -158,6 +164,11 @@ export const useBadgeStore = create<BadgeState>((set) => ({
             throw error;
         }
     },
+
+    /**
+     * Clear new badges list
+     */
+    clearNewBadges: () => set({ newBadges: [] }),
 
     /**
      * Clear error message
