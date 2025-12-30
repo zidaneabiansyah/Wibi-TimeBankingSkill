@@ -86,6 +86,26 @@ func (s *EndorsementService) CreateEndorsement(endorserID uint, req *dto.CreateE
 		return nil, fmt.Errorf("failed to create endorsement: %w", err)
 	}
 
+	// Trigger Notification
+	if s.notificationService != nil {
+		endorser, _ := s.userRepo.GetByID(endorserID)
+		skill, _ := s.skillRepo.GetByID(req.SkillID)
+		
+		notificationData := map[string]interface{}{
+			"endorsement_id": endorsement.ID,
+			"endorser_name": endorser.FullName,
+			"skill_name": skill.Name,
+		}
+
+		_, _ = s.notificationService.CreateNotification(
+			req.UserID,
+			models.NotificationTypeSocial,
+			"New Endorsement",
+			fmt.Sprintf("%s endorsed your skill in %s!", endorser.FullName, skill.Name),
+			notificationData,
+		)
+	}
+
 	return s.endorsementRepo.GetEndorsementByID(endorsement.ID)
 }
 
@@ -141,4 +161,9 @@ func (s *EndorsementService) GetTopEndorsedSkills(limit int) ([]map[string]inter
 	}
 
 	return s.endorsementRepo.GetTopEndorsedSkills(limit)
+}
+
+// GetUserReputation gets the total reputation score (total endorsements)
+func (s *EndorsementService) GetUserReputation(userID uint) (int64, error) {
+	return s.endorsementRepo.GetTotalEndorsements(userID)
 }

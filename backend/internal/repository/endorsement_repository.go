@@ -97,3 +97,12 @@ func (r *EndorsementRepository) GetTopEndorsedSkills(limit int) ([]map[string]in
 	}
 	return results, nil
 }
+
+// GetTotalEndorsements gets the total number of endorsements received by a user
+func (r *EndorsementRepository) GetTotalEndorsements(userID uint) (int64, error) {
+	var count int64
+	if err := r.db.Model(&models.Endorsement{}).Where("user_id = ?", userID).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

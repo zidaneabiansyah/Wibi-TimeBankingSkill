@@ -196,3 +196,22 @@ func (h *EndorsementHandler) GetTopEndorsedSkills(c *gin.Context) {
 
 	utils.SendSuccess(c, http.StatusOK, "Top endorsed skills fetched successfully", skills)
 }
+
+// GetUserReputation gets the total reputation score of a user
+func (h *EndorsementHandler) GetUserReputation(c *gin.Context) {
+	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+
+	reputation, err := h.endorsementService.GetUserReputation(uint(userID))
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch reputation", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Reputation fetched successfully", gin.H{
+		"reputation": reputation,
+	})
+}
