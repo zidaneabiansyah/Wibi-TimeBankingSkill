@@ -150,6 +150,14 @@ func (h *SkillHandler) GetRecommendedSkills(c *gin.Context) {
 		limit = 5
 	}
 
+	// Try to get from cache
+	cache := utils.GetCache()
+	cacheKey := utils.CacheKeySkills + ":recommended:" + strconv.Itoa(limit)
+	if cached, found := cache.Get(cacheKey); found {
+		utils.SendSuccess(c, http.StatusOK, "Recommendations retrieved from cache", cached)
+		return
+	}
+
 	skills, err := h.skillService.GetRecommendedSkills(limit)
 	if err != nil {
 		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch recommendations", err)
@@ -161,6 +169,9 @@ func (h *SkillHandler) GetRecommendedSkills(c *gin.Context) {
 	for i, skill := range skills {
 		skillResponses[i] = dto.ToSkillResponse(&skill)
 	}
+
+	// Cache recommendations
+	cache.Set(cacheKey, skillResponses)
 
 	utils.SendSuccess(c, http.StatusOK, "Recommendations retrieved successfully", skillResponses)
 }
