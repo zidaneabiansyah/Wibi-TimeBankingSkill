@@ -915,3 +915,94 @@ func (s *SessionService) AdminResolveSession(sessionID uint, resolution string) 
 
 	return dto.MapSessionToResponse(session), nil
 }
+
+// CheckIn allows a participant to check in for a session
+// Session automatically starts when both parties have checked in
+func (s *SessionService) CheckIn(userID, sessionID uint) (*dto.SessionResponse, error) {
+	session, err := s.sessionRepo.GetByID(sessionID)
+	if err != nil {
+		return nil, errors.New("session not found")
+	}
+
+	// Verify user is part of this session
+	isTeacher := session.TeacherID == userID
+	isStudent := session.StudentID == userID
+	if !isTeacher && !isStudent {
+		return nil, errors.New("you are not part of this session")
+	}
+
+	// Verify session can be checked into
+	if !session.CanCheckIn() {
+		return nil, errors.New("session is not in a state that allows check-in")
+	}
+
+	// Enforce check-in window (±15 minutes)
+	now := time.Now()
+	if session.ScheduledAt != nil {
+		windowStart := session.ScheduledAt.Add(-15 * time.Minute)
+		windowEnd := session.ScheduledAt.Add(15 * time.Minute)
+		if now.Before(windowStart) {
+			return nil, errors.New("too early to check in (window starts 15 minutes before scheduled time)")
+		}
+		if now.After(windowEnd) {
+			return nil, errors.New("too late to check in (window ended 15 minutes after scheduled time)")
+		}
+	}
+
+	// Update check-in status
+	if isTeacher {
+		session.TeacherCheckedIn = true
+		session.TeacherCheckedInAt = &now
+	}
+	if isStudent {
+		session.StudentCheckedIn = true
+		session.StudentCheckedInAt = &now
+	}
+
+	// Auto-start if both checked in
+	if session.IsBothCheckedIn() {
+		session.Status = models.StatusInProgress
+		session.StartedAt = &now
+	}
+
+	if err := s.sessionRepo.Update(session); err != nil {
+		return nil, errors.New("failed to record check-in")
+	}
+
+	return dto.MapSessionToResponse(session), nil
+}
+
+// SendSessionReminders checks for sessions starting soon and sends notifications
+func (s *SessionService) SendSessionReminders() error {
+	// Check for sessions starting in the next 30 minutes
+	sessions, err := s.sessionRepo.GetSessionsStartingSoon(30)
+	if err != nil {
+		return err
+	}
+
+	for i := range sessions {
+		session := &sessions[i]
+		
+		// Send notification to teacher
+		teacherNotifData := map[string]interface{}{"sessionID": session.ID}
+		_, _ = s.notificationService.CreateNotification(
+			session.TeacherID,
+			models.NotificationTypeSession,
+			"Upcoming Session Reminder",
+			"Your session '"+session.Title+"' starts in less than 30 minutes.",
+			teacherNotifData,
+		)
+
+		// Send notification to student
+		studentNotifData := map[string]interface{}{"sessionID": session.ID}
+		_, _ = s.notificationService.CreateNotification(
+			session.StudentID,
+			models.NotificationTypeSession,
+			"Upcoming Session Reminder",
+			"Your session '"+session.Title+"' starts in less than 30 minutes.",
+			studentNotifData,
+		)
+	}
+
+	return nil
+}

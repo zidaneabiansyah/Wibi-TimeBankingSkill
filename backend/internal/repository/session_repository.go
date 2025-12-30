@@ -22,6 +22,7 @@ type SessionRepositoryInterface interface {
 	GetTotalTeachingHours(userID uint) (float64, error)
 	GetTotalLearningHours(userID uint) (float64, error)
 	ExistsActiveSession(teacherID, studentID, userSkillID uint) (bool, error)
+	GetSessionsStartingSoon(minutes int) ([]models.Session, error)
 }
 
 type SessionRepository struct {
@@ -206,4 +207,16 @@ func (r *SessionRepository) ExistsActiveSession(teacherID, studentID, userSkillI
 			[]models.SessionStatus{models.StatusPending, models.StatusApproved, models.StatusInProgress}).
 		Count(&count).Error
 	return count > 0, err
+}
+
+// GetSessionsStartingSoon gets sessions starting within X minutes that haven't been notified
+func (r *SessionRepository) GetSessionsStartingSoon(minutes int) ([]models.Session, error) {
+	var sessions []models.Session
+	limitTime := time.Now().Add(time.Duration(minutes) * time.Minute)
+	
+	err := r.db.Preload("Teacher").Preload("Student").
+		Where("status = ? AND scheduled_at > ? AND scheduled_at <= ?", 
+			models.StatusApproved, time.Now(), limitTime).
+		Find(&sessions).Error
+	return sessions, err
 }
