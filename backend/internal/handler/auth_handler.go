@@ -113,3 +113,29 @@ func (h *AuthHandler) Logout(c *gin.Context) {
   // This endpoint is just for consistency and can be used for logging/analytics
   utils.SendSuccess(c, http.StatusOK, "Logout successful", nil)
 }
+
+// VerifyEmail handles email verification via link
+// @Summary Verify user email
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param token query string true "Verification token"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /auth/verify-email [get]
+func (h *AuthHandler) VerifyEmail(c *gin.Context) {
+  token := c.Query("token")
+  if token == "" {
+    utils.SendError(c, http.StatusBadRequest, "Verification token is required", nil)
+    return
+  }
+
+  err := h.authService.VerifyEmail(token)
+  if err != nil {
+    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    return
+  }
+
+  utils.SendSuccess(c, http.StatusOK, "Email verified successfully", nil)
+}
+

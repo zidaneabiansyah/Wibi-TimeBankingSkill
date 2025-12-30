@@ -49,9 +49,17 @@ export const authService = {
   },
 
   // Verify email with code
-  verifyEmailCode: async (email: string, code: string): Promise<void> => {
+  verifyEmailCode: async (email: string, token: string): Promise<void> => {
     try {
-      await apiClient.post('/auth/verify-email/confirm', { email, code });
+      // Token-based verification (used when user clicks email link)
+      // Token is passed as query param to /verify-email?token=ABC
+      // We call the API endpoint with the token
+      if (token) {
+        await apiClient.get(`/auth/verify-email?token=${token}`);
+      } else {
+        // Fallback for code-based verification (if needed)
+        await apiClient.post('/auth/verify-email/confirm', { email, code: token });
+      }
     } catch (error: any) {
       throw error;
     }

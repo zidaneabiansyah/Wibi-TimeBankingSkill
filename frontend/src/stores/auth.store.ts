@@ -58,17 +58,31 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             const response = await authService.register(data);
 
-            // Save token and user
-            authService.saveToken(response.token);
-            authService.saveUser(response.user);
+            // Save email for verification page
+            localStorage.setItem('registrationEmail', data.email);
 
-            set({
-                user: response.user,
-                token: response.token,
-                isAuthenticated: true,
-                isLoading: false,
-                error: null,
-            });
+            // Only save token and user if registration returned a token (email already verified)
+            if (response.token) {
+                authService.saveToken(response.token);
+                authService.saveUser(response.user);
+
+                set({
+                    user: response.user,
+                    token: response.token,
+                    isAuthenticated: true,
+                    isLoading: false,
+                    error: null,
+                });
+            } else {
+                // Registration successful but email verification pending
+                set({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                    isLoading: false,
+                    error: null,
+                });
+            }
         } catch (error: any) {
             set({
                 isLoading: false,

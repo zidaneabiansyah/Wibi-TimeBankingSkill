@@ -111,8 +111,9 @@ export default function RegisterPage() {
       setError(null);
       const { confirmPassword, ...registerData } = data;
       await registerUser(registerData);
-      toast.success('Registration successful!');
-      router.push('/dashboard');
+      toast.success('Registration successful! Check your email to verify your account.');
+      // Redirect to email verification pending page
+      router.push('/register-success');
     } catch (err: any) {
       setError(err.message || 'Registration failed');
       toast.error(err.message || 'Registration failed');

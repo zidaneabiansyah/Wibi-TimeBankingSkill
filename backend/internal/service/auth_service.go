@@ -2,6 +2,7 @@ package service
 
 import (
   "errors"
+  "os"
   "strings"
 
   "github.com/timebankingskill/backend/internal/dto"
@@ -25,21 +26,28 @@ func NewAuthService(userRepo *repository.UserRepository, transactionRepo *reposi
 }
 
 // Register registers a new user account in the system
-// Creates user profile, grants welcome bonus credits, and generates JWT token
+// Creates user profile, grants welcome bonus credits, sends verification email
 //
 // Registration Flow:
 //   1. Validates registration input (email, password, username, etc)
 //   2. Checks email and username uniqueness
 //   3. Hashes password securely
-//   4. Creates user record with default settings
+//   4. Creates user record with default settings (is_verified=false)
 //   5. Grants 3.0 welcome bonus credits (starting balance)
 //   6. Creates initial transaction record for audit trail
-//   7. Generates JWT authentication token
+//   7. Generates verification token (24 hour expiry)
+//   8. Sends verification email via Brevo
+//   9. Returns registration response (user cannot login until verified)
 //
 // Welcome Bonus:
 //   - New users receive 3.0 time credits to get started
 //   - This allows immediate booking of learning sessions
 //   - Credits are tracked in transaction history
+//
+// Email Verification:
+//   - User must verify email before first login
+//   - Verification link sent to email, valid for 24 hours
+//   - User clicks link to complete registration
 //
 // Validation Rules:
 //   - Password: Minimum 6 characters
@@ -51,7 +59,7 @@ func NewAuthService(userRepo *repository.UserRepository, transactionRepo *reposi
 //   - req: Registration request with user details
 //
 // Returns:
-//   - *AuthResponse: JWT token and user profile
+//   - *AuthResponse: User profile (token returned after email verification)
 //   - error: If validation fails, duplicate email/username, or database error
 func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, error) {
   // Validate input
@@ -83,7 +91,7 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     return nil, errors.New("failed to hash password")
   }
 
-  // Create user
+  // Create user (not verified yet)
   user := &models.User{
     Email:         strings.ToLower(req.Email),
     Password:      hashedPassword,
@@ -96,7 +104,7 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     Location:      req.Location,
     CreditBalance: 3.0, // Starting bonus
     IsActive:      true,
-    IsVerified:    false,
+    IsVerified:    false, // User must verify email
   }
 
   // Save user
@@ -116,15 +124,28 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
   }
   _ = s.transactionRepo.Create(transaction)
 
-  // Generate JWT token
-  token, err := utils.GenerateToken(user.ID, user.Email)
+  // Generate verification token (24 hour expiry)
+  verificationToken, err := utils.GenerateEmailVerificationToken(user.Email)
   if err != nil {
-    return nil, errors.New("failed to generate token")
+    // User created but email sending will fail, continue anyway
+    // Return response so user knows to check email
   }
 
-  // Prepare response
+  // Build verification link - NOTE: Update this with your frontend URL
+  frontendURL := os.Getenv("FRONTEND_URL")
+  if frontendURL == "" {
+    frontendURL = "http://localhost:3000" // fallback for development
+  }
+  verificationLink := frontendURL + "/verify-email?token=" + verificationToken
+
+  // Send verification email
+  if verificationToken != "" {
+    _ = utils.SendVerificationEmail(user.Email, user.FullName, verificationLink)
+  }
+
+  // Prepare response (no token yet, user must verify email first)
   response := &dto.AuthResponse{
-    Token: token,
+    Token: "", // Empty token until verified
     User:  s.mapUserToProfile(user),
   }
 
@@ -137,22 +158,24 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 // Authentication Flow:
 //   1. Finds user by email (case-insensitive)
 //   2. Validates user account is active
-//   3. Verifies password using secure hash comparison
-//   4. Generates JWT token with user ID and email
-//   5. Returns token and user profile
+//   3. Checks if email is verified
+//   4. Verifies password using secure hash comparison
+//   5. Generates JWT token with user ID and email
+//   6. Returns token and user profile
 //
 // Security:
 //   - Passwords are never returned in response
 //   - Uses bcrypt for secure password hashing
 //   - JWT tokens expire after configured duration
 //   - Inactive accounts cannot login
+//   - Unverified emails cannot login
 //
 // Parameters:
 //   - req: Login request with email and password
 //
 // Returns:
 //   - *AuthResponse: JWT token and user profile
-//   - error: If invalid credentials, inactive account, or database error
+//   - error: If invalid credentials, inactive account, unverified email, or database error
 func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
   // Find user by email
   user, err := s.userRepo.GetByEmail(strings.ToLower(req.Email))
@@ -163,6 +186,11 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
   // Check if user is active
   if !user.IsActive {
     return nil, errors.New("account is deactivated")
+  }
+
+  // Check if email is verified
+  if !user.IsVerified {
+    return nil, errors.New("please verify your email before logging in")
   }
 
   // Verify password
@@ -233,4 +261,41 @@ func (s *AuthService) mapUserToProfile(user *models.User) dto.UserProfile {
     IsActive:      user.IsActive,
     IsVerified:    user.IsVerified,
   }
+}
+
+// VerifyEmail marks user email as verified using verification token
+// This method is called when user clicks the verification link in email
+//
+// Verification Flow:
+//   1. Validates the verification token (JWT with 24 hour expiry)
+//   2. Extracts email from token claims
+//   3. Finds user by email
+//   4. Updates is_verified flag to true
+//   5. Returns success message
+//
+// Parameters:
+//   - token: JWT token containing user email and expiration
+//
+// Returns:
+//   - error: If token invalid, expired, user not found, or database error
+func (s *AuthService) VerifyEmail(token string) error {
+  // Verify token and extract email
+  email, err := utils.VerifyEmailToken(token)
+  if err != nil {
+    return err
+  }
+
+  // Find user by email
+  user, err := s.userRepo.GetByEmail(email)
+  if err != nil {
+    return errors.New("user not found")
+  }
+
+  // Update is_verified flag
+  user.IsVerified = true
+  if err := s.userRepo.Update(user); err != nil {
+    return errors.New("failed to verify email: " + err.Error())
+  }
+
+  return nil
 }
