@@ -42,6 +42,7 @@ type ThreadResponse struct {
 // CreateReplyRequest is the request to create a forum reply
 type CreateReplyRequest struct {
 	ThreadID uint   `json:"thread_id" binding:"required"`
+	ParentID *uint  `json:"parent_id"`
 	Content  string `json:"content" binding:"required,min=1"`
 }
 
@@ -49,6 +50,7 @@ type CreateReplyRequest struct {
 type ReplyResponse struct {
 	ID        uint                 `json:"id"`
 	ThreadID  uint                 `json:"thread_id"`
+	ParentID  *uint                `json:"parent_id"`
 	AuthorID  uint                 `json:"author_id"`
 	Author    *UserProfileResponse `json:"author,omitempty"`
 	Content   string               `json:"content"`
@@ -75,20 +77,22 @@ type ForumCategoryResponse struct {
 
 // CreateStoryRequest is the request to create a success story
 type CreateStoryRequest struct {
-	Title       string           `json:"title" binding:"required,min=3,max=200"`
-	Description string           `json:"description" binding:"required,min=10"`
-	Images      models.JSONArray `json:"images"`
-	Tags        models.JSONArray `json:"tags"`
-	IsPublished bool             `json:"is_published"`
+	Title            string           `json:"title" binding:"required,min=3,max=200"`
+	Description      string           `json:"description" binding:"required,min=10"`
+	FeaturedImageURL string           `json:"featured_image_url"`
+	Images           models.JSONArray `json:"images"`
+	Tags             models.JSONArray `json:"tags"`
+	IsPublished      bool             `json:"is_published"`
 }
 
 // UpdateStoryRequest is the request to update a success story
 type UpdateStoryRequest struct {
-	Title       string           `json:"title" binding:"required,min=3,max=200"`
-	Description string           `json:"description" binding:"required,min=10"`
-	Images      models.JSONArray `json:"images"`
-	Tags        models.JSONArray `json:"tags"`
-	IsPublished bool             `json:"is_published"`
+	Title            string           `json:"title" binding:"required,min=3,max=200"`
+	Description      string           `json:"description" binding:"required,min=10"`
+	FeaturedImageURL string           `json:"featured_image_url"`
+	Images           models.JSONArray `json:"images"`
+	Tags             models.JSONArray `json:"tags"`
+	IsPublished      bool             `json:"is_published"`
 }
 
 // StoryResponse is the response for a success story
@@ -96,10 +100,11 @@ type StoryResponse struct {
 	ID           uint                 `json:"id"`
 	UserID       uint                 `json:"user_id"`
 	User         *UserProfileResponse `json:"user,omitempty"`
-	Title        string               `json:"title"`
-	Description  string               `json:"description"`
-	Images       models.JSONArray     `json:"images"`
-	Tags         models.JSONArray     `json:"tags"`
+	Title            string               `json:"title"`
+	Description      string               `json:"description"`
+	FeaturedImageURL string               `json:"featured_image_url"`
+	Images           models.JSONArray     `json:"images"`
+	Tags             models.JSONArray     `json:"tags"`
 	LikeCount    int                  `json:"like_count"`
 	CommentCount int                  `json:"comment_count"`
 	IsPublished  bool                 `json:"is_published"`
@@ -112,6 +117,7 @@ type StoryResponse struct {
 // CreateCommentRequest is the request to create a story comment
 type CreateCommentRequest struct {
 	StoryID uint   `json:"story_id" binding:"required"`
+	ParentID *uint `json:"parent_id"`
 	Content string `json:"content" binding:"required,min=1"`
 }
 
@@ -119,6 +125,7 @@ type CreateCommentRequest struct {
 type CommentResponse struct {
 	ID        uint                 `json:"id"`
 	StoryID   uint                 `json:"story_id"`
+	ParentID  *uint                `json:"parent_id"`
 	AuthorID  uint                 `json:"author_id"`
 	Author    *UserProfileResponse `json:"author,omitempty"`
 	Content   string               `json:"content"`
