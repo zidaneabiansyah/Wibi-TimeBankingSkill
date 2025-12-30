@@ -15,6 +15,7 @@ import { useBadgeStore } from "@/stores/badge.store";
 import { useReviewStore } from "@/stores/review.store";
 import type { UserSkill, LearningSkill } from "@/types";
 import { toast } from 'sonner';
+import { communityService } from '@/lib/services/community.service';
 import { AvailabilityForm } from '@/components/profile/AvailabilityForm';
 import ReviewList from '@/components/review/ReviewList';
 import { BadgeCollection } from '@/components/badge/BadgeCollection';
@@ -35,6 +36,7 @@ function ProfileContent() {
   const { userBadges, fetchUserBadges } = useBadgeStore();
   const { userReviews, fetchUserReviews } = useReviewStore();
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
+  const [reputation, setReputation] = useState<number>(0);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -44,6 +46,7 @@ function ProfileContent() {
     fetchUserBadges().catch(console.error);
     // Fetch reviews for current user with user ID
     fetchUserReviews(user.id, 100, 0).catch(console.error);
+    communityService.getUserReputation(user.id).then(setReputation).catch(console.error);
   }, [user?.id, fetchUserSkills, fetchLearningSkills, fetchUserBadges, fetchUserReviews]);
 
   if (!user) return null;
@@ -185,6 +188,13 @@ function ProfileContent() {
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
                   <span>{user.average_rating_as_teacher?.toFixed(1) || 'N/A'} Rating</span>
+                </div>
+                <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2 text-blue-500">
+                        <circle cx="12" cy="8" r="7" />
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                    </svg>
+                    <span>{reputation} Reputation</span>
                 </div>
               </div>
               <p className="text-muted-foreground">{user.bio || 'No bio yet'}</p>
