@@ -22,6 +22,11 @@ export const authService = {
     return apiClient.get<UserProfile>('/auth/profile');
   },
 
+  // Update user profile
+  updateProfile: async (data: Partial<UserProfile>): Promise<UserProfile> => {
+    return apiClient.put<UserProfile>('/user/profile', data);
+  },
+
   // Save token to localStorage
   saveToken: (token: string): void => {
     if (typeof window !== 'undefined') {
