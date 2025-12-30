@@ -145,6 +145,95 @@ func (h *ForumHandler) UpdateThread(c *gin.Context) {
 	utils.SendSuccess(c, http.StatusOK, "Thread updated successfully", thread)
 }
 
+// PinThread toggles pin status of a thread
+func (h *ForumHandler) PinThread(c *gin.Context) {
+	threadID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid thread ID", err)
+		return
+	}
+
+	var req struct {
+		IsPinned bool `json:"is_pinned"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
+		return
+	}
+
+	if err := h.forumService.PinThread(uint(threadID), req.IsPinned); err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Thread pin status updated", nil)
+}
+
+// LockThread toggles lock status of a thread
+func (h *ForumHandler) LockThread(c *gin.Context) {
+	threadID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid thread ID", err)
+		return
+	}
+
+	var req struct {
+		IsLocked bool `json:"is_locked"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
+		return
+	}
+
+	if err := h.forumService.LockThread(uint(threadID), req.IsLocked); err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Thread lock status updated", nil)
+}
+
+// SearchThreads searches for threads
+func (h *ForumHandler) SearchThreads(c *gin.Context) {
+	query := c.Query("q")
+	if query == "" {
+		utils.SendError(c, http.StatusBadRequest, "Search query is required", nil)
+		return
+	}
+
+	limit := 10
+	offset := 0
+
+	if l := c.Query("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
+			limit = parsed
+		}
+	}
+
+	if o := c.Query("offset"); o != "" {
+		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
+			offset = parsed
+		}
+	}
+
+	threads, total, err := h.forumService.SearchThreads(query, limit, offset)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to search threads", err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Threads found successfully",
+		"data": gin.H{
+			"threads": threads,
+			"total":   total,
+			"limit":   limit,
+			"offset":  offset,
+		},
+	})
+}
+
 // ===== REPLY ENDPOINTS =====
 
 // CreateReply creates a new forum reply

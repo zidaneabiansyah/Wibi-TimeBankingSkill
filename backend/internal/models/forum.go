@@ -42,6 +42,8 @@ type ForumReply struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	ThreadID  uint      `gorm:"index" json:"thread_id"`
 	Thread    *ForumThread `gorm:"foreignKey:ThreadID" json:"thread,omitempty"`
+	ParentID  *uint      `json:"parent_id"`
+	Parent    *ForumReply `gorm:"foreignKey:ParentID" json:"parent,omitempty"`
 	AuthorID  uint      `gorm:"index" json:"author_id"`
 	Author    *User     `gorm:"foreignKey:AuthorID" json:"author,omitempty"`
 	Content   string    `gorm:"type:text" json:"content"`
@@ -57,6 +59,7 @@ type SuccessStory struct {
 	User        *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	Title       string    `json:"title"`
 	Description string    `gorm:"type:text" json:"description"`
+	FeaturedImageURL string `json:"featured_image_url"`
 	Images      JSONArray `gorm:"type:jsonb" json:"images"`
 	Tags        JSONArray `gorm:"type:jsonb" json:"tags"`
 	LikeCount   int       `json:"like_count"`
@@ -71,6 +74,8 @@ type StoryComment struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	StoryID   uint      `gorm:"index" json:"story_id"`
 	Story     *SuccessStory `gorm:"foreignKey:StoryID" json:"story,omitempty"`
+	ParentID  *uint      `json:"parent_id"`
+	Parent    *StoryComment `gorm:"foreignKey:ParentID" json:"parent,omitempty"`
 	AuthorID  uint      `gorm:"index" json:"author_id"`
 	Author    *User     `gorm:"foreignKey:AuthorID" json:"author,omitempty"`
 	Content   string    `gorm:"type:text" json:"content"`

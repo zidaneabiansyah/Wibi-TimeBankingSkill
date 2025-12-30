@@ -134,3 +134,26 @@ func (r *ForumRepository) DeleteReply(replyID uint) error {
 	// Decrement reply count on thread
 	return r.db.Model(&models.ForumThread{}).Where("id = ?", reply.ThreadID).Update("reply_count", gorm.Expr("reply_count - ?", 1)).Error
 }
+
+// SearchThreads searches threads by title or content
+func (r *ForumRepository) SearchThreads(query string, limit, offset int) ([]models.ForumThread, int64, error) {
+	var threads []models.ForumThread
+	var total int64
+	
+	searchQuery := "%" + query + "%"
+	db := r.db.Model(&models.ForumThread{}).
+		Where("title ILIKE ? OR content ILIKE ?", searchQuery, searchQuery)
+
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := db.Preload("Author").
+		Preload("Category").
+		Order("created_at desc").
+		Limit(limit).
+		Offset(offset).
+		Find(&threads).Error
+
+	return threads, total, err
+}
