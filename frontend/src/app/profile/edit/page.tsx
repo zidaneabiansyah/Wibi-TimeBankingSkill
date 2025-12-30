@@ -84,16 +84,17 @@ function EditProfileContent() {
     const onSubmit = async (data: ProfileFormData) => {
         setIsSubmitting(true)
         try {
-            // Update profile
-            await updateProfile(data)
+            // Prepare update data
+            const updateData: any = { ...data }
 
             // Upload avatar if changed
-            if (avatarFile) {
-                const formData = new FormData()
-                formData.append('file', avatarFile)
-                // Note: Avatar upload endpoint would need to be implemented in backend
-                // For now, we'll just show success
+            if (avatarFile && avatarPreview) {
+                // Use the data URL (base64) as avatar
+                updateData.avatar = avatarPreview
             }
+
+            // Update profile
+            await updateProfile(updateData)
 
             toast.success('Profile updated successfully')
             router.push('/profile')

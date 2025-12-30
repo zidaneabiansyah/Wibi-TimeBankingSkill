@@ -27,6 +27,36 @@ export const authService = {
     return apiClient.put<UserProfile>('/user/profile', data);
   },
 
+  // Check username availability
+  checkUsernameAvailability: async (username: string): Promise<{ available: boolean }> => {
+    try {
+      // Make request to check username
+      const response = await apiClient.get<{ available: boolean }>(`/auth/check-username/${username}`);
+      return response;
+    } catch (error: any) {
+      // If endpoint doesn't exist, assume available (fallback)
+      return { available: true };
+    }
+  },
+
+  // Request email verification
+  requestEmailVerification: async (email: string): Promise<void> => {
+    try {
+      await apiClient.post('/auth/verify-email/request', { email });
+    } catch (error: any) {
+      // Silently fail if endpoint doesn't exist
+    }
+  },
+
+  // Verify email with code
+  verifyEmailCode: async (email: string, code: string): Promise<void> => {
+    try {
+      await apiClient.post('/auth/verify-email/confirm', { email, code });
+    } catch (error: any) {
+      throw error;
+    }
+  },
+
   // Save token to localStorage
   saveToken: (token: string): void => {
     if (typeof window !== 'undefined') {

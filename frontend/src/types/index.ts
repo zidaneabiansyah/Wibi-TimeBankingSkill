@@ -21,6 +21,7 @@ export interface RegisterRequest {
     grade: string;
     major?: string;
     phone_number?: string;
+    location?: string;
 }
 
 export interface AuthResponse {

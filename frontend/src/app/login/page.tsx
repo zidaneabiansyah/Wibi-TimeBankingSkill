@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -26,18 +26,37 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
+  // Load remembered email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('wibi_remembered_email');
+    if (savedEmail) {
+      setValue('email', savedEmail);
+      setRememberMe(true);
+    }
+  }, [setValue]);
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
+      
+      // Save email if remember me is checked
+      if (rememberMe) {
+        localStorage.setItem('wibi_remembered_email', data.email);
+      } else {
+        localStorage.removeItem('wibi_remembered_email');
+      }
+      
       await login(data);
       toast.success('Login successful!');
       router.push('/dashboard');
@@ -160,6 +179,20 @@ export default function LoginPage() {
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password.message}</p>
                 )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 cursor-pointer"
+                  disabled={isLoading}
+                />
+                <Label htmlFor="remember" className="text-sm cursor-pointer">
+                  Remember me
+                </Label>
               </div>
 
               <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10" type="submit" disabled={isLoading}>

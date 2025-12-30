@@ -10,6 +10,7 @@ export interface UpdateProfileRequest {
     bio?: string;
     phone_number?: string;
     location?: string;
+    avatar?: string;
 }
 
 export interface ChangePasswordRequest {

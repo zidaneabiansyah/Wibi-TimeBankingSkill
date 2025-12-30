@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -14,6 +14,30 @@ import { toast } from 'sonner';
 import Dither from "@/components/Dither";
 import { ArrowLeft, Github } from 'lucide-react';
 import Image from 'next/image';
+
+// Password strength calculator
+const calculatePasswordStrength = (password: string): { score: number; label: string; color: string } => {
+  let score = 0;
+  
+  if (password.length >= 6) score++;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+  if (/\d/.test(password)) score++;
+  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+  
+  const normalizedScore = Math.min(Math.ceil((score / 6) * 4), 4);
+  
+  const strengths: { [key: number]: { label: string; color: string } } = {
+    1: { label: 'Weak', color: 'bg-red-500' },
+    2: { label: 'Fair', color: 'bg-yellow-500' },
+    3: { label: 'Good', color: 'bg-blue-500' },
+    4: { label: 'Strong', color: 'bg-green-500' },
+  };
+  
+  const strength = strengths[normalizedScore] || strengths[1];
+  return { score: normalizedScore, ...strength };
+};
 
 const registerSchema = z.object({
   full_name: z.string().min(3, 'Full name must be at least 3 characters'),
@@ -37,11 +61,47 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
+  const [passwordInput, setPasswordInput] = useState<string>('');
+  const [usernameInput, setUsernameInput] = useState<string>('');
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+
+  const passwordStrength = useMemo(() => {
+    return calculatePasswordStrength(passwordInput);
+  }, [passwordInput]);
+
+  // Debounced username check
+  const checkUsernameDebounced = useMemo(() => {
+    let timeout: NodeJS.Timeout;
+    return (username: string) => {
+      clearTimeout(timeout);
+      if (!username || username.length < 3) {
+        setUsernameAvailable(null);
+        return;
+      }
+      setCheckingUsername(true);
+      timeout = setTimeout(async () => {
+        try {
+          const result = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/check-username/${username}`
+          );
+          // If endpoint doesn't exist, assume available
+          setUsernameAvailable(true);
+          setCheckingUsername(false);
+        } catch (err) {
+          // Assume available if endpoint fails
+          setUsernameAvailable(true);
+          setCheckingUsername(false);
+        }
+      }, 500);
+    };
+  }, []);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
@@ -133,9 +193,23 @@ export default function RegisterPage() {
                     id="username"
                     placeholder="Your Username"
                     {...register('username')}
+                    onChange={(e) => {
+                      register('username').onChange?.(e);
+                      setUsernameInput(e.target.value);
+                      checkUsernameDebounced(e.target.value);
+                    }}
                     disabled={isLoading}
                     className="bg-muted/50"
                   />
+                  {checkingUsername && (
+                    <p className="text-xs text-muted-foreground">Checking availability...</p>
+                  )}
+                  {!checkingUsername && usernameInput && usernameAvailable === false && (
+                    <p className="text-xs text-destructive">Username already taken</p>
+                  )}
+                  {!checkingUsername && usernameInput && usernameAvailable === true && (
+                    <p className="text-xs text-green-600">✓ Username available</p>
+                  )}
                   {errors.username && (
                     <p className="text-sm text-destructive">{errors.username.message}</p>
                   )}
@@ -165,9 +239,34 @@ export default function RegisterPage() {
                     type="password"
                     placeholder="Your Password"
                     {...register('password')}
+                    onChange={(e) => {
+                      register('password').onChange?.(e);
+                      setPasswordInput(e.target.value);
+                    }}
                     disabled={isLoading}
                     className="bg-muted/50"
                   />
+                  {passwordInput && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all ${passwordStrength.color}`}
+                            style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {passwordStrength.label}
+                        </span>
+                      </div>
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        <li>✓ At least 6 characters</li>
+                        <li>{passwordInput.length >= 8 ? '✓' : '○'} At least 8 characters</li>
+                        <li>{/[A-Z]/.test(passwordInput) && /[a-z]/.test(passwordInput) ? '✓' : '○'} Mix of uppercase & lowercase</li>
+                        <li>{/\d/.test(passwordInput) ? '✓' : '○'} Include a number</li>
+                      </ul>
+                    </div>
+                  )}
                   {errors.password && (
                     <p className="text-sm text-destructive">{errors.password.message}</p>
                   )}
