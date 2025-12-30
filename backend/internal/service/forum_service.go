@@ -157,6 +157,7 @@ func (s *ForumService) CreateReply(userID uint, req *dto.CreateReplyRequest) (*m
 
 	reply := &models.ForumReply{
 		ThreadID: req.ThreadID,
+		ParentID: req.ParentID,
 		AuthorID: userID,
 		Content:  req.Content,
 	}
@@ -189,4 +190,46 @@ func (s *ForumService) DeleteReply(replyID, userID uint) error {
 	}
 
 	return nil
+}
+
+// PinThread toggles pin status of a thread
+func (s *ForumService) PinThread(threadID uint, isPinned bool) error {
+	thread, err := s.forumRepo.GetThreadByID(threadID)
+	if err != nil {
+		return errors.New("thread not found")
+	}
+
+	thread.IsPinned = isPinned
+	if err := s.forumRepo.UpdateThread(thread); err != nil {
+		return fmt.Errorf("failed to update thread: %w", err)
+	}
+
+	return nil
+}
+
+// LockThread toggles lock status of a thread
+func (s *ForumService) LockThread(threadID uint, isLocked bool) error {
+	thread, err := s.forumRepo.GetThreadByID(threadID)
+	if err != nil {
+		return errors.New("thread not found")
+	}
+
+	thread.IsClosed = isLocked
+	if err := s.forumRepo.UpdateThread(thread); err != nil {
+		return fmt.Errorf("failed to update thread: %w", err)
+	}
+
+	return nil
+}
+
+// SearchThreads searches for threads
+func (s *ForumService) SearchThreads(query string, limit, offset int) ([]models.ForumThread, int64, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 10
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	return s.forumRepo.SearchThreads(query, limit, offset)
 }

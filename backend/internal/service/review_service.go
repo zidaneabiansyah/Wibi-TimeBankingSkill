@@ -15,6 +15,7 @@ type ReviewService struct {
 	sessionRepo         *repository.SessionRepository
 	userRepo            *repository.UserRepository
 	notificationService *NotificationService
+	badgeService        *BadgeService
 }
 
 // NewReviewService creates a new review service
@@ -23,12 +24,14 @@ func NewReviewService(
 	sessionRepo *repository.SessionRepository,
 	userRepo *repository.UserRepository,
 	notificationService *NotificationService,
+	badgeService *BadgeService,
 ) *ReviewService {
 	return &ReviewService{
 		reviewRepo:          reviewRepo,
 		sessionRepo:         sessionRepo,
 		userRepo:            userRepo,
 		notificationService: notificationService,
+		badgeService:        badgeService,
 	}
 }
 

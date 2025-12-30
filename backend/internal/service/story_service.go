@@ -53,11 +53,12 @@ func (s *StoryService) CreateStory(userID uint, req *dto.CreateStoryRequest) (*m
 
 	story := &models.SuccessStory{
 		UserID:      userID,
-		Title:       req.Title,
-		Description: req.Description,
-		Images:      req.Images,
-		Tags:        req.Tags,
-		IsPublished: req.IsPublished,
+		Title:            req.Title,
+		Description:      req.Description,
+		FeaturedImageURL: req.FeaturedImageURL,
+		Images:           req.Images,
+		Tags:             req.Tags,
+		IsPublished:      req.IsPublished,
 	}
 
 	if err := s.storyRepo.CreateStory(story); err != nil {
@@ -115,6 +116,7 @@ func (s *StoryService) UpdateStory(storyID, userID uint, req *dto.UpdateStoryReq
 
 	story.Title = req.Title
 	story.Description = req.Description
+	story.FeaturedImageURL = req.FeaturedImageURL
 	story.Images = req.Images
 	story.Tags = req.Tags
 	story.IsPublished = req.IsPublished
@@ -159,6 +161,7 @@ func (s *StoryService) CreateComment(userID uint, req *dto.CreateCommentRequest)
 
 	comment := &models.StoryComment{
 		StoryID:  req.StoryID,
+		ParentID: req.ParentID,
 		AuthorID: userID,
 		Content:  req.Content,
 	}
