@@ -5,9 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
 import { LeaderboardTable } from './LeaderboardTable';
 import { useBadgeStore } from '@/stores';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import type { LeaderboardEntry } from '@/lib/services/badge.service';
 
 type LeaderboardType = 'badges' | 'rarity' | 'sessions' | 'rating' | 'credits';
+type TimeRange = 'weekly' | 'monthly' | 'all-time';
 
 interface LeaderboardTabsProps {
     limit?: number;
@@ -27,18 +35,22 @@ const LEADERBOARD_TYPES: { value: LeaderboardType; label: string; icon: string }
 export function LeaderboardTabs({ limit = 10 }: LeaderboardTabsProps) {
     const { leaderboards, isLoading, fetchLeaderboard } = useBadgeStore();
     const [selectedType, setSelectedType] = useState<LeaderboardType>('badges');
+    const [timeRange, setTimeRange] = useState<TimeRange>('all-time');
 
     useEffect(() => {
         // Load initial leaderboard
-        fetchLeaderboard('badges', limit);
-    }, [limit, fetchLeaderboard]);
+        fetchLeaderboard('badges', limit, timeRange);
+    }, [limit, fetchLeaderboard, timeRange]);
 
     const handleTypeChange = (type: LeaderboardType) => {
         setSelectedType(type);
-        // Load leaderboard if not already loaded
-        if (!leaderboards[type] || leaderboards[type].length === 0) {
-            fetchLeaderboard(type, limit);
-        }
+        // Always fetch when switching tabs to ensure freshness with current time range
+        fetchLeaderboard(type, limit, timeRange);
+    };
+
+    const handleTimeRangeChange = (range: TimeRange) => {
+        setTimeRange(range);
+        fetchLeaderboard(selectedType, limit, range);
     };
 
     const currentEntries: LeaderboardEntry[] = leaderboards[selectedType] || [];
@@ -46,11 +58,23 @@ export function LeaderboardTabs({ limit = 10 }: LeaderboardTabsProps) {
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div>
-                <h2 className="text-2xl font-bold">Leaderboards</h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Top {limit} users across different categories
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold">Leaderboards</h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Top {limit} users across different categories
+                    </p>
+                </div>
+                <Select value={timeRange} onValueChange={(v) => handleTimeRangeChange(v as TimeRange)}>
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="weekly">This Week</SelectItem>
+                        <SelectItem value="monthly">This Month</SelectItem>
+                        <SelectItem value="all-time">All Time</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Tabs */}
