@@ -30,6 +30,14 @@ func (s *SkillService) GetSkillByID(id uint) (*models.Skill, error) {
 	return s.skillRepo.GetByID(id)
 }
 
+// GetRecommendedSkills retrieves recommended skills
+func (s *SkillService) GetRecommendedSkills(limit int) ([]models.Skill, error) {
+	if limit <= 0 {
+		limit = 5
+	}
+	return s.skillRepo.GetRecommendations(limit)
+}
+
 // GetSkillTeachers retrieves all teachers for a specific skill
 func (s *SkillService) GetSkillTeachers(skillID uint) ([]models.UserSkill, error) {
 	// Use type assertion to access the concrete method

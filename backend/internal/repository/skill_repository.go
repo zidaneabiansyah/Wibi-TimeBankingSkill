@@ -27,6 +27,9 @@ type SkillRepositoryInterface interface {
 	GetLearningSkills(userID uint) ([]models.LearningSkill, error)
 	GetLearningSkill(userID, skillID uint) (*models.LearningSkill, error)
 	DeleteLearningSkill(userID, skillID uint) error
+
+	// Recommendations
+	GetRecommendations(limit int) ([]models.Skill, error)
 }
 
 // SkillRepository handles database operations for skills
@@ -112,8 +115,6 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 	}
 
 	// Count total
-	// Note: Count with Group/Having can be tricky in GORM. 
-	// We might need to use a subquery for accurate total count of groups.
 	countQuery := r.db.Table("(?) as grouped", query).Count(&total)
 	if countQuery.Error != nil {
 		return nil, 0, countQuery.Error
@@ -133,6 +134,26 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 	// Apply pagination and get results
 	err := query.Limit(limit).Offset(offset).Order(sortOrder).Find(&skills).Error
 	return skills, total, err
+}
+
+// GetRecommendations returns recommended skills
+func (r *SkillRepository) GetRecommendations(limit int) ([]models.Skill, error) {
+	var skills []models.Skill
+
+	// Simplified recommendation: highest rated and most popular
+	err := r.db.Model(&models.Skill{}).
+		Select("skills.*, " +
+			"COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, " +
+			"COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate, " +
+			"COALESCE(SUM(user_skills.total_sessions), 0) as aggregate_sessions, " +
+			"COALESCE(MAX(user_skills.average_rating), 0) as max_teacher_rating").
+		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
+		Group("skills.id").
+		Order("max_teacher_rating DESC, aggregate_sessions DESC").
+		Limit(limit).
+		Find(&skills).Error
+
+	return skills, err
 }
 
 // GetByID finds a skill by ID

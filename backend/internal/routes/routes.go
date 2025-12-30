@@ -125,6 +125,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		skills := v1.Group("/skills")
 		{
 			skills.GET("", skillHandler.GetSkills)                     // GET /api/v1/skills?limit=10&page=1&category=&search=
+			skills.GET("/recommended", skillHandler.GetRecommendedSkills) // GET /api/v1/skills/recommended
 			skills.GET("/:id/teachers", skillHandler.GetSkillTeachers) // GET /api/v1/skills/1/teachers
 			skills.GET("/:id", skillHandler.GetSkillByID)              // GET /api/v1/skills/1
 		}

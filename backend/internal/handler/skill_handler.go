@@ -142,6 +142,29 @@ func (h *SkillHandler) GetSkillByID(c *gin.Context) {
 	utils.SendSuccess(c, http.StatusOK, "Skill retrieved successfully", response)
 }
 
+// GetRecommendedSkills handles GET /api/v1/skills/recommended
+func (h *SkillHandler) GetRecommendedSkills(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "5")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 || limit > 20 {
+		limit = 5
+	}
+
+	skills, err := h.skillService.GetRecommendedSkills(limit)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch recommendations", err)
+		return
+	}
+
+	// Convert to response DTOs
+	skillResponses := make([]dto.SkillResponse, len(skills))
+	for i, skill := range skills {
+		skillResponses[i] = dto.ToSkillResponse(&skill)
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Recommendations retrieved successfully", skillResponses)
+}
+
 // GetSkillTeachers handles GET /api/v1/skills/:id/teachers
 func (h *SkillHandler) GetSkillTeachers(c *gin.Context) {
 	idStr := c.Param("id")
