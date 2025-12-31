@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Header } from '@/components/layout'
 import { ProtectedRoute } from '@/components/auth'
-import { VideoCallModal } from '@/components/video'
 import { useSessionStore } from '@/stores/session.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { sessionService } from '@/lib/services/session.service'
@@ -93,7 +92,7 @@ function SessionDetailContent() {
     const [showCancelForm, setShowCancelForm] = useState(false)
     const [showDisputeForm, setShowDisputeForm] = useState(false)
     const [disputeReason, setDisputeReason] = useState('')
-    const [showVideoCall, setShowVideoCall] = useState(false)
+    // Video call state removed, using redirection
 
     useEffect(() => {
         // Fetch session details
@@ -400,12 +399,12 @@ function SessionDetailContent() {
 
                                     {canJoinVideoCall && (
                                         <Button
-                                            onClick={() => setShowVideoCall(true)}
+                                            onClick={() => router.push(`/dashboard/sessions/${session.id}/room`)}
                                             disabled={isSubmitting}
                                             className="bg-blue-600 hover:bg-blue-700 text-white"
                                         >
                                             <Video className="mr-2 h-4 w-4" />
-                                            {session.status === 'in_progress' ? 'Join Video Call' : 'Start Video Call'}
+                                            {session.status === 'in_progress' ? 'Enter Session Room' : 'Enter Session Room'}
                                         </Button>
                                     )}
 
@@ -514,15 +513,6 @@ function SessionDetailContent() {
                     </Card>
                 </div>
 
-                {/* Video Call Modal */}
-                {session && (
-                    <VideoCallModal
-                        isOpen={showVideoCall}
-                        onClose={() => setShowVideoCall(false)}
-                        sessionId={session.id}
-                        partnerName={isTeacher ? session.student?.full_name || 'Student' : session.teacher?.full_name || 'Teacher'}
-                    />
-                )}
             </main>
         </div>
     )
