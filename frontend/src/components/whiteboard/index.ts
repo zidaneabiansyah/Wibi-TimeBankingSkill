@@ -1,1 +1,1 @@
-export { WhiteboardCanvas } from './WhiteboardCanvas';
+export { TldrawWhiteboard } from './TldrawWhiteboard';

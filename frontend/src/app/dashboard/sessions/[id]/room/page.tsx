@@ -12,7 +12,9 @@ import { useSessionStore } from '@/stores/session.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { toast } from 'sonner';
 import type { Session } from '@/types';
-import { CheckCircle2, Clock, Users, Video, MapPin, ExternalLink, Timer, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Clock, Users, Video, MapPin, ExternalLink, Timer, AlertCircle, PenTool, LayoutDashboard } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TldrawWhiteboard } from '@/components/whiteboard';
 
 /**
  * SessionTimer - Real-time timer component for active sessions
@@ -233,7 +235,16 @@ function SessionRoomContent() {
                         </Badge>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Tabs defaultValue="details" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                            <TabsTrigger value="details">Session Details</TabsTrigger>
+                            <TabsTrigger value="whiteboard" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
+                                Whiteboard
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="details" className="mt-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Left Column - Check-in / Timer */}
                         <div className="space-y-6">
                             {/* Check-in Card (before session starts) */}
@@ -453,7 +464,26 @@ function SessionRoomContent() {
                                 </CardContent>
                             </Card>
                         </div>
-                    </div>
+                        </div>
+                        </TabsContent>
+
+                        <TabsContent value="whiteboard" className="mt-6">
+                            <Card className="border-none shadow-none bg-transparent">
+                                <CardHeader className="px-0 pt-0">
+                                    <CardTitle>Session Whiteboard</CardTitle>
+                                    <CardDescription>
+                                        Collaborate in real-time. Changes are saved automatically.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-0 h-[600px] border rounded-lg overflow-hidden bg-white">
+                                    <TldrawWhiteboard 
+                                        sessionId={sessionId} 
+                                        isReadOnly={currentSession.status === 'completed'} 
+                                    />
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </main>
         </div>
