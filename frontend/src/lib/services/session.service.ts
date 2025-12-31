@@ -144,6 +144,24 @@ export const sessionService = {
         const response = await api.post<ApiResponse<Session>>(`/sessions/${id}/dispute`, data);
         return response.data.data!;
     },
+    
+    // Start a video session
+    async startVideoSession(id: number): Promise<{
+        id: number;
+        room_id: string;
+        jitsi_url: string;
+        token: string;
+        status: string;
+    }> {
+        const response = await api.post<ApiResponse<{
+            id: number;
+            room_id: string;
+            jitsi_url: string;
+            token: string;
+            status: string;
+        }>>(`/sessions/${id}/video/start`);
+        return response.data.data!;
+    },
 };
 
 export default sessionService;
