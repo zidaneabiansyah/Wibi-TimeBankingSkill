@@ -155,8 +155,8 @@ func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsRespons
 		TotalCreditsInFlow: totalCredits,
 		AverageSessionRating: avgRating,
 		TotalSkills:        int(totalSkills),
-		TopSkills:          []dto.SkillStatistic{},      // TODO: Implement real top skills
-		UserGrowth:         s.generateUserGrowthTrend(), // TODO: Implement real trend
+		TopSkills:          s.getTopSkills(),            // Implement real top skills
+		UserGrowth:         s.generateUserGrowthTrend(), // Real trend
 		SessionTrend:       s.generateSessionTrend(),    // TODO: Implement real trend
 		CreditFlow:         s.generateCreditFlowTrend(), // TODO: Implement real trend
 		RecentActivity:     s.fetchRecentActivity(),
@@ -263,39 +263,58 @@ func (s *AnalyticsService) GetCreditStatistics() (*dto.CreditStatistic, error) {
 
 // Helper functions
 
+func (s *AnalyticsService) getTopSkills() []dto.SkillStatistic {
+	// Get top 5 skills by rating/popularity
+	skills, _ := s.skillRepo.GetRecommendations(5)
+	return s.mapTopSkills(skills)
+}
+
 func (s *AnalyticsService) mapTopSkills(skills interface{}) []dto.SkillStatistic {
-	// Implementation depends on skill structure
-	return []dto.SkillStatistic{}
+	var stats []dto.SkillStatistic
+	
+	// Assuming skills is []models.Skill
+	if modelSkills, ok := skills.([]models.Skill); ok {
+		for _, sk := range modelSkills {
+			stats = append(stats, dto.SkillStatistic{
+				SkillID:   sk.ID,
+				SkillName: sk.Name,
+				Value:     float64(sk.TotalSessions), // Could be avg rating or other metric
+				// Additional fields if needed
+			})
+		}
+	}
+	return stats
 }
 
 func (s *AnalyticsService) generateUserGrowthTrend() []dto.DateStatistic {
 	trend := make([]dto.DateStatistic, 0)
-	now := time.Now()
-
-	// Generate trend for last 7 days with mock data
-	for i := 6; i >= 0; i-- {
-		date := now.AddDate(0, 0, -i)
-		// Mock data - in production, would query actual data
-		trend = append(trend, dto.DateStatistic{
-			Date:  date.Format("2006-01-02"),
-			Value: 10 + i,
-		})
+	
+	stats, err := s.userRepo.GetGrowthTrend(30)
+	if err != nil {
+		return trend // Return empty on error or handle better
 	}
 
+	for _, stat := range stats {
+		trend = append(trend, dto.DateStatistic{
+			Date:  stat.Date,
+			Value: stat.Value,
+		})
+	}
 	return trend
 }
 
 func (s *AnalyticsService) generateSessionTrend() []dto.DateStatistic {
 	trend := make([]dto.DateStatistic, 0)
-	now := time.Now()
+	
+	stats, err := s.sessionRepo.GetSessionTrend(30)
+	if err != nil {
+		return trend
+	}
 
-	// Generate trend for last 7 days with mock data
-	for i := 6; i >= 0; i-- {
-		date := now.AddDate(0, 0, -i)
-		// Mock data - in production, would query actual data
+	for _, stat := range stats {
 		trend = append(trend, dto.DateStatistic{
-			Date:  date.Format("2006-01-02"),
-			Value: 5 + i,
+			Date:  stat.Date,
+			Value: stat.Value,
 		})
 	}
 
@@ -304,15 +323,16 @@ func (s *AnalyticsService) generateSessionTrend() []dto.DateStatistic {
 
 func (s *AnalyticsService) generateCreditFlowTrend() []dto.DateStatistic {
 	trend := make([]dto.DateStatistic, 0)
-	now := time.Now()
+	
+	stats, err := s.transactionRepo.GetCreditVolumeTrend(30)
+	if err != nil {
+		return trend
+	}
 
-	// Generate trend for last 7 days with mock data
-	for i := 6; i >= 0; i-- {
-		date := now.AddDate(0, 0, -i)
-		// Mock data - in production, would query actual data
+	for _, stat := range stats {
 		trend = append(trend, dto.DateStatistic{
-			Date:  date.Format("2006-01-02"),
-			Value: 100.0 * float64(i+1),
+			Date:  stat.Date,
+			Value: stat.Value,
 		})
 	}
 
