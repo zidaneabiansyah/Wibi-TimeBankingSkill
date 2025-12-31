@@ -26,12 +26,14 @@ import { toast } from 'sonner';
 
 interface Session {
     id: number;
-    teacher_name: string;
-    learner_name: string;
-    skill_name: string;
+    teacher: { full_name: string };
+    student: { full_name: string };
+    user_skill: { skill: { name: string } };
+    teacher_id: number;
+    student_id: number;
     status: 'pending' | 'approved' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
     mode: 'online' | 'offline';
-    scheduled_date: string;
+    scheduled_at: string;
     duration: number;
     created_at: string;
 }
@@ -59,7 +61,6 @@ export default function SessionsPage() {
     const fetchSessions = async () => {
         try {
             setIsLoading(true);
-            // TODO: Replace with actual admin API endpoint
             const response = await fetch('/api/v1/admin/sessions', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
@@ -102,10 +103,14 @@ export default function SessionsPage() {
     };
 
     const filteredSessions = sessions.filter((session) => {
+        const teacherName = session.teacher?.full_name || 'Unknown';
+        const learnerName = session.student?.full_name || 'Unknown';
+        const skillName = session.user_skill?.skill?.name || 'Unknown';
+
         const matchesSearch =
-            session.teacher_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            session.learner_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            session.skill_name.toLowerCase().includes(searchQuery.toLowerCase());
+            teacherName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            learnerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            skillName.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesFilter = filterStatus === 'all' || session.status === filterStatus;
 
@@ -263,9 +268,9 @@ export default function SessionsPage() {
                                 filteredSessions.map((session) => (
                                     <TableRow key={session.id}>
                                         <TableCell className="font-medium">#{session.id}</TableCell>
-                                        <TableCell>{session.teacher_name}</TableCell>
-                                        <TableCell>{session.learner_name}</TableCell>
-                                        <TableCell>{session.skill_name}</TableCell>
+                                        <TableCell>{session.teacher?.full_name || 'Unknown'}</TableCell>
+                                        <TableCell>{session.student?.full_name || 'Unknown'}</TableCell>
+                                        <TableCell>{session.user_skill?.skill?.name || 'Unknown'}</TableCell>
                                         <TableCell>
                                             <Badge variant="outline">
                                                 {session.mode === 'online' ? '🌐 Online' : '📍 Offline'}
@@ -273,8 +278,8 @@ export default function SessionsPage() {
                                         </TableCell>
                                         <TableCell>{getStatusBadge(session.status)}</TableCell>
                                         <TableCell>
-                                            {session.scheduled_date
-                                                ? new Date(session.scheduled_date).toLocaleDateString()
+                                            {session.scheduled_at
+                                                ? new Date(session.scheduled_at).toLocaleDateString()
                                                 : '-'}
                                         </TableCell>
                                         <TableCell className="text-right">

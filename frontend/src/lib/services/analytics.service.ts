@@ -92,4 +92,33 @@ export const analyticsService = {
             throw error;
         }
     },
+    /**
+     * Export analytics report
+     */
+    async exportAnalytics(format: 'csv' | 'pdf', type: 'user' | 'platform' = 'platform'): Promise<void> {
+        try {
+            const response = await axios.post(
+                `${API_BASE}/analytics/export`,
+                { format, type },
+                {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                    responseType: 'blob', // Important for file download
+                }
+            );
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            link.setAttribute('download', `analytics_report_${date}.${format}`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Failed to export analytics:', error);
+            throw error;
+        }
+    },
 };

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { analyticsService } from '@/lib/services/analytics.service';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Users, GraduationCap, CreditCard, BookOpen, Loader2, TrendingUp } from 'lucide-react';
 import type { PlatformAnalytics } from '@/types';
 
@@ -37,11 +38,28 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-6">
             {/* Page Header */}
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                <p className="text-muted-foreground">
-                    Overview of your platform's performance
-                </p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                    <p className="text-muted-foreground">
+                        Overview of your platform's performance
+                    </p>
+                </div>
+                <div className="flex gap-2">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => analyticsService.exportAnalytics('csv')}
+                        disabled={isLoading}
+                    >
+                        Export CSV
+                    </Button>
+                    <Button 
+                        onClick={() => analyticsService.exportAnalytics('pdf')}
+                        disabled={isLoading}
+                    >
+                        Export PDF
+                    </Button>
+                </div>
             </div>
 
             {/* Stats Grid */}
