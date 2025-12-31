@@ -93,7 +93,15 @@ export default function CommunityPage() {
 
     const handleResolveReport = async (reportId: number) => {
         try {
-            // TODO: Implement resolve API
+            const response = await fetch(`/api/v1/admin/reports/${reportId}/resolve`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to resolve report');
+
             toast.success('Report resolved successfully');
             fetchData();
         } catch (error) {
@@ -103,7 +111,15 @@ export default function CommunityPage() {
 
     const handleDismissReport = async (reportId: number) => {
         try {
-            // TODO: Implement dismiss API
+            const response = await fetch(`/api/v1/admin/reports/${reportId}/dismiss`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to dismiss report');
+
             toast.success('Report dismissed successfully');
             fetchData();
         } catch (error) {

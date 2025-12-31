@@ -81,7 +81,15 @@ export default function GamificationPage() {
 
     const handleDeleteBadge = async (badgeId: number) => {
         try {
-            // TODO: Implement delete API
+            const response = await fetch(`/api/v1/admin/badges/${badgeId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to delete badge');
+
             toast.success('Badge deleted successfully');
             fetchBadges();
         } catch (error) {

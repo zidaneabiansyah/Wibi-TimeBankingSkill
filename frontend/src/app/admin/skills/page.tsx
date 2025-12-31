@@ -56,7 +56,6 @@ export default function SkillsPage() {
     const fetchSkills = async () => {
         try {
             setIsLoading(true);
-            // TODO: Replace with actual admin API endpoint
             const response = await fetch('/api/v1/admin/skills', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
@@ -76,7 +75,15 @@ export default function SkillsPage() {
 
     const handleDeleteSkill = async (skillId: number) => {
         try {
-            // TODO: Implement delete API
+            const response = await fetch(`/api/v1/admin/skills/${skillId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to delete skill');
+
             toast.success('Skill deleted successfully');
             fetchSkills();
         } catch (error) {
