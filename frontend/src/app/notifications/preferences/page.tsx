@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Bell, Mail, Smartphone, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import { notificationService } from '@/lib/services/notification.service';
 
 /**
  * NotificationPreferences Page
@@ -39,8 +40,8 @@ export default function NotificationPreferencesPage() {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            // TODO: Call API to save preferences
-            // await notificationService.updatePreferences(preferences);
+            // Call API to save preferences
+            await notificationService.updatePreferences(preferences);
             toast.success('Preferences saved successfully');
         } catch (error) {
             console.error('Failed to save preferences:', error);

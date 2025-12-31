@@ -55,7 +55,6 @@ export default function TransactionsPage() {
     const fetchTransactions = async () => {
         try {
             setIsLoading(true);
-            // TODO: Replace with actual admin API endpoint
             const response = await fetch('/api/v1/admin/transactions', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('admin_token')}`,

@@ -69,7 +69,6 @@ export default function UsersPage() {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            // TODO: Replace with actual admin API endpoint
             const response = await fetch('/api/v1/admin/users', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
