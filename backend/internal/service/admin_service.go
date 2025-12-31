@@ -17,6 +17,8 @@ type AdminService struct {
 	sessionRepo     *repository.SessionRepository
 	transactionRepo *repository.TransactionRepository
 	skillRepo       *repository.SkillRepository
+	reportRepo      *repository.ReportRepository
+	forumRepo       *repository.ForumRepository
 }
 
 // NewAdminService creates new admin service
@@ -26,6 +28,8 @@ func NewAdminService(
 	sessionRepo *repository.SessionRepository,
 	transactionRepo *repository.TransactionRepository,
 	skillRepo *repository.SkillRepository,
+	reportRepo *repository.ReportRepository,
+	forumRepo *repository.ForumRepository,
 ) *AdminService {
 	return &AdminService{
 		adminRepo:       adminRepo,
@@ -33,6 +37,8 @@ func NewAdminService(
 		sessionRepo:     sessionRepo,
 		transactionRepo: transactionRepo,
 		skillRepo:       skillRepo,
+		reportRepo:      reportRepo,
+		forumRepo:       forumRepo,
 	}
 }
 
