@@ -3,11 +3,28 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================================
+   DESIGN TOKENS - WIBI PLATFORM
+   ============================================================================
+   
+   Color Palette:
+   - Primary Orange: #FF8C42 (from Wibi logo monkey)
+   - Primary Gold: #FFB84D (time/hourglass vibes)
+   - Secondary Purple: #6B46C1 (complementary accent)
+   - Success Green: #10B981 (earned credits)
+   - Dark Neutral: #0F1419 (main background)
+   
+   Spacing: 4px base unit (4, 8, 12, 16, 24, 32, 48, 64px)
+   Border Radius: 8px (sm), 12px (md), 16px (lg)
+   ============================================================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Sidebar components */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -16,11 +33,15 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  
+  /* Chart colors */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  
+  /* Core colors */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -37,59 +58,178 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  
+  /* Spacing tokens */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+  --spacing-4xl: 64px;
+  
+  /* Border radius tokens */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Dark theme by default - Modern dark UI */
+/* Dark theme by default - Modern dark UI with Wibi branding */
 :root {
-  --radius: 0.625rem;
-  /* Dark background with subtle warmth */
-  --background: oklch(0.13 0.005 250);
-  --foreground: oklch(0.95 0 0);
-  /* Cards slightly lighter than background */
-  --card: oklch(0.17 0.005 250);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.17 0.005 250);
-  --popover-foreground: oklch(0.95 0 0);
-  /* Primary - Vibrant amber/gold accent */
-  --primary: oklch(0.78 0.16 75);
-  --primary-foreground: oklch(0.15 0 0);
-  /* Secondary - Subtle dark */
-  --secondary: oklch(0.22 0.005 250);
-  --secondary-foreground: oklch(0.95 0 0);
-  /* Muted for subtle elements */
-  --muted: oklch(0.22 0.005 250);
+  --radius: 0.75rem;
+  
+  /* ========== BACKGROUNDS ========== */
+  /* Main background - very dark neutral blue */
+  --background: oklch(0.12 0.005 250);
+  --foreground: oklch(0.96 0 0);
+  
+  /* Cards - slightly elevated from background */
+  --card: oklch(0.16 0.004 250);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.16 0.004 250);
+  --popover-foreground: oklch(0.96 0 0);
+  
+  /* ========== PRIMARY COLORS (Orange from logo) ========== */
+  /* Primary Orange - Wibi brand color from monkey logo */
+  --primary: oklch(0.68 0.18 45);
+  --primary-foreground: oklch(0.98 0 0);
+  
+  /* Secondary (Gold) - Time/hourglass vibes, for emphasis */
+  --secondary: oklch(0.78 0.16 75);
+  --secondary-foreground: oklch(0.15 0 0);
+  
+  /* ========== ACCENT COLORS ========== */
+  /* Muted - for secondary text and borders */
+  --muted: oklch(0.22 0.004 250);
   --muted-foreground: oklch(0.65 0 0);
-  /* Accent - Purple/violet for highlights */
-  --accent: oklch(0.6 0.2 280);
-  --accent-foreground: oklch(0.95 0 0);
-  /* Destructive - Red */
+  
+  /* Accent - Purple/violet for secondary actions */
+  --accent: oklch(0.60 0.20 280);
+  --accent-foreground: oklch(0.98 0 0);
+  
+  /* ========== STATE COLORS ========== */
+  /* Destructive - Red for errors/warnings */
   --destructive: oklch(0.65 0.22 25);
-  /* Borders and inputs */
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.78 0.16 75);
-  /* Chart colors - Vibrant palette */
-  --chart-1: oklch(0.7 0.18 75);
-  --chart-2: oklch(0.65 0.18 180);
-  --chart-3: oklch(0.6 0.2 280);
-  --chart-4: oklch(0.7 0.2 330);
-  --chart-5: oklch(0.65 0.22 25);
-  /* Sidebar */
-  --sidebar: oklch(0.15 0.005 250);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.78 0.16 75);
-  --sidebar-primary-foreground: oklch(0.15 0 0);
-  --sidebar-accent: oklch(0.22 0.005 250);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.78 0.16 75);
+  --destructive-foreground: oklch(0.98 0 0);
+  
+  /* Success - Green for earned credits, completed actions */
+  --success: oklch(0.70 0.18 150);
+  --success-foreground: oklch(0.98 0 0);
+  
+  /* Warning - Orange-red for warnings */
+  --warning: oklch(0.68 0.20 50);
+  --warning-foreground: oklch(0.98 0 0);
+  
+  /* ========== INTERACTIVE ELEMENTS ========== */
+  /* Borders - subtle, semi-transparent */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 8%);
+  
+  /* Ring - focus ring color (matches primary orange) */
+  --ring: oklch(0.68 0.18 45);
+  
+  /* ========== CHART COLORS ========== */
+  --chart-1: oklch(0.68 0.18 45);   /* Orange primary */
+  --chart-2: oklch(0.78 0.16 75);   /* Gold secondary */
+  --chart-3: oklch(0.60 0.20 280);  /* Purple accent */
+  --chart-4: oklch(0.70 0.18 150);  /* Green success */
+  --chart-5: oklch(0.65 0.22 25);   /* Red destructive */
+  
+  /* ========== SIDEBAR COMPONENTS ========== */
+  --sidebar: oklch(0.15 0.004 250);
+  --sidebar-foreground: oklch(0.96 0 0);
+  --sidebar-primary: oklch(0.68 0.18 45);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.22 0.004 250);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.68 0.18 45);
 }
 
-/* Light theme - Optional */
+/* ============================================================================
+   TYPOGRAPHY HIERARCHY - WIBI DESIGN SYSTEM
+   ============================================================================ */
+
+@layer base {
+  /* Display - Hero titles (56px) */
+  h1, .text-display {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Heading - Section titles (36px) */
+  h2, .text-heading {
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Subheading - Card/component titles (20px) */
+  h3, .text-subheading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  
+  /* Body Large - Intro/emphasis text (18px) */
+  .text-body-large {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  
+  /* Body - Main content (16px) - DEFAULT */
+  body, p, .text-body {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  
+  /* Body Small - Secondary text (14px) */
+  .text-body-sm, small {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  
+  /* Caption - Helper text, timestamps (12px) */
+  .text-caption {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  
+  /* Muted text - Secondary descriptions */
+  .text-muted {
+    @apply text-muted-foreground;
+  }
+  
+  /* ========== BASE ELEMENT STYLES ========== */
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  a {
+    @apply text-primary hover:text-secondary transition-colors duration-200;
+  }
+  
+  /* Smooth focus ring for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+/* Light theme - Optional (Future) */
 .light {
   --background: oklch(0.98 0 0);
   --foreground: oklch(0.15 0 0);
@@ -97,46 +237,38 @@
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.55 0.2 280);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.95 0 0);
+  --primary: oklch(0.68 0.18 45);
+  --primary-foreground: oklch(0.15 0 0);
+  --secondary: oklch(0.78 0.16 75);
   --secondary-foreground: oklch(0.15 0 0);
-  --muted: oklch(0.95 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.95 0.02 280);
+  --muted: oklch(0.90 0 0);
+  --muted-foreground: oklch(0.50 0 0);
+  --accent: oklch(0.60 0.20 280);
   --accent-foreground: oklch(0.15 0 0);
-  --destructive: oklch(0.55 0.25 25);
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.55 0.2 280);
-  --chart-1: oklch(0.55 0.2 280);
-  --chart-2: oklch(0.55 0.18 180);
-  --chart-3: oklch(0.65 0.18 75);
-  --chart-4: oklch(0.55 0.2 330);
-  --chart-5: oklch(0.55 0.22 25);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.90 0 0);
+  --input: oklch(0.90 0 0);
+  --ring: oklch(0.68 0.18 45);
+  --chart-1: oklch(0.68 0.18 45);
+  --chart-2: oklch(0.78 0.16 75);
+  --chart-3: oklch(0.60 0.20 280);
+  --chart-4: oklch(0.70 0.18 150);
+  --chart-5: oklch(0.65 0.22 25);
   --sidebar: oklch(0.98 0 0);
   --sidebar-foreground: oklch(0.15 0 0);
-  --sidebar-primary: oklch(0.55 0.2 280);
+  --sidebar-primary: oklch(0.68 0.18 45);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.95 0 0);
+  --sidebar-accent: oklch(0.90 0 0);
   --sidebar-accent-foreground: oklch(0.15 0 0);
-  --sidebar-border: oklch(0.9 0 0);
-  --sidebar-ring: oklch(0.55 0.2 280);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  --sidebar-border: oklch(0.90 0 0);
+  --sidebar-ring: oklch(0.68 0.18 45);
 }
 
 /* ============================================================================
-   ANIMATION KEYFRAMES
+   ANIMATION KEYFRAMES & UTILITIES
    ============================================================================ */
 
+/* Fade animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -146,23 +278,23 @@
   }
 }
 
-@keyframes pulse-slow {
-  0%,
-  100% {
+@keyframes fadeOut {
+  from {
     opacity: 1;
   }
-  50% {
-    opacity: 0.7;
+  to {
+    opacity: 0;
   }
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.animate-fade-in {
+  animation: fadeIn 300ms ease-out;
 }
 
+/* Slide animations - smooth entrance effects */
 @keyframes slideUp {
   from {
-    transform: translateY(10px);
+    transform: translateY(12px);
     opacity: 0;
   }
   to {
@@ -173,7 +305,7 @@
 
 @keyframes slideDown {
   from {
-    transform: translateY(-10px);
+    transform: translateY(-12px);
     opacity: 0;
   }
   to {
@@ -182,6 +314,37 @@
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 300ms ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 300ms ease-out;
+}
+
+/* Scale animations */
 @keyframes scaleIn {
   from {
     transform: scale(0.95);
@@ -193,6 +356,45 @@
   }
 }
 
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 200ms ease-out;
+}
+
+/* Pulse animations - for loading states */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Shimmer animation - for skeleton loaders */
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;
@@ -202,18 +404,77 @@
   }
 }
 
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0) 40%
+  );
+  background-size: 1000px 100%;
+}
+
+/* Bounce animation - for interactive elements */
+@keyframes bounce-soft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-soft {
+  animation: bounce-soft 2s infinite;
+}
+
+/* Spin animation - for loading spinners */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Glow effect - for badges and highlights */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 140, 66, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
 /* ============================================================================
-   SMOOTH SCROLLING
+   SCROLL BEHAVIOR & ACCESSIBILITY
    ============================================================================ */
 
 html {
   scroll-behavior: smooth;
 }
 
-/* ============================================================================
-   FOCUS VISIBLE (Accessibility)
-   ============================================================================ */
+/* Smooth transitions for reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
+/* Focus visible - accessibility */
 *:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
