@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"strconv"
+	
 	"github.com/timebankingskill/backend/internal/models"
 )
 
@@ -47,4 +49,32 @@ func (r *SessionRepository) GetAllWithFilters(limit, offset int, search, status 
 
 	err := query.Order("sessions.created_at DESC").Limit(limit).Offset(offset).Find(&sessions).Error
 	return sessions, total, err
+}
+
+// GetSessionTrend gets session count per day over the last N days
+func (r *SessionRepository) GetSessionTrend(days int) ([]models.DailyStat, error) {
+	var stats []models.DailyStat
+	
+	// Postgres specific query
+	err := r.db.Raw(`
+		SELECT 
+			TO_CHAR(created_at, 'YYYY-MM-DD') as date, 
+			COUNT(*) as value 
+		FROM sessions 
+		WHERE created_at >= NOW() - CAST($1 AS INTERVAL) 
+		GROUP BY date 
+		ORDER BY date ASC
+	`, strconv.Itoa(days)+" days").Scan(&stats).Error
+
+	return stats, err
+}
+
+// GetAverageDuration calculates the average duration of completed sessions
+func (r *SessionRepository) GetAverageDuration() (float64, error) {
+	var avg float64
+	err := r.db.Model(&models.Session{}).
+		Where("status = ?", models.StatusCompleted).
+		Select("COALESCE(AVG(duration), 0)").
+		Scan(&avg).Error
+	return avg, err
 }

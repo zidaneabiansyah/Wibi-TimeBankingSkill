@@ -16,13 +16,12 @@ func (h *SessionHandler) AdminApproveSession(c *gin.Context) {
 		return
 	}
 
-	session, err := h.sessionService.AdminApproveSession(uint(sessionID))
-	if err != nil {
+	if err := h.sessionService.AdminApproveSession(uint(sessionID)); err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Session approved by admin", session)
+	utils.SendSuccess(c, http.StatusOK, "Session approved by admin", nil)
 }
 
 // AdminRejectSession handles POST /api/v1/admin/sessions/:id/reject
@@ -33,13 +32,12 @@ func (h *SessionHandler) AdminRejectSession(c *gin.Context) {
 		return
 	}
 
-	session, err := h.sessionService.AdminRejectSession(uint(sessionID))
-	if err != nil {
+	if err := h.sessionService.AdminRejectSession(uint(sessionID)); err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Session rejected by admin", session)
+	utils.SendSuccess(c, http.StatusOK, "Session rejected by admin", nil)
 }
 
 // AdminCompleteSession handles POST /api/v1/admin/sessions/:id/complete
@@ -50,11 +48,10 @@ func (h *SessionHandler) AdminCompleteSession(c *gin.Context) {
 		return
 	}
 
-	session, err := h.sessionService.AdminCompleteSession(uint(sessionID))
-	if err != nil {
+	if err := h.sessionService.AdminCompleteSession(uint(sessionID)); err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Session marked as completed by admin", session)
+	utils.SendSuccess(c, http.StatusOK, "Session marked as completed by admin", nil)
 }

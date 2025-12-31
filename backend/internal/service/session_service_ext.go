@@ -2,131 +2,118 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/timebankingskill/backend/internal/models"
 )
 
-// AdminApproveSession approves a session by admin override
-func (s *SessionService) AdminApproveSession(sessionID uint) (*models.Session, error) {
+// AdminApproveSession approves a session on behalf of a teacher (or admin override)
+func (s *SessionService) AdminApproveSession(sessionID uint) error {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if session.Status != models.SessionStatusPending {
-		return nil, errors.New("only pending sessions can be approved")
+	if session.Status != models.StatusPending {
+		return errors.New("session is not pending")
 	}
 
-	session.Status = models.SessionStatusScheduled
+	session.Status = models.StatusApproved
+
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, err
+		return err
 	}
 
-	// Notify both parties
-	go s.notificationService.CreateNotification(session.StudentID, "Your session has been approved by admin", "session", session.ID)
-	go s.notificationService.CreateNotification(session.TeacherID, "Session approved by admin", "session", session.ID)
+	// Send notifications
+	s.notificationService.CreateNotification(
+		session.StudentID,
+		models.NotificationTypeSession,
+		"Session Approved",
+		"Your session has been approved by admin.",
+		map[string]interface{}{"session_id": session.ID},
+	)
+	
+	s.notificationService.CreateNotification(
+		session.TeacherID,
+		models.NotificationTypeSession,
+		"Session Approved",
+		"You have a new session approved by admin.",
+		map[string]interface{}{"session_id": session.ID},
+	)
 
-	return session, nil
+	return nil
 }
 
-// AdminRejectSession rejects a session by admin override
-func (s *SessionService) AdminRejectSession(sessionID uint) (*models.Session, error) {
+// AdminRejectSession rejects a session
+func (s *SessionService) AdminRejectSession(sessionID uint) error {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if session.Status != models.SessionStatusPending {
-		return nil, errors.New("only pending sessions can be rejected")
+	if session.Status != models.StatusPending {
+		return errors.New("session is not pending")
 	}
 
-	session.Status = models.SessionStatusCancelled // Or rejected? Repo uses Cancelled usually for end state
-	// Looking at models, there is no "Rejected", usually cancelled.
-	// But let's check status consts. Standard is Cancelled.
-	
-	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, err
-	}
-
-	go s.notificationService.CreateNotification(session.StudentID, "Your session was rejected by admin", "session", session.ID)
-	
-	return session, nil
+	session.Status = models.StatusRejected
+	return s.sessionRepo.Update(session)
 }
 
 // AdminCompleteSession completes a session by admin override (releases funds)
-func (s *SessionService) AdminCompleteSession(sessionID uint) (*models.Session, error) {
+func (s *SessionService) AdminCompleteSession(sessionID uint) error {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if session.Status == models.SessionStatusCompleted {
-		return nil, errors.New("session is already completed")
+	if session.Status == models.StatusCompleted {
+		return errors.New("session is already completed")
 	}
-
-	// Use existing logic for completion?
-	// confirmCompletionInternal handles transfer.
-	// We should probably reuse that logic or replicate it safely.
-	// For simplicity in extension, let's replicate the transfer-if-needed logic or better, expose complete method.
-	// Existing confirmCompletion checks for student ID.
-	// Let's implement transfer manually here safe for admin.
 
 	// 1. Update status
-	session.Status = models.SessionStatusCompleted
+	session.Status = models.StatusCompleted
 	now := time.Now()
 	session.CompletedAt = &now
+	session.CreditReleased = true
 	
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, err
+		return err
 	}
 
-	// 2. Transfer credits
-	amount := float64(session.Duration) / 60.0 * session.HourlyRate
-	if err := s.transactionRepo.Create(&models.Transaction{
-		UserID:      session.TeacherID,
-		Type:        models.TransactionTypeEarned,
-		Amount:      amount,
-		Description: fmt.Sprintf("Earned from session #%d (Admin completed)", session.ID),
-		ReferenceID: session.ID,
-		ReferenceType: "session",
-	}); err != nil {
-		return nil, err
-	}
-	
-	// Increment teacher balance
-	s.userRepo.UpdateCreditBalance(session.TeacherID, amount)
+	// 2. Transfer credits using session.CreditAmount
+	amount := session.CreditAmount
 
-	// Release hold for student (record spending officially if hold logic used, or just deducting if held)
-	// Platform uses "Hold" on booking. "Spent" on completion.
-	// System assumes hold was created on booking. We need to convert Hold to Spent.
-	// TransactionRepo logic usually handles this.
-	// Let's simple create "Spent" transaction for student to balance the "Hold" if we track it, 
-	// OR essentially checks 'Hold' transaction and marks it processed.
-	// Given previous implementation complexity, let's look at `ConfirmCompletion`.
-	// It calls `s.transactionRepo.TransferCredits` usually?
-	// `transaction_repository.go` didn't show TransferCredits.
-	// Usage in `session_service.go` would clarify.
-	// Assuming simple credit flow for now: Student paid to Hold. Admin creates "Spent" and "Earned".
-	
-	// Create Spent for student
-	if err := s.transactionRepo.Create(&models.Transaction{
-		UserID:      session.StudentID,
-		Type:        models.TransactionTypeSpent,
-		Amount:      amount,
-		Description: fmt.Sprintf("Paid for session #%d (Admin completed)", session.ID),
-		ReferenceID: session.ID,
-		ReferenceType: "session",
-	}); err != nil {
-		// Log error
+	// Create earned transaction for teacher
+	earnedTransaction := &models.Transaction{
+		UserID:        session.TeacherID,
+		Type:          models.TransactionEarned,
+		Amount:        amount,
+		BalanceBefore: 0,
+		BalanceAfter:  0,
+		Description:   "Earned from session (Admin completed)",
+		SessionID:     &session.ID,
 	}
-	// Deduct student balance (if not already deducted by hold - usually hold deducts but marks as hold)
-	// If hold deducts, we don't deduct again.
-	// Let's assume Hold deducts. Then we just log "Spent" for record? 
-	// To be safe, let's just mark status Completed.
+	_ = s.transactionRepo.Create(earnedTransaction)
 	
-	go s.notificationService.CreateNotification(session.TeacherID, "Session marked completed by admin", "session", session.ID)
+	// Create spent transaction for student
+	spentTransaction := &models.Transaction{
+		UserID:        session.StudentID,
+		Type:          models.TransactionSpent,
+		Amount:        -amount,
+		BalanceBefore: 0,
+		BalanceAfter:  0,
+		Description:   "Spent on session (Admin completed)",
+		SessionID:     &session.ID,
+	}
+	_ = s.transactionRepo.Create(spentTransaction)
 	
-	return session, nil
+	s.notificationService.CreateNotification(
+		session.TeacherID,
+		models.NotificationTypeSession,
+		"Session Completed",
+		"Session marked completed by admin.",
+		map[string]interface{}{"session_id": session.ID},
+	)
+	
+	return nil
 }
