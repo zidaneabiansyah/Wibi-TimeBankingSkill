@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"strconv"
+
 	"github.com/timebankingskill/backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -14,6 +16,7 @@ type TransactionRepositoryInterface interface {
 	CountTotal() (int64, error)
 	GetTotalVolume() (float64, error)
 	GetAllWithFilters(limit, offset int, typeFilter, search string) ([]models.Transaction, int64, error)
+	GetCreditVolumeTrend(days int) ([]models.DailyStat, error)
 }
 
 // TransactionRepository handles database operations for transactions
@@ -79,4 +82,21 @@ func (r *TransactionRepository) GetUserTransactionHistory(userID uint, limit, of
 		Find(&transactions).Error
 
 	return transactions, total, err
+}
+
+// GetCreditVolumeTrend gets credit transaction volume over the last N days
+func (r *TransactionRepository) GetCreditVolumeTrend(days int) ([]models.DailyStat, error) {
+	var stats []models.DailyStat
+	
+	err := r.db.Raw(`
+		SELECT 
+			TO_CHAR(created_at, 'YYYY-MM-DD') as date, 
+			SUM(amount) as value 
+		FROM transactions 
+		WHERE created_at >= NOW() - CAST(? AS INTERVAL) 
+		GROUP BY date 
+		ORDER BY date ASC
+	`, strconv.Itoa(days)+" days").Scan(&stats).Error
+
+	return stats, err
 }

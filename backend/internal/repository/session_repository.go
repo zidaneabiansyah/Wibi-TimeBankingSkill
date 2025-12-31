@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/timebankingskill/backend/internal/models"
@@ -28,6 +29,7 @@ type SessionRepositoryInterface interface {
 	CountTotal() (int64, error)
 	CountCompleted() (int64, error)
 	GetAllWithFilters(limit, offset int, search, status string) ([]models.Session, int64, error)
+	GetSessionTrend(days int) ([]models.DailyStat, error)
 }
 
 type SessionRepository struct {
