@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/layout";
 import { ProtectedRoute } from "@/components/auth";
+import { TimeCreditsDisplay } from "@/components/ui/time-credits-display";
+import { SessionCard } from "@/components/ui/session-card";
 import { useAuthStore } from "@/stores/auth.store";
 import { useUserStore } from "@/stores/user.store";
 import { useSessionStore } from "@/stores/session.store";
@@ -18,7 +20,8 @@ import TransactionDetailModal from "@/components/transaction/TransactionDetailMo
 import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
 import { ErrorState } from "@/components/ui/error-state";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Calendar, Award, Receipt } from "lucide-react";
+import { motion } from "framer-motion";
+import { Calendar, Award, Receipt, Zap, TrendingUp, Users, Star } from "lucide-react";
 import type { Transaction, Session, Skill } from "@/types";
 
 // Format date
@@ -109,139 +112,224 @@ function DashboardContent() {
                         </div>
                     </div>
 
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Credit Balance</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold">
+                    {/* Stats Cards - Animated Grid */}
+                    <motion.div 
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            hidden: { opacity: 0 },
+                            visible: {
+                                opacity: 1,
+                                transition: {
+                                    staggerChildren: 0.08,
+                                    delayChildren: 0.1,
+                                },
+                            },
+                        }}
+                    >
+                        {/* Credit Balance Card */}
+                        <motion.div
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                            }}
+                        >
+                            <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                        <Zap className="h-4 w-4 text-secondary" />
+                                        Credit Balance
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
                                     {isLoading ? (
                                         <LoadingSkeleton className="h-9 w-20" />
                                     ) : (
-                                        ((user?.credit_balance || 0) - (user?.credit_held || 0)).toFixed(1)
+                                        <div>
+                                            <div className="text-3xl font-bold text-primary">
+                                                {((user?.credit_balance || 0) - (user?.credit_held || 0)).toFixed(1)}
+                                            </div>
+                                            <div className="flex flex-col gap-2 mt-2 text-xs">
+                                                <p className="text-muted-foreground">Available credits</p>
+                                                {(user?.credit_held || 0) > 0 && (
+                                                    <p className="text-secondary font-medium flex items-center gap-1">
+                                                        <span className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
+                                                        {user?.credit_held?.toFixed(1)} held in escrow
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
-                                </div>
-                                <div className="flex flex-col gap-1 mt-1 text-xs">
-                                    <p className="text-muted-foreground">Available credits</p>
-                                    {(user?.credit_held || 0) > 0 && (
-                                        <p className="text-amber-500 font-medium flex items-center gap-1">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                            {user?.credit_held?.toFixed(1)} held in escrow
-                                        </p>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Sessions as Teacher</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold">
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        {/* Sessions as Teacher */}
+                        <motion.div
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                            }}
+                        >
+                            <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                        <Users className="h-4 w-4 text-secondary" />
+                                        Teaching
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
                                     {isLoading ? (
                                         <LoadingSkeleton className="h-9 w-16" />
                                     ) : (
-                                        stats?.total_sessions_as_teacher || 0
+                                        <div>
+                                            <div className="text-3xl font-bold text-primary">
+                                                {stats?.total_sessions_as_teacher || 0}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground mt-2">
+                                                {isLoading ? (
+                                                    <LoadingSkeleton className="h-3 w-24" />
+                                                ) : (
+                                                    `${stats?.total_credits_earned?.toFixed(1) || '0.0'} credits earned`
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                    {isLoading ? (
-                                        <LoadingSkeleton className="h-3 w-24 mt-1" />
-                                    ) : (
-                                        `${stats?.total_credits_earned?.toFixed(1) || '0.0'} credits earned`
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Sessions as Student</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold">
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        {/* Sessions as Student */}
+                        <motion.div
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                            }}
+                        >
+                            <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                        <TrendingUp className="h-4 w-4 text-secondary" />
+                                        Learning
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
                                     {isLoading ? (
                                         <LoadingSkeleton className="h-9 w-16" />
                                     ) : (
-                                        stats?.total_sessions_as_student || 0
+                                        <div>
+                                            <div className="text-3xl font-bold text-primary">
+                                                {stats?.total_sessions_as_student || 0}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground mt-2">
+                                                {isLoading ? (
+                                                    <LoadingSkeleton className="h-3 w-24" />
+                                                ) : (
+                                                    `${stats?.total_credits_spent?.toFixed(1) || '0.0'} credits spent`
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        {/* Average Rating */}
+                        <motion.div
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                            }}
+                        >
+                            <Card className="border-border/40 hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                        <Star className="h-4 w-4 text-secondary fill-secondary" />
+                                        Your Rating
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
                                     {isLoading ? (
-                                        <LoadingSkeleton className="h-3 w-24 mt-1" />
+                                        <LoadingSkeleton className="h-9 w-12" />
                                     ) : (
-                                        `${stats?.total_credits_spent?.toFixed(1) || '0.0'} credits spent`
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-3xl font-bold text-secondary">
+                                                    {stats?.average_rating_as_teacher?.toFixed(1) || 'N/A'}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground mt-2">As teacher</p>
+                                        </div>
                                     )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Average Rating</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center">
-                                    <div className="text-3xl font-bold">
-                                        {isLoading ? (
-                                            <LoadingSkeleton className="h-9 w-12" />
-                                        ) : (
-                                            stats?.average_rating_as_teacher?.toFixed(1) || 'N/A'
-                                        )}
-                                    </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-yellow-400 ml-1">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1">As teacher</p>
-                            </CardContent>
-                        </Card>
-                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    </motion.div>
 
                     {/* Pending Requests Alert */}
                     {pendingRequests.length > 0 && (
-                        <Card className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
-                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                                    </svg>
-                                    {pendingRequests.length} Pending Request{pendingRequests.length > 1 ? 's' : ''}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                <p className="text-sm text-muted-foreground">Students are waiting for your approval</p>
-                                <div className="space-y-2">
-                                    {pendingRequests.slice(0, 3).map((session: Session) => (
-                                        <div key={session.id} className="flex items-center justify-between p-2 bg-white dark:bg-slate-900 rounded">
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium">{session.student?.full_name}</p>
-                                                <p className="text-xs text-muted-foreground">{session.title}</p>
-                                            </div>
-                                            <Button size="sm" variant="outline" onClick={() => handleOpenApprovalModal(session)}>
-                                                Review
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 to-transparent hover:border-secondary/50 transition-all duration-300">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-lg flex items-center gap-2 text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
+                                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                        </svg>
+                                        {pendingRequests.length} Pending Request{pendingRequests.length > 1 ? 's' : ''}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <p className="text-sm text-muted-foreground">Students are waiting for your approval</p>
+                                    <div className="space-y-2">
+                                        {pendingRequests.slice(0, 3).map((session: Session) => (
+                                            <motion.div
+                                                key={session.id}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                className="flex items-center justify-between p-3 bg-muted/30 border border-border/20 rounded-lg hover:bg-muted/50 transition-colors"
+                                            >
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-semibold truncate">{session.student?.full_name}</p>
+                                                    <p className="text-xs text-muted-foreground truncate">{session.title}</p>
+                                                </div>
+                                                <Button size="sm" className="ml-2 bg-primary hover:bg-primary/90" onClick={() => handleOpenApprovalModal(session)}>
+                                                    Review
+                                                </Button>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                    {pendingRequests.length > 3 && (
+                                        <Link href="/dashboard/sessions">
+                                            <Button size="sm" variant="ghost" className="w-full text-primary hover:text-primary/80">
+                                                View All ({pendingRequests.length}) →
                                             </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                                {pendingRequests.length > 3 && (
-                                    <Link href="/dashboard/sessions">
-                                        <Button size="sm" variant="ghost" className="w-full">
-                                            View All ({pendingRequests.length})
-                                        </Button>
-                                    </Link>
-                                )}
-                            </CardContent>
-                        </Card>
+                                        </Link>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     )}
 
                     {/* Upcoming Sessions */}
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Upcoming Sessions</h2>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.1 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 className="text-2xl font-bold">Upcoming Sessions</h2>
+                                <p className="text-sm text-muted-foreground mt-1">Your scheduled learning and teaching sessions</p>
+                            </div>
                             <Link href="/dashboard/sessions">
-                                <Button variant="ghost" size="sm">View All</Button>
+                                <Button variant="outline" className="border-border/40 hover:border-primary/50">View All</Button>
                             </Link>
                         </div>
                         {upcomingSessions.length === 0 ? (
@@ -256,50 +344,76 @@ function DashboardContent() {
                                 variant="card"
                             />
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <motion.div 
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true, amount: 0.1 }}
+                                variants={{
+                                    hidden: { opacity: 0 },
+                                    visible: {
+                                        opacity: 1,
+                                        transition: {
+                                            staggerChildren: 0.08,
+                                        },
+                                    },
+                                }}
+                            >
                                 {upcomingSessions.map((session: Session) => (
-                                    <Card key={session.id}>
-                                        <CardHeader>
-                                            <div className="flex justify-between items-start">
-                                                <CardTitle className="text-lg">{session.title}</CardTitle>
-                                                <Badge>{session.status}</Badge>
-                                            </div>
-                                            <CardDescription>
-                                                {session.scheduled_at ? formatDate(session.scheduled_at) : 'Not scheduled'}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="space-y-2 text-sm">
-                                                <div className="flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <polyline points="12 6 12 12 16 14" />
-                                                    </svg>
-                                                    <span>{session.duration} hour{session.duration !== 1 ? 's' : ''}</span>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                                        <circle cx="12" cy="7" r="4" />
-                                                    </svg>
-                                                    <span>
-                                                        {session.teacher_id === user?.id 
-                                                            ? `Teaching ${session.student?.full_name || 'Student'}`
-                                                            : `Learning from ${session.teacher?.full_name || 'Teacher'}`}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter>
-                                            <Link href={`/dashboard/sessions`} className="w-full">
-                                                <Button variant="outline" size="sm" className="w-full">View Details</Button>
-                                            </Link>
-                                        </CardFooter>
-                                    </Card>
+                                    <motion.div
+                                        key={session.id}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 20 },
+                                            visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                                        }}
+                                    >
+                                        <Link href={`/dashboard/sessions`}>
+                                            <Card className="h-full border-border/30 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer group">
+                                                <CardHeader className="pb-4">
+                                                    <div className="flex justify-between items-start gap-2">
+                                                        <div className="flex-1 min-w-0">
+                                                            <CardTitle className="text-lg group-hover:text-primary transition-colors truncate">
+                                                                {session.title}
+                                                            </CardTitle>
+                                                            <CardDescription className="text-xs mt-1">
+                                                                {session.scheduled_at ? formatDate(session.scheduled_at) : 'Not scheduled'}
+                                                            </CardDescription>
+                                                        </div>
+                                                        <Badge variant="outline" className="shrink-0 capitalize border-border/50">
+                                                            {session.status}
+                                                        </Badge>
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent className="space-y-3">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Calendar className="h-4 w-4 text-secondary" />
+                                                        <span>{session.duration} hour{session.duration !== 1 ? 's' : ''}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Users className="h-4 w-4 text-secondary" />
+                                                        <span className="truncate">
+                                                            {session.teacher_id === user?.id 
+                                                                ? `Teaching ${session.student?.full_name || 'Student'}`
+                                                                : `Learning from ${session.teacher?.full_name || 'Teacher'}`}
+                                                        </span>
+                                                    </div>
+                                                </CardContent>
+                                                <CardFooter className="pt-0">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        className="w-full border-border/40 hover:border-primary/50 group-hover:bg-primary/5 transition-all"
+                                                    >
+                                                        View Details →
+                                                    </Button>
+                                                </CardFooter>
+                                            </Card>
+                                        </Link>
+                                    </motion.div>
                                 ))}
-                            </div>
+                            </motion.div>
                         )}
-                    </div>
+                    </motion.div>
 
     {/* Leaderboard Section */}
                     <div>
