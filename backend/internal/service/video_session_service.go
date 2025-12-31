@@ -17,6 +17,7 @@ type VideoSessionService struct {
 	sessionRepo      *repository.SessionRepository
 	userRepo         *repository.UserRepository
 	notificationSvc  *NotificationService
+	jitsiSvc         *JitsiService
 	config           *config.Config
 }
  
@@ -25,7 +26,9 @@ func NewVideoSessionServiceWithNotification(
 	videoSessionRepo *repository.VideoSessionRepository,
 	sessionRepo *repository.SessionRepository,
 	userRepo *repository.UserRepository,
+	userRepo *repository.UserRepository,
 	notificationSvc *NotificationService,
+	jitsiSvc *JitsiService,
 	cfg *config.Config,
 ) *VideoSessionService {
 	return &VideoSessionService{
@@ -33,6 +36,7 @@ func NewVideoSessionServiceWithNotification(
 		sessionRepo:      sessionRepo,
 		userRepo:         userRepo,
 		notificationSvc:  notificationSvc,
+		jitsiSvc:         jitsiSvc,
 		config:           cfg,
 	}
 }
@@ -48,32 +52,63 @@ func (s *VideoSessionService) StartVideoSession(userID uint, sessionID uint) (*d
 	if session.TeacherID != userID && session.StudentID != userID {
 		return nil, errors.New("you are not authorized to start this video session")
 	}
- 
-	// Room ID is typically a combination of session ID and a unique string
-	roomID := fmt.Sprintf("wibi-session-%d-%d", sessionID, time.Now().Unix())
- 
-	now := time.Now()
-	videoSession := &models.VideoSession{
-		SessionID: sessionID,
-		RoomID:    roomID,
-		StartedAt: &now,
-		Status:    "active",
-	}
- 
-	created, err := s.videoSessionRepo.CreateVideoSession(videoSession)
-	if err != nil {
-		return nil, err
-	}
- 
+
+    var roomID string
+    var videoSession *models.VideoSession
+
+	// Check if there is already an active video session
+    existingSession, err := s.videoSessionRepo.GetActiveVideoSession(sessionID)
+    if err == nil && existingSession != nil {
+        // Reuse existing session
+        roomID = existingSession.RoomID
+        videoSession = existingSession
+    } else {
+        // Create new session
+        // Room ID is typically a combination of session ID and a unique string
+        roomID = fmt.Sprintf("wibi-session-%d-%d", sessionID, time.Now().Unix())
+    
+        now := time.Now()
+        newSession := &models.VideoSession{
+            SessionID: sessionID,
+            RoomID:    roomID,
+            StartedAt: &now,
+            Status:    "active",
+        }
+    
+        videoSession, err = s.videoSessionRepo.CreateVideoSession(newSession)
+        if err != nil {
+            return nil, err
+        }
+    }
+
 	// Generate Jitsi URL
 	jitsiURL := fmt.Sprintf("%s/%s", s.config.Jitsi.BaseURL, roomID)
- 
+    
+    // Generate JWT Token
+    user, err := s.userRepo.GetByID(userID)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Teacher is moderator
+    isModerator := session.TeacherID == userID
+    token, err := s.jitsiSvc.GenerateToken(user, roomID, isModerator)
+    if err != nil {
+        // Log error but proceed without token (might work for free tier/testing if disabled)
+        // Or fail if strict. Let's log and return error for now as JaaS requires it.
+        fmt.Printf("Failed to generate Jitsi token: %v\n", err)
+        // For now preventing failure if key is missing, but ideally should return error
+        if s.config.Jitsi.PrivateKey != "" {
+            return nil, fmt.Errorf("failed to generate video token: %w", err)
+        }
+    }
+
 	return &dto.StartVideoSessionResponse{
-		ID:       created.ID,
-		RoomID:   created.RoomID,
+		ID:       videoSession.ID,
+		RoomID:   videoSession.RoomID,
 		JitsiURL: jitsiURL,
-		Status:   created.Status,
-		// Token: would be generated here if using Jitsi as a Service auth
+		Status:   videoSession.Status,
+		Token:    token,
 	}, nil
 }
  

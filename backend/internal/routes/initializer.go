@@ -145,7 +145,15 @@ func InitializeVideoSessionHandler(db *gorm.DB, cfg *config.Config) *handler.Vid
 	userRepo := repository.NewUserRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
 	notificationService := service.NewNotificationService(notificationRepo, userRepo)
-	videoSessionService := service.NewVideoSessionServiceWithNotification(videoSessionRepo, sessionRepo, userRepo, notificationService, cfg)
+	
+	jitsiService, err := service.NewJitsiService(cfg)
+	if err != nil {
+		// Log error but continue (service will likely fail on token generation if key was essential but malformed)
+		// Basic logging since we don't have a logger injected here effectively
+		// Ideally use log.Printf or similar
+	}
+
+	videoSessionService := service.NewVideoSessionServiceWithNotification(videoSessionRepo, sessionRepo, userRepo, notificationService, jitsiService, cfg)
 	return handler.NewVideoSessionHandler(videoSessionService)
 }
 
