@@ -213,6 +213,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				adminProtected.GET("/sessions", adminHandler.GetAllSessions)         // GET /api/v1/admin/sessions
 				adminProtected.GET("/transactions", adminHandler.GetAllTransactions) // GET /api/v1/admin/transactions
 				adminProtected.GET("/skills", adminHandler.GetAllSkills)             // GET /api/v1/admin/skills
+				adminProtected.GET("/reports", adminHandler.GetAllReports)           // GET /api/v1/admin/reports
+				adminProtected.GET("/forum/threads", adminHandler.GetAllForumThreads) // GET /api/v1/admin/forum/threads
 				adminProtected.POST("/sessions/:id/resolve", sessionHandler.AdminResolveSession) // POST /api/v1/admin/sessions/:id/resolve
 			}
 
