@@ -10,7 +10,7 @@ interface ForumCategoryCardProps {
 
 export function ForumCategoryCard({ category }: ForumCategoryCardProps) {
     return (
-        <Link href={`/community/forum/${category.id}`}>
+        <Link href={`/community/forum/category/${category.id}`}>
             <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:shadow-xl hover:border-primary/50 hover:-translate-y-1">
                 {/* Gradient background accent */}
                 <div
