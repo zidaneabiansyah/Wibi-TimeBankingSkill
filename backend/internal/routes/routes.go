@@ -222,6 +222,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				analytics.GET("/credits", analyticsHandler.GetCreditStatistics)   // GET /api/v1/analytics/credits
 				analytics.GET("/user", analyticsHandler.GetUserAnalytics)         // GET /api/v1/analytics/user
 				analytics.GET("/user/:userId", analyticsHandler.GetUserAnalyticsByID) // GET /api/v1/analytics/user/:userId
+				analytics.POST("/export", analyticsHandler.ExportAnalytics)       // POST /api/v1/analytics/export
 			}
 
 			// Sessions routes
