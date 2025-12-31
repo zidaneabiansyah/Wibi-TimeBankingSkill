@@ -29,6 +29,7 @@ export function Header() {
 
     const navLinks = [
         { href: '/marketplace', label: 'Marketplace' },
+        { href: '/community', label: 'Community' },
         { href: '/dashboard', label: 'Dashboard' },
         { href: '/dashboard/sessions', label: 'Sessions' },
         { href: '/profile', label: 'Profile' },
