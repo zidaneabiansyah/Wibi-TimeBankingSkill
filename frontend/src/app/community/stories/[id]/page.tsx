@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, Heart, MessageCircle, ArrowLeft, Reply, Trash2 } from 'lucide-react';
+import { Loader2, Heart, MessageCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { communityService } from '@/lib/services/community.service';
 import { useCommunityStore } from '@/stores/community.store';
+import { NestedComments } from '@/components/community';
 import type { SuccessStory, StoryComment } from '@/types';
 import { toast } from 'sonner';
 
@@ -58,7 +59,7 @@ export default function StoryDetailPage() {
         try {
             setSubmitting(true);
             const newComment = await communityService.createComment(storyId, commentContent, replyingTo);
-            setStoryComments([newComment, ...storyComments]);
+            setStoryComments([...storyComments, newComment]);
             setCommentContent('');
             setReplyingTo(null);
             toast.success('Comment posted successfully!');
@@ -101,6 +102,13 @@ export default function StoryDetailPage() {
         }
     };
 
+    const handleReply = (commentId: number) => {
+        setReplyingTo(commentId);
+        // Scroll to comment form
+        const formArea = document.getElementById('comment-form');
+        formArea?.scrollIntoView({ behavior: 'smooth' });
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -119,6 +127,8 @@ export default function StoryDetailPage() {
             </div>
         );
     }
+
+    const replyingToComment = replyingTo ? storyComments.find(c => c.id === replyingTo) : null;
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
@@ -192,67 +202,43 @@ export default function StoryDetailPage() {
                 </div>
 
                 {/* Comment form */}
-                <div className="bg-card rounded-lg border border-border p-6 mb-8">
+                <div id="comment-form" className="bg-card rounded-lg border border-border p-6 mb-8">
                     <h2 className="text-xl font-semibold mb-4">Leave a Comment</h2>
-                    {replyingTo && (
-                        <div className="flex items-center justify-between bg-muted/50 p-2 rounded mb-2 text-sm">
-                            <span>Replying to a comment...</span>
-                            <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="h-auto p-1">Cancel</Button>
+                    {replyingToComment && (
+                        <div className="flex items-center justify-between bg-muted/50 p-3 rounded-lg mb-4 text-sm border border-border">
+                            <div>
+                                <span className="text-muted-foreground">Replying to </span>
+                                <span className="font-medium">{replyingToComment.author?.full_name || 'Anonymous'}</span>
+                                <p className="text-muted-foreground text-xs mt-1 line-clamp-1">{replyingToComment.content}</p>
+                            </div>
+                            <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="h-auto p-2">
+                                Cancel
+                            </Button>
                         </div>
                     )}
                     <textarea
                         value={commentContent}
                         onChange={(e) => setCommentContent(e.target.value)}
-                        placeholder="Write your comment here..."
+                        placeholder={replyingTo ? "Write your reply..." : "Write your comment here..."}
                         className="w-full p-3 border border-border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
                         rows={4}
                     />
                     <Button onClick={handleComment} disabled={submitting}>
-                        {submitting ? 'Posting...' : 'Post Comment'}
+                        {submitting ? 'Posting...' : replyingTo ? 'Post Reply' : 'Post Comment'}
                     </Button>
                 </div>
 
                 {/* Comments */}
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold mb-4">Comments ({storyComments.length})</h2>
-                    {storyComments.length === 0 ? (
-                        <p className="text-muted-foreground text-center py-8">No comments yet. Be the first to comment!</p>
-                    ) : (
-                        storyComments.map((comment) => (
-                            <div key={comment.id} className="bg-card rounded-lg border border-border p-4">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-semibold">{comment.author?.full_name || 'Anonymous'}</p>
-                                        <span className="text-xs text-muted-foreground">
-                                            {new Date(comment.created_at).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                             setReplyingTo(comment.id);
-                                             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                                        }}
-                                        className="text-muted-foreground hover:text-foreground"
-                                    >
-                                        <Reply className="h-4 w-4 mr-1" /> Reply
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleDeleteComment(comment.id)}
-                                        className="text-destructive hover:text-destructive"
-                                    >
-                                        <Trash2 className="h-4 w-4 mr-1" /> Delete
-                                    </Button>
-                                </div>
-                                <p className="text-muted-foreground">{comment.content}</p>
-                            </div>
-                        ))
-                    )}
+                    <NestedComments 
+                        comments={storyComments} 
+                        onReply={handleReply}
+                        onDelete={handleDeleteComment}
+                    />
                 </div>
             </div>
         </div>
     );
 }
+
