@@ -13,6 +13,7 @@ import (
 	"github.com/timebankingskill/backend/internal/config"
 	"github.com/timebankingskill/backend/internal/middleware"
 	"github.com/timebankingskill/backend/internal/models"
+	"github.com/timebankingskill/backend/internal/utils"
 	whiteboardws "github.com/timebankingskill/backend/internal/websocket"
 	"gorm.io/gorm"
 )
@@ -39,16 +40,24 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	analyticsHandler := InitializeAnalyticsHandler(db)
 	availabilityHandler := InitializeAvailabilityHandler(db)
 
-	// WebSocket endpoints (before auth middleware)
+	// WebSocket endpoints (manually handle auth since headers aren't sent in WS handshake)
 	router.GET("/api/v1/ws/whiteboard/:sessionId", func(c *gin.Context) {
-		// Get user from context (set by auth middleware)
-		userID, exists := c.Get("user_id")
-		if !exists {
-			c.JSON(401, gin.H{"error": "Unauthorized"})
+		tokenString := c.Query("token")
+		if tokenString == "" {
+			c.JSON(401, gin.H{"error": "Unauthorized: Missing token"})
 			return
 		}
 
-		userName, _ := c.Get("user_name")
+		claims, err := utils.ValidateToken(tokenString)
+		if err != nil {
+			c.JSON(401, gin.H{"error": "Unauthorized: Invalid token"})
+			return
+		}
+
+		userID := uint(claims.UserID)
+		// Assuming claims has Username or we can fetch it, for now using "User" prefix if not in claims
+		userName := "User " + fmt.Sprint(userID) 
+
 		sessionIDStr := c.Param("sessionId")
 
 		// Parse session ID
