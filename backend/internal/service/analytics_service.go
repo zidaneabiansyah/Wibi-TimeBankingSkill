@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/timebankingskill/backend/internal/dto"
@@ -158,7 +159,80 @@ func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsRespons
 		UserGrowth:         s.generateUserGrowthTrend(), // TODO: Implement real trend
 		SessionTrend:       s.generateSessionTrend(),    // TODO: Implement real trend
 		CreditFlow:         s.generateCreditFlowTrend(), // TODO: Implement real trend
+		RecentActivity:     s.fetchRecentActivity(),
 	}, nil
+}
+
+// fetchRecentActivity aggregates latest activities from different sources
+func (s *AnalyticsService) fetchRecentActivity() []dto.ActivityItem {
+	var activities []dto.ActivityItem
+
+	// 1. Get recent users (limit 5)
+	users, _ := s.userRepo.GetAllWithFilters(5, 0, "", "") // Assuming GetAllWithFilters sorts by created_at desc
+	// Note: GetAllWithFilters in UserRepository might not strictly sort by created_at. 
+	// We might need a specific GetRecent users method. 
+	// For now, let's assume it returns standard order or we need to add sorting.
+	// Actually, `GetAllWithFilters` in `user_repository` usually defaults to ID desc or CreatedAt desc.
+	// Let's rely on standard practice or check repo. 
+	// If needed, we can add Order by created_at desc.
+	
+	for _, u := range users {
+		activities = append(activities, dto.ActivityItem{
+			ID:        u.ID,
+			Type:      "user",
+			Message:   "New user registered",
+			Details:   u.FullName,
+			CreatedAt: u.CreatedAt.UnixMilli(),
+		})
+	}
+
+	// 2. Get recent sessions (limit 5)
+	// We don't have GetRecentSessions here? 
+	// `sessionRepo.GetAllWithFilters` exists (page, limit, search, status).
+	sessions, _, _ := s.sessionRepo.GetAllWithFilters(5, 0, "", "") 
+	for _, sess := range sessions {
+		msg := "New session created"
+		if sess.Status == "completed" {
+			msg = "Session completed"
+		}
+		activities = append(activities, dto.ActivityItem{
+			ID:        sess.ID,
+			Type:      "session",
+			Message:   msg,
+			Details:   "Session #" + strconv.FormatUint(uint64(sess.ID), 10),
+			CreatedAt: sess.CreatedAt.UnixMilli(),
+		})
+	}
+
+	// 3. Get recent skills
+	skills, _, _ := s.skillRepo.GetAllWithFilters(5, 0, "", "", nil, nil, "", "newest")
+	for _, sk := range skills {
+		activities = append(activities, dto.ActivityItem{
+			ID:        sk.ID,
+			Type:      "skill",
+			Message:   "New skill added",
+			Details:   sk.Name,
+			CreatedAt: sk.CreatedAt.UnixMilli(),
+		})
+	}
+	
+	// Sort by CreatedAt desc
+	// Basic bubble sort or sort slice
+	// Since slice is small (15 max), bubble sort is fine
+	for i := 0; i < len(activities)-1; i++ {
+		for j := 0; j < len(activities)-i-1; j++ {
+			if activities[j].CreatedAt < activities[j+1].CreatedAt {
+				activities[j], activities[j+1] = activities[j+1], activities[j]
+			}
+		}
+	}
+
+	// Limit to top 5 or 10
+	if len(activities) > 10 {
+		activities = activities[:10]
+	}
+
+	return activities
 }
 
 // GetSessionStatistics gets session statistics

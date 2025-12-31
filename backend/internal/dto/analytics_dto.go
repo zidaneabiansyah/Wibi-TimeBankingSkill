@@ -33,6 +33,16 @@ type PlatformAnalyticsResponse struct {
 	UserGrowth          []DateStatistic         `json:"user_growth"`
 	SessionTrend        []DateStatistic         `json:"session_trend"`
 	CreditFlow          []DateStatistic         `json:"credit_flow"`
+	RecentActivity      []ActivityItem          `json:"recent_activity"`
+}
+
+// ActivityItem represents a timeline activity item
+type ActivityItem struct {
+	ID        uint   `json:"id"`
+	Type      string `json:"type"`      // "user", "session", "skill"
+	Message   string `json:"message"`   // "New user registered", "Session completed", etc.
+	Details   string `json:"details"`   // User name, Session ID, Skill name
+	CreatedAt int64  `json:"created_at"` // Timestamp
 }
 
 // SkillStatistic represents skill statistics
