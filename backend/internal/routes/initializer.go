@@ -1,6 +1,9 @@
 package routes
 
 import (
+
+	"fmt"
+
 	"github.com/timebankingskill/backend/internal/config"
 	"github.com/timebankingskill/backend/internal/handler"
 	"github.com/timebankingskill/backend/internal/repository"

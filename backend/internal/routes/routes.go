@@ -159,6 +159,16 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			badges.GET("/:id", badgeHandler.GetBadge)           // GET /api/v1/badges/1
 		}
 
+		// Public Endorsements
+		endorsements := v1.Group("/endorsements")
+		{
+			endorsements.GET("/user/:user_id", endorsementHandler.GetEndorsementsForUser) // GET /api/v1/endorsements/user/:user_id
+			endorsements.GET("/user/:user_id/skill/:skill_id", endorsementHandler.GetEndorsementsForSkill) // GET /api/v1/endorsements/user/:user_id/skill/:skill_id
+			endorsements.GET("/count/:user_id/:skill_id", endorsementHandler.GetEndorsementCount)         // GET /api/v1/endorsements/count/:user_id/:skill_id
+			endorsements.GET("/top-skills", endorsementHandler.GetTopEndorsedSkills)      // GET /api/v1/endorsements/top-skills
+			endorsements.GET("/user/:user_id/reputation", endorsementHandler.GetUserReputation) // GET /api/v1/endorsements/user/:user_id/reputation
+		}
+
 		// Public Leaderboards
 		leaderboards := v1.Group("/leaderboard")
 		{
@@ -367,12 +377,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			endorsements := protected.Group("/endorsements")
 			{
 				endorsements.POST("", endorsementHandler.CreateEndorsement)                   // POST /api/v1/endorsements
-				endorsements.GET("/user/:user_id", endorsementHandler.GetEndorsementsForUser) // GET /api/v1/endorsements/user/:user_id
-				endorsements.GET("/user/:user_id/skill/:skill_id", endorsementHandler.GetEndorsementsForSkill) // GET /api/v1/endorsements/user/:user_id/skill/:skill_id
-				endorsements.GET("/count/:user_id/:skill_id", endorsementHandler.GetEndorsementCount)         // GET /api/v1/endorsements/count/:user_id/:skill_id
 				endorsements.DELETE("/:id", endorsementHandler.DeleteEndorsement)             // DELETE /api/v1/endorsements/:id
-				endorsements.GET("/top-skills", endorsementHandler.GetTopEndorsedSkills)      // GET /api/v1/endorsements/top-skills
-				endorsements.GET("/user/:user_id/reputation", endorsementHandler.GetUserReputation) // GET /api/v1/endorsements/user/:user_id/reputation
 			}
 		}
 	}

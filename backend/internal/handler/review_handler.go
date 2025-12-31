@@ -68,7 +68,7 @@ func (h *ReviewHandler) GetReview(c *gin.Context) {
 // GetUserReviews retrieves all reviews for a user
 // GET /api/v1/users/:userId/reviews
 func (h *ReviewHandler) GetUserReviews(c *gin.Context) {
-	userIDStr := c.Param("userId")
+	userIDStr := c.Param("id")
 	userID, err := strconv.ParseUint(userIDStr, 10, 32)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
@@ -108,7 +108,7 @@ func (h *ReviewHandler) GetUserReviews(c *gin.Context) {
 // GetUserReviewsByType retrieves reviews for a user filtered by type (teacher/student)
 // GET /api/v1/users/:userId/reviews/:type
 func (h *ReviewHandler) GetUserReviewsByType(c *gin.Context) {
-	userIDStr := c.Param("userId")
+	userIDStr := c.Param("id")
 	userID, err := strconv.ParseUint(userIDStr, 10, 32)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
@@ -154,7 +154,7 @@ func (h *ReviewHandler) GetUserReviewsByType(c *gin.Context) {
 // GetUserRatingSummary retrieves rating summary for a user
 // GET /api/v1/users/:userId/rating-summary
 func (h *ReviewHandler) GetUserRatingSummary(c *gin.Context) {
-	userIDStr := c.Param("userId")
+	userIDStr := c.Param("id")
 	userID, err := strconv.ParseUint(userIDStr, 10, 32)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
