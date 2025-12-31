@@ -309,3 +309,20 @@ func (h *BadgeHandler) GetCreditLeaderboard(c *gin.Context) {
 		"total":   len(leaderboard),
 	})
 }
+
+// DeleteBadge deletes a badge by ID (admin only)
+// DELETE /api/v1/admin/badges/:id
+func (h *BadgeHandler) DeleteBadge(c *gin.Context) {
+	badgeID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid badge ID", err)
+		return
+	}
+
+	if err := h.badgeService.DeleteBadge(uint(badgeID)); err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to delete badge", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Badge deleted successfully", nil)
+}

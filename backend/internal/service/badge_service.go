@@ -604,3 +604,8 @@ func (s *BadgeService) GetCreditLeaderboard(limit int) ([]dto.LeaderboardEntry, 
 
 	return leaderboard, nil
 }
+
+// DeleteBadge deletes a badge by ID (admin only)
+func (s *BadgeService) DeleteBadge(badgeID uint) error {
+	return s.badgeRepo.Delete(badgeID)
+}

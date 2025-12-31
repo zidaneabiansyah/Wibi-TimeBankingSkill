@@ -48,6 +48,11 @@ func (r *BadgeRepository) UpdateBadge(badge *models.Badge) error {
 	return r.db.Save(badge).Error
 }
 
+// Delete deletes a badge by ID (soft delete)
+func (r *BadgeRepository) Delete(id uint) error {
+	return r.db.Delete(&models.Badge{}, id).Error
+}
+
 // DeleteBadge deletes a badge (soft delete)
 func (r *BadgeRepository) DeleteBadge(id uint) error {
 	return r.db.Delete(&models.Badge{}, id).Error
