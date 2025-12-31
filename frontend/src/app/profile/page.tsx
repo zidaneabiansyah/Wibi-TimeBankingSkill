@@ -57,9 +57,14 @@ function ProfileContent() {
     router.push('/profile/edit');
   };
 
-  // Handle Add Skill
+  // Handle Add Skill (Teacher)
   const handleAddSkill = () => {
     router.push('/profile/skills/new');
+  };
+
+  // Handle Add Learning Skill (Student)
+  const handleAddLearningSkill = () => {
+    router.push('/profile/skills/new?type=learning');
   };
 
   // Handle Edit Skill
@@ -312,7 +317,7 @@ function ProfileContent() {
                     </div>
                     <h3 className="font-medium mb-1">Add Learning Goal</h3>
                     <p className="text-sm text-muted-foreground text-center mb-4">What skills would you like to learn?</p>
-                    <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
+                    <Button variant="outline" onClick={handleAddLearningSkill}>Add Learning Goal</Button>
                   </Card>
                 </div>
               ) : (
@@ -332,7 +337,7 @@ function ProfileContent() {
                         <p className="text-sm text-muted-foreground">{skill.notes || 'No notes'}</p>
                       </CardContent>
                       <CardFooter className="flex justify-between">
-                        <Button variant="outline" size="sm" onClick={() => handleRemoveLearningSkill(skill.id)} disabled={isDeleting === skill.id}>Remove</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleRemoveLearningSkill(skill.skill_id)} disabled={isDeleting === skill.skill_id}>Remove</Button>
                         <Button size="sm" onClick={() => handleFindTutors(skill.id, skill.skill?.name || '')}>Find Tutors</Button>
                       </CardFooter>
                     </Card>
@@ -346,7 +351,7 @@ function ProfileContent() {
                     </div>
                     <h3 className="font-medium mb-1">Add Learning Goal</h3>
                     <p className="text-sm text-muted-foreground text-center mb-4">What skills would you like to learn?</p>
-                    <Button variant="outline" onClick={handleAddSkill}>Add Skill</Button>
+                    <Button variant="outline" onClick={handleAddLearningSkill}>Add Skill</Button>
                   </Card>
                 </div>
               )}

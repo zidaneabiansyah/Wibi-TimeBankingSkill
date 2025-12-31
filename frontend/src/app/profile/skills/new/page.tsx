@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,8 +19,12 @@ const SKILL_LEVELS: SkillLevel[] = ['beginner', 'intermediate', 'advanced', 'exp
 
 function AddSkillContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const type = searchParams.get('type');
+    const isLearning = type === 'learning';
+
     const { user } = useAuthStore();
-    const { skills, fetchSkills, addUserSkill, isLoading } = useSkillStore();
+    const { skills, fetchSkills, addUserSkill, addLearningSkill, isLoading } = useSkillStore();
     const [skillsLoading, setSkillsLoading] = useState(true);
 
     const [formData, setFormData] = useState({
@@ -32,6 +36,8 @@ function AddSkillContent() {
         proof_url: '',
         proof_type: 'portfolio',
         is_available: true,
+        priority: '1',
+        notes: '',
     });
 
     useEffect(() => {
@@ -73,20 +79,30 @@ function AddSkillContent() {
         }
 
         try {
-            await addUserSkill({
-                skill_id: parseInt(formData.skill_id),
-                level: formData.level,
-                description: formData.description,
-                hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : 0,
-                years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : 0,
-                proof_url: formData.proof_url,
-                proof_type: formData.proof_type,
-                online_only: false,
-                offline_only: false,
-                is_available: formData.is_available,
-            });
+            if (isLearning) {
+                await addLearningSkill({
+                    skill_id: parseInt(formData.skill_id),
+                    desired_level: formData.level,
+                    priority: parseInt(formData.priority) || 1,
+                    notes: formData.notes || '',
+                });
+                toast.success('Learning goal added successfully');
+            } else {
+                await addUserSkill({
+                    skill_id: parseInt(formData.skill_id),
+                    level: formData.level,
+                    description: formData.description,
+                    hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : 0,
+                    years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : 0,
+                    proof_url: formData.proof_url,
+                    proof_type: formData.proof_type,
+                    online_only: false,
+                    offline_only: false,
+                    is_available: formData.is_available,
+                });
+                toast.success('Skill added successfully');
+            }
 
-            toast.success('Skill added successfully');
             router.push('/profile');
         } catch (error: any) {
             toast.error(error.message || 'Failed to add skill');
@@ -100,128 +116,162 @@ function AddSkillContent() {
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-2xl mx-auto">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Add New Skill</CardTitle>
-                            <CardDescription>Share a skill you can teach with the community</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Skill Selection */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="skill_id">Skill *</Label>
-                                    <Select value={formData.skill_id} onValueChange={(value) => handleSelectChange('skill_id', value)}>
-                                        <SelectTrigger id="skill_id" disabled={skillsLoading}>
-                                            <SelectValue placeholder={skillsLoading ? 'Loading skills...' : 'Select a skill'} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {skills.map(skill => (
-                                                <SelectItem key={skill.id} value={skill.id.toString()}>
-                                                    {skill.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Proficiency Level */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="level">Proficiency Level *</Label>
-                                    <Select value={formData.level} onValueChange={(value) => handleSelectChange('level', value)}>
-                                        <SelectTrigger id="level">
-                                            <SelectValue placeholder="Select your level" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {SKILL_LEVELS.map(level => (
-                                                <SelectItem key={level} value={level}>
-                                                    {level.charAt(0).toUpperCase() + level.slice(1)}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Description */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="description">Description</Label>
-                                    <Textarea
-                                        id="description"
-                                        name="description"
-                                        placeholder="Describe your experience and what students will learn"
-                                        value={formData.description}
-                                        onChange={handleChange}
-                                        rows={4}
-                                    />
-                                </div>
-
-                                {/* Years of Experience */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="years_of_experience">Years of Experience</Label>
-                                    <Input
-                                        id="years_of_experience"
-                                        name="years_of_experience"
-                                        type="number"
-                                        placeholder="e.g., 5"
-                                        value={formData.years_of_experience}
-                                        onChange={handleChange}
-                                        min="0"
-                                    />
-                                </div>
-
-                                {/* Hourly Rate */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="hourly_rate">Hourly Rate (Credits/Hour)</Label>
-                                    <Input
-                                        id="hourly_rate"
-                                        name="hourly_rate"
-                                        type="number"
-                                        placeholder="e.g., 10"
-                                        value={formData.hourly_rate}
-                                        onChange={handleChange}
-                                        min="0"
-                                        step="0.5"
-                                    />
-                                </div>
-
-                                {/* Portfolio/Proof */}
-                                <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
-                                    <div className="space-y-1">
-                                        <Label className="text-base">Portfolio / Proof of Experience</Label>
-                                        <p className="text-xs text-muted-foreground">
-                                            Showcase your work or provide a link to a certificate to build trust.
-                                        </p>
-                                    </div>
-                                    
+                            <CardHeader>
+                                <CardTitle>{isLearning ? 'Add Learning Goal' : 'Add New Skill'}</CardTitle>
+                                <CardDescription>
+                                    {isLearning 
+                                        ? 'What skills would you like to learn from the community?' 
+                                        : 'Share a skill you can teach with the community'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    {/* Skill Selection */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="proof_url">Project or Certificate URL</Label>
-                                        <Input
-                                            id="proof_url"
-                                            name="proof_url"
-                                            placeholder="https://behance.net/your-work or https://drive.google.com/..."
-                                            value={formData.proof_url}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="proof_type">Type of Proof</Label>
-                                        <Select value={formData.proof_type} onValueChange={(value) => handleSelectChange('proof_type', value)}>
-                                            <SelectTrigger id="proof_type">
-                                                <SelectValue placeholder="Select type" />
+                                        <Label htmlFor="skill_id">Skill *</Label>
+                                        <Select value={formData.skill_id} onValueChange={(value) => handleSelectChange('skill_id', value)}>
+                                            <SelectTrigger id="skill_id" disabled={skillsLoading}>
+                                                <SelectValue placeholder={skillsLoading ? 'Loading skills...' : 'Select a skill'} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="portfolio">Portfolio / Karya</SelectItem>
-                                                <SelectItem value="certificate">Certification</SelectItem>
-                                                <SelectItem value="experience">Detailed Work History</SelectItem>
-                                                <SelectItem value="other">Other</SelectItem>
+                                                {skills.map(skill => (
+                                                    <SelectItem key={skill.id} value={skill.id.toString()}>
+                                                        {skill.name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                </div>
+
+                                    {/* Proficiency Level or Desired Level */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="level">{isLearning ? 'Desired Level *' : 'Proficiency Level *'}</Label>
+                                        <Select value={formData.level} onValueChange={(value) => handleSelectChange('level', value)}>
+                                            <SelectTrigger id="level">
+                                                <SelectValue placeholder="Select level" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {SKILL_LEVELS.map(level => (
+                                                    <SelectItem key={level} value={level}>
+                                                        {level.charAt(0).toUpperCase() + level.slice(1)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {/* Learning Fields */}
+                                    {isLearning ? (
+                                        <>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="notes">Notes/Specific Requirements</Label>
+                                                <Textarea
+                                                    id="notes"
+                                                    name="notes"
+                                                    placeholder="What specifically do you want to learn?"
+                                                    value={formData.notes}
+                                                    onChange={handleChange}
+                                                    rows={4}
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="priority">Priority (1-5)</Label>
+                                                <Input
+                                                    id="priority"
+                                                    name="priority"
+                                                    type="number"
+                                                    min="1"
+                                                    max="5"
+                                                    value={formData.priority}
+                                                    onChange={handleChange}
+                                                />
+                                                <p className="text-xs text-muted-foreground">High priority goals are shown first.</p>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        /* Teaching Fields */
+                                        <>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="description">Description</Label>
+                                                <Textarea
+                                                    id="description"
+                                                    name="description"
+                                                    placeholder="Describe your experience and what students will learn"
+                                                    value={formData.description}
+                                                    onChange={handleChange}
+                                                    rows={4}
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="years_of_experience">Years of Experience</Label>
+                                                <Input
+                                                    id="years_of_experience"
+                                                    name="years_of_experience"
+                                                    type="number"
+                                                    placeholder="e.g., 5"
+                                                    value={formData.years_of_experience}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="hourly_rate">Hourly Rate (Credits/Hour)</Label>
+                                                <Input
+                                                    id="hourly_rate"
+                                                    name="hourly_rate"
+                                                    type="number"
+                                                    placeholder="e.g., 10"
+                                                    value={formData.hourly_rate}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                    step="0.5"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
+                                                <div className="space-y-1">
+                                                    <Label className="text-base">Portfolio / Proof of Experience</Label>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Showcase your work or provide a link to a certificate to build trust.
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="proof_url">Project or Certificate URL</Label>
+                                                    <Input
+                                                        id="proof_url"
+                                                        name="proof_url"
+                                                        placeholder="https://behance.net/your-work or https://drive.google.com/..."
+                                                        value={formData.proof_url}
+                                                        onChange={handleChange}
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="proof_type">Type of Proof</Label>
+                                                    <Select value={formData.proof_type} onValueChange={(value) => handleSelectChange('proof_type', value)}>
+                                                        <SelectTrigger id="proof_type">
+                                                            <SelectValue placeholder="Select type" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="portfolio">Portfolio / Karya</SelectItem>
+                                                            <SelectItem value="certificate">Certification</SelectItem>
+                                                            <SelectItem value="experience">Detailed Work History</SelectItem>
+                                                            <SelectItem value="other">Other</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
 
                                 {/* Actions */}
                                 <div className="flex gap-4">
                                     <Button type="submit" disabled={isLoading || skillsLoading}>
-                                        {isLoading ? 'Adding...' : 'Add Skill'}
+                                        {isLoading ? 'Adding...' : isLearning ? 'Add Learning Goal' : 'Add Skill'}
                                     </Button>
                                     <Button
                                         type="button"
