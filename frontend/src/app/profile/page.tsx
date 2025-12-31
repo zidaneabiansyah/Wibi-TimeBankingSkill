@@ -19,6 +19,7 @@ import { communityService } from '@/lib/services/community.service';
 import { AvailabilityForm } from '@/components/profile/AvailabilityForm';
 import ReviewList from '@/components/review/ReviewList';
 import { BadgeCollection } from '@/components/badge/BadgeCollection';
+import { ReputationCard } from '@/components/profile/ReputationCard';
 
 function getInitials(name: string) {
   return name
@@ -208,6 +209,7 @@ function ProfileContent() {
               <TabsTrigger value="learning">Learning Wishlist</TabsTrigger>
               <TabsTrigger value="reviews">Reviews</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
+              <TabsTrigger value="reputation">Reputation</TabsTrigger>
               <TabsTrigger value="availability">Availability</TabsTrigger>
             </TabsList>
 
@@ -358,6 +360,13 @@ function ProfileContent() {
             {/* Badges Tab */}
             <TabsContent value="badges" className="mt-6">
               <BadgeCollection userId={user.id} showPin={true} />
+            </TabsContent>
+
+            {/* Reputation Tab */}
+            <TabsContent value="reputation" className="mt-6">
+              <div className="max-w-2xl">
+                <ReputationCard userId={user.id} userName={user.full_name} />
+              </div>
             </TabsContent>
 
             {/* Availability Tab */}
