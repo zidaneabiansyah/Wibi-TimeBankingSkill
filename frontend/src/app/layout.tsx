@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/auth";
 import { AdminProvider } from "@/components/auth/AdminProvider";
 import AchievementPopup from "@/components/gamification/AchievementPopup";
 import { PWAProvider } from "@/components/providers/pwa-provider";
+import { MobileOptimization } from "@/components/mobile-optimization";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -94,6 +95,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <MobileOptimization />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
