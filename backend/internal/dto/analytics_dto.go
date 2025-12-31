@@ -27,6 +27,7 @@ type PlatformAnalyticsResponse struct {
 	TotalSessions       int                     `json:"total_sessions"`
 	CompletedSessions   int                     `json:"completed_sessions"`
 	TotalCreditsInFlow  float64                 `json:"total_credits_in_flow"`
+	AverageSessionDuration float64              `json:"average_session_duration"`
 	AverageSessionRating float64                `json:"average_session_rating"`
 	TotalSkills         int                     `json:"total_skills"`
 	TopSkills           []SkillStatistic        `json:"top_skills"`

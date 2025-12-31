@@ -30,6 +30,7 @@ type SessionRepositoryInterface interface {
 	CountCompleted() (int64, error)
 	GetAllWithFilters(limit, offset int, search, status string) ([]models.Session, int64, error)
 	GetSessionTrend(days int) ([]models.DailyStat, error)
+	GetAverageDuration() (float64, error)
 }
 
 type SessionRepository struct {

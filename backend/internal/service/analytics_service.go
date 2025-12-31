@@ -135,10 +135,14 @@ func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsRespons
 		totalCredits = 0
 	}
 
-	// 4. Get rating stats
+	// 4. Get rating and duration stats
 	avgRating, err := s.reviewRepo.GetAveragePlatformRating()
 	if err != nil {
 		avgRating = 0
+	}
+	avgDuration, err := s.sessionRepo.GetAverageDuration()
+	if err != nil {
+		avgDuration = 0
 	}
 
 	// 5. Get skill stats
@@ -148,18 +152,19 @@ func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsRespons
 	}
 
 	return &dto.PlatformAnalyticsResponse{
-		TotalUsers:         int(totalUsers),
-		ActiveUsers:        int(activeUsers),
-		TotalSessions:      int(totalSessions),
-		CompletedSessions:  int(completedSessions),
-		TotalCreditsInFlow: totalCredits,
-		AverageSessionRating: avgRating,
-		TotalSkills:        int(totalSkills),
-		TopSkills:          s.getTopSkills(),            // Implement real top skills
-		UserGrowth:         s.generateUserGrowthTrend(), // Real trend
-		SessionTrend:       s.generateSessionTrend(),    // TODO: Implement real trend
-		CreditFlow:         s.generateCreditFlowTrend(), // TODO: Implement real trend
-		RecentActivity:     s.fetchRecentActivity(),
+		TotalUsers:             int(totalUsers),
+		ActiveUsers:            int(activeUsers),
+		TotalSessions:          int(totalSessions),
+		CompletedSessions:      int(completedSessions),
+		TotalCreditsInFlow:     totalCredits,
+		AverageSessionRating:   avgRating,
+		AverageSessionDuration: avgDuration,
+		TotalSkills:            int(totalSkills),
+		TopSkills:              s.getTopSkills(),
+		UserGrowth:             s.generateUserGrowthTrend(),
+		SessionTrend:           s.generateSessionTrend(),
+		CreditFlow:             s.generateCreditFlowTrend(),
+		RecentActivity:         s.fetchRecentActivity(),
 	}, nil
 }
 
