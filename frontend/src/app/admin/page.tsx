@@ -155,7 +155,11 @@ export default function AdminDashboard() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Avg. Session Duration</span>
-                                <span className="text-sm font-medium">1.5 hours</span>{/* TODO: Add duration tracking */}
+                                <span className="text-sm font-medium">
+                                    {analytics?.average_session_duration 
+                                        ? `${(analytics.average_session_duration / 60).toFixed(1)} hours` 
+                                        : '0 hours'}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Avg. Rating</span>

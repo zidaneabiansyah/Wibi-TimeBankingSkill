@@ -65,7 +65,6 @@ export default function CommunityPage() {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            // TODO: Replace with actual admin API endpoints
             const [threadsRes, reportsRes] = await Promise.all([
                 fetch('/api/v1/admin/forum/threads', {
                     headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },

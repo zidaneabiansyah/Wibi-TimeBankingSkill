@@ -61,7 +61,6 @@ export default function GamificationPage() {
     const fetchBadges = async () => {
         try {
             setIsLoading(true);
-            // TODO: Replace with actual admin API endpoint
             const response = await fetch('/api/v1/admin/badges', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('admin_token')}`,

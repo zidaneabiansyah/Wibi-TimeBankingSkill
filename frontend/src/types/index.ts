@@ -627,6 +627,7 @@ export interface PlatformAnalytics {
     completed_sessions: number;
     total_credits_in_flow: number;
     average_session_rating: number;
+    average_session_duration: number;
     total_skills: number;
     top_skills: SkillStatistic[];
     user_growth: DateStatistic[];
