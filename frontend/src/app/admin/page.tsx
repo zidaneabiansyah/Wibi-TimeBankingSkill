@@ -117,33 +117,29 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950">
-                                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium">New user registered</p>
-                                    <p className="text-xs text-muted-foreground">2 minutes ago</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-950">
-                                    <GraduationCap className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium">Session completed</p>
-                                    <p className="text-xs text-muted-foreground">15 minutes ago</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-950">
-                                    <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium">New skill added</p>
-                                    <p className="text-xs text-muted-foreground">1 hour ago</p>
-                                </div>
-                            </div>
+                            {analytics?.recent_activity && analytics.recent_activity.length > 0 ? (
+                                analytics.recent_activity.map((activity) => (
+                                    <div key={`${activity.type}-${activity.id}`} className="flex items-center gap-4">
+                                        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                                            activity.type === 'user' ? 'bg-blue-100 dark:bg-blue-950' :
+                                            activity.type === 'session' ? 'bg-green-100 dark:bg-green-950' :
+                                            'bg-purple-100 dark:bg-purple-950'
+                                        }`}>
+                                            {activity.type === 'user' && <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+                                            {activity.type === 'session' && <GraduationCap className="h-5 w-5 text-green-600 dark:text-green-400" />}
+                                            {activity.type === 'skill' && <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium">{activity.message}</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {activity.details} • {new Date(activity.created_at).toLocaleString()}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No recent activity</p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -159,15 +155,19 @@ export default function AdminDashboard() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Avg. Session Duration</span>
-                                <span className="text-sm font-medium">1.5 hours</span>
+                                <span className="text-sm font-medium">1.5 hours</span>{/* TODO: Add duration tracking */}
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Avg. Rating</span>
-                                <span className="text-sm font-medium">4.8 / 5.0</span>
+                                <span className="text-sm font-medium">{analytics?.average_session_rating.toFixed(1) || '0.0'} / 5.0</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Completion Rate</span>
-                                <span className="text-sm font-medium">92%</span>
+                                <span className="text-sm font-medium">
+                                    {analytics && analytics.total_sessions > 0 
+                                        ? Math.round((analytics.completed_sessions / analytics.total_sessions) * 100) 
+                                        : 0}%
+                                </span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Active Teachers</span>

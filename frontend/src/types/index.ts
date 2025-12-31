@@ -632,6 +632,15 @@ export interface PlatformAnalytics {
     user_growth: DateStatistic[];
     session_trend: DateStatistic[];
     credit_flow: DateStatistic[];
+    recent_activity: ActivityItem[];
+}
+
+export interface ActivityItem {
+    id: number;
+    type: string;
+    message: string;
+    details: string;
+    created_at: number;
 }
 
 export interface SkillStatistic {
