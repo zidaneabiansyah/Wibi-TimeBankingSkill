@@ -30,6 +30,28 @@ func (h *AdminHandler) GetAllUsers(c *gin.Context) {
 	})
 }
 
+// GetAllSessions gets all sessions (admin only)
+// GET /api/v1/admin/sessions
+func (h *AdminHandler) GetAllSessions(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	search := c.Query("search")
+	filter := c.Query("status")
+
+	sessions, total, err := h.adminService.GetAllSessions(page, limit, search, filter)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch sessions", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Sessions retrieved successfully", gin.H{
+		"data":  sessions,
+		"total": total,
+		"page":  page,
+		"limit": limit,
+	})
+}
+
 // GetAllTransactions gets all transactions (admin only)
 // GET /api/v1/admin/transactions
 func (h *AdminHandler) GetAllTransactions(c *gin.Context) {
@@ -163,7 +185,7 @@ func (h *AdminHandler) ResolveReport(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetUint("user_id") // Assuming auth middleware sets this
+	adminID := c.GetUint("user_id")
 
 	if err := h.adminService.ResolveReport(uint(id), adminID, "Resolved by admin"); err != nil {
 		utils.SendError(c, http.StatusInternalServerError, "Failed to resolve report", err)

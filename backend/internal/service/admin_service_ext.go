@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors" // Added for errors.New
 	"github.com/timebankingskill/backend/internal/models"
 )
 
@@ -99,4 +98,27 @@ func (s *AdminService) ActivateUser(userID uint) error {
 	}
 	user.IsActive = true
 	return s.userRepo.Update(user)
+}
+
+// ResolveReport resolves a report
+func (s *AdminService) ResolveReport(reportID, adminID uint, resolution string) error {
+	report, err := s.reportRepo.GetByID(reportID)
+	if err != nil {
+		return err
+	}
+	report.Status = "resolved"
+	report.ResolvedBy = &adminID
+	report.Resolution = resolution
+	return s.reportRepo.Update(report)
+}
+
+// DismissReport dismisses a report
+func (s *AdminService) DismissReport(reportID, adminID uint) error {
+	report, err := s.reportRepo.GetByID(reportID)
+	if err != nil {
+		return err
+	}
+	report.Status = "dismissed"
+	report.ResolvedBy = &adminID
+	return s.reportRepo.Update(report)
 }
