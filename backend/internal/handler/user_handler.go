@@ -65,6 +65,7 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 		Bio:         req.Bio,
 		PhoneNumber: req.PhoneNumber,
 		Location:    req.Location,
+		Avatar:      req.Avatar,
 	}
 
 	err := h.userService.UpdateUserProfile(userID.(uint), updates)
