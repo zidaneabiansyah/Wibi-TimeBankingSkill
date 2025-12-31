@@ -82,8 +82,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 
 		// Create mock user object
 		user := &models.User{
-			ID:       userID.(uint),
-			FullName: userName.(string),
+			ID:       userID,
+			FullName: userName,
 		}
 
 		// Handle whiteboard connection
