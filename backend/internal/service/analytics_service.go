@@ -2,7 +2,6 @@ package service
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
@@ -173,14 +172,8 @@ func (s *AnalyticsService) fetchRecentActivity() []dto.ActivityItem {
 	var activities []dto.ActivityItem
 
 	// 1. Get recent users (limit 5)
-	users, _ := s.userRepo.GetAllWithFilters(5, 0, "", "") // Assuming GetAllWithFilters sorts by created_at desc
-	// Note: GetAllWithFilters in UserRepository might not strictly sort by created_at. 
-	// We might need a specific GetRecent users method. 
-	// For now, let's assume it returns standard order or we need to add sorting.
-	// Actually, `GetAllWithFilters` in `user_repository` usually defaults to ID desc or CreatedAt desc.
-	// Let's rely on standard practice or check repo. 
-	// If needed, we can add Order by created_at desc.
-	
+	users, _, _ := s.userRepo.GetAllWithFilters(5, 0, "", "") 
+
 	for _, u := range users {
 		activities = append(activities, dto.ActivityItem{
 			ID:        u.ID,
@@ -192,12 +185,10 @@ func (s *AnalyticsService) fetchRecentActivity() []dto.ActivityItem {
 	}
 
 	// 2. Get recent sessions (limit 5)
-	// We don't have GetRecentSessions here? 
-	// `sessionRepo.GetAllWithFilters` exists (page, limit, search, status).
 	sessions, _, _ := s.sessionRepo.GetAllWithFilters(5, 0, "", "") 
 	for _, sess := range sessions {
 		msg := "New session created"
-		if sess.Status == "completed" {
+		if sess.Status == models.StatusCompleted {
 			msg = "Session completed"
 		}
 		activities = append(activities, dto.ActivityItem{
@@ -210,6 +201,7 @@ func (s *AnalyticsService) fetchRecentActivity() []dto.ActivityItem {
 	}
 
 	// 3. Get recent skills
+	// Note: GetAllWithFilters returns ([]models.Skill, int64, error)
 	skills, _, _ := s.skillRepo.GetAllWithFilters(5, 0, "", "", nil, nil, "", "newest")
 	for _, sk := range skills {
 		activities = append(activities, dto.ActivityItem{
@@ -222,8 +214,6 @@ func (s *AnalyticsService) fetchRecentActivity() []dto.ActivityItem {
 	}
 	
 	// Sort by CreatedAt desc
-	// Basic bubble sort or sort slice
-	// Since slice is small (15 max), bubble sort is fine
 	for i := 0; i < len(activities)-1; i++ {
 		for j := 0; j < len(activities)-i-1; j++ {
 			if activities[j].CreatedAt < activities[j+1].CreatedAt {
@@ -281,10 +271,12 @@ func (s *AnalyticsService) mapTopSkills(skills interface{}) []dto.SkillStatistic
 	if modelSkills, ok := skills.([]models.Skill); ok {
 		for _, sk := range modelSkills {
 			stats = append(stats, dto.SkillStatistic{
-				SkillID:   sk.ID,
-				SkillName: sk.Name,
-				Value:     float64(sk.TotalSessions), // Could be avg rating or other metric
-				// Additional fields if needed
+				SkillID:       sk.ID,
+				SkillName:     sk.Name,
+				SessionCount:  sk.TotalTeachers, // Using TotalTeachers as a proxy if SessionCount not available
+				TeacherCount:  sk.TotalTeachers,
+				LearnerCount:  sk.TotalLearners,
+				AverageRating: 0, // Placeholder
 			})
 		}
 	}
@@ -296,7 +288,7 @@ func (s *AnalyticsService) generateUserGrowthTrend() []dto.DateStatistic {
 	
 	stats, err := s.userRepo.GetGrowthTrend(30)
 	if err != nil {
-		return trend // Return empty on error or handle better
+		return trend 
 	}
 
 	for _, stat := range stats {

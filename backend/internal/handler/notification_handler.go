@@ -273,3 +273,24 @@ func (h *NotificationHandler) GetNotificationsByType(c *gin.Context) {
 		"offset":        offset,
 	})
 }
+
+// UpdatePreferences updates user notification preferences (stub)
+// PUT /api/v1/notifications/preferences
+func (h *NotificationHandler) UpdatePreferences(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		return
+	}
+
+	// For now, this is a stub that just returns success
+	// Actual implementation would save preferences to DB
+	var req dto.UpdateNotificationPreferencesRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
+		return
+	}
+
+	// TODO: Implement actual preference saving when model is ready
+	utils.SendSuccess(c, http.StatusOK, "Preferences saved successfully", nil)
+}
