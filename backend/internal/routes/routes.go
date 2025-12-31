@@ -215,7 +215,14 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				adminProtected.GET("/skills", adminHandler.GetAllSkills)             // GET /api/v1/admin/skills
 				adminProtected.GET("/reports", adminHandler.GetAllReports)           // GET /api/v1/admin/reports
 				adminProtected.GET("/forum/threads", adminHandler.GetAllForumThreads) // GET /api/v1/admin/forum/threads
+				
+				adminProtected.POST("/users/:id/suspend", adminHandler.SuspendUser)   // POST /api/v1/admin/users/:id/suspend
+				adminProtected.POST("/users/:id/activate", adminHandler.ActivateUser) // POST /api/v1/admin/users/:id/activate
+				
 				adminProtected.POST("/sessions/:id/resolve", sessionHandler.AdminResolveSession) // POST /api/v1/admin/sessions/:id/resolve
+				adminProtected.POST("/sessions/:id/approve", sessionHandler.AdminApproveSession) // POST /api/v1/admin/sessions/:id/approve
+				adminProtected.POST("/sessions/:id/reject", sessionHandler.AdminRejectSession)   // POST /api/v1/admin/sessions/:id/reject
+				adminProtected.POST("/sessions/:id/complete", sessionHandler.AdminCompleteSession) // POST /api/v1/admin/sessions/:id/complete
 			}
 
 			// Analytics Routes (Authenticated)
