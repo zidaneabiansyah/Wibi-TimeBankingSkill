@@ -1,17 +1,37 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Zap, BookOpen, TrendingUp, Users, Star, ArrowRight } from "lucide-react";
+
+// Animation variants
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" }
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Header/Navigation */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
                 <Image 
                   src="/wibi.png" 
@@ -21,20 +41,20 @@ export default function Home() {
                   className="rounded-md"
                 />
               </div>
-              <span className="text-xl font-bold text-primary">Wibi</span>
-            </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Wibi</span>
+            </Link>
             <nav className="hidden md:flex items-center gap-8">
-              <Link href="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Marketplace</Link>
-              <Link href="/community" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Community</Link>
-              <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How It Works</Link>
-              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
+              <Link href="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Marketplace</Link>
+              <Link href="/community" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Community</Link>
+              <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">How It Works</Link>
+              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">About</Link>
             </nav>
             <div className="flex items-center gap-3">
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">Login</Button>
+                <Button variant="ghost" size="sm">Login</Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="bg-primary hover:bg-primary/90">Sign Up</Button>
+                <Button size="sm">Sign Up</Button>
               </Link>
             </div>
           </div>
@@ -42,38 +62,92 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative w-full py-16 md:py-24 lg:py-32 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/30" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+      <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-secondary/5 via-transparent to-transparent opacity-40" />
         
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div 
+          className="relative mx-auto max-w-container px-4 sm:px-6 lg:px-8"
+          initial="initial"
+          animate="animate"
+          variants={staggerContainer}
+        >
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                  <span className="text-primary">Time</span> = Currency
-                </h1>
-                <p className="max-w-[540px] text-lg text-muted-foreground md:text-xl leading-relaxed">
-                  Platform peer-to-peer skill exchange untuk pelajar menggunakan sistem Time Banking. 
-                  Belajar dan ajarkan skill tanpa uang, hanya dengan waktu.
-                </p>
+            {/* Left Content */}
+            <motion.div className="space-y-8" variants={fadeInUp}>
+              <div className="space-y-6">
+                <motion.div variants={fadeInUp}>
+                  <Badge variant="outline" className="px-3 py-1 text-xs font-medium border-primary/30 text-primary bg-primary/5 w-fit">
+                    🎓 Welcome to Wibi
+                  </Badge>
+                </motion.div>
+
+                <motion.h1 
+                  className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight"
+                  variants={fadeInUp}
+                >
+                  <span className="text-foreground">Your Time Is</span>
+                  <br />
+                  <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse-slow">
+                    Valuable
+                  </span>
+                </motion.h1>
+
+                <motion.p 
+                  className="max-w-[540px] text-lg text-muted-foreground leading-relaxed"
+                  variants={fadeInUp}
+                >
+                  Platform peer-to-peer skill exchange untuk pelajar. Belajar dan ajarkan skill tanpa uang, hanya dengan waktu. Bergabunglah dengan komunitas kami.
+                </motion.p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/register">
-                  <Button size="lg" className="w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+                variants={fadeInUp}
+              >
+                <Link href="/register" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto px-8 font-semibold flex items-center gap-2">
                     Get Started
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/marketplace">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 border-border hover:bg-muted">
+                <Link href="/marketplace" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 font-semibold">
                     Explore Skills
                   </Button>
                 </Link>
-              </div>
-            </div>
-            <div className="flex items-center justify-center lg:justify-end">
-              <div className="relative w-full max-w-[480px] aspect-square">
+              </motion.div>
+
+              {/* Trust Indicators */}
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-6 pt-4 text-sm text-muted-foreground"
+                variants={fadeInUp}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                    <Users className="h-4 w-4 text-primary" />
+                  </div>
+                  <span>1,200+ Active Users</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10">
+                    <Zap className="h-4 w-4 text-secondary" />
+                  </div>
+                  <span>15K+ Hours Exchanged</span>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right - Hero Image */}
+            <motion.div 
+              className="flex items-center justify-center lg:justify-end"
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <div className="relative w-full max-w-[500px] aspect-square">
                 <Image 
                   src="/undraw_sharing-knowledge_2jx3.svg" 
                   alt="Students exchanging skills" 
@@ -82,202 +156,251 @@ export default function Home() {
                   priority
                 />
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* How It Works */}
-      <section className="relative w-full py-16 md:py-24 lg:py-32 border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
-            <Badge variant="outline" className="px-4 py-1.5 text-sm border-primary/30 text-primary bg-primary/5">
-              How It Works
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Time Banking Simplified
-            </h2>
-            <p className="max-w-[700px] text-muted-foreground text-lg">
-              Exchange your skills without money. 1 hour teaching = 1 Time Credit = 1 hour learning.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
-            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors h-full">
-              <CardHeader className="pb-4 flex-1 flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary">
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                  </svg>
-                </div>
-                <CardTitle className="text-lg whitespace-nowrap">1. List Your Skills</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed">Create your profile and list skills you can teach others. Set your availability and teaching preferences.</p>
-              </CardContent>
-            </Card>
-            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors h-full">
-              <CardHeader className="pb-4 flex-1 flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary">
-                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-                    <line x1="16" x2="16" y1="2" y2="6"/>
-                    <line x1="8" x2="8" y1="2" y2="6"/>
-                    <line x1="3" x2="21" y1="10" y2="10"/>
-                  </svg>
-                </div>
-                <CardTitle className="text-lg whitespace-nowrap">2. Book Sessions</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed">Browse the marketplace and book sessions with tutors. Use your time credits to learn new skills.</p>
-              </CardContent>
-            </Card>
-            <Card className="relative flex flex-col items-center text-center bg-card/50 border-border/50 hover:border-primary/30 transition-colors h-full">
-              <CardHeader className="pb-4 flex-1 flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary">
-                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                    <path d="m9 12 2 2 4-4"/>
-                  </svg>
-                </div>
-                <CardTitle className="text-lg whitespace-nowrap">3. Earn & Spend Credits</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed">Earn time credits by teaching others. Spend your credits to learn new skills from other tutors.</p>
-              </CardContent>
-            </Card>
-          </div>
+      <section className="relative w-full py-20 md:py-32 lg:py-40 border-t border-border/40">
+        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp}>
+              <Badge className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary border-primary/20">
+                How It Works
+              </Badge>
+            </motion.div>
+            <motion.h2 
+              className="text-4xl md:text-5xl font-bold tracking-tight"
+              variants={fadeInUp}
+            >
+              Time Banking Made Simple
+            </motion.h2>
+            <motion.p 
+              className="max-w-[700px] text-muted-foreground text-lg"
+              variants={fadeInUp}
+            >
+              1 hour teaching = 1 Time Credit = 1 hour learning. No money involved, pure skill exchange.
+            </motion.p>
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            {[
+              {
+                step: "1",
+                title: "List Your Skills",
+                description: "Create your profile and showcase skills you can teach. Set your availability and teaching style.",
+                icon: BookOpen,
+                color: "from-primary/20 to-primary/5"
+              },
+              {
+                step: "2",
+                title: "Book Sessions",
+                description: "Browse marketplace and book sessions with experienced tutors. Choose time that fits your schedule.",
+                icon: Zap,
+                color: "from-secondary/20 to-secondary/5"
+              },
+              {
+                step: "3",
+                title: "Earn & Learn",
+                description: "Earn time credits by teaching. Spend them to learn from other skilled tutors in our community.",
+                icon: TrendingUp,
+                color: "from-accent/20 to-accent/5"
+              },
+            ].map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+                <motion.div key={idx} variants={fadeInUp}>
+                  <Card className="relative h-full flex flex-col overflow-hidden group hover:border-primary transition-all duration-300">
+                    {/* Gradient background */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                    
+                    <CardHeader className="relative pb-4 flex-1">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                          <IconComponent className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm font-bold text-primary mb-1">Step {item.step}</div>
+                          <CardTitle className="text-lg">{item.title}</CardTitle>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="relative pt-0">
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        {item.description}
+                      </p>
+                    </CardContent>
+
+                    {/* Accent line on hover */}
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
 
       {/* Featured Skills */}
-      <section className="relative w-full py-16 md:py-24 lg:py-32 bg-muted/30 border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
-            <Badge variant="outline" className="px-4 py-1.5 text-sm border-primary/30 text-primary bg-primary/5">
-              Skills Marketplace
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Popular Skills</h2>
-            <p className="max-w-[700px] text-muted-foreground text-lg">
-              Discover the most sought-after skills on our platform.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
-            <Card className="group bg-card/50 border-border/50 hover:border-primary/30 hover:bg-card/80 transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
-                    📐
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Mathematics</CardTitle>
-                    <CardDescription className="text-sm">Algebra, Calculus, Statistics</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border-0">Academic</Badge>
-                  <Badge variant="outline" className="border-border/50">25+ Tutors</Badge>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Link href="/marketplace" className="w-full">
-                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
-                    Explore
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-            <Card className="group bg-card/50 border-border/50 hover:border-primary/30 hover:bg-card/80 transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-400">
-                    💻
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Programming</CardTitle>
-                    <CardDescription className="text-sm">Web Dev, Python, Mobile Apps</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-green-500/10 text-green-400 hover:bg-green-500/20 border-0">Technical</Badge>
-                  <Badge variant="outline" className="border-border/50">18+ Tutors</Badge>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Link href="/marketplace" className="w-full">
-                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
-                    Explore
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-            <Card className="group bg-card/50 border-border/50 hover:border-primary/30 hover:bg-card/80 transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-400">
-                    🌐
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Language</CardTitle>
-                    <CardDescription className="text-sm">English, Japanese, Public Speaking</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border-0">Language</Badge>
-                  <Badge variant="outline" className="border-border/50">30+ Tutors</Badge>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Link href="/marketplace" className="w-full">
-                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
-                    Explore
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-          </div>
+      <section className="relative w-full py-20 md:py-32 lg:py-40 border-t border-border/40">
+        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp}>
+              <Badge className="px-3 py-1 text-xs font-medium bg-secondary/10 text-secondary border-secondary/20">
+                Popular Skills
+              </Badge>
+            </motion.div>
+            <motion.h2 
+              className="text-4xl md:text-5xl font-bold tracking-tight"
+              variants={fadeInUp}
+            >
+              Explore What's Popular
+            </motion.h2>
+            <motion.p 
+              className="max-w-[700px] text-muted-foreground text-lg"
+              variants={fadeInUp}
+            >
+              Browse the most sought-after skills taught by our community members.
+            </motion.p>
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            {[
+              {
+                emoji: "📐",
+                title: "Mathematics",
+                description: "Algebra, Calculus, Statistics",
+                category: "Academic",
+                tutors: "25+"
+              },
+              {
+                emoji: "💻",
+                title: "Programming",
+                description: "Web Dev, Python, Mobile Apps",
+                category: "Technical",
+                tutors: "18+"
+              },
+              {
+                emoji: "🌐",
+                title: "Languages",
+                description: "English, Japanese, Korean",
+                category: "Language",
+                tutors: "30+"
+              },
+            ].map((skill, idx) => (
+              <motion.div key={idx} variants={fadeInUp}>
+                <Card className="relative h-full flex flex-col group overflow-hidden hover:border-primary transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="text-3xl">{skill.emoji}</div>
+                      <Badge variant="outline" className="text-xs">{skill.tutors} Tutors</Badge>
+                    </div>
+                    <CardTitle className="text-lg">{skill.title}</CardTitle>
+                    <CardDescription className="text-sm">{skill.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-4 flex-1">
+                    <Badge className="bg-primary/10 text-primary border-primary/20">{skill.category}</Badge>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/marketplace" className="w-full">
+                      <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
+                        Explore <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </Link>
+                  </CardFooter>
+
+                  {/* Accent line */}
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative w-full py-16 md:py-24 lg:py-32 overflow-hidden border-t border-border/40">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center space-y-6 text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Ready to <span className="text-primary">Start</span>?
-            </h2>
-            <p className="mx-auto max-w-[600px] text-muted-foreground text-lg">
-              Join our community today and start exchanging skills with other students.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/register">
-                <Button size="lg" className="w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                  Sign Up Now
+      <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden border-t border-border/40">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/5" />
+        
+        <motion.div 
+          className="relative mx-auto max-w-container px-4 sm:px-6 lg:px-8"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+        >
+          <div className="flex flex-col items-center space-y-8 text-center">
+            <motion.div variants={fadeInUp}>
+              <Badge className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary border-primary/20">
+                Get Started Today
+              </Badge>
+            </motion.div>
+
+            <motion.h2 
+              className="text-5xl md:text-6xl font-bold tracking-tight leading-tight"
+              variants={fadeInUp}
+            >
+              Ready to Exchange Skills?
+            </motion.h2>
+
+            <motion.p 
+              className="mx-auto max-w-[600px] text-muted-foreground text-lg leading-relaxed"
+              variants={fadeInUp}
+            >
+              Join 1,200+ students who are already learning and teaching without spending money.
+            </motion.p>
+
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 pt-4"
+              variants={fadeInUp}
+            >
+              <Link href="/register" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto px-8 font-semibold flex items-center justify-center gap-2">
+                  Sign Up Free
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/how-it-works">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 border-border hover:bg-muted">
+              <Link href="/how-it-works" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 font-semibold">
                   Learn More
                 </Button>
               </Link>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="w-full py-12 md:py-16 border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <footer className="w-full py-16 md:py-24 border-t border-border/40">
+        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-12">
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2 w-fit hover:opacity-80 transition-opacity">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                   <Image 
                     src="/wibi.png" 
@@ -288,22 +411,22 @@ export default function Home() {
                   />
                 </div>
                 <span className="text-lg font-bold text-primary">Wibi</span>
-              </div>
+              </Link>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Platform peer-to-peer skill exchange untuk pelajar menggunakan sistem Time Banking.
+                Peer-to-peer skill exchange platform using Time Banking system.
               </p>
             </div>
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground">Platform</h4>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors">Marketplace</Link>
+                  <Link href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors duration-200">Marketplace</Link>
                 </li>
                 <li>
-                  <Link href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</Link>
+                  <Link href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors duration-200">How It Works</Link>
                 </li>
                 <li>
-                  <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link>
+                  <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors duration-200">About Us</Link>
                 </li>
               </ul>
             </div>
@@ -311,26 +434,26 @@ export default function Home() {
               <h4 className="text-sm font-semibold text-foreground">Support</h4>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
+                  <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors duration-200">FAQ</Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+                  <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors duration-200">Contact</Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
+                  <Link href="/terms" className="text-muted-foreground hover:text-primary transition-colors duration-200">Terms</Link>
                 </li>
               </ul>
             </div>
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground">Connect</h4>
               <div className="flex gap-4">
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                   </svg>
                   <span className="sr-only">Facebook</span>
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                     <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
@@ -338,7 +461,7 @@ export default function Home() {
                   </svg>
                   <span className="sr-only">Instagram</span>
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
                   </svg>
@@ -347,8 +470,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Wibi Time Banking. All rights reserved.
+          <div className="pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} Wibi Time Banking. All rights reserved. • <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link> • <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link></p>
           </div>
         </div>
       </footer>
