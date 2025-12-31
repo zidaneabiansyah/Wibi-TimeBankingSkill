@@ -109,6 +109,14 @@ export const notificationService = {
     async deleteNotification(id: number): Promise<void> {
         await api.delete(`/notifications/${id}`);
     },
+
+    /**
+     * Update notification preferences
+     * @param preferences - New preferences object
+     */
+    async updatePreferences(preferences: any): Promise<void> {
+        await api.put('/notifications/preferences', preferences);
+    },
 };
 
 export default notificationService;
