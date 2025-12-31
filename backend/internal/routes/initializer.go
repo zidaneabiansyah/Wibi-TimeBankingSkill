@@ -20,7 +20,9 @@ func InitializeAuthHandler(db *gorm.DB) *handler.AuthHandler {
 // InitializeAdminHandler initializes admin handler with dependencies
 func InitializeAdminHandler(db *gorm.DB) *handler.AdminHandler {
 	adminRepo := repository.NewAdminRepository(db)
-	adminService := service.NewAdminService(adminRepo)
+	userRepo := repository.NewUserRepository(db)
+	sessionRepo := repository.NewSessionRepository(db)
+	adminService := service.NewAdminService(adminRepo, userRepo, sessionRepo)
 	return handler.NewAdminHandler(adminService)
 }
 

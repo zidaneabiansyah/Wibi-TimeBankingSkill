@@ -209,7 +209,19 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			// Admin Session Management (requires admin middleware)
 			adminProtected := protected.Group("/admin")
 			{
+				adminProtected.GET("/users", adminHandler.GetAllUsers)           // GET /api/v1/admin/users
+				adminProtected.GET("/sessions", adminHandler.GetAllSessions)     // GET /api/v1/admin/sessions
 				adminProtected.POST("/sessions/:id/resolve", sessionHandler.AdminResolveSession) // POST /api/v1/admin/sessions/:id/resolve
+			}
+
+			// Analytics Routes (Authenticated)
+			analytics := protected.Group("/analytics")
+			{
+				analytics.GET("/platform", analyticsHandler.GetPlatformAnalytics) // GET /api/v1/analytics/platform
+				analytics.GET("/sessions", analyticsHandler.GetSessionStatistics) // GET /api/v1/analytics/sessions
+				analytics.GET("/credits", analyticsHandler.GetCreditStatistics)   // GET /api/v1/analytics/credits
+				analytics.GET("/user", analyticsHandler.GetUserAnalytics)         // GET /api/v1/analytics/user
+				analytics.GET("/user/:userId", analyticsHandler.GetUserAnalyticsByID) // GET /api/v1/analytics/user/:userId
 			}
 
 			// Sessions routes
@@ -257,16 +269,6 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			progressSummary := protected.Group("/user/progress")
 			{
 				progressSummary.GET("/summary", progressHandler.GetUserProgress)             // GET /api/v1/user/progress/summary
-			}
-
-			// Analytics routes
-			analytics := protected.Group("/analytics")
-			{
-				analytics.GET("/user", analyticsHandler.GetUserAnalytics)                    // GET /api/v1/analytics/user
-				analytics.GET("/user/:userId", analyticsHandler.GetUserAnalyticsByID)        // GET /api/v1/analytics/user/:userId
-				analytics.GET("/platform", analyticsHandler.GetPlatformAnalytics)            // GET /api/v1/analytics/platform
-				analytics.GET("/sessions", analyticsHandler.GetSessionStatistics)            // GET /api/v1/analytics/sessions
-				analytics.GET("/credits", analyticsHandler.GetCreditStatistics)              // GET /api/v1/analytics/credits
 			}
 
 			// Reviews routes

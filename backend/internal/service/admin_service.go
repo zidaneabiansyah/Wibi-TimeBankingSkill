@@ -12,13 +12,21 @@ import (
 
 // AdminService handles admin business logic
 type AdminService struct {
-	adminRepo *repository.AdminRepository
+	adminRepo   *repository.AdminRepository
+	userRepo    *repository.UserRepository
+	sessionRepo *repository.SessionRepository
 }
 
 // NewAdminService creates new admin service
-func NewAdminService(adminRepo *repository.AdminRepository) *AdminService {
+func NewAdminService(
+	adminRepo *repository.AdminRepository,
+	userRepo *repository.UserRepository,
+	sessionRepo *repository.SessionRepository,
+) *AdminService {
 	return &AdminService{
-		adminRepo: adminRepo,
+		adminRepo:   adminRepo,
+		userRepo:    userRepo,
+		sessionRepo: sessionRepo,
 	}
 }
 
