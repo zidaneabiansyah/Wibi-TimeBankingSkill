@@ -26,7 +26,6 @@ func NewVideoSessionServiceWithNotification(
 	videoSessionRepo *repository.VideoSessionRepository,
 	sessionRepo *repository.SessionRepository,
 	userRepo *repository.UserRepository,
-	userRepo *repository.UserRepository,
 	notificationSvc *NotificationService,
 	jitsiSvc *JitsiService,
 	cfg *config.Config,

@@ -93,7 +93,7 @@ func (s *JitsiService) GenerateToken(user *models.User, roomID string, isModerat
 				"id":     fmt.Sprintf("%d", user.ID),
 				"name":   user.FullName,
 				"email":  user.Email,
-				"avatar": user.AvatarURL,
+				"avatar": user.Avatar,
 			},
 			"features": map[string]interface{}{
 				"livestreaming": true,
