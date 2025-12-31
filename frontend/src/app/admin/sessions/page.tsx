@@ -102,6 +102,57 @@ export default function SessionsPage() {
         }
     };
 
+    const handleApproveSession = async (id: number) => {
+        try {
+            const response = await fetch(`/api/v1/admin/sessions/${id}/approve`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+            });
+            if (response.ok) {
+                toast.success('Session approved');
+                fetchSessions();
+            } else {
+                toast.error('Failed to approve session');
+            }
+        } catch (error) {
+            toast.error('Error approving session');
+        }
+    };
+
+    const handleRejectSession = async (id: number) => {
+        try {
+            const response = await fetch(`/api/v1/admin/sessions/${id}/reject`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+            });
+            if (response.ok) {
+                toast.success('Session rejected');
+                fetchSessions();
+            } else {
+                toast.error('Failed to reject session');
+            }
+        } catch (error) {
+            toast.error('Error rejecting session');
+        }
+    };
+
+    const handleCompleteSession = async (id: number) => {
+        try {
+            const response = await fetch(`/api/v1/admin/sessions/${id}/complete`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+            });
+            if (response.ok) {
+                toast.success('Session marked as completed');
+                fetchSessions();
+            } else {
+                toast.error('Failed to complete session');
+            }
+        } catch (error) {
+            toast.error('Error completing session');
+        }
+    };
+
     const filteredSessions = sessions.filter((session) => {
         const teacherName = session.teacher?.full_name || 'Unknown';
         const learnerName = session.student?.full_name || 'Unknown';
@@ -298,18 +349,27 @@ export default function SessionsPage() {
                                                     </DropdownMenuItem>
                                                     {session.status === 'pending' && (
                                                         <>
-                                                            <DropdownMenuItem className="text-green-600">
+                                                            <DropdownMenuItem 
+                                                                className="text-green-600"
+                                                                onClick={() => handleApproveSession(session.id)}
+                                                            >
                                                                 <CheckCircle className="mr-2 h-4 w-4" />
                                                                 Approve Session
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem className="text-red-600">
+                                                            <DropdownMenuItem 
+                                                                className="text-red-600"
+                                                                onClick={() => handleRejectSession(session.id)}
+                                                            >
                                                                 <XCircle className="mr-2 h-4 w-4" />
                                                                 Reject Session
                                                             </DropdownMenuItem>
                                                         </>
                                                     )}
                                                     {session.status === 'in_progress' && (
-                                                        <DropdownMenuItem className="text-blue-600">
+                                                        <DropdownMenuItem 
+                                                            className="text-blue-600"
+                                                            onClick={() => handleCompleteSession(session.id)}
+                                                        >
                                                             <Clock className="mr-2 h-4 w-4" />
                                                             Mark as Completed
                                                         </DropdownMenuItem>

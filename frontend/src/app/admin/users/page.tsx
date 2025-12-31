@@ -89,9 +89,19 @@ export default function UsersPage() {
 
     const handleSuspendUser = async (userId: number) => {
         try {
-            // TODO: Implement suspend API
-            toast.success('User suspended successfully');
-            fetchUsers();
+            const response = await fetch(`/api/v1/admin/users/${userId}/suspend`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+            });
+            
+            if (response.ok) {
+                toast.success('User suspended successfully');
+                fetchUsers();
+            } else {
+                toast.error('Failed to suspend user');
+            }
         } catch (error) {
             toast.error('Failed to suspend user');
         }
@@ -99,9 +109,19 @@ export default function UsersPage() {
 
     const handleActivateUser = async (userId: number) => {
         try {
-            // TODO: Implement activate API
-            toast.success('User activated successfully');
-            fetchUsers();
+            const response = await fetch(`/api/v1/admin/users/${userId}/activate`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+            });
+
+            if (response.ok) {
+                toast.success('User activated successfully');
+                fetchUsers();
+            } else {
+                toast.error('Failed to activate user');
+            }
         } catch (error) {
             toast.error('Failed to activate user');
         }
