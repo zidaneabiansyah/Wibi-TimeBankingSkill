@@ -133,7 +133,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
             }));
             return session;
         } catch (error: any) {
-            const errorMessage = error.response?.data?.error || 'Failed to book session';
+            // Backend returns { success: false, message: "...", error: "..." }
+            // The api interceptor already extracts the message
+            const errorMessage = error.message || error.response?.data?.message || 'Failed to book session';
             set({ error: errorMessage, isLoading: false });
             throw new Error(errorMessage);
         }

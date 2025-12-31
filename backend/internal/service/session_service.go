@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -149,7 +150,7 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		// Rollback credit hold if session creation fails
 		student.CreditHeld -= creditAmount
 		_ = s.userRepo.Update(student)
-		return nil, errors.New("failed to create session")
+		return nil, fmt.Errorf("failed to create session: %v", err)
 	}
 
 	// Record the hold transaction for audit trail
