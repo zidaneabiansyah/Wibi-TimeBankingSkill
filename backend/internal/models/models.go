@@ -33,6 +33,8 @@ func AutoMigrate(db *gorm.DB) error {
 		{"SharedFile", &SharedFile{}},
 		{"Whiteboard", &Whiteboard{}},
 		{"SkillProgress", &SkillProgress{}},
+		{"Availability", &Availability{}},
+		{"Report", &Report{}},
 		{"Milestone", &Milestone{}},
 	}
 
