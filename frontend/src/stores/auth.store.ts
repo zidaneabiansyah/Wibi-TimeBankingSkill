@@ -16,6 +16,7 @@ interface AuthState {
     logout: () => Promise<void>;
     loadUser: () => void;
     clearError: () => void;
+    setUser: (user: UserProfile) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -131,5 +132,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     // Clear error
     clearError: () => {
         set({ error: null });
+    },
+
+    // Update user manually (e.g. after profile update)
+    setUser: (user: UserProfile) => {
+        authService.saveUser(user);
+        set({ user });
     },
 }));

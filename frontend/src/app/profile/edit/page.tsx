@@ -72,12 +72,49 @@ function EditProfileContent() {
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
-            setAvatarFile(file)
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setAvatarPreview(reader.result as string)
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+               toast.error("Image size must be less than 5MB");
+               return;
             }
-            reader.readAsDataURL(file)
+
+            // Create image object to load the file
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            
+            img.onload = () => {
+                // Calculate new dimensions (max 500px width/height)
+                const MAX_SIZE = 500;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                }
+
+                // Create canvas for resizing
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Compress to JPEG with 0.7 quality
+                    // This significantly reduces the base64 string size compared to raw PNG
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    setAvatarPreview(compressedBase64);
+                }
+            };
         }
     }
 
@@ -88,13 +125,22 @@ function EditProfileContent() {
             const updateData: any = { ...data }
 
             // Upload avatar if changed
-            if (avatarFile && avatarPreview) {
+            // Upload avatar if changed (avatarPreview contains the compressed base64)
+            if (avatarPreview && avatarPreview.startsWith('data:image')) {
                 // Use the data URL (base64) as avatar
                 updateData.avatar = avatarPreview
             }
 
             // Update profile
             await updateProfile(updateData)
+
+            // Update auth store with new profile data to keep UI in sync
+            // The updateProfile call in user.store.ts updates its own state,
+            // but we need to update the global auth user as well.
+            const updatedProfile = useUserStore.getState().profile;
+            if (updatedProfile) {
+                useAuthStore.getState().setUser(updatedProfile);
+            }
 
             toast.success('Profile updated successfully')
             router.push('/profile')

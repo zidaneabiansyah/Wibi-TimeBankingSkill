@@ -128,7 +128,7 @@ function ProfileContent() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-bold">{user.full_name}</h1>
-                  <p className="text-muted-foreground">@{user.username} • Joined {new Date(user.created_at).toLocaleDateString()}</p>
+                  <p className="text-muted-foreground">@{user.username} • Joined {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => router.push('/dashboard/progress')}>
