@@ -32,6 +32,7 @@ type SkillRepositoryInterface interface {
 
 	// Recommendations
 	GetRecommendations(limit int) ([]models.Skill, error)
+	CountTotal() (int64, error)
 }
 
 // SkillRepository handles database operations for skills

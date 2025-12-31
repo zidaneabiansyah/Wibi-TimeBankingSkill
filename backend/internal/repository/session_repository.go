@@ -25,6 +25,9 @@ type SessionRepositoryInterface interface {
 	GetTotalLearningHours(userID uint) (float64, error)
 	ExistsActiveSession(teacherID, studentID, userSkillID uint) (bool, error)
 	GetSessionsStartingSoon(minutes int) ([]models.Session, error)
+	CountTotal() (int64, error)
+	CountCompleted() (int64, error)
+	GetAllWithFilters(limit, offset int, search, status string) ([]models.Session, int64, error)
 }
 
 type SessionRepository struct {

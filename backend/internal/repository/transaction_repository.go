@@ -11,6 +11,8 @@ type TransactionRepositoryInterface interface {
 	GetUserBalance(userID uint) (float64, error)
 	GetByID(id uint) (*models.Transaction, error)
 	GetUserTransactionHistory(userID uint, limit, offset int) ([]models.Transaction, int64, error)
+	CountTotal() (int64, error)
+	GetTotalVolume() (float64, error)
 }
 
 // TransactionRepository handles database operations for transactions
