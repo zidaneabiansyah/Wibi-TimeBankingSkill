@@ -1,9 +1,21 @@
 import type { NextConfig } from "next";
+import withPWA from "next-pwa" with { type: "commonjs" };
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true,
+  sw: "/sw.js",
+})(nextConfig);
