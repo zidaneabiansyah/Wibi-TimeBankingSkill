@@ -146,13 +146,13 @@ function DashboardContent() {
                                         stats?.total_sessions_as_teacher || 0
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <div className="text-xs text-muted-foreground mt-1">
                                     {isLoading ? (
                                         <LoadingSkeleton className="h-3 w-24 mt-1" />
                                     ) : (
                                         `${stats?.total_credits_earned?.toFixed(1) || '0.0'} credits earned`
                                     )}
-                                </p>
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -167,13 +167,13 @@ function DashboardContent() {
                                         stats?.total_sessions_as_student || 0
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <div className="text-xs text-muted-foreground mt-1">
                                     {isLoading ? (
                                         <LoadingSkeleton className="h-3 w-24 mt-1" />
                                     ) : (
                                         `${stats?.total_credits_spent?.toFixed(1) || '0.0'} credits spent`
                                     )}
-                                </p>
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
