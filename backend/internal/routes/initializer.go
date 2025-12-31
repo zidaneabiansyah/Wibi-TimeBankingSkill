@@ -22,7 +22,9 @@ func InitializeAdminHandler(db *gorm.DB) *handler.AdminHandler {
 	adminRepo := repository.NewAdminRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	sessionRepo := repository.NewSessionRepository(db)
-	adminService := service.NewAdminService(adminRepo, userRepo, sessionRepo)
+	transactionRepo := repository.NewTransactionRepository(db)
+	skillRepo := repository.NewSkillRepository(db)
+	adminService := service.NewAdminService(adminRepo, userRepo, sessionRepo, transactionRepo, skillRepo)
 	return handler.NewAdminHandler(adminService)
 }
 
