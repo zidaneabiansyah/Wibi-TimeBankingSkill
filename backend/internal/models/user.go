@@ -66,3 +66,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+// DailyStat represents daily aggregated statistics
+type DailyStat struct {
+	Date  string  `json:"date"`
+	Value float64 `json:"value"`
+}

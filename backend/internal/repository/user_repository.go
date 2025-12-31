@@ -1,9 +1,10 @@
 package repository
 
 import (
-  "errors"
+  	"errors"
+	"strconv"
 
-  "github.com/timebankingskill/backend/internal/models"
+	"github.com/timebankingskill/backend/internal/models"
   "gorm.io/gorm"
 )
 
@@ -17,7 +18,8 @@ type UserRepositoryInterface interface {
   Update(user *models.User) error
   Delete(id uint) error
   CountTotal() (int64, error)
-  CountActive() (int64, error)
+	CountActive() (int64, error)
+	GetGrowthTrend(days int) ([]models.DailyStat, error)
 }
 
 // UserRepository handles database operations for users
@@ -129,5 +131,23 @@ func (r *UserRepository) IncrementStats(userID uint, field string, value int) er
 func (r *UserRepository) GetAll() ([]models.User, error) {
   var users []models.User
   err := r.db.Find(&users).Error
-  return users, err
+  	return users, err
+}
+
+// GetGrowthTrend gets user growth over the last N days
+func (r *UserRepository) GetGrowthTrend(days int) ([]models.DailyStat, error) {
+	var stats []models.DailyStat
+	
+	// Postgres specific query
+	err := r.db.Raw(`
+		SELECT 
+			TO_CHAR(created_at, 'YYYY-MM-DD') as date, 
+			COUNT(*) as value 
+		FROM users 
+		WHERE created_at >= NOW() - CAST(? AS INTERVAL) 
+		GROUP BY date 
+		ORDER BY date ASC
+	`, strconv.Itoa(days)+" days").Scan(&stats).Error
+
+	return stats, err
 }
