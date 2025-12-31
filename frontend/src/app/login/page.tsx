@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from '@/stores/auth.store';
 import { toast } from 'sonner';
 import Dither from "@/components/Dither";
-import { ArrowLeft, Github } from 'lucide-react';
+import { ArrowLeft, Github, Mail, Lock } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -98,18 +99,27 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-8">
-        <div className="w-full max-w-md space-y-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-4 sm:p-8">
+        <motion.div 
+          className="w-full max-w-md space-y-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          {/* Header Section: FIXED TYPOGRAPHY */}
           <div className="space-y-2 text-center lg:text-left">
-            <div className="flex items-center justify-center lg:justify-start gap-2 mb-6">
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
               <Image 
                 src="/wibi.png" 
                 alt="Wibi Logo" 
-                width={32} 
-                height={32}
-                className="rounded-lg"
+                width={40} 
+                height={40}
+                className="rounded-lg flex-shrink-0"
               />
-              <span className="text-xl font-bold">Waktu Indonesia Berbagi Ilmu</span>
+              {/* Dikembalikan ke text-xl font-bold agar tidak pecah/wrap */}
+              <span className="text-xl font-bold tracking-tight text-foreground">
+                Waktu Indonesia Berbagi Ilmu
+              </span>
             </div>
             <h2 className="text-2xl font-semibold tracking-tight">Welcome back</h2>
             <p className="text-sm text-muted-foreground">
@@ -117,15 +127,24 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Social Buttons */}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full" type="button">
+              <Button 
+                variant="outline" 
+                className="w-full h-11" 
+                type="button"
+              >
                 <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                   <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
                 </svg>
                 Google
               </Button>
-              <Button variant="outline" className="w-full" type="button">
+              <Button 
+                variant="outline" 
+                className="w-full h-11" 
+                type="button"
+              >
                 <Github className="mr-2 h-4 w-4" />
                 GitHub
               </Button>
@@ -133,86 +152,112 @@ export default function LoginPage() {
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
+                  Or continue with email
                 </span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
-                <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
+                <motion.div 
+                  className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm flex items-center gap-2"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
+                  </svg>
+                  <span>{error}</span>
+                </motion.div>
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Your Email"
-                  {...register('email')}
-                  disabled={isLoading}
-                  className="bg-muted/50"
-                />
+                <Label htmlFor="email">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    {...register('email')}
+                    disabled={isLoading}
+                    className="pl-10 h-11" 
+                  />
+                </div>
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
+                  <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+                    Forgot password?
+                  </Link>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Your Password"
-                  {...register('password')}
-                  disabled={isLoading}
-                  className="bg-muted/50"
-                />
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    {...register('password')}
+                    disabled={isLoading}
+                    className="pl-10 h-11" 
+                  />
+                </div>
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 py-1">
                 <input
                   id="remember"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-4 h-4 cursor-pointer rounded border-primary text-primary focus:ring-primary accent-primary"
                   disabled={isLoading}
                 />
-                <Label htmlFor="remember" className="text-sm cursor-pointer">
-                  Remember me
+                <Label htmlFor="remember" className="text-sm cursor-pointer font-normal text-muted-foreground">
+                  Remember me for 30 days
                 </Label>
               </div>
 
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10" type="submit" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign in'}
+              <Button 
+                className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all active:scale-[0.98]" 
+                type="submit" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign in'
+                )}
               </Button>
             </form>
 
-            <div className="flex items-center justify-between text-sm">
-              <div className="text-muted-foreground">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="text-primary hover:underline font-medium">
-                  Sign up
-                </Link>
-              </div>
-              <Link href="/forgot-password" className="text-primary hover:underline font-medium">
-                Forgot password?
+            <div className="text-center text-sm text-muted-foreground pt-2">
+              Don&apos;t have an account?{" "}
+              <Link href="/register" className="text-primary hover:underline font-medium">
+                Sign up
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

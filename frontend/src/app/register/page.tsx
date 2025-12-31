@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from '@/stores/auth.store';
 import { toast } from 'sonner';
 import Dither from "@/components/Dither";
-import { ArrowLeft, Github } from 'lucide-react';
+import { ArrowLeft, Github, Mail, Lock, User, BookOpen, MapPin, Smartphone, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 // Password strength calculator
 const calculatePasswordStrength = (password: string): { score: number; label: string; color: string } => {
@@ -123,10 +124,15 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen w-full">
       {/* Left Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-8">
-        <div className="w-full max-w-md space-y-8">
-          <div className="space-y-2 text-center lg:text-left">
-            <div className="flex items-center justify-center lg:justify-start gap-2 mb-6">
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-4 sm:p-8 overflow-y-auto">
+        <motion.div 
+          className="w-full max-w-md space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="space-y-3 text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
               <Image 
                 src="/wibi.png" 
                 alt="Wibi Logo" 
@@ -134,74 +140,99 @@ export default function RegisterPage() {
                 height={32}
                 className="rounded-lg"
               />
-              <span className="text-xl font-bold">Waktu Indonesia Berbagi Ilmu</span>
+              <span className="text-sm font-semibold text-muted-foreground">Waktu Indonesia Berbagi Ilmu</span>
             </div>
-            <h2 className="text-2xl font-semibold tracking-tight">Create an account</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Create an account</h2>
             <p className="text-sm text-muted-foreground">
               Join the Time Banking community and start exchanging skills today
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full" type="button">
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                variant="outline" 
+                className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200" 
+                type="button"
+              >
                 <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                   <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
                 </svg>
-                Google
+                <span className="text-xs sm:text-sm">Google</span>
               </Button>
-              <Button variant="outline" className="w-full" type="button">
+              <Button 
+                variant="outline" 
+                className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200" 
+                type="button"
+              >
                 <Github className="mr-2 h-4 w-4" />
-                GitHub
+                <span className="text-xs sm:text-sm">GitHub</span>
               </Button>
             </div>
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border/20" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
+                <span className="bg-background px-2 text-muted-foreground text-xs">
+                  Or continue with email
                 </span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
-                <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
+                <motion.div 
+                  className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm flex items-start gap-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <div className="flex-shrink-0 pt-0.5">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
+                    </svg>
+                  </div>
+                  <span>{error}</span>
+                </motion.div>
               )}
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="full_name">Full Name</Label>
-                  <Input
-                    id="full_name"
-                    placeholder="Your Full Name"
-                    {...register('full_name')}
-                    disabled={isLoading}
-                    className="bg-muted/50"
-                  />
+                  <Label htmlFor="full_name" className="text-sm font-medium">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="full_name"
+                      placeholder="John Doe"
+                      {...register('full_name')}
+                      disabled={isLoading}
+                      className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                    />
+                  </div>
                   {errors.full_name && (
-                    <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <span>⚠</span> {errors.full_name.message}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    placeholder="Your Username"
-                    {...register('username')}
-                    onChange={(e) => {
-                      register('username').onChange?.(e);
-                      setUsernameInput(e.target.value);
-                      checkUsernameDebounced(e.target.value);
-                    }}
-                    disabled={isLoading}
-                    className="bg-muted/50"
-                  />
+                  <Label htmlFor="username" className="text-sm font-medium">Username</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="username"
+                      placeholder="johndoe"
+                      {...register('username')}
+                      onChange={(e) => {
+                        register('username').onChange?.(e);
+                        setUsernameInput(e.target.value);
+                        checkUsernameDebounced(e.target.value);
+                      }}
+                      disabled={isLoading}
+                      className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                    />
+                  </div>
                   {checkingUsername && (
                     <p className="text-xs text-muted-foreground">Checking availability...</p>
                   )}
@@ -209,164 +240,220 @@ export default function RegisterPage() {
                     <p className="text-xs text-destructive">Username already taken</p>
                   )}
                   {!checkingUsername && usernameInput && usernameAvailable === true && (
-                    <p className="text-xs text-green-600">✓ Username available</p>
+                    <p className="text-xs text-green-600 flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> Username available</p>
                   )}
                   {errors.username && (
-                    <p className="text-sm text-destructive">{errors.username.message}</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <span>⚠</span> {errors.username.message}
+                    </p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Your Email"
-                  {...register('email')}
-                  disabled={isLoading}
-                  className="bg-muted/50"
-                />
+                <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    {...register('email')}
+                    disabled={isLoading}
+                    className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                  />
+                </div>
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <span>⚠</span> {errors.email.message}
+                  </p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Your Password"
-                    {...register('password')}
-                    onChange={(e) => {
-                      register('password').onChange?.(e);
-                      setPasswordInput(e.target.value);
-                    }}
-                    disabled={isLoading}
-                    className="bg-muted/50"
-                  />
+                  <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      {...register('password')}
+                      onChange={(e) => {
+                        register('password').onChange?.(e);
+                        setPasswordInput(e.target.value);
+                      }}
+                      disabled={isLoading}
+                      className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                    />
+                  </div>
                   {passwordInput && (
-                    <div className="space-y-2">
+                    <div className="space-y-3 pt-1">
+                      {/* Bar & Label Strength */}
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
+                        <div className="flex-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                          <motion.div
                             className={`h-full transition-all ${passwordStrength.color}`}
-                            style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                            transition={{ duration: 0.3 }}
                           />
                         </div>
-                        <span className="text-xs font-medium text-muted-foreground">
+                        <span className="text-xs font-medium text-muted-foreground min-w-[3rem] text-right">
                           {passwordStrength.label}
                         </span>
                       </div>
-                      <ul className="text-xs text-muted-foreground space-y-1">
-                        <li>✓ At least 6 characters</li>
-                        <li>{passwordInput.length >= 8 ? '✓' : '○'} At least 8 characters</li>
-                        <li>{/[A-Z]/.test(passwordInput) && /[a-z]/.test(passwordInput) ? '✓' : '○'} Mix of uppercase & lowercase</li>
-                        <li>{/\d/.test(passwordInput) ? '✓' : '○'} Include a number</li>
+
+                      {/* List Persyaratan: Dibuat Grid 2 Kolom (Menyamping) */}
+                      <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] sm:text-xs text-muted-foreground">
+                        <li className={`flex items-center gap-1.5 ${passwordInput.length >= 6 ? 'text-green-600 font-medium' : ''}`}>
+                          {passwordInput.length >= 6 ? '✓' : '○'} Min 6 chars
+                        </li>
+                        <li className={`flex items-center gap-1.5 ${passwordInput.length >= 8 ? 'text-green-600 font-medium' : ''}`}>
+                          {passwordInput.length >= 8 ? '✓' : '○'} Min 8 chars
+                        </li>
+                        <li className={`flex items-center gap-1.5 ${/[A-Z]/.test(passwordInput) && /[a-z]/.test(passwordInput) ? 'text-green-600 font-medium' : ''}`}>
+                          {/[A-Z]/.test(passwordInput) && /[a-z]/.test(passwordInput) ? '✓' : '○'} Upper & Lower
+                        </li>
+                        <li className={`flex items-center gap-1.5 ${/\d/.test(passwordInput) ? 'text-green-600 font-medium' : ''}`}>
+                          {/\d/.test(passwordInput) ? '✓' : '○'} Number
+                        </li>
                       </ul>
                     </div>
                   )}
                   {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <span>⚠</span> {errors.password.message}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm Password"
-                    {...register('confirmPassword')}
-                    disabled={isLoading}
-                    className="bg-muted/50"
-                  />
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      {...register('confirmPassword')}
+                      disabled={isLoading}
+                      className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                    />
+                  </div>
                   {errors.confirmPassword && (
-                    <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <span>⚠</span> {errors.confirmPassword.message}
+                    </p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="school">School</Label>
-                <Input
-                  id="school"
-                  placeholder="Your School Name"
-                  {...register('school')}
-                  disabled={isLoading}
-                  className="bg-muted/50"
-                />
+                <Label htmlFor="school" className="text-sm font-medium">School</Label>
+                <div className="relative">
+                  <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="school"
+                    placeholder="Your School Name"
+                    {...register('school')}
+                    disabled={isLoading}
+                    className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                  />
+                </div>
                 {errors.school && (
-                  <p className="text-sm text-destructive">{errors.school.message}</p>
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <span>⚠</span> {errors.school.message}
+                  </p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="grade">Grade</Label>
+                  <Label htmlFor="grade" className="text-sm font-medium">Grade</Label>
                   <Input
                     id="grade"
-                    placeholder="Your Grade"
+                    placeholder="e.g., 10, 11, 12"
                     {...register('grade')}
                     disabled={isLoading}
-                    className="bg-muted/50"
+                    className="bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
                   />
                   {errors.grade && (
-                    <p className="text-sm text-destructive">{errors.grade.message}</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <span>⚠</span> {errors.grade.message}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="major">Major</Label>
+                  <Label htmlFor="major" className="text-sm font-medium">Major</Label>
                   <Input
                     id="major"
-                    placeholder="Your Major"
+                    placeholder="e.g., Science, Arts"
                     {...register('major')}
                     disabled={isLoading}
-                    className="bg-muted/50"
+                    className="bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="phone_number">Phone Number</Label>
-                  <Input
-                    id="phone_number"
-                    placeholder="e.g., 081234..."
-                    {...register('phone_number')}
-                    disabled={isLoading}
-                    className="bg-muted/50"
-                  />
+                  <Label htmlFor="phone_number" className="text-sm font-medium">Phone Number</Label>
+                  <div className="relative">
+                    <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="phone_number"
+                      placeholder="081234..."
+                      {...register('phone_number')}
+                      disabled={isLoading}
+                      className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location *</Label>
-                  <Input
-                    id="location"
-                    placeholder="e.g., Jakarta, Bandung"
-                    {...register('location')}
-                    disabled={isLoading}
-                    className="bg-muted/50"
-                  />
+                  <Label htmlFor="location" className="text-sm font-medium">Location *</Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="location"
+                      placeholder="e.g., Jakarta"
+                      {...register('location')}
+                      disabled={isLoading}
+                      className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
+                    />
+                  </div>
                   {errors.location && (
-                    <p className="text-sm text-destructive">{errors.location.message}</p>
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <span>⚠</span> {errors.location.message}
+                    </p>
                   )}
                 </div>
               </div>
 
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10" type="submit" disabled={isLoading}>
-                {isLoading ? 'Creating account...' : 'Create Account'}
+              <Button 
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 active:scale-98 mt-6" 
+                type="submit" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2" />
+                    Creating account...
+                  </>
+                ) : (
+                  'Create Account'
+                )}
               </Button>
             </form>
 
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-muted-foreground border-t border-border/20 pt-4">
               Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline font-medium">
+              <Link href="/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
                 Sign in
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Right Side - Dither Background & Branding */}
