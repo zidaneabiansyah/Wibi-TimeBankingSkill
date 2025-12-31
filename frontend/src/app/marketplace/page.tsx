@@ -3,13 +3,16 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header } from "@/components/layout";
+import { SkillCard } from "@/components/ui/skill-card";
 import { useSkillStore } from "@/stores/skill.store";
+import { motion } from "framer-motion";
+import { Search, Filter, X, Star, Clock } from "lucide-react";
 import type { Skill } from "@/types";
 
 const categories = [
@@ -58,6 +61,7 @@ export default function MarketplacePage() {
     const [sortBy, setSortBy] = useState('newest');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [debouncedLocation, setDebouncedLocation] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     // Debounce search and location
     useEffect(() => {
@@ -96,9 +100,7 @@ export default function MarketplacePage() {
     const handleCategoryChange = (category: string) => {
         setSelectedCategory(category);
         setCurrentPage(1); // Reset to first page on filter change
-    };
-
-    return (
+    };    return (
         <div className="min-h-screen bg-background">
             <Header />
 
@@ -246,142 +248,210 @@ export default function MarketplacePage() {
                         </div>
                     </div>
 
-                    {/* Category Tabs */}
-                    <Tabs value={selectedCategory} onValueChange={handleCategoryChange} className="w-full">
-                        <TabsList className="w-full md:w-auto grid grid-cols-3 md:flex md:flex-row gap-2">
-                            {categories.map((cat) => (
-                                <TabsTrigger key={cat.value} value={cat.value}>{cat.label}</TabsTrigger>
-                            ))}
-                        </TabsList>
+                    {/* Category Tabs - Modern Minimal Design */}
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <Tabs value={selectedCategory} onValueChange={handleCategoryChange} className="flex-1">
+                            <TabsList className="grid grid-cols-3 sm:grid-cols-6 bg-muted/30 border border-border/20 p-0.5 rounded-lg">
+                                {categories.map((cat) => (
+                                    <TabsTrigger 
+                                        key={cat.value} 
+                                        value={cat.value}
+                                        className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all duration-200 text-xs sm:text-sm"
+                                    >
+                                        {cat.label}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
                         
-                        <div className="mt-6">
-                            {isLoading ? (
-                                <div className="text-center py-12">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                                    <p className="mt-2 text-muted-foreground">Loading skills...</p>
-                                </div>
-                            ) : skills.length === 0 ? (
-                                <div className="text-center py-12 text-muted-foreground">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 opacity-50">
+                        <div className="text-sm text-muted-foreground bg-muted/40 px-4 py-2 rounded-lg border border-border/20 whitespace-nowrap">
+                            <span className="font-semibold text-foreground">{skillsTotal}</span> skills
+                        </div>
+                    </div>
+
+                    {/* Skills Grid Section */}
+                    <div className="mt-8">
+                        {isLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {[...Array(6)].map((_, i) => (
+                                    <div key={i} className="h-80 bg-muted/30 rounded-lg animate-pulse" />
+                                ))}
+                            </div>
+                        ) : skills.length === 0 ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="text-center py-20"
+                            >
+                                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                                         <circle cx="11" cy="11" r="8" />
                                         <path d="m21 21-4.3-4.3" />
                                     </svg>
-                                    <p className="text-lg font-medium">No skills found</p>
-                                    <p className="text-sm mt-1">Try adjusting your search or filters</p>
                                 </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {skills.map((skill: Skill) => (
-                                        <Card key={skill.id} className="group overflow-hidden bg-card/50 border-border/50 hover:border-primary/30 hover:bg-card/80 transition-all duration-300">
-                                            <div className="aspect-video w-full overflow-hidden bg-linear-to-br from-primary/5 to-primary/10 flex items-center justify-center">
-                                                {skill.icon ? (
-                                                    <span className="text-5xl group-hover:scale-110 transition-transform">{skill.icon}</span>
-                                                ) : (
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary/40 group-hover:text-primary/60 transition-colors">
-                                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                                        <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                                                    </svg>
-                                                )}
-                                            </div>
-                                            <CardHeader className="pb-3">
-                                                <div className="flex justify-between items-start gap-2">
-                                                    <div className="space-y-1">
-                                                        <CardTitle className="text-lg">{skill.name}</CardTitle>
-                                                        <CardDescription className="line-clamp-2">{skill.description || 'No description'}</CardDescription>
-                                                    </div>
-                                                    <Badge variant="outline" className="capitalize shrink-0 border-border/50">{skill.category}</Badge>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="pb-4">
-                                                <div className="flex items-center gap-3 text-sm">
-                                                    <div className="flex items-center gap-1 text-muted-foreground">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                                            <circle cx="12" cy="7" r="4" />
-                                                        </svg>
-                                                        <span>{skill.total_teachers || 0} teachers</span>
-                                                    </div>
-                                                    <span className="text-border">•</span>
-                                                    <div className="flex items-center gap-1 text-muted-foreground">
-                                                        <span>{skill.total_learners || 0} learners</span>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-3 flex items-center justify-between">
-                                                    <div className="flex items-center text-primary">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-                                                            <circle cx="12" cy="12" r="10" />
-                                                            <polyline points="12 6 12 12 16 14" />
-                                                        </svg>
-                                                        <span className="font-semibold text-sm">
-                                                            {skill.min_rate === skill.max_rate 
-                                                                ? `${skill.min_rate || 0} Credit/hour` 
-                                                                : `${skill.min_rate || 0} - ${skill.max_rate || 0} Credits/hour`}
-                                                        </span>
-                                                    </div>
-                                                    {skill.max_rate >= 1.5 && (
-                                                        <Badge variant="secondary" className="text-[8px] h-3.5 px-1 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border-none font-bold uppercase tracking-tighter">
-                                                            Advanced
-                                                        </Badge>
+                                <h3 className="text-lg font-semibold text-foreground mb-2">No skills found</h3>
+                                <p className="text-muted-foreground mb-6">Try adjusting your search or filters</p>
+                                <Button asChild variant="outline">
+                                    <Link href="/marketplace">Clear filters</Link>
+                                </Button>
+                            </motion.div>
+                        ) : (
+                            <motion.div 
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true, amount: 0.1 }}
+                                variants={{
+                                    hidden: { opacity: 0 },
+                                    visible: {
+                                        opacity: 1,
+                                        transition: {
+                                            staggerChildren: 0.05,
+                                            delayChildren: 0.1,
+                                        },
+                                    },
+                                }}
+                            >
+                                {skills.map((skill: Skill, idx) => (
+                                    <motion.div
+                                        key={skill.id}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 20 },
+                                            visible: {
+                                                opacity: 1,
+                                                y: 0,
+                                                transition: { duration: 0.3, ease: "easeOut" },
+                                            },
+                                        }}
+                                    >
+                                        <Link href={`/marketplace/${skill.id}`} className="block h-full">
+                                            <div className="group relative flex flex-col h-full overflow-hidden rounded-lg border border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card/70 hover:shadow-lg hover:shadow-primary/10">
+                                                {/* Accent Line */}
+                                                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                                
+                                                {/* Image/Icon Hero Section */}
+                                                <div className="w-full aspect-video bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
+                                                    {skill.icon ? (
+                                                        <span className="text-6xl group-hover:scale-110 transition-transform duration-300">{skill.icon}</span>
+                                                    ) : (
+                                                        <div className="flex items-center justify-center w-full h-full bg-linear-to-br from-primary/20 to-secondary/20">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary/40 group-hover:text-primary/60 transition-colors duration-300">
+                                                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                                                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                                            </svg>
+                                                        </div>
                                                     )}
                                                 </div>
-                                            </CardContent>
-                                            <CardFooter className="pt-0">
-                                                <Link href={`/marketplace/${skill.id}`} className="w-full">
-                                                    <Button className="w-full bg-primary hover:bg-primary/90 group-hover:shadow-lg group-hover:shadow-primary/20 transition-all">
+                                                
+                                                {/* Header with Badge */}
+                                                <div className="flex-1 flex flex-col p-4 md:p-5 space-y-3">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex-1 min-w-0">
+                                                            <h3 className="text-base md:text-lg font-semibold text-primary truncate group-hover:text-secondary transition-colors">
+                                                                {skill.name}
+                                                            </h3>
+                                                            <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
+                                                                {skill.description || 'Learn this valuable skill'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Category Badge */}
+                                                    <div className="flex gap-2 flex-wrap">
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary border border-secondary/20">
+                                                            {skill.category || 'General'}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Stats Row 1: Rating + Teachers */}
+                                                    <div className="flex items-center gap-3 text-xs md:text-sm pt-2 border-t border-border/10">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Star className="h-3.5 w-3.5 fill-secondary text-secondary" />
+                                                            <span className="font-semibold">5.0</span>
+                                                            <span className="text-muted-foreground">
+                                                                ({skill.total_teachers || 0} teachers)
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Stats Row 2: Learners + Rate */}
+                                                    <div className="flex items-center gap-3 text-xs md:text-sm">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                                                            <span className="text-muted-foreground">
+                                                                {skill.min_rate === skill.max_rate 
+                                                                    ? `${skill.min_rate || 0} Credits/hr` 
+                                                                    : `${skill.min_rate || 0}-${skill.max_rate || 0} Credits/hr`}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-border/50">•</span>
+                                                        <span className="text-muted-foreground">
+                                                            {skill.total_learners || 0} learners
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* CTA Button */}
+                                                <div className="p-4 md:p-5 pt-0 mt-auto">
+                                                    <Button 
+                                                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-200"
+                                                        onClick={() => {}}
+                                                    >
                                                         View Tutors
                                                     </Button>
-                                                </Link>
-                                            </CardFooter>
-                                        </Card>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        )}
+
+                        {/* Pagination */}
+                        {skillsTotal > pageSize && (
+                            <div className="mt-12 flex items-center justify-center gap-2">
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                    disabled={currentPage === 1 || isLoading}
+                                    className="border-border/50"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                                        <path d="m15 18-6-6 6-6" />
+                                    </svg>
+                                    Previous
+                                </Button>
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: Math.ceil(skillsTotal / pageSize) }, (_, i) => i + 1).map((page) => (
+                                        <Button
+                                            key={page}
+                                            variant={currentPage === page ? "default" : "outline"}
+                                            size="sm"
+                                            onClick={() => setCurrentPage(page)}
+                                            disabled={isLoading}
+                                            className={`h-8 w-8 p-0 ${currentPage === page ? "" : "border-border/50"}`}
+                                        >
+                                            {page}
+                                        </Button>
                                     ))}
                                 </div>
-                            )}
-
-                            {/* Pagination */}
-                            {skillsTotal > pageSize && (
-                                <div className="mt-12 flex items-center justify-center gap-2">
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
-                                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                        disabled={currentPage === 1 || isLoading}
-                                        className="border-border/50"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                                            <path d="m15 18-6-6 6-6" />
-                                        </svg>
-                                        Previous
-                                    </Button>
-                                    <div className="flex items-center gap-1">
-                                        {Array.from({ length: Math.ceil(skillsTotal / pageSize) }, (_, i) => i + 1).map((page) => (
-                                            <Button
-                                                key={page}
-                                                variant={currentPage === page ? "default" : "outline"}
-                                                size="sm"
-                                                onClick={() => setCurrentPage(page)}
-                                                disabled={isLoading}
-                                                className={`h-8 w-8 p-0 ${currentPage === page ? "" : "border-border/50"}`}
-                                            >
-                                                {page}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
-                                        onClick={() => setCurrentPage(Math.min(Math.ceil(skillsTotal / pageSize), currentPage + 1))}
-                                        disabled={currentPage >= Math.ceil(skillsTotal / pageSize) || isLoading}
-                                        className="border-border/50"
-                                    >
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => setCurrentPage(Math.min(Math.ceil(skillsTotal / pageSize), currentPage + 1))}
+                                    disabled={currentPage >= Math.ceil(skillsTotal / pageSize) || isLoading}
+                                    className="border-border/50"
+                                >
                                         Next
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2">
-                                            <path d="m9 18 6-6-6-6" />
-                                        </svg>
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </Tabs>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </main>
         </div>
