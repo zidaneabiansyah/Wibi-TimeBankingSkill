@@ -1,3 +1,12 @@
+package service
+
+import (
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/timebankingskill/backend/internal/models"
+)
 
 // AdminApproveSession approves a session by admin override
 func (s *SessionService) AdminApproveSession(sessionID uint) (*models.Session, error) {
