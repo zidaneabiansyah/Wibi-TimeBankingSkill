@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth";
 import { AdminProvider } from "@/components/auth/AdminProvider";
 import AchievementPopup from "@/components/gamification/AchievementPopup";
+import { PWAProvider } from "@/components/providers/pwa-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,11 +20,67 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Wibi - Time Banking Skill Platform",
-  description: "Platform peer-to-peer skill exchange untuk pelajar menggunakan sistem Time Banking",
+  description: "Share skills, earn credits, grow together. A peer-to-peer time banking platform for students to exchange knowledge and services.",
+  keywords: [
+    "time banking",
+    "skill exchange",
+    "peer-to-peer learning",
+    "education platform",
+    "student community",
+  ],
+  authors: [{ name: "Wibi Team" }],
+  creator: "Wibi",
+  publisher: "Wibi",
+  metadataBase: new URL("https://wibi.app"),
+  alternates: {
+    canonical: "https://wibi.app",
+  },
+  openGraph: {
+    title: "Wibi - Time Banking Skill Platform",
+    description: "Share skills, earn credits, grow together.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Wibi",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Wibi Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wibi - Time Banking Skill Platform",
+    description: "Share skills, earn credits, grow together.",
+    images: ["/og-image.png"],
+    creator: "@wibiapp",
+  },
   icons: {
-    icon: '/wibi.png',
-    shortcut: '/wibi.png',
-    apple: '/wibi.png',
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/wibi.png", sizes: "any" },
+    ],
+    shortcut: "/wibi.png",
+    apple: "/wibi.png",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black",
+    title: "Wibi",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    minimumScale: 1,
+    viewportFit: "cover",
   },
 };
 
@@ -43,13 +100,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AdminProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </AdminProvider>
-          <AchievementPopup />
-          <Sonner />
+          <PWAProvider>
+            <AdminProvider>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </AdminProvider>
+            <AchievementPopup />
+            <Sonner />
+          </PWAProvider>
         </ThemeProvider>
       </body>
     </html>
