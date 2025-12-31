@@ -95,7 +95,9 @@ function BookSessionContent() {
             toast.success('Session booked successfully! Waiting for teacher approval.');
             router.push('/dashboard');
         } catch (err: any) {
-            toast.error(err.message || 'Failed to book session');
+            console.error('Booking error:', err);
+            const errorMessage = err.message || 'Failed to book session';
+            toast.error(errorMessage);
         }
     };
 
