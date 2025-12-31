@@ -152,3 +152,43 @@ func (h *AdminHandler) ActivateUser(c *gin.Context) {
 
 	utils.SendSuccess(c, http.StatusOK, "User activated successfully", nil)
 }
+
+// ResolveReport resolves a report
+// POST /api/v1/admin/reports/:id/resolve
+func (h *AdminHandler) ResolveReport(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid report ID", err)
+		return
+	}
+
+	adminID := c.GetUint("user_id") // Assuming auth middleware sets this
+
+	if err := h.adminService.ResolveReport(uint(id), adminID, "Resolved by admin"); err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to resolve report", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Report resolved successfully", nil)
+}
+
+// DismissReport dismisses a report
+// POST /api/v1/admin/reports/:id/dismiss
+func (h *AdminHandler) DismissReport(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid report ID", err)
+		return
+	}
+
+	adminID := c.GetUint("user_id")
+
+	if err := h.adminService.DismissReport(uint(id), adminID); err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to dismiss report", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Report dismissed successfully", nil)
+}

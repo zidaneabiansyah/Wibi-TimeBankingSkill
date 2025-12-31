@@ -45,3 +45,16 @@ func MapNotificationsToResponse(notifications []models.Notification) []Notificat
 	}
 	return response
 }
+
+// UpdateNotificationPreferencesRequest represents request to update notification preferences
+type UpdateNotificationPreferencesRequest struct {
+	SessionNotifications    bool   `json:"sessionNotifications"`
+	CreditNotifications     bool   `json:"creditNotifications"`
+	AchievementNotifications bool   `json:"achievementNotifications"`
+	ReviewNotifications     bool   `json:"reviewNotifications"`
+	EmailNotifications      bool   `json:"emailNotifications"`
+	PushNotifications       bool   `json:"pushNotifications"`
+	QuietHours             bool   `json:"quietHours"`
+	QuietHoursStart        string `json:"quietHoursStart"`
+	QuietHoursEnd          string `json:"quietHoursEnd"`
+}

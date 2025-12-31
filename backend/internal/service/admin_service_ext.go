@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors" // Added for errors.New
 	"github.com/timebankingskill/backend/internal/models"
 )
 

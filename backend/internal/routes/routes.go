@@ -223,6 +223,14 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				adminProtected.POST("/sessions/:id/approve", sessionHandler.AdminApproveSession) // POST /api/v1/admin/sessions/:id/approve
 				adminProtected.POST("/sessions/:id/reject", sessionHandler.AdminRejectSession)   // POST /api/v1/admin/sessions/:id/reject
 				adminProtected.POST("/sessions/:id/complete", sessionHandler.AdminCompleteSession) // POST /api/v1/admin/sessions/:id/complete
+				
+				// Admin Report Management
+				adminProtected.POST("/reports/:id/resolve", adminHandler.ResolveReport) // POST /api/v1/admin/reports/:id/resolve
+				adminProtected.POST("/reports/:id/dismiss", adminHandler.DismissReport) // POST /api/v1/admin/reports/:id/dismiss
+				
+				// Admin Badge Management
+				adminProtected.GET("/badges", badgeHandler.GetAllBadges)      // GET /api/v1/admin/badges (reuse public/list handler or make admin specific)
+				adminProtected.DELETE("/badges/:id", badgeHandler.DeleteBadge) // DELETE /api/v1/admin/badges/:id
 			}
 
 			// Analytics Routes (Authenticated)
@@ -309,6 +317,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				notifications.GET("/unread/count", notificationHandler.GetUnreadCount)        // GET /api/v1/notifications/unread/count
 				notifications.GET("/type/:type", notificationHandler.GetNotificationsByType)  // GET /api/v1/notifications/type/session
 				notifications.PUT("/:id/read", notificationHandler.MarkAsRead)                // PUT /api/v1/notifications/1/read
+				notifications.PUT("/preferences", notificationHandler.UpdatePreferences)      // PUT /api/v1/notifications/preferences
 				notifications.PUT("/read-all", notificationHandler.MarkAllAsRead)             // PUT /api/v1/notifications/read-all
 				notifications.DELETE("/:id", notificationHandler.DeleteNotification)          // DELETE /api/v1/notifications/1
 			}
