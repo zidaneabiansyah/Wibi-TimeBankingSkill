@@ -1,7 +1,5 @@
-import axios from 'axios';
+import api from '../api';
 import type { Whiteboard } from '@/types';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
 /**
  * Whiteboard Service - Handles all whiteboard-related API calls
@@ -10,14 +8,14 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v
 export const whiteboardService = {
     // Get or create whiteboard for a session
     async getOrCreateWhiteboard(sessionId: number): Promise<Whiteboard> {
-        const response = await axios.get(`${API_BASE}/sessions/${sessionId}/whiteboard`);
+        const response = await api.get(`/sessions/${sessionId}/whiteboard`);
         return response.data.data;
     },
 
     // Save drawing data to whiteboard
     async saveDrawing(sessionId: number, drawingData: Record<string, any>): Promise<Whiteboard> {
-        const response = await axios.post(
-            `${API_BASE}/sessions/${sessionId}/whiteboard/save`,
+        const response = await api.post(
+            `/sessions/${sessionId}/whiteboard/save`,
             drawingData
         );
         return response.data.data;
@@ -25,17 +23,17 @@ export const whiteboardService = {
 
     // Clear whiteboard
     async clearWhiteboard(sessionId: number): Promise<void> {
-        await axios.post(`${API_BASE}/sessions/${sessionId}/whiteboard/clear`);
+        await api.post(`/sessions/${sessionId}/whiteboard/clear`);
     },
 
     // Delete whiteboard
     async deleteWhiteboard(sessionId: number): Promise<void> {
-        await axios.delete(`${API_BASE}/sessions/${sessionId}/whiteboard`);
+        await api.delete(`/sessions/${sessionId}/whiteboard`);
     },
 
     // Get whiteboard data
     async getWhiteboard(sessionId: number): Promise<Whiteboard> {
-        const response = await axios.get(`${API_BASE}/sessions/${sessionId}/whiteboard/data`);
+        const response = await api.get(`/sessions/${sessionId}/whiteboard/data`);
         return response.data.data;
     },
 };

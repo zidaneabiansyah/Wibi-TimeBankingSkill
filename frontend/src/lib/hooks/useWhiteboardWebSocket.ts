@@ -36,7 +36,7 @@ export function useWhiteboardWebSocket({ sessionId, enabled = true }: UseWhitebo
 
         try {
             const token = localStorage.getItem('token');
-            const wsUrl = `${process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws') || 'ws://localhost:8080/api/v1'}/ws/whiteboard/${sessionId}`;
+            const wsUrl = `${process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws') || 'ws://localhost:8080/api/v1'}/ws/whiteboard/${sessionId}?token=${token}`;
 
             const ws = new WebSocket(wsUrl);
 
