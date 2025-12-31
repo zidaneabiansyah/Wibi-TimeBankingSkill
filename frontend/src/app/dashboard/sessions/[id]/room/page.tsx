@@ -15,6 +15,8 @@ import type { Session } from '@/types';
 import { CheckCircle2, Clock, Users, Video, MapPin, ExternalLink, Timer, AlertCircle, PenTool, LayoutDashboard } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TldrawWhiteboard } from '@/components/whiteboard';
+import { VideoRoom } from '@/components/video';
+import { sessionService } from '@/lib/services/session.service';
 
 /**
  * SessionTimer - Real-time timer component for active sessions
@@ -140,6 +142,14 @@ function SessionRoomContent() {
 
     const [isCheckingIn, setIsCheckingIn] = useState(false);
     const [isCompleting, setIsCompleting] = useState(false);
+    
+    // Video state
+    const [videoData, setVideoData] = useState<{
+        room_id: string;
+        token: string;
+        jitsi_url: string;
+    } | null>(null);
+    const [isVideoLoading, setIsVideoLoading] = useState(false);
 
     // Fetch session on mount and poll for updates
     useEffect(() => {
@@ -178,6 +188,19 @@ function SessionRoomContent() {
             toast.error(error.message || 'Failed to confirm completion');
         } finally {
             setIsCompleting(false);
+        }
+    };
+
+    const handleVideoStart = async () => {
+        try {
+            setIsVideoLoading(true);
+            const data = await sessionService.startVideoSession(sessionId);
+            setVideoData(data);
+            toast.success('Joined video session');
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to start video session');
+        } finally {
+            setIsVideoLoading(false);
         }
     };
 
@@ -236,8 +259,11 @@ function SessionRoomContent() {
                     </div>
 
                     <Tabs defaultValue="details" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-                            <TabsTrigger value="details">Session Details</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+                            <TabsTrigger value="details">Details</TabsTrigger>
+                            <TabsTrigger value="video" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
+                                Video
+                            </TabsTrigger>
                             <TabsTrigger value="whiteboard" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
                                 Whiteboard
                             </TabsTrigger>
@@ -245,226 +271,274 @@ function SessionRoomContent() {
 
                         <TabsContent value="details" className="mt-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left Column - Check-in / Timer */}
-                        <div className="space-y-6">
-                            {/* Check-in Card (before session starts) */}
-                            {!sessionInProgress && currentSession.status === 'approved' && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Users className="h-5 w-5" />
-                                            Check-in Status
-                                        </CardTitle>
-                                        <CardDescription>
-                                            Both participants must check in to start the session.
-                                            <span className="block mt-1 text-xs font-semibold text-primary">
-                                                Check-in is available 15 minutes before and after the scheduled time.
-                                            </span>
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <CheckInStatus session={currentSession} currentUserId={user.id} />
-                                    </CardContent>
-                                    <CardFooter>
-                                        {!myCheckIn ? (
-                                            <Button 
-                                                className="w-full" 
-                                                onClick={handleCheckIn}
-                                                disabled={isCheckingIn}
-                                            >
-                                                {isCheckingIn ? 'Checking in...' : 'Check In Now'}
-                                            </Button>
-                                        ) : !bothCheckedIn ? (
-                                            <div className="w-full text-center text-muted-foreground">
-                                                <AlertCircle className="h-5 w-5 mx-auto mb-2" />
-                                                Waiting for partner to check in...
-                                            </div>
-                                        ) : null}
-                                    </CardFooter>
-                                </Card>
-                            )}
+                                {/* Left Column - Check-in / Timer */}
+                                <div className="space-y-6">
+                                    {/* Check-in Card (before session starts) */}
+                                    {!sessionInProgress && currentSession.status === 'approved' && (
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <Users className="h-5 w-5" />
+                                                    Check-in Status
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Both participants must check in to start the session.
+                                                    <span className="block mt-1 text-xs font-semibold text-primary">
+                                                        Check-in is available 15 minutes before and after the scheduled time.
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <CheckInStatus session={currentSession} currentUserId={user.id} />
+                                            </CardContent>
+                                            <CardFooter>
+                                                {!myCheckIn ? (
+                                                    <Button 
+                                                        className="w-full" 
+                                                        onClick={handleCheckIn}
+                                                        disabled={isCheckingIn}
+                                                    >
+                                                        {isCheckingIn ? 'Checking in...' : 'Check In Now'}
+                                                    </Button>
+                                                ) : !bothCheckedIn ? (
+                                                    <div className="w-full text-center text-muted-foreground">
+                                                        <AlertCircle className="h-5 w-5 mx-auto mb-2" />
+                                                        Waiting for partner to check in...
+                                                    </div>
+                                                ) : null}
+                                            </CardFooter>
+                                        </Card>
+                                    )}
 
-                            {/* Timer (during session) */}
-                            {sessionInProgress && (
-                                <SessionTimer 
-                                    startedAt={currentSession.started_at} 
-                                    duration={currentSession.duration} 
-                                />
-                            )}
+                                    {/* Timer (during session) */}
+                                    {sessionInProgress && (
+                                        <SessionTimer 
+                                            startedAt={currentSession.started_at} 
+                                            duration={currentSession.duration} 
+                                        />
+                                    )}
 
-                            {/* Complete Session Card */}
-                            {sessionInProgress && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <CheckCircle2 className="h-5 w-5" />
-                                            Complete Session
-                                        </CardTitle>
-                                        <CardDescription>
-                                            Both participants must confirm to complete the session
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                                                <span>Your confirmation</span>
-                                                {myConfirmation ? (
-                                                    <Badge className="bg-green-500 text-white">Confirmed</Badge>
+                                    {/* Complete Session Card */}
+                                    {sessionInProgress && (
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <CheckCircle2 className="h-5 w-5" />
+                                                    Complete Session
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Both participants must confirm to complete the session
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                                                        <span>Your confirmation</span>
+                                                        {myConfirmation ? (
+                                                            <Badge className="bg-green-500 text-white">Confirmed</Badge>
+                                                        ) : (
+                                                            <Badge variant="outline">Pending</Badge>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                                                        <span>Partner confirmation</span>
+                                                        {(isTeacher ? currentSession.student_confirmed : currentSession.teacher_confirmed) ? (
+                                                            <Badge className="bg-green-500 text-white">Confirmed</Badge>
+                                                        ) : (
+                                                            <Badge variant="outline">Pending</Badge>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter>
+                                                {!myConfirmation ? (
+                                                    <Button 
+                                                        className="w-full" 
+                                                        onClick={handleComplete}
+                                                        disabled={isCompleting}
+                                                    >
+                                                        {isCompleting ? 'Confirming...' : 'Confirm Completion'}
+                                                    </Button>
                                                 ) : (
-                                                    <Badge variant="outline">Pending</Badge>
+                                                    <div className="w-full text-center text-muted-foreground">
+                                                        Waiting for partner to confirm...
+                                                    </div>
                                                 )}
+                                            </CardFooter>
+                                        </Card>
+                                    )}
+
+                                    {/* Completed State */}
+                                    {currentSession.status === 'completed' && (
+                                        <Card className="border-green-500 bg-green-950/20">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2 text-green-500">
+                                                    <CheckCircle2 className="h-5 w-5" />
+                                                    Session Completed
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="text-muted-foreground">
+                                                    {currentSession.credit_amount} credits have been transferred.
+                                                </p>
+                                                <div className="mt-4 flex gap-2">
+                                                    <Link href="/dashboard/sessions">
+                                                        <Button variant="outline">Back to Sessions</Button>
+                                                    </Link>
+                                                    {!isTeacher && (
+                                                        <Link href={`/dashboard/sessions/${sessionId}/review`}>
+                                                            <Button>Leave a Review</Button>
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </div>
+
+                                {/* Right Column - Session Info */}
+                                <div className="space-y-6">
+                                    {/* Session Details */}
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Session Details</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <Clock className="h-5 w-5 text-muted-foreground" />
+                                                <div>
+                                                    <p className="font-medium">Scheduled Time</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {currentSession.scheduled_at 
+                                                            ? new Date(currentSession.scheduled_at).toLocaleString()
+                                                            : 'Not scheduled'}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                                                <span>Partner confirmation</span>
-                                                {(isTeacher ? currentSession.student_confirmed : currentSession.teacher_confirmed) ? (
-                                                    <Badge className="bg-green-500 text-white">Confirmed</Badge>
-                                                ) : (
-                                                    <Badge variant="outline">Pending</Badge>
-                                                )}
+
+                                            <div className="flex items-center gap-3">
+                                                <Badge variant="outline" className="capitalize">{currentSession.mode}</Badge>
+                                                <span className="text-sm text-muted-foreground">
+                                                    {currentSession.duration} hour{currentSession.duration !== 1 ? 's' : ''} • {currentSession.credit_amount} credits
+                                                </span>
                                             </div>
+
+                                            {currentSession.mode !== 'offline' && currentSession.meeting_link && (
+                                                <div className="flex items-center gap-3">
+                                                    <Video className="h-5 w-5 text-muted-foreground" />
+                                                    <div className="flex-1">
+                                                        <p className="font-medium">Meeting Link</p>
+                                                        <a 
+                                                            href={currentSession.meeting_link} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="text-sm text-primary hover:underline flex items-center gap-1"
+                                                        >
+                                                            Join Meeting <ExternalLink className="h-3 w-3" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {currentSession.mode !== 'online' && currentSession.location && (
+                                                <div className="flex items-center gap-3">
+                                                    <MapPin className="h-5 w-5 text-muted-foreground" />
+                                                    <div>
+                                                        <p className="font-medium">Location</p>
+                                                        <p className="text-sm text-muted-foreground">{currentSession.location}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {currentSession.description && (
+                                                <div>
+                                                    <p className="font-medium mb-1">Description</p>
+                                                    <p className="text-sm text-muted-foreground">{currentSession.description}</p>
+                                                </div>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+
+                                    {/* Participant Info */}
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Participants</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                    <span className="font-bold text-primary">
+                                                        {currentSession.teacher?.full_name?.charAt(0) || 'T'}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium">{currentSession.teacher?.full_name || 'Teacher'}</p>
+                                                    <p className="text-sm text-muted-foreground">Teacher</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                    <span className="font-bold text-primary">
+                                                        {currentSession.student?.full_name?.charAt(0) || 'S'}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium">{currentSession.student?.full_name || 'Student'}</p>
+                                                    <p className="text-sm text-muted-foreground">Student</p>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="video" className="mt-6">
+                            <Card className="border-none shadow-none bg-transparent">
+                                <CardHeader className="px-0 pt-0">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <CardTitle>Video Session</CardTitle>
+                                            <CardDescription>
+                                                Secure video calling powered by Jitsi.
+                                            </CardDescription>
                                         </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        {!myConfirmation ? (
-                                            <Button 
-                                                className="w-full" 
-                                                onClick={handleComplete}
-                                                disabled={isCompleting}
-                                            >
-                                                {isCompleting ? 'Confirming...' : 'Confirm Completion'}
+                                        {!videoData && sessionInProgress && (
+                                            <Button onClick={handleVideoStart} disabled={isVideoLoading}>
+                                                {isVideoLoading ? (
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                ) : <Video className="h-4 w-4 mr-2" />}
+                                                Join Video Call
                                             </Button>
-                                        ) : (
-                                            <div className="w-full text-center text-muted-foreground">
-                                                Waiting for partner to confirm...
-                                            </div>
                                         )}
-                                    </CardFooter>
-                                </Card>
-                            )}
-
-                            {/* Completed State */}
-                            {currentSession.status === 'completed' && (
-                                <Card className="border-green-500 bg-green-950/20">
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2 text-green-500">
-                                            <CheckCircle2 className="h-5 w-5" />
-                                            Session Completed
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-muted-foreground">
-                                            {currentSession.credit_amount} credits have been transferred.
-                                        </p>
-                                        <div className="mt-4 flex gap-2">
-                                            <Link href="/dashboard/sessions">
-                                                <Button variant="outline">Back to Sessions</Button>
-                                            </Link>
-                                            {!isTeacher && (
-                                                <Link href={`/dashboard/sessions/${sessionId}/review`}>
-                                                    <Button>Leave a Review</Button>
-                                                </Link>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-0 border rounded-lg overflow-hidden bg-black min-h-[600px] flex items-center justify-center">
+                                    {videoData ? (
+                                        <VideoRoom 
+                                            roomName={videoData.room_id} 
+                                            jwt={videoData.token} 
+                                        />
+                                    ) : (
+                                        <div className="text-center text-muted-foreground p-12">
+                                            <div className="mb-4 bg-muted/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                <Video className="h-8 w-8" />
+                                            </div>
+                                            <h3 className="text-lg font-medium text-white mb-2">Ready to join?</h3>
+                                            <p className="max-w-xs mx-auto mb-6">
+                                                Join the video call to start interacting with your partner face-to-face.
+                                            </p>
+                                            {sessionInProgress ? (
+                                                <Button onClick={handleVideoStart} disabled={isVideoLoading} variant="secondary">
+                                                    Join Video Call
+                                                </Button>
+                                            ) : (
+                                                <p className="text-sm">Session is not active. Video call is disabled.</p>
                                             )}
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            )}
-                        </div>
-
-                        {/* Right Column - Session Info */}
-                        <div className="space-y-6">
-                            {/* Session Details */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Session Details</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <Clock className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="font-medium">Scheduled Time</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {currentSession.scheduled_at 
-                                                    ? new Date(currentSession.scheduled_at).toLocaleString()
-                                                    : 'Not scheduled'}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <Badge variant="outline" className="capitalize">{currentSession.mode}</Badge>
-                                        <span className="text-sm text-muted-foreground">
-                                            {currentSession.duration} hour{currentSession.duration !== 1 ? 's' : ''} • {currentSession.credit_amount} credits
-                                        </span>
-                                    </div>
-
-                                    {currentSession.mode !== 'offline' && currentSession.meeting_link && (
-                                        <div className="flex items-center gap-3">
-                                            <Video className="h-5 w-5 text-muted-foreground" />
-                                            <div className="flex-1">
-                                                <p className="font-medium">Meeting Link</p>
-                                                <a 
-                                                    href={currentSession.meeting_link} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-sm text-primary hover:underline flex items-center gap-1"
-                                                >
-                                                    Join Meeting <ExternalLink className="h-3 w-3" />
-                                                </a>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {currentSession.mode !== 'online' && currentSession.location && (
-                                        <div className="flex items-center gap-3">
-                                            <MapPin className="h-5 w-5 text-muted-foreground" />
-                                            <div>
-                                                <p className="font-medium">Location</p>
-                                                <p className="text-sm text-muted-foreground">{currentSession.location}</p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {currentSession.description && (
-                                        <div>
-                                            <p className="font-medium mb-1">Description</p>
-                                            <p className="text-sm text-muted-foreground">{currentSession.description}</p>
-                                        </div>
                                     )}
                                 </CardContent>
                             </Card>
-
-                            {/* Participant Info */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Participants</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <span className="font-bold text-primary">
-                                                {currentSession.teacher?.full_name?.charAt(0) || 'T'}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">{currentSession.teacher?.full_name || 'Teacher'}</p>
-                                            <p className="text-sm text-muted-foreground">Teacher</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <span className="font-bold text-primary">
-                                                {currentSession.student?.full_name?.charAt(0) || 'S'}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">{currentSession.student?.full_name || 'Student'}</p>
-                                            <p className="text-sm text-muted-foreground">Student</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                        </div>
                         </TabsContent>
 
                         <TabsContent value="whiteboard" className="mt-6">

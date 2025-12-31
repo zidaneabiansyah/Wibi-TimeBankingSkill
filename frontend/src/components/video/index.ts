@@ -1,2 +1,1 @@
-export { VideoCall } from './VideoCall';
-export { VideoCallModal } from './VideoCallModal';
+export * from './VideoRoom';
