@@ -108,35 +108,56 @@ func (s *AnalyticsService) GetUserAnalytics(userID uint) (*dto.UserAnalyticsResp
 
 // GetPlatformAnalytics gets platform-wide analytics
 func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsResponse, error) {
-	// Get user stats (simplified)
-	totalUsers := 0
-	activeUsers := 0
+	// 1. Get user stats
+	totalUsers, err := s.userRepo.CountTotal()
+	if err != nil {
+		return nil, err
+	}
+	activeUsers, err := s.userRepo.CountActive()
+	if err != nil {
+		activeUsers = 0 // validation optional
+	}
 
-	// Get session stats (simplified)
-	totalSessions := 0
-	completedSessions := 0
+	// 2. Get session stats
+	totalSessions, err := s.sessionRepo.CountTotal()
+	if err != nil {
+		return nil, err
+	}
+	completedSessions, err := s.sessionRepo.CountCompleted()
+	if err != nil {
+		completedSessions = 0
+	}
 
-	// Get credit stats (simplified)
-	totalCredits := 0.0
+	// 3. Get credit stats
+	totalCredits, err := s.transactionRepo.GetTotalVolume()
+	if err != nil {
+		totalCredits = 0
+	}
 
-	// Get rating stats (simplified)
-	avgRating := 0.0
+	// 4. Get rating stats
+	avgRating, err := s.reviewRepo.GetAveragePlatformRating()
+	if err != nil {
+		avgRating = 0
+	}
 
-	// Get skill stats (simplified)
-	totalSkills := 0
+	// 5. Get skill stats
+	totalSkills, err := s.skillRepo.CountTotal()
+	if err != nil {
+		totalSkills = 0
+	}
 
 	return &dto.PlatformAnalyticsResponse{
-		TotalUsers:         totalUsers,
-		ActiveUsers:        activeUsers,
-		TotalSessions:      totalSessions,
-		CompletedSessions:  completedSessions,
+		TotalUsers:         int(totalUsers),
+		ActiveUsers:        int(activeUsers),
+		TotalSessions:      int(totalSessions),
+		CompletedSessions:  int(completedSessions),
 		TotalCreditsInFlow: totalCredits,
 		AverageSessionRating: avgRating,
-		TotalSkills:        totalSkills,
-		TopSkills:          []dto.SkillStatistic{},
-		UserGrowth:         s.generateUserGrowthTrend(),
-		SessionTrend:       s.generateSessionTrend(),
-		CreditFlow:         s.generateCreditFlowTrend(),
+		TotalSkills:        int(totalSkills),
+		TopSkills:          []dto.SkillStatistic{},      // TODO: Implement real top skills
+		UserGrowth:         s.generateUserGrowthTrend(), // TODO: Implement real trend
+		SessionTrend:       s.generateSessionTrend(),    // TODO: Implement real trend
+		CreditFlow:         s.generateCreditFlowTrend(), // TODO: Implement real trend
 	}, nil
 }
 
