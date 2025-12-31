@@ -77,6 +77,10 @@ export default function CreateThreadPage() {
                 formData.content,
                 tagArray
             );
+            
+            if (!thread) {
+                throw new Error('Failed to create thread: No data returned');
+            }
 
             toast.success('Thread created successfully!');
             router.push(`/community/forum/thread/${thread.id}`);
