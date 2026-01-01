@@ -143,7 +143,7 @@ export default function GamificationPage() {
                         <div className="flex items-center gap-2">
                             <Award className="h-4 w-4 text-blue-600" />
                             <div className="text-2xl font-bold">
-                                {badges.reduce((sum, b) => sum + b.total_earned, 0)}
+                                {badges.reduce((sum, b) => sum + (b.total_earned || (b as any).total_awarded || 0), 0)}
                             </div>
                         </div>
                     </CardContent>
@@ -154,7 +154,7 @@ export default function GamificationPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-green-600">
-                            {badges.reduce((sum, b) => sum + b.bonus_credits, 0)} CR
+                            {badges.reduce((sum, b) => sum + (b.bonus_credits || 0), 0)} CR
                         </div>
                     </CardContent>
                 </Card>

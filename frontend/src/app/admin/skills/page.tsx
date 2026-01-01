@@ -129,7 +129,7 @@ export default function SkillsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {skills.reduce((sum, s) => sum + s.total_teachers, 0)}
+                            {skills.reduce((sum, s) => sum + (s.total_teachers || 0), 0)}
                         </div>
                     </CardContent>
                 </Card>
@@ -139,7 +139,7 @@ export default function SkillsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {skills.reduce((sum, s) => sum + s.total_learners, 0)}
+                            {skills.reduce((sum, s) => sum + (s.total_learners || 0), 0)}
                         </div>
                     </CardContent>
                 </Card>
@@ -149,7 +149,7 @@ export default function SkillsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {skills.reduce((sum, s) => sum + s.total_sessions, 0)}
+                            {skills.reduce((sum, s) => sum + (s.total_sessions || 0), 0)}
                         </div>
                     </CardContent>
                 </Card>
