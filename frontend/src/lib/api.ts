@@ -13,8 +13,21 @@ const api: AxiosInstance = axios.create({
 // Request interceptor - Add auth token
 api.interceptors.request.use(
     (config) => {
-        // Get token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        // Determine which token to use based on the URL
+        let token = null;
+        if (typeof window !== 'undefined') {
+            const isAdminPage = window.location.pathname.startsWith('/admin');
+            const isAdminApi = config.url?.startsWith('/admin');
+
+            if (isAdminApi || (isAdminPage && !config.url?.startsWith('/auth'))) {
+                token = localStorage.getItem('admin_token');
+                // Fallback to regular token if admin_token is missing but regular token exists
+                // (e.g. admin logout might have happened but user session still exists?)
+                if (!token) token = localStorage.getItem('token');
+            } else {
+                token = localStorage.getItem('token');
+            }
+        }
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
