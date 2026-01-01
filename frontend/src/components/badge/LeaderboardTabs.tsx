@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
 import { LeaderboardTable } from './LeaderboardTable';
 import { useBadgeStore } from '@/stores';
+import { motion } from 'framer-motion';
 import {
     Select,
     SelectContent,
@@ -56,62 +57,64 @@ export function LeaderboardTabs({ limit = 10 }: LeaderboardTabsProps) {
     const currentEntries: LeaderboardEntry[] = leaderboards[selectedType] || [];
 
     return (
-        <div className="space-y-4">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold">Leaderboards</h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Top {limit} users across different categories
-                    </p>
+        <div className="space-y-10">
+            {/* Controls Filter */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                <Tabs 
+                    value={selectedType} 
+                    onValueChange={(v) => handleTypeChange(v as LeaderboardType)}
+                    className="w-full max-w-2xl"
+                >
+                    <TabsList className="grid w-full grid-cols-5 p-1 h-12 bg-muted/50 rounded-xl">
+                        {LEADERBOARD_TYPES.map((type) => (
+                            <TabsTrigger 
+                                key={type.value} 
+                                value={type.value} 
+                                className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+                            >
+                                <span className="text-lg">{type.icon}</span>
+                                <span className="hidden lg:inline text-xs font-semibold">{type.label}</span>
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </Tabs>
+
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Time Range:</span>
+                    <Select value={timeRange} onValueChange={(v) => handleTimeRangeChange(v as TimeRange)}>
+                        <SelectTrigger className="w-[140px] h-10 rounded-xl bg-card border-border/40 focus:ring-primary/20">
+                            <SelectValue placeholder="Select period" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-border/40">
+                            <SelectItem value="weekly">This Week</SelectItem>
+                            <SelectItem value="monthly">This Month</SelectItem>
+                            <SelectItem value="all-time">All Time</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
-                <Select value={timeRange} onValueChange={(v) => handleTimeRangeChange(v as TimeRange)}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select period" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="weekly">This Week</SelectItem>
-                        <SelectItem value="monthly">This Month</SelectItem>
-                        <SelectItem value="all-time">All Time</SelectItem>
-                    </SelectContent>
-                </Select>
             </div>
 
-            {/* Tabs */}
-            <Tabs value={selectedType} onValueChange={(v) => handleTypeChange(v as LeaderboardType)}>
-                <TabsList className="grid w-full grid-cols-5">
-                    {LEADERBOARD_TYPES.map((type) => (
-                        <TabsTrigger key={type.value} value={type.value} className="gap-1">
-                            <span>{type.icon}</span>
-                            <span className="hidden sm:inline text-xs">{type.label}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
-
-                {/* Tab Contents */}
-                {LEADERBOARD_TYPES.map((type) => (
-                    <TabsContent key={type.value} value={type.value} className="space-y-4">
-                        {isLoading && !currentEntries.length ? (
-                            <div className="flex items-center justify-center py-12">
-                                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-                            </div>
-                        ) : (
-                            <LeaderboardTable
-                                entries={currentEntries}
-                                type={type.value}
-                                isLoading={isLoading && !currentEntries.length}
-                            />
-                        )}
-                    </TabsContent>
-                ))}
-            </Tabs>
-
-            {/* Info Box */}
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                    💡 <strong>Tip:</strong> Leaderboards update in real-time as users complete sessions and earn badges.
-                    Keep improving to climb the ranks!
-                </p>
+            {/* Ranking Display Section */}
+            <div className="relative">
+                {isLoading && !currentEntries.length ? (
+                    <div className="flex flex-col items-center justify-center py-24 gap-4">
+                        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                        <p className="text-sm text-muted-foreground animate-pulse">Fetching global rankings...</p>
+                    </div>
+                ) : (
+                    <motion.div
+                        key={`${selectedType}-${timeRange}`}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                    >
+                        <LeaderboardTable
+                            entries={currentEntries}
+                            type={selectedType}
+                            isLoading={isLoading && !currentEntries.length}
+                        />
+                    </motion.div>
+                )}
             </div>
         </div>
     );
