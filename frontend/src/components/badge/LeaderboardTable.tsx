@@ -94,26 +94,29 @@ export function LeaderboardTable({
                                         </AvatarFallback>
                                     </Avatar>
                                 </div>
-                                <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 h-8 w-8 rounded-full flex items-center justify-center font-bold text-shadow shadow-lg
-                                    ${rank === 1 ? 'bg-yellow-500 text-white text-lg h-10 w-10 border-4 border-background' : 
-                                      rank === 2 ? 'bg-slate-400 text-white' : 
-                                      'bg-orange-600 text-white'}`}
+                                <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center font-black shadow-2xl z-20 transition-transform group-hover:scale-110
+                                    ${rank === 1 ? 'bg-yellow-500 text-white text-xl md:text-2xl border-4 border-background' : 
+                                      rank === 2 ? 'bg-slate-300 text-slate-800 text-lg md:text-xl border-4 border-background shadow-slate-400/20' : 
+                                      'bg-orange-500 text-white text-lg md:text-xl border-4 border-background shadow-orange-900/20'}`}
                                 >
-                                    {rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}
+                                    {rank === 1 ? '1' : rank === 2 ? '2' : '3'}
+                                    <div className="absolute -top-1 -right-1 text-[10px] drop-shadow-sm">
+                                        {rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Info Card */}
-                            <div className={`w-full p-4 rounded-2xl border bg-card/80 backdrop-blur-sm shadow-xl text-center space-y-1 
-                                ${isFirst ? 'pt-6 pb-8 border-yellow-500/20 shadow-yellow-500/5' : 'border-border/40'}`}
+                            <div className={`w-full p-6 rounded-3xl border bg-card/90 backdrop-blur-md shadow-2xl text-center space-y-2 
+                                ${isFirst ? 'pt-8 pb-10 border-yellow-500/30 shadow-yellow-500/10 ring-2 ring-yellow-500/5' : 'border-border/60 shadow-lg'}`}
                             >
-                                <p className="font-bold text-base truncate">{entry.full_name}</p>
-                                <p className="text-xs text-muted-foreground truncate mb-2">@{entry.username}</p>
-                                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
-                                    ${isFirst ? 'bg-yellow-500 text-white' : 'bg-muted'}`}
+                                <p className={`font-black tracking-tight truncate ${isFirst ? 'text-xl' : 'text-lg'}`}>{entry.full_name}</p>
+                                <p className="text-xs font-bold text-muted-foreground/80 truncate mb-3">@{entry.username}</p>
+                                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black uppercase tracking-widest shadow-sm
+                                    ${isFirst ? 'bg-yellow-500 text-white shadow-yellow-500/20' : 'bg-secondary text-secondary-foreground shadow-black/5'}`}
                                 >
-                                    {badgeService.formatScore(entry.score, type)}
-                                    <span className="opacity-70 font-medium lowercase">{type === 'rating' ? 'rating' : type}</span>
+                                    <span className="text-lg">{badgeService.formatScore(entry.score, type)}</span>
+                                    <span className="text-[10px] opacity-80 font-bold lowercase">{type === 'rating' ? 'stars' : type}</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -123,38 +126,42 @@ export function LeaderboardTable({
 
             {/* Ranking List (4+) */}
             {others.length > 0 && (
-                <div className="max-w-4xl mx-auto space-y-3">
-                    <h4 className="text-sm font-bold text-muted-foreground px-4 flex items-center gap-2">
-                        <ArrowUp className="h-3.5 w-3.5" />
-                        UPCOMING CHALENGERS
-                    </h4>
-                    <div className="space-y-2">
+                <div className="max-w-4xl mx-auto space-y-4">
+                    <div className="flex items-center gap-3 px-4">
+                        <div className="h-px flex-1 bg-border/40" />
+                        <h4 className="text-[10px] font-black tracking-[0.2em] text-muted-foreground flex items-center gap-2 uppercase">
+                            <ArrowUp className="h-3 w-3 text-primary" />
+                            Upcoming Challengers
+                        </h4>
+                        <div className="h-px flex-1 bg-border/40" />
+                    </div>
+                    <div className="space-y-3">
                         {others.map((entry, index) => (
                             <motion.div
                                 key={entry.user_id}
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.05 * index }}
-                                className="group flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/40 hover:border-primary/20 hover:shadow-md transition-all duration-300"
+                                className="group flex items-center gap-5 p-5 rounded-3xl bg-card border border-border/40 hover:border-primary/40 hover:shadow-xl hover:bg-accent/5 transition-all duration-300"
                             >
-                                <div className="flex-shrink-0 w-8 text-center font-bold text-muted-foreground group-hover:text-primary transition-colors">
+                                <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-secondary/50 flex items-center justify-center font-black text-lg text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all">
                                     {(entry.rank || index + 4)}
                                 </div>
-                                <Avatar className="h-10 w-10 border border-border/40 group-hover:scale-105 transition-transform">
+                                <Avatar className="h-12 w-12 border-2 border-background shadow-sm group-hover:scale-110 transition-transform ring-1 ring-border/20">
                                     <AvatarImage src={entry.avatar} alt={entry.username} />
-                                    <AvatarFallback>{entry.username.substring(0, 2).toUpperCase()}</AvatarFallback>
+                                    <AvatarFallback className="font-bold">{entry.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-sm truncate">{entry.full_name}</p>
-                                    <p className="text-xs text-muted-foreground truncate">@{entry.username}</p>
+                                    <p className="font-bold text-base truncate group-hover:text-primary transition-colors">{entry.full_name}</p>
+                                    <p className="text-xs font-semibold text-muted-foreground/80 truncate">@{entry.username}</p>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-bold text-base text-foreground">
+                                <div className="text-right flex flex-col items-end gap-0.5">
+                                    <p className="font-black text-xl text-foreground tracking-tight">
                                         {badgeService.formatScore(entry.score, type)}
                                     </p>
-                                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">
+                                    <div className="px-2 py-0.5 rounded-lg bg-secondary/80 text-[10px] uppercase font-black text-muted-foreground tracking-widest">
                                         {type}
-                                    </p>
+                                    </div>
                                 </div>
                             </motion.div>
                         ))}
