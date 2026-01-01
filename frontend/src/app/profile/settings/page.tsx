@@ -6,10 +6,11 @@ import { motion } from 'framer-motion';
 import type { UserProfile } from '@/types';
 import { useUserStore } from '@/stores/user.store';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Header } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { Bell, Lock, Eye, Globe, AlertCircle, CheckCircle } from 'lucide-react';
+import { Bell, Lock, Eye, Globe, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 
 interface SettingsSection {
     id: string;
@@ -120,26 +121,40 @@ export default function SettingsPage() {
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 py-8 px-4">
-                <motion.div
-                    className="max-w-6xl mx-auto"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                >
-                    {/* Header */}
-                    <motion.div variants={itemVariants} className="mb-8">
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                            Settings
-                        </h1>
-                        <p className="text-slate-600 dark:text-slate-400">
-                            Manage your account and preferences
-                        </p>
-                    </motion.div>
+            <div className="min-h-screen bg-background">
+                <Header />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        {/* Sidebar Navigation */}
-                        <motion.div variants={itemVariants} className="lg:col-span-1">
+                <main className="container mx-auto px-4 py-8 max-w-6xl">
+                    <motion.div
+                        className="space-y-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        {/* Header with Back Button */}
+                        <motion.div variants={itemVariants} className="flex items-center gap-3">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => router.back()}
+                                className="gap-2"
+                            >
+                                <ArrowLeft className="h-4 w-4" />
+                                Back
+                            </Button>
+                            <div>
+                                <h1 className="text-3xl font-bold text-foreground mb-1">
+                                    Settings
+                                </h1>
+                                <p className="text-muted-foreground">
+                                    Manage your account and preferences
+                                </p>
+                            </div>
+                        </motion.div>
+
+                        <motion.div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            {/* Sidebar Navigation */}
+                            <motion.div variants={itemVariants} className="lg:col-span-1">
                             <nav className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-2 space-y-1">
                                 {settingsSections.map((section) => (
                                     <button
@@ -495,8 +510,9 @@ export default function SettingsPage() {
                                 </motion.div>
                             </div>
                         </motion.div>
-                    </div>
+                    </motion.div>
                 </motion.div>
+                </main>
             </div>
         </ProtectedRoute>
     );

@@ -369,8 +369,10 @@ function ProfileContent() {
 
             {/* Reputation Tab */}
             <TabsContent value="reputation" className="mt-6">
-              <div className="max-w-2xl">
-                <ReputationCard userId={user.id} userName={user.full_name} />
+              <div className="flex justify-center">
+                <div className="w-full max-w-2xl">
+                  <ReputationCard userId={user.id} userName={user.full_name} />
+                </div>
               </div>
             </TabsContent>
 

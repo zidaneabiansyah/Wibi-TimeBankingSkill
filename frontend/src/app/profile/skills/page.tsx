@@ -20,7 +20,7 @@ import type { Skill } from '@/types';
 export default function MySkillsPage() {
     const router = useRouter();
     const { user } = useAuthStore();
-    const { skills, isLoading, fetchSkills } = useSkillStore();
+    const { userSkills, isLoadingUserSkills, fetchUserSkills } = useSkillStore();
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -28,14 +28,14 @@ export default function MySkillsPage() {
         const loadSkills = async () => {
             try {
                 setError(null);
-                await fetchSkills({ limit: 100, offset: 0 });
+                await fetchUserSkills();
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to load skills');
             }
         };
 
         loadSkills();
-    }, [fetchSkills]);
+    }, [fetchUserSkills]);
 
     const handleDelete = async (skillId: number) => {
         if (!confirm('Are you sure you want to delete this skill?')) return;
@@ -91,7 +91,7 @@ export default function MySkillsPage() {
                     )}
 
                     {/* Loading State */}
-                    {isLoading ? (
+                    {isLoadingUserSkills ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {Array.from({ length: 6 }).map((_, i) => (
                                 <Card key={i} className="h-full">
@@ -105,9 +105,9 @@ export default function MySkillsPage() {
                                 </Card>
                             ))}
                         </div>
-                    ) : skills && skills.length > 0 ? (
+                    ) : userSkills && userSkills.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {skills.map((skill, index) => (
+                            {userSkills.map((skill: any, index: number) => (
                                 <motion.div
                                     key={skill.id}
                                     initial={{ opacity: 0, y: 20 }}
