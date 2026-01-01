@@ -1,16 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import type { UserProfile } from '@/types';
 import { useUserStore } from '@/stores/user.store';
+import { useAuthStore } from '@/stores/auth.store';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Header } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
-import { Bell, Lock, Eye, Globe, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Bell, Lock, Eye, Globe, AlertCircle, CheckCircle, ArrowLeft, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface SettingsSection {
     id: string;
@@ -33,7 +37,24 @@ interface FormState {
     sessionTimeout: string;
 }
 
+interface ProfileFormData {
+    full_name: string;
+    username: string;
+    school: string;
+    grade: string;
+    major?: string;
+    bio?: string;
+    phone_number?: string;
+    location?: string;
+}
+
 const settingsSections: SettingsSection[] = [
+    {
+        id: 'profile',
+        title: 'Profile',
+        description: 'Edit your profile information',
+        icon: <Eye className="w-5 h-5" />,
+    },
     {
         id: 'account',
         title: 'Account',
@@ -62,10 +83,22 @@ const settingsSections: SettingsSection[] = [
 
 export default function SettingsPage() {
     const router = useRouter();
-    const profile = useUserStore((state) => state.profile);
-    const [activeSection, setActiveSection] = useState('account');
-    const [isLoading, setIsLoading] = useState(false);
+    const { user } = useAuthStore();
+    const { profile, isLoading, fetchProfile, updateProfile } = useUserStore();
+    const [activeSection, setActiveSection] = useState('profile');
+    const [isLoading2, setIsLoading2] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [avatarPreview, setAvatarPreview] = useState<string>('');
+    const [profileFormData, setProfileFormData] = useState<ProfileFormData>({
+        full_name: '',
+        username: '',
+        school: '',
+        grade: '',
+        major: '',
+        bio: '',
+        phone_number: '',
+        location: '',
+    });
     const [formState, setFormState] = useState<FormState>({
         email: profile?.email || '',
         fullName: profile?.full_name || '',
@@ -80,6 +113,83 @@ export default function SettingsPage() {
         sessionTimeout: '24h',
     });
 
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
+
+    useEffect(() => {
+        if (profile) {
+            setProfileFormData({
+                full_name: profile.full_name || '',
+                username: profile.username || '',
+                school: profile.school || '',
+                grade: profile.grade || '',
+                major: profile.major || '',
+                bio: profile.bio || '',
+                phone_number: profile.phone_number || '',
+                location: profile.location || '',
+            });
+            setFormState((prev) => ({
+                ...prev,
+                email: profile.email || '',
+                fullName: profile.full_name || '',
+                phone: profile.phone_number || '',
+            }));
+            if (profile.avatar) {
+                setAvatarPreview(profile.avatar);
+            }
+        }
+    }, [profile]);
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('Image size must be less than 5MB');
+                return;
+            }
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = () => {
+                const MAX_SIZE = 500;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    setAvatarPreview(compressedBase64);
+                }
+            };
+        }
+    };
+
+    const handleProfileChange = (field: keyof ProfileFormData, value: string) => {
+        setProfileFormData((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
     const handleInputChange = (field: keyof FormState, value: string | boolean) => {
         setFormState((prev) => ({
             ...prev,
@@ -87,18 +197,47 @@ export default function SettingsPage() {
         }));
     };
 
-    const handleSave = async () => {
-        setIsLoading(true);
+    const handleSaveProfile = async () => {
+        setIsLoading2(true);
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const updateData: any = { ...profileFormData };
+            if (avatarPreview && avatarPreview.startsWith('data:image')) {
+                updateData.avatar = avatarPreview;
+            }
+
+            await updateProfile(updateData);
+
+            const updatedProfile = useUserStore.getState().profile;
+            if (updatedProfile) {
+                useAuthStore.getState().setUser(updatedProfile);
+            }
+
+            toast.success('Changes saved successfully');
             setSaveStatus('success');
             setTimeout(() => setSaveStatus('idle'), 3000);
         } catch (error) {
+            toast.error('Failed to save changes');
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 3000);
         } finally {
-            setIsLoading(false);
+            setIsLoading2(false);
+        }
+    };
+
+    const handleSave = async () => {
+        setIsLoading2(true);
+        try {
+            // For other sections, simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            toast.success('Changes saved successfully');
+            setSaveStatus('success');
+            setTimeout(() => setSaveStatus('idle'), 3000);
+        } catch (error) {
+            toast.error('Failed to save changes');
+            setSaveStatus('error');
+            setTimeout(() => setSaveStatus('idle'), 3000);
+        } finally {
+            setIsLoading2(false);
         }
     };
 
@@ -175,6 +314,176 @@ export default function SettingsPage() {
                         {/* Settings Content */}
                         <motion.div variants={itemVariants} className="lg:col-span-3">
                             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 space-y-6">
+                                {/* Profile Section */}
+                                {activeSection === 'profile' && (
+                                    <motion.div
+                                        className="space-y-6"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                    >
+                                        <div>
+                                            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                                                Edit Profile
+                                            </h2>
+
+                                            {/* Avatar Section */}
+                                            <div className="space-y-4 mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
+                                                <h3 className="font-semibold text-slate-900 dark:text-white">
+                                                    Profile Picture
+                                                </h3>
+                                                <div className="flex items-center gap-6">
+                                                    <div className="w-24 h-24 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+                                                        {avatarPreview ? (
+                                                            <img
+                                                                src={avatarPreview}
+                                                                alt="Avatar preview"
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <span className="text-2xl font-bold text-primary">
+                                                                {user?.full_name?.charAt(0) || 'U'}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <Label htmlFor="avatar" className="cursor-pointer">
+                                                            <div className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition w-fit">
+                                                                <Upload className="h-4 w-4" />
+                                                                Choose Image
+                                                            </div>
+                                                        </Label>
+                                                        <input
+                                                            id="avatar"
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={handleAvatarChange}
+                                                            className="hidden"
+                                                        />
+                                                        <p className="text-xs text-muted-foreground mt-2">
+                                                            JPG, PNG or GIF (max. 5MB)
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Personal Information */}
+                                            <div className="space-y-4 mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
+                                                <h3 className="font-semibold text-slate-900 dark:text-white">
+                                                    Personal Information
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="full_name">Full Name *</Label>
+                                                        <Input
+                                                            id="full_name"
+                                                            value={profileFormData.full_name}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('full_name', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="username">Username *</Label>
+                                                        <Input
+                                                            id="username"
+                                                            value={profileFormData.username}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('username', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="phone_number">Phone Number</Label>
+                                                        <Input
+                                                            id="phone_number"
+                                                            type="tel"
+                                                            value={profileFormData.phone_number || ''}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('phone_number', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="location">Location</Label>
+                                                        <Input
+                                                            id="location"
+                                                            value={profileFormData.location || ''}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('location', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="bio">Bio</Label>
+                                                    <Textarea
+                                                        id="bio"
+                                                        placeholder="Tell us about yourself..."
+                                                        value={profileFormData.bio || ''}
+                                                        onChange={(e) =>
+                                                            handleProfileChange('bio', e.target.value)
+                                                        }
+                                                        rows={4}
+                                                        className="w-full"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Education Information */}
+                                            <div className="space-y-4">
+                                                <h3 className="font-semibold text-slate-900 dark:text-white">
+                                                    Education
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="school">School *</Label>
+                                                        <Input
+                                                            id="school"
+                                                            value={profileFormData.school}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('school', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="grade">Grade *</Label>
+                                                        <Input
+                                                            id="grade"
+                                                            value={profileFormData.grade}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('grade', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    <div className="md:col-span-2 space-y-2">
+                                                        <Label htmlFor="major">Major/Field of Study</Label>
+                                                        <Input
+                                                            id="major"
+                                                            value={profileFormData.major || ''}
+                                                            onChange={(e) =>
+                                                                handleProfileChange('major', e.target.value)
+                                                            }
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
                                 {/* Account Settings */}
                                 {activeSection === 'account' && (
                                     <motion.div
@@ -502,10 +811,10 @@ export default function SettingsPage() {
 
                                     <Button
                                         onClick={handleSave}
-                                        disabled={isLoading}
+                                        disabled={isLoading2}
                                         className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2"
                                     >
-                                        {isLoading ? 'Saving...' : 'Save Changes'}
+                                        {isLoading2 ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </motion.div>
                             </div>

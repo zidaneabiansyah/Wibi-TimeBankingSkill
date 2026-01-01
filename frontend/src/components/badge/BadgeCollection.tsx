@@ -30,19 +30,13 @@ export function BadgeCollection({
     showPin = true,
     compact = false,
 }: BadgeCollectionProps) {
-    const { userBadges, isLoading, error, fetchUserBadges, fetchUserBadgesByType, pinBadge } =
+    const { userBadges, isLoading, error, fetchUserBadges, pinBadge } =
         useBadgeStore();
-    const [selectedType, setSelectedType] = useState<BadgeType>('achievement');
     const [isChecking, setIsChecking] = useState(false);
 
     useEffect(() => {
         fetchUserBadges();
     }, [fetchUserBadges]);
-
-    const handleTypeChange = (type: BadgeType) => {
-        setSelectedType(type);
-        fetchUserBadgesByType(type);
-    };
 
     const handleCheckBadges = async () => {
         setIsChecking(true);
@@ -59,7 +53,6 @@ export function BadgeCollection({
         await pinBadge(badgeId, isPinned);
     };
 
-    const filteredBadges = userBadges.filter((ub) => ub.badge?.type === selectedType);
     const totalBadges = userBadges.length;
     const pinnedBadges = userBadges.filter((ub) => ub.is_pinned);
 
@@ -146,44 +139,35 @@ export function BadgeCollection({
             </div>
 
             {/* Tabs */}
-            <Tabs value={selectedType} onValueChange={(v) => handleTypeChange(v as BadgeType)}>
-                <TabsList className="grid w-full grid-cols-4">
-                    {BADGE_TYPES.map((type) => (
-                        <TabsTrigger key={type.value} value={type.value} className="gap-1">
-                            <span>{type.icon}</span>
-                            <span className="hidden sm:inline">{type.label.split(' ')[1]}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+            <Tabs value="all" onValueChange={() => {}}>
+                <TabsList className="hidden" />
 
-                {/* Tab Contents */}
-                {BADGE_TYPES.map((type) => (
-                    <TabsContent key={type.value} value={type.value} className="space-y-4">
-                        {isLoading ? (
-                            <div className="flex items-center justify-center py-12">
-                                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-                            </div>
-                        ) : filteredBadges.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-lg font-semibold mb-2">No {type.label} yet</p>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                    Keep working to earn more badges!
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {filteredBadges.map((ub) => (
-                                    <BadgeCard
-                                        key={ub.id}
-                                        userBadge={ub}
-                                        onPin={handlePin}
-                                        showPin={showPin}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </TabsContent>
-                ))}
+                {/* All Badges Grid */}
+                <TabsContent value="all" className="space-y-4">
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-12">
+                            <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                        </div>
+                    ) : userBadges.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-lg font-semibold mb-2">No badges yet</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                                Keep working to earn your first badge!
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {userBadges.map((ub: any) => (
+                                <BadgeCard
+                                    key={ub.id}
+                                    userBadge={ub}
+                                    onPin={handlePin}
+                                    showPin={showPin}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </TabsContent>
             </Tabs>
 
             {/* Pinned Badges Section */}
