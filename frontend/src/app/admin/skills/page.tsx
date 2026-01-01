@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreVertical, Eye, Edit, Trash2, Loader2, Filter, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { adminService } from '@/lib/services/admin.service';
 
 interface Skill {
     id: number;
@@ -35,7 +36,7 @@ interface Skill {
 }
 
 const categoryColors: Record<string, string> = {
-    academic: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
+    academic: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-yellow-300',
     technical: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300',
     creative: 'bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-300',
     language: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
@@ -56,15 +57,8 @@ export default function SkillsPage() {
     const fetchSkills = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/v1/admin/skills', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setSkills(data.data || []);
-            }
+            const result = await adminService.getAllSkills();
+            setSkills(result.data as any || []);
         } catch (error) {
             console.error('Failed to fetch skills:', error);
             toast.error('Failed to load skills');
@@ -75,15 +69,7 @@ export default function SkillsPage() {
 
     const handleDeleteSkill = async (skillId: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/skills/${skillId}`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to delete skill');
-
+            await adminService.deleteAdminSkill(skillId);
             toast.success('Skill deleted successfully');
             fetchSkills();
         } catch (error) {

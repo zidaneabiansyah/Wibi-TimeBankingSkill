@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreVertical, Eye, Download, Loader2, Filter, TrendingUp, TrendingDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { adminService } from '@/lib/services/admin.service';
 
 interface Transaction {
     id: number;
@@ -55,15 +56,8 @@ export default function TransactionsPage() {
     const fetchTransactions = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/v1/admin/transactions', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setTransactions(data.data || []);
-            }
+            const result = await adminService.getAllTransactions();
+            setTransactions(result.data as any || []);
         } catch (error) {
             console.error('Failed to fetch transactions:', error);
             toast.error('Failed to load transactions');

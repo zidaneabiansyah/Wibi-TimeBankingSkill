@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreVertical, Eye, Edit, Trash2, Loader2, Filter, Plus, Trophy, Star, Award } from 'lucide-react';
 import { toast } from 'sonner';
+import { adminService } from '@/lib/services/admin.service';
 
 interface Badge {
     id: number;
@@ -61,15 +62,8 @@ export default function GamificationPage() {
     const fetchBadges = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/v1/admin/badges', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setBadges(data.data || []);
-            }
+            const data = await adminService.getAllBadges();
+            setBadges(data.badges as any || []);
         } catch (error) {
             console.error('Failed to fetch badges:', error);
             toast.error('Failed to load badges');
@@ -80,15 +74,7 @@ export default function GamificationPage() {
 
     const handleDeleteBadge = async (badgeId: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/badges/${badgeId}`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to delete badge');
-
+            await adminService.deleteBadge(badgeId);
             toast.success('Badge deleted successfully');
             fetchBadges();
         } catch (error) {

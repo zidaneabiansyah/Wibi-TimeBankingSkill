@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreVertical, UserCheck, UserX, Eye, Loader2, Filter } from 'lucide-react';
 import { toast } from 'sonner';
+import { adminService } from '@/lib/services/admin.service';
 
 interface User {
     id: number;
@@ -69,15 +70,8 @@ export default function UsersPage() {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/v1/admin/users', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setUsers(data.data || []);
-            }
+            const result = await adminService.getAllUsers();
+            setUsers(result.data || []);
         } catch (error) {
             console.error('Failed to fetch users:', error);
             toast.error('Failed to load users');
@@ -88,19 +82,9 @@ export default function UsersPage() {
 
     const handleSuspendUser = async (userId: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/users/${userId}/suspend`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-            
-            if (response.ok) {
-                toast.success('User suspended successfully');
-                fetchUsers();
-            } else {
-                toast.error('Failed to suspend user');
-            }
+            await adminService.suspendUser(userId);
+            toast.success('User suspended successfully');
+            fetchUsers();
         } catch (error) {
             toast.error('Failed to suspend user');
         }
@@ -108,19 +92,9 @@ export default function UsersPage() {
 
     const handleActivateUser = async (userId: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/users/${userId}/activate`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-
-            if (response.ok) {
-                toast.success('User activated successfully');
-                fetchUsers();
-            } else {
-                toast.error('Failed to activate user');
-            }
+            await adminService.activateUser(userId);
+            toast.success('User activated successfully');
+            fetchUsers();
         } catch (error) {
             toast.error('Failed to activate user');
         }

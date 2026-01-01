@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreVertical, Eye, Trash2, Loader2, Filter, MessageSquare, FileText, Flag, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { adminService } from '@/lib/services/admin.service';
 
 interface ForumThread {
     id: number;
@@ -65,23 +66,13 @@ export default function CommunityPage() {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const [threadsRes, reportsRes] = await Promise.all([
-                fetch('/api/v1/admin/forum/threads', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-                }),
-                fetch('/api/v1/admin/reports', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-                }),
+            const [threadsResult, reportsResult] = await Promise.all([
+                adminService.getAllForumThreads(),
+                adminService.getAllReports()
             ]);
 
-            if (threadsRes.ok) {
-                const data = await threadsRes.json();
-                setThreads(data.data || []);
-            }
-            if (reportsRes.ok) {
-                const data = await reportsRes.json();
-                setReports(data.data || []);
-            }
+            setThreads(threadsResult.data as any || []);
+            setReports(reportsResult.data || []);
         } catch (error) {
             console.error('Failed to fetch data:', error);
             toast.error('Failed to load community data');
@@ -92,15 +83,7 @@ export default function CommunityPage() {
 
     const handleResolveReport = async (reportId: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/reports/${reportId}/resolve`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to resolve report');
-
+            await adminService.resolveReport(reportId, 'Resolved by admin via dashboard');
             toast.success('Report resolved successfully');
             fetchData();
         } catch (error) {
@@ -110,15 +93,7 @@ export default function CommunityPage() {
 
     const handleDismissReport = async (reportId: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/reports/${reportId}/dismiss`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to dismiss report');
-
+            await adminService.dismissReport(reportId);
             toast.success('Report dismissed successfully');
             fetchData();
         } catch (error) {

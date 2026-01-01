@@ -272,15 +272,7 @@ export default function SettingsPage() {
                     >
                         {/* Header with Back Button */}
                         <motion.div variants={itemVariants} className="flex items-center gap-3">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => router.back()}
-                                className="gap-2"
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                                Back
-                            </Button>
+
                             <div>
                                 <h1 className="text-3xl font-bold text-foreground mb-1">
                                     Settings
@@ -295,6 +287,13 @@ export default function SettingsPage() {
                             {/* Sidebar Navigation */}
                             <motion.div variants={itemVariants} className="lg:col-span-1">
                             <nav className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-2 space-y-1">
+                                <button
+                                    onClick={() => router.back()}
+                                    className="w-full text-left px-4 py-3 rounded-md font-medium transition-colors flex items-center gap-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 mb-2 border-b border-slate-100 dark:border-slate-700 pb-2"
+                                >
+                                    <ArrowLeft className="w-5 h-5" />
+                                    <span>Back to Profile</span>
+                                </button>
                                 {settingsSections.map((section) => (
                                     <button
                                         key={section.id}

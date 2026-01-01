@@ -23,28 +23,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreVertical, Eye, CheckCircle, XCircle, Loader2, Filter, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { adminService } from '@/lib/services/admin.service';
+import type { Session, SessionStatus } from '@/types';
 
-interface Session {
-    id: number;
-    teacher: { full_name: string };
-    student: { full_name: string };
-    user_skill: { skill: { name: string } };
-    teacher_id: number;
-    student_id: number;
-    status: 'pending' | 'approved' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
-    mode: 'online' | 'offline';
-    scheduled_at: string;
-    duration: number;
-    created_at: string;
-}
-
-const statusColors = {
+const statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300',
     approved: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
     scheduled: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300',
     in_progress: 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300',
     completed: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
     cancelled: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
+    rejected: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
     disputed: 'bg-red-200 text-red-900 dark:bg-red-900 dark:text-red-100 border-red-300',
 };
 
@@ -61,15 +50,8 @@ export default function SessionsPage() {
     const fetchSessions = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/v1/admin/sessions', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setSessions(data.data || []);
-            }
+            const result = await adminService.getAllSessions();
+            setSessions(result.data || []);
         } catch (error) {
             console.error('Failed to fetch sessions:', error);
             toast.error('Failed to load sessions');
@@ -80,76 +62,41 @@ export default function SessionsPage() {
 
     const handleResolve = async (id: number, resolution: 'payout' | 'refund') => {
         try {
-            const token = localStorage.getItem('admin_token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/sessions/${id}/resolve`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ resolution }),
-            });
-
-            if (response.ok) {
-                toast.success(`Session resolved with ${resolution}`);
-                fetchSessions();
-            } else {
-                const error = await response.json();
-                toast.error(error.message || 'Failed to resolve session');
-            }
-        } catch (error) {
-            toast.error('An error occurred while resolving the session');
+            await adminService.resolveSession(id, resolution);
+            toast.success(`Session resolved with ${resolution}`);
+            fetchSessions();
+        } catch (error: any) {
+            toast.error(error.message || 'An error occurred while resolving the session');
         }
     };
 
     const handleApproveSession = async (id: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/sessions/${id}/approve`, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-            });
-            if (response.ok) {
-                toast.success('Session approved');
-                fetchSessions();
-            } else {
-                toast.error('Failed to approve session');
-            }
+            await adminService.approveSession(id);
+            toast.success('Session approved');
+            fetchSessions();
         } catch (error) {
-            toast.error('Error approving session');
+            toast.error('Failed to approve session');
         }
     };
 
     const handleRejectSession = async (id: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/sessions/${id}/reject`, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-            });
-            if (response.ok) {
-                toast.success('Session rejected');
-                fetchSessions();
-            } else {
-                toast.error('Failed to reject session');
-            }
+            await adminService.rejectSession(id);
+            toast.success('Session rejected');
+            fetchSessions();
         } catch (error) {
-            toast.error('Error rejecting session');
+            toast.error('Failed to reject session');
         }
     };
 
     const handleCompleteSession = async (id: number) => {
         try {
-            const response = await fetch(`/api/v1/admin/sessions/${id}/complete`, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-            });
-            if (response.ok) {
-                toast.success('Session marked as completed');
-                fetchSessions();
-            } else {
-                toast.error('Failed to complete session');
-            }
+            await adminService.completeSession(id);
+            toast.success('Session marked as completed');
+            fetchSessions();
         } catch (error) {
-            toast.error('Error completing session');
+            toast.error('Failed to complete session');
         }
     };
 
