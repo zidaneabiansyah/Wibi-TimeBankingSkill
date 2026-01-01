@@ -68,7 +68,7 @@ export default function TermsPage() {
                             Terms of <span className="text-primary">Service</span>
                         </h1>
                         <p className="max-w-[700px] text-muted-foreground text-lg md:text-xl">
-                            Please read these terms carefully before using Wibi. Last updated: December 2024
+                            Please read these terms carefully before using Wibi. Last updated: December 2025
                         </p>
                     </div>
                 </div>
