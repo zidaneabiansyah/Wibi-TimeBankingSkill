@@ -33,6 +33,7 @@ export function Header() {
     const navLinks = [
         { href: '/marketplace', label: 'Marketplace' },
         { href: '/community', label: 'Community' },
+        { href: '/leaderboard', label: 'Leaderboard' },
         { href: '/dashboard', label: 'Dashboard' },
         { href: '/dashboard/sessions', label: 'Sessions' },
         { href: '/profile', label: 'Profile' },
@@ -125,6 +126,10 @@ export function Header() {
                                     <MobileMenuItem
                                         label="Community"
                                         href="/community"
+                                    />
+                                    <MobileMenuItem
+                                        label="Leaderboard"
+                                        href="/leaderboard"
                                     />
 
                                     <div className="h-px bg-border/40 my-2" />

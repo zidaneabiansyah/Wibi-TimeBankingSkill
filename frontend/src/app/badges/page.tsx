@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import { BadgeCollection } from '@/components/badge/BadgeCollection';
+import { Button } from '@/components/ui/button';
+import { Trophy, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { LeaderboardTabs } from '@/components/badge/LeaderboardTabs';
 
 export const metadata: Metadata = {
@@ -30,9 +33,23 @@ export default function BadgesPage() {
                 {/* Divider */}
                 <div className="h-px bg-linear-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
 
-                {/* Leaderboards Section */}
-                <section className="space-y-6">
-                    <LeaderboardTabs limit={10} />
+                {/* Leaderboards Section Link */}
+                <section className="bg-primary/5 rounded-2xl p-8 md:p-12 border border-primary/10 text-center space-y-6">
+                    <div className="max-w-2xl mx-auto space-y-4">
+                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-primary mb-2">
+                            <Trophy className="h-6 w-6" />
+                        </div>
+                        <h2 className="text-3xl font-bold italic">Community Leaderboard</h2>
+                        <p className="text-muted-foreground">
+                            Lihat siapa yang memimpin komunitas hari ini. Bersainglah dalam kategori Badges, Rarity, Sessions, Rating, dan Credits.
+                        </p>
+                        <Button size="lg" className="rounded-full px-8 gap-2" asChild>
+                            <Link href="/leaderboard">
+                                View Full Leaderboard
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </div>
                 </section>
 
                 {/* Info Section */}
