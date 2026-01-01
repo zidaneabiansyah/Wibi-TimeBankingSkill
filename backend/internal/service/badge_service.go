@@ -296,8 +296,26 @@ func (s *BadgeService) GetBadgeLeaderboard(limit int) ([]dto.LeaderboardEntry, e
 
 	var leaderboard []dto.LeaderboardEntry
 	for _, result := range results {
-		userID := uint(result["user_id"].(float64))
-		badgeCount := int(result["badge_count"].(int64))
+		var userID uint
+		var badgeCount int
+
+		// Robust type extraction for user_id (can be int64 or float64 depending on driver/aggregation)
+		if uid, ok := result["user_id"].(int64); ok {
+			userID = uint(uid)
+		} else if uid, ok := result["user_id"].(float64); ok {
+			userID = uint(uid)
+		} else {
+			continue // Skip invalid entries
+		}
+
+		// Robust type extraction for badge_count
+		if count, ok := result["badge_count"].(int64); ok {
+			badgeCount = int(count)
+		} else if count, ok := result["badge_count"].(int); ok {
+			badgeCount = count
+		} else if count, ok := result["badge_count"].(float64); ok {
+			badgeCount = int(count)
+		}
 
 		user, err := s.userRepo.GetByID(userID)
 		if err != nil {
@@ -330,8 +348,26 @@ func (s *BadgeService) GetRarityLeaderboard(limit int) ([]dto.LeaderboardEntry, 
 
 	var leaderboard []dto.LeaderboardEntry
 	for _, result := range results {
-		userID := uint(result["user_id"].(float64))
-		totalRarity := int(result["total_rarity"].(int64))
+		var userID uint
+		var totalRarity int
+
+		// Robust type extraction for user_id
+		if uid, ok := result["user_id"].(int64); ok {
+			userID = uint(uid)
+		} else if uid, ok := result["user_id"].(float64); ok {
+			userID = uint(uid)
+		} else {
+			continue
+		}
+
+		// Robust type extraction for total_rarity
+		if rarity, ok := result["total_rarity"].(int64); ok {
+			totalRarity = int(rarity)
+		} else if rarity, ok := result["total_rarity"].(int); ok {
+			totalRarity = rarity
+		} else if rarity, ok := result["total_rarity"].(float64); ok {
+			totalRarity = int(rarity)
+		}
 
 		user, err := s.userRepo.GetByID(userID)
 		if err != nil {
