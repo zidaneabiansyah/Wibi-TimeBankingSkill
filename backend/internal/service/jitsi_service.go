@@ -6,7 +6,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"time"
 
@@ -25,17 +25,23 @@ func NewJitsiService(cfg *config.Config) (*JitsiService, error) {
 	// If the key is a path, read the file. If it's the key content itself, use it directly.
 	var keyBytes []byte
 	var err error
+	
+	keyContent := strings.TrimSpace(cfg.Jitsi.PrivateKey)
 
-	if strings.HasPrefix(cfg.Jitsi.PrivateKey, "-----BEGIN") {
-		keyBytes = []byte(cfg.Jitsi.PrivateKey)
-	} else if cfg.Jitsi.PrivateKey != "" {
-		keyBytes, err = ioutil.ReadFile(cfg.Jitsi.PrivateKey)
-		if err != nil {
-			// If file read fails, maybe it's just a string that doesn't have the header? 
-			// But usually it should have the header. 
-			// Let's assume for now it might be a file path if it doesn't look like a key.
-			// If it's empty, we just won't have a key and token generation will fail.
-			return nil, fmt.Errorf("failed to read private key file: %w", err)
+	if strings.HasPrefix(keyContent, "-----BEGIN") {
+		keyBytes = []byte(keyContent)
+	} else if keyContent != "" {
+		// Check if it's a file path
+		if _, statErr := os.Stat(keyContent); statErr == nil {
+			keyBytes, err = os.ReadFile(keyContent)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read private key file: %w", err)
+			}
+		} else {
+			// Not a file path, treat as raw key content and wrap with PEM headers if missing
+			pemHeader := "-----BEGIN PRIVATE KEY-----\n"
+			pemFooter := "\n-----END PRIVATE KEY-----"
+			keyBytes = []byte(pemHeader + keyContent + pemFooter)
 		}
 	}
 
@@ -59,6 +65,10 @@ func NewJitsiService(cfg *config.Config) (*JitsiService, error) {
 				return nil, errors.New("private key is not RSA")
 			}
 		}
+	}
+
+	if privateKey != nil {
+		fmt.Println("Jitsi service initialized successfully with private key")
 	}
 
 	return &JitsiService{
