@@ -95,9 +95,9 @@ func main() {
 
   // Start server
   addr := fmt.Sprintf(":%s", cfg.Server.Port)
-  log.Printf("🚀 Server starting on http://localhost%s", addr)
-  log.Printf("📚 API Documentation: http://localhost%s/api/v1/health", addr)
-  log.Printf("🔐 Auth endpoints: http://localhost%s/api/v1/auth", addr)
+  log.Printf("🚀 WIBI Server starting on http://localhost%s", addr)
+  log.Printf("📚 WIBI API Documentation: http://localhost%s/api/v1/health", addr)
+  log.Printf("🔐 WIBI Auth endpoints: http://localhost%s/api/v1/auth", addr)
 
   if err := router.Run(addr); err != nil {
     log.Fatalf("❌ Failed to start server: %v", err)
