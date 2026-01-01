@@ -15,6 +15,7 @@ type BadgeResponse struct {
 	BonusCredits float64 `json:"bonus_credits"`
 	Rarity       int    `json:"rarity"`
 	TotalAwarded int    `json:"total_awarded"`
+	TotalEarned  int    `json:"total_earned"`
 	Color        string `json:"color"`
 	IsActive     bool   `json:"is_active"`
 	DisplayOrder int    `json:"display_order"`
@@ -67,6 +68,7 @@ func MapBadgeToResponse(badge *models.Badge) *BadgeResponse {
 		BonusCredits: badge.BonusCredits,
 		Rarity:       badge.Rarity,
 		TotalAwarded: badge.TotalAwarded,
+		TotalEarned:  badge.TotalAwarded,
 		Color:        badge.Color,
 		IsActive:     badge.IsActive,
 		DisplayOrder: badge.DisplayOrder,

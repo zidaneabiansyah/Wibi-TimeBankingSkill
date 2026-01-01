@@ -40,6 +40,7 @@ type Badge struct {
 
 	// Stats
 	TotalAwarded int `gorm:"default:0" json:"total_awarded"` // How many users have this badge
+	TotalEarned  int `gorm:"-" json:"total_earned"`         // Alias for total_awarded for frontend consistency
 
 	// Display
 	Color        string `json:"color"` // Badge color (hex)

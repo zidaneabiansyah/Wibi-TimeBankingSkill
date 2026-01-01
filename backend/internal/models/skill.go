@@ -43,6 +43,7 @@ type Skill struct {
 	// Stats
 	TotalTeachers int `gorm:"default:0" json:"total_teachers"`
 	TotalLearners int `gorm:"default:0" json:"total_learners"`
+	TotalSessions int `gorm:"-" json:"total_sessions"`
 	
 	// Transient fields for marketplace
 	MinRate float64 `gorm:"-" json:"min_rate"`

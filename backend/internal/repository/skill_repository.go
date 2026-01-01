@@ -93,7 +93,7 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 		Select("skills.*, " +
 			"COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, " +
 			"COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate, " +
-			"COALESCE(SUM(user_skills.total_sessions), 0) as aggregate_sessions, " +
+			"COALESCE(SUM(user_skills.total_sessions), 0) as total_sessions, " +
 			"COALESCE(MAX(user_skills.average_rating), 0) as max_teacher_rating").
 		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
 		Group("skills.id")
@@ -127,7 +127,7 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 	sortOrder := "skills.created_at DESC"
 	switch sortBy {
 	case "popular":
-		sortOrder = "aggregate_sessions DESC"
+		sortOrder = "total_sessions DESC"
 	case "rating":
 		sortOrder = "max_teacher_rating DESC"
 	case "newest":
@@ -148,11 +148,11 @@ func (r *SkillRepository) GetRecommendations(limit int) ([]models.Skill, error) 
 		Select("skills.*, " +
 			"COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, " +
 			"COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate, " +
-			"COALESCE(SUM(user_skills.total_sessions), 0) as aggregate_sessions, " +
+			"COALESCE(SUM(user_skills.total_sessions), 0) as total_sessions, " +
 			"COALESCE(MAX(user_skills.average_rating), 0) as max_teacher_rating").
 		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
 		Group("skills.id").
-		Order("max_teacher_rating DESC, aggregate_sessions DESC").
+		Order("max_teacher_rating DESC, total_sessions DESC").
 		Limit(limit).
 		Find(&skills).Error
 
