@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Zap, BookOpen, TrendingUp, Users, Star, ArrowRight } from "lucide-react";
-import { Footer } from "@/components/layout/Footer";
+import { Footer, Header } from "@/components/layout";
 import dynamic from 'next/dynamic';
 
 const DotLottieReact = dynamic(
@@ -35,38 +35,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-                <Image 
-                  src="/wibi.png" 
-                  alt="Wibi Logo" 
-                  width={28} 
-                  height={28} 
-                  className="rounded-md"
-                />
-              </div>
-              <span className="text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">Wibi</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-8">
-              <Link href="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Marketplace</Link>
-              <Link href="/community" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Community</Link>
-              <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">How It Works</Link>
-              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">About</Link>
-            </nav>
-            <div className="flex items-center gap-3">
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Login</Button>
-              </Link>
-              <Link href="/register">
-                <Button size="sm">Sign Up</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">

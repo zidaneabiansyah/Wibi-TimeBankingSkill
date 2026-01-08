@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Header } from "@/components/layout";
+import { Header, Footer } from "@/components/layout";
 import { SkillCard } from "@/components/ui/skill-card";
 import { useSkillStore } from "@/stores/skill.store";
 import { motion } from "framer-motion";
@@ -105,7 +105,7 @@ export default function MarketplacePage() {
             <Header />
 
             {/* Main Content */}
-            <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            <main className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16 py-8">
                 <div className="flex flex-col space-y-8">
                     {/* Page Title */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -328,10 +328,10 @@ export default function MarketplacePage() {
                                         <Link href={`/marketplace/${skill.id}`} className="block h-full">
                                             <div className="group relative flex flex-col h-full overflow-hidden rounded-lg border border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card/70 hover:shadow-lg hover:shadow-primary/10">
                                                 {/* Accent Line */}
-                                                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                                <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                                 
                                                 {/* Image/Icon Hero Section */}
-                                                <div className="w-full aspect-video bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
+                                                <div className="w-full aspect-video bg-linear-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
                                                     {skill.icon ? (
                                                         <span className="text-6xl group-hover:scale-110 transition-transform duration-300">{skill.icon}</span>
                                                     ) : (
@@ -454,6 +454,7 @@ export default function MarketplacePage() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }
