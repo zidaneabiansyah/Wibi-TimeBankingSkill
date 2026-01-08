@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header, Footer } from "@/components/layout";
 import { SkillCard } from "@/components/ui/skill-card";
 import { useSkillStore } from "@/stores/skill.store";
-import { motion } from "framer-motion";
 import { Search, Filter, X, Star, Clock } from "lucide-react";
 import type { Skill } from "@/types";
 
@@ -244,7 +243,7 @@ export default function MarketplacePage() {
                         </div>
 
                         <div className="ml-auto text-sm text-muted-foreground flex items-center bg-muted/50 px-4 py-2 rounded-lg whitespace-nowrap">
-                            <span className="font-medium text-foreground">{skillsTotal}</span>&nbsp;skills found
+                            <span className="font-medium text-foreground">{skillsTotal}</span>&nbsp;skills available
                         </div>
                     </div>
 
@@ -263,10 +262,6 @@ export default function MarketplacePage() {
                                 ))}
                             </TabsList>
                         </Tabs>
-                        
-                        <div className="text-sm text-muted-foreground bg-muted/40 px-4 py-2 rounded-lg border border-border/20 whitespace-nowrap">
-                            <span className="font-semibold text-foreground">{skillsTotal}</span> skills
-                        </div>
                     </div>
 
                     {/* Skills Grid Section */}
@@ -278,12 +273,7 @@ export default function MarketplacePage() {
                                 ))}
                             </div>
                         ) : skills.length === 0 ? (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="text-center py-20"
-                            >
+                            <div className="text-center py-20">
                                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 mb-4">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                                         <circle cx="11" cy="11" r="8" />
@@ -295,117 +285,89 @@ export default function MarketplacePage() {
                                 <Button asChild variant="outline">
                                     <Link href="/marketplace">Clear filters</Link>
                                 </Button>
-                            </motion.div>
+                            </div>
                         ) : (
-                            <motion.div 
-                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true, amount: 0.1 }}
-                                variants={{
-                                    hidden: { opacity: 0 },
-                                    visible: {
-                                        opacity: 1,
-                                        transition: {
-                                            staggerChildren: 0.05,
-                                            delayChildren: 0.1,
-                                        },
-                                    },
-                                }}
-                            >
-                                {skills.map((skill: Skill, idx) => (
-                                    <motion.div
-                                        key={skill.id}
-                                        variants={{
-                                            hidden: { opacity: 0, y: 20 },
-                                            visible: {
-                                                opacity: 1,
-                                                y: 0,
-                                                transition: { duration: 0.3, ease: "easeOut" },
-                                            },
-                                        }}
-                                    >
-                                        <Link href={`/marketplace/${skill.id}`} className="block h-full">
-                                            <div className="group relative flex flex-col h-full overflow-hidden rounded-lg border border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card/70 hover:shadow-lg hover:shadow-primary/10">
-                                                {/* Accent Line */}
-                                                <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                                
-                                                {/* Image/Icon Hero Section */}
-                                                <div className="w-full aspect-video bg-linear-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
-                                                    {skill.icon ? (
-                                                        <span className="text-6xl group-hover:scale-110 transition-transform duration-300">{skill.icon}</span>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center w-full h-full bg-linear-to-br from-primary/20 to-secondary/20">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary/40 group-hover:text-primary/60 transition-colors duration-300">
-                                                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                                                <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                                                            </svg>
-                                                        </div>
-                                                    )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {skills.map((skill: Skill) => (
+                                    <Link key={skill.id} href={`/marketplace/${skill.id}`} className="block h-full">
+                                        <div className="group relative flex flex-col h-full overflow-hidden rounded-lg border border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card/70 hover:shadow-lg hover:shadow-primary/10">
+                                            {/* Accent Line */}
+                                            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            
+                                            {/* Image/Icon Hero Section */}
+                                            <div className="w-full aspect-video bg-linear-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
+                                                {skill.icon ? (
+                                                    <span className="text-6xl group-hover:scale-110 transition-transform duration-300">{skill.icon}</span>
+                                                ) : (
+                                                    <div className="flex items-center justify-center w-full h-full bg-linear-to-br from-primary/20 to-secondary/20">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary/40 group-hover:text-primary/60 transition-colors duration-300">
+                                                            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                                            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Header with Badge */}
+                                            <div className="flex-1 flex flex-col p-4 md:p-5 space-y-3">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-base md:text-lg font-semibold text-primary truncate group-hover:text-secondary transition-colors">
+                                                            {skill.name}
+                                                        </h3>
+                                                        <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
+                                                            {skill.description || 'Learn this valuable skill'}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                
-                                                {/* Header with Badge */}
-                                                <div className="flex-1 flex flex-col p-4 md:p-5 space-y-3">
-                                                    <div className="flex items-start justify-between gap-2">
-                                                        <div className="flex-1 min-w-0">
-                                                            <h3 className="text-base md:text-lg font-semibold text-primary truncate group-hover:text-secondary transition-colors">
-                                                                {skill.name}
-                                                            </h3>
-                                                            <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
-                                                                {skill.description || 'Learn this valuable skill'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
 
-                                                    {/* Category Badge */}
-                                                    <div className="flex gap-2 flex-wrap">
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary border border-secondary/20">
-                                                            {skill.category || 'General'}
-                                                        </span>
-                                                    </div>
+                                                {/* Category Badge */}
+                                                <div className="flex gap-2 flex-wrap">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary border border-secondary/20">
+                                                        {skill.category || 'General'}
+                                                    </span>
+                                                </div>
 
-                                                    {/* Stats Row 1: Rating + Teachers */}
-                                                    <div className="flex items-center gap-3 text-xs md:text-sm pt-2 border-t border-border/10">
-                                                        <div className="flex items-center gap-1.5">
-                                                            <Star className="h-3.5 w-3.5 fill-secondary text-secondary" />
-                                                            <span className="font-semibold">5.0</span>
-                                                            <span className="text-muted-foreground">
-                                                                ({skill.total_teachers || 0} teachers)
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Stats Row 2: Learners + Rate */}
-                                                    <div className="flex items-center gap-3 text-xs md:text-sm">
-                                                        <div className="flex items-center gap-1.5">
-                                                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                                                            <span className="text-muted-foreground">
-                                                                {skill.min_rate === skill.max_rate 
-                                                                    ? `${skill.min_rate || 0} Credits/hr` 
-                                                                    : `${skill.min_rate || 0}-${skill.max_rate || 0} Credits/hr`}
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-border/50">•</span>
+                                                {/* Stats Row 1: Rating + Teachers */}
+                                                <div className="flex items-center gap-3 text-xs md:text-sm pt-2 border-t border-border/10">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Star className="h-3.5 w-3.5 fill-secondary text-secondary" />
+                                                        <span className="font-semibold">5.0</span>
                                                         <span className="text-muted-foreground">
-                                                            {skill.total_learners || 0} learners
+                                                            ({skill.total_teachers || 0} teachers)
                                                         </span>
                                                     </div>
                                                 </div>
 
-                                                {/* CTA Button */}
-                                                <div className="p-4 md:p-5 pt-0 mt-auto">
-                                                    <Button 
-                                                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-200"
-                                                        onClick={() => {}}
-                                                    >
-                                                        View Tutors
-                                                    </Button>
+                                                {/* Stats Row 2: Learners + Rate */}
+                                                <div className="flex items-center gap-3 text-xs md:text-sm">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                                                        <span className="text-muted-foreground">
+                                                            {skill.min_rate === skill.max_rate 
+                                                                ? `${skill.min_rate || 0} Credits/hr` 
+                                                                : `${skill.min_rate || 0}-${skill.max_rate || 0} Credits/hr`}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-border/50">•</span>
+                                                    <span className="text-muted-foreground">
+                                                        {skill.total_learners || 0} learners
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </Link>
-                                    </motion.div>
+
+                                            {/* CTA Button */}
+                                            <div className="p-4 md:p-5 pt-0 mt-auto">
+                                                <Button 
+                                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-200"
+                                                >
+                                                    View Tutors
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </Link>
                                 ))}
-                            </motion.div>
+                            </div>
                         )}
 
                         {/* Pagination */}

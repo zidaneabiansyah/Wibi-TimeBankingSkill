@@ -38,7 +38,7 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
+      <section className="relative w-full py-16 md:py-24 lg:py-28 overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 bg-linear-to-br from-background via-background to-muted/20" />
         <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top_right,var(--tw-linear-stops))] from-primary/10 via-transparent to-transparent" />
@@ -137,8 +137,8 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="relative w-full py-20 md:py-32 lg:py-40 border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+      <section className="relative w-full py-16 md:py-24 lg:py-28 border-t border-border/40">
+        <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
           <motion.div 
             className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             initial="initial"
@@ -230,8 +230,8 @@ export default function Home() {
       </section>
 
       {/* Featured Skills */}
-      <section className="relative w-full py-20 md:py-32 lg:py-40 border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+      <section className="relative w-full py-16 md:py-24 lg:py-28 border-t border-border/40">
+        <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
           <motion.div 
             className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             initial="initial"
@@ -319,11 +319,11 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden border-t border-border/40">
+      <section className="relative w-full py-16 md:py-24 lg:py-28 overflow-hidden border-t border-border/40">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-secondary/5" />
         
         <motion.div 
-          className="relative mx-auto max-w-7xl px-6 sm:px-8 lg:px-10"
+          className="relative mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16"
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, margin: "-100px" }}
