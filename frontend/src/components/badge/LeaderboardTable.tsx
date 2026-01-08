@@ -96,8 +96,9 @@ export function LeaderboardTable({
                                 </div>
                                 <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center font-black shadow-2xl z-20 transition-transform group-hover:scale-110
                                     ${rank === 1 ? 'bg-yellow-500 text-white text-xl md:text-2xl border-4 border-background' : 
-                                      rank === 2 ? 'bg-slate-300 text-slate-800 text-lg md:text-xl border-4 border-background shadow-slate-400/20' : 
-                                      'bg-orange-500 text-white text-lg md:text-xl border-4 border-background shadow-orange-900/20'}`}
+                                    rank === 2 ? 'bg-slate-300 text-slate-800 text-lg md:text-xl border-4 border-background shadow-slate-400/20' : 
+                                    rank === 3 ? 'bg-orange-500 text-white text-lg md:text-xl border-4 border-background shadow-orange-900/20' : 
+                                    'bg-orange-500 text-white text-lg md:text-xl border-4 border-background shadow-orange-900/20'}`}
                                 >
                                     {rank === 1 ? '1' : rank === 2 ? '2' : '3'}
                                     <div className="absolute -top-1 -right-1 text-[10px] drop-shadow-sm">
@@ -144,7 +145,7 @@ export function LeaderboardTable({
                                 transition={{ delay: 0.05 * index }}
                                 className="group flex items-center gap-5 p-5 rounded-3xl bg-card border border-border/40 hover:border-primary/40 hover:shadow-xl hover:bg-accent/5 transition-all duration-300"
                             >
-                                <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-secondary/50 flex items-center justify-center font-black text-lg text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all">
+                                <div className="shrink-0 w-10 h-10 rounded-2xl bg-secondary/50 flex items-center justify-center font-black text-lg text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all">
                                     {(entry.rank || index + 4)}
                                 </div>
                                 <Avatar className="h-12 w-12 border-2 border-background shadow-sm group-hover:scale-110 transition-transform ring-1 ring-border/20">

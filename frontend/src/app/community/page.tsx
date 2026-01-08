@@ -2,8 +2,15 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { MessageSquare, BookOpen, Award } from 'lucide-react';
+import { MessageSquare, BookOpen, Award, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import dynamic from 'next/dynamic';
+
+const LeaderboardTabs = dynamic(
+  () => import('@/components/badge/LeaderboardTabs').then((mod) => mod.LeaderboardTabs),
+  { ssr: false, loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-3xl" /> }
+);
+import { motion } from 'framer-motion';
 import gsap from 'gsap';
 
 export default function CommunityPage() {
@@ -38,6 +45,10 @@ export default function CommunityPage() {
                 delay: delay,
             });
         });
+
+        return () => {
+            gsap.killTweensOf(orbs.current);
+        };
     }, []);
 
     const sections = [
@@ -153,7 +164,7 @@ export default function CommunityPage() {
                 </div>
 
                 {/* Stats Section - Centered */}
-                <div className="bg-card rounded-xl border border-border p-8 text-center">
+                <div className="bg-card rounded-xl border border-border p-8 text-center mb-16">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
                             <p className="text-4xl font-bold text-primary mb-2">1000+</p>
@@ -169,6 +180,30 @@ export default function CommunityPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Leaderboard Section */}
+                <motion.section 
+                    id="leaderboard"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="space-y-8"
+                >
+                    <div className="text-center space-y-4 max-w-2xl mx-auto">
+                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <Trophy className="h-6 w-6" />
+                        </div>
+                        <h2 className="text-4xl font-bold tracking-tight italic">Community Rankings</h2>
+                        <p className="text-lg text-muted-foreground">
+                            Lihat siapa yang memimpin hari ini. Teruslah berkontribusi untuk mendaki tangga peringkat!
+                        </p>
+                    </div>
+
+                    <div className="bg-card/50 backdrop-blur-sm rounded-3xl border border-border/40 p-4 sm:p-10">
+                        <LeaderboardTabs limit={15} />
+                    </div>
+                </motion.section>
             </div>
         </div>
     );

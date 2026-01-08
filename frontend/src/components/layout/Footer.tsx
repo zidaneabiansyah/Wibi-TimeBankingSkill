@@ -35,9 +35,6 @@ export function Footer() {
                                 <Link href="/community" className="text-muted-foreground hover:text-primary transition-colors duration-200">Community Hub</Link>
                             </li>
                             <li>
-                                <Link href="/leaderboard" className="text-muted-foreground hover:text-primary transition-colors duration-200">Leaderboard</Link>
-                            </li>
-                            <li>
                                 <Link href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors duration-200">How It Works</Link>
                             </li>
                         </ul>

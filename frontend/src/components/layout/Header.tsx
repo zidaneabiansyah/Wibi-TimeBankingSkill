@@ -5,9 +5,23 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth.store";
-import { NotificationBell, NotificationDropdown } from "@/components/notification";
+import dynamic from 'next/dynamic';
+
+const NotificationBell = dynamic(
+    () => import('@/components/notification').then((mod) => mod.NotificationBell),
+    { ssr: false }
+);
+
+const NotificationDropdown = dynamic(
+    () => import('@/components/notification').then((mod) => mod.NotificationDropdown),
+    { ssr: false }
+);
 import { UserDropdownMenu } from "@/components/ui/user-dropdown-menu";
-import { MobileMenuDrawer, MobileMenuItem } from "@/components/ui/mobile-menu-drawer";
+import { MobileMenuItem } from "@/components/ui/mobile-menu-drawer";
+const MobileMenuDrawer = dynamic(
+    () => import('@/components/ui/mobile-menu-drawer').then((mod) => mod.MobileMenuDrawer),
+    { ssr: false }
+);
 import { Menu } from 'lucide-react';
 
 export function Header() {
@@ -33,7 +47,6 @@ export function Header() {
     const navLinks = [
         { href: '/marketplace', label: 'Marketplace' },
         { href: '/community', label: 'Community' },
-        { href: '/leaderboard', label: 'Leaderboard' },
         { href: '/dashboard', label: 'Dashboard' },
         { href: '/dashboard/sessions', label: 'Sessions' },
         { href: '/profile', label: 'Profile' },
@@ -44,7 +57,7 @@ export function Header() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between gap-4">
                     {/* Logo */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
                                 <img src="/wibi.png" alt="Wibi Logo" className="h-7 w-7 rounded-md" />
@@ -69,7 +82,7 @@ export function Header() {
 
                             {/* Credits Badge */}
                             <div
-                                className="flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-2.5 py-1.5 text-xs sm:text-sm font-semibold hidden sm:flex"
+                                className="hidden sm:flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-2.5 py-1.5 text-xs sm:text-sm font-semibold"
                                 title={`Available Credits: ${user.credit_balance?.toFixed(1) || '0.0'}`}
                             >
                                 <svg
@@ -126,10 +139,6 @@ export function Header() {
                                     <MobileMenuItem
                                         label="Community"
                                         href="/community"
-                                    />
-                                    <MobileMenuItem
-                                        label="Leaderboard"
-                                        href="/leaderboard"
                                     />
 
                                     <div className="h-px bg-border/40 my-2" />

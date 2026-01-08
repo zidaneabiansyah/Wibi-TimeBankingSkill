@@ -8,6 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Zap, BookOpen, TrendingUp, Users, Star, ArrowRight } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
+import dynamic from 'next/dynamic';
+
+const DotLottieReact = dynamic(
+  () => import('@lottiefiles/dotlottie-react').then((mod) => mod.DotLottieReact),
+  { ssr: false }
+);
 
 // Animation variants
 const fadeInUp = {
@@ -30,7 +36,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header/Navigation */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
@@ -42,12 +48,11 @@ export default function Home() {
                   className="rounded-md"
                 />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Wibi</span>
+              <span className="text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">Wibi</span>
             </Link>
             <nav className="hidden md:flex items-center gap-8">
               <Link href="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Marketplace</Link>
               <Link href="/community" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Community</Link>
-              <Link href="/leaderboard" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">Leaderboard</Link>
               <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">How It Works</Link>
               <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">About</Link>
             </nav>
@@ -66,12 +71,12 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
         {/* Animated background elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-secondary/5 via-transparent to-transparent opacity-40" />
+        <div className="absolute inset-0 bg-linear-to-br from-background via-background to-muted/20" />
+        <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top_right,var(--tw-linear-stops))] from-primary/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-linear(ellipse_at_bottom_left,var(--tw-linear-stops))] from-secondary/5 via-transparent to-transparent opacity-40" />
         
         <motion.div 
-          className="relative mx-auto max-w-container px-4 sm:px-6 lg:px-8"
+          className="relative mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16"
           initial="initial"
           animate="animate"
           variants={staggerContainer}
@@ -92,13 +97,13 @@ export default function Home() {
                 >
                   <span className="text-foreground">Your Time Is</span>
                   <br />
-                  <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse-slow">
+                  <span className="bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse-slow">
                     Valuable
                   </span>
                 </motion.h1>
 
                 <motion.p 
-                  className="max-w-[540px] text-lg text-muted-foreground leading-relaxed"
+                  className="max-w-[640px] text-lg text-muted-foreground leading-relaxed"
                   variants={fadeInUp}
                 >
                   Platform peer-to-peer skill exchange untuk pelajar. Belajar dan ajarkan skill tanpa uang, hanya dengan waktu. Bergabunglah dengan komunitas kami.
@@ -149,13 +154,12 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="relative w-full max-w-[500px] aspect-square">
-                <Image 
-                  src="/undraw_sharing-knowledge_2jx3.svg" 
-                  alt="Students exchanging skills" 
-                  fill 
-                  className="object-contain drop-shadow-2xl"
-                  priority
+              <div className="relative w-full max-w-[600px] aspect-square">
+                <DotLottieReact
+                  src="/Learning.json"
+                  loop
+                  autoplay
+                  className="w-full h-full"
                 />
               </div>
             </motion.div>
@@ -165,7 +169,7 @@ export default function Home() {
 
       {/* How It Works */}
       <section className="relative w-full py-20 md:py-32 lg:py-40 border-t border-border/40">
-        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <motion.div 
             className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             initial="initial"
@@ -227,11 +231,11 @@ export default function Home() {
                 <motion.div key={idx} variants={fadeInUp}>
                   <Card className="relative h-full flex flex-col overflow-hidden group hover:border-primary transition-all duration-300">
                     {/* Gradient background */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                    <div className={`absolute inset-0 bg-linear-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                     
                     <CardHeader className="relative pb-4 flex-1">
                       <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 shrink-0">
                           <IconComponent className="h-6 w-6 text-primary" />
                         </div>
                         <div className="flex-1">
@@ -247,7 +251,7 @@ export default function Home() {
                     </CardContent>
 
                     {/* Accent line on hover */}
-                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Card>
                 </motion.div>
               );
@@ -258,7 +262,7 @@ export default function Home() {
 
       {/* Featured Skills */}
       <section className="relative w-full py-20 md:py-32 lg:py-40 border-t border-border/40">
-        <div className="mx-auto max-w-container px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
           <motion.div 
             className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             initial="initial"
@@ -337,7 +341,7 @@ export default function Home() {
                   </CardFooter>
 
                   {/* Accent line */}
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Card>
               </motion.div>
             ))}
@@ -347,10 +351,10 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden border-t border-border/40">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/5" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-secondary/5" />
         
         <motion.div 
-          className="relative mx-auto max-w-container px-4 sm:px-6 lg:px-8"
+          className="relative mx-auto max-w-7xl px-6 sm:px-8 lg:px-10"
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, margin: "-100px" }}

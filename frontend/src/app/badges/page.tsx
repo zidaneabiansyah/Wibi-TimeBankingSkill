@@ -44,7 +44,7 @@ export default function BadgesPage() {
                             Lihat siapa yang memimpin komunitas hari ini. Bersainglah dalam kategori Badges, Rarity, Sessions, Rating, dan Credits.
                         </p>
                         <Button size="lg" className="rounded-full px-8 gap-2" asChild>
-                            <Link href="/leaderboard">
+                            <Link href="/community#leaderboard">
                                 View Full Leaderboard
                                 <ArrowRight className="h-4 w-4" />
                             </Link>

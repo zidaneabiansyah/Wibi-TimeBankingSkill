@@ -239,30 +239,6 @@ export default function AboutPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center">
-              <CardContent className="pt-8">
-                <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-500/20 to-blue-500/5 mx-auto mb-4 flex items-center justify-center text-4xl">
-                  👩‍🎨
-                </div>
-                <h3 className="font-semibold text-lg">Design Team</h3>
-                <p className="text-muted-foreground text-sm">UI/UX Designer</p>
-                <p className="text-muted-foreground text-xs mt-3">
-                  Creating beautiful and intuitive experiences for our users.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center">
-              <CardContent className="pt-8">
-                <div className="w-24 h-24 rounded-full bg-linear-to-br from-green-500/20 to-green-500/5 mx-auto mb-4 flex items-center justify-center text-4xl">
-                  🤝
-                </div>
-                <h3 className="font-semibold text-lg">Community</h3>
-                <p className="text-muted-foreground text-sm">Community Manager</p>
-                <p className="text-muted-foreground text-xs mt-3">
-                  Building and nurturing our growing community of learners.
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
