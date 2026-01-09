@@ -19,7 +19,7 @@ export function Footer() {
                                     className="rounded-md"
                                 />
                             </div>
-                            <span className="text-lg font-bold text-primary">Wibi</span>
+                            <span className="text-lg font-bold text-primary">Waktu Indonesia Berbagi Ilmu   </span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed">
                             Peer-to-peer skill exchange platform using Time Banking system.
@@ -32,13 +32,13 @@ export function Footer() {
                                 <Link href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors duration-200">Marketplace</Link>
                             </li>
                             <li>
-                                <Link href="/community" className="text-muted-foreground hover:text-primary transition-colors duration-200">Community Hub</Link>
-                            </li>
-                            <li>
                                 <Link href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors duration-200">How It Works</Link>
                             </li>
                             <li>
                                 <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors duration-200">About Us</Link>
+                            </li>
+                            <li>
+                                <Link href="/community" className="text-muted-foreground hover:text-primary transition-colors duration-200">Community Hub</Link>
                             </li>
                         </ul>
                     </div>

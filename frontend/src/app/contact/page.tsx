@@ -5,8 +5,78 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, HelpCircle, ChevronDown, FileText, Bug, MessageSquare, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { Footer, Header } from '@/components/layout';
+
+interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+}
+
+const faqItems: FAQItem[] = [
+  {
+    id: 'how-start',
+    question: 'How do I get started with Wibi Time Banking?',
+    answer:
+      "Getting started is easy! Sign up with your email, complete your profile with your skills and availability, and you're ready to share your expertise or learn from others. Browse the marketplace to find skills you want to learn or offer your own.",
+    category: 'Getting Started',
+  },
+  {
+    id: 'how-credits',
+    question: 'How does the credit system work?',
+    answer:
+      'You earn credits by teaching or sharing your skills with others. Each hour of teaching typically earns you one credit. You can then spend those credits to learn from others. Credits are your currency in the time banking community.',
+    category: 'Credits & Payments',
+  },
+  {
+    id: 'how-book',
+    question: 'How do I book a session with someone?',
+    answer:
+      'Find the skill you want to learn in the marketplace, click on the teacher\'s profile, check their availability, and click "Book Session". You\'ll receive a confirmation and a video session link. Make sure you have enough credits before booking.',
+    category: 'Sessions',
+  },
+  {
+    id: 'cancel-session',
+    question: 'Can I cancel a session?',
+    answer:
+      'Yes, you can cancel sessions up to 24 hours before the scheduled time with no penalty. Cancellations made within 24 hours may result in credit deductions. Always check the cancellation policy.',
+    category: 'Sessions',
+  },
+  {
+    id: 'refund-credits',
+    question: 'Can I get a refund for my credits?',
+    answer:
+      'Credits are non-refundable by design as they represent time value in our community. However, you can always use them to book sessions or transfer them through community initiatives. Contact support for special cases.',
+    category: 'Credits & Payments',
+  },
+  {
+    id: 'safety',
+    question: 'How does Wibi ensure my safety?',
+    answer:
+      'We verify all users, conduct background checks for premium teachers, use secure video connections, and monitor all interactions. You can report inappropriate behavior, and our trust & safety team responds within 24 hours.',
+    category: 'Safety & Trust',
+  },
+  {
+    id: 'technical-issue',
+    question: 'I\'m having technical issues with the video session',
+    answer:
+      'First, try refreshing your browser and checking your internet connection. Clear your browser cache and ensure your camera/microphone permissions are granted. For persistent issues, contact our technical support team with details about your device and browser.',
+    category: 'Technical',
+  },
+  {
+    id: 'upload-files',
+    question: 'Can I share files or documents during a session?',
+    answer:
+      'Yes! You can upload and share documents, presentations, and images during your session. The teacher can also save these files for future reference. File size limit is 10MB per file.',
+    category: 'Features',
+  },
+];
+
+const faqCategories = ['All', ...new Set(faqItems.map((item) => item.category))];
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -16,6 +86,13 @@ export default function ContactPage() {
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [expandedFAQId, setExpandedFAQId] = useState<string | null>(null);
+
+    const filteredFAQs =
+        selectedCategory === 'All'
+            ? faqItems
+            : faqItems.filter((item) => item.category === selectedCategory);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -53,56 +130,29 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="min-h-screen bg-background">
-            {/* Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Link href="/" className="flex items-center gap-2">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-                                    <img src="/wibi.png" alt="Wibi Logo" className="h-7 w-7 rounded-md" />
-                                </div>
-                                <span className="text-xl font-bold text-primary">Wibi</span>
-                            </Link>
-                        </div>
-                        <nav className="hidden md:flex items-center gap-1">
-                            <Link href="/marketplace" className="px-4 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Marketplace</Link>
-                            <Link href="/how-it-works" className="px-4 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">How It Works</Link>
-                            <Link href="/about" className="px-4 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">About</Link>
-                        </nav>
-                        <div className="flex items-center gap-3">
-                            <Link href="/login">
-                                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">Login</Button>
-                            </Link>
-                            <Link href="/register">
-                                <Button size="sm" className="bg-primary hover:bg-primary/90">Sign Up</Button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <div className="flex min-h-screen flex-col bg-background">
+            <Header />
 
             {/* Hero Section */}
-            <section className="w-full py-16 md:py-24 lg:py-32 bg-linear-to-b from-background to-muted/30">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <section className="w-full py-16 md:py-24 lg:py-28 bg-linear-to-b from-background to-muted/30">
+                <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
                     <div className="flex flex-col items-center text-center space-y-6">
                         <Badge variant="outline" className="px-4 py-1.5 text-sm border-primary/30 text-primary bg-primary/5">
-                            Contact Us
+                            Contact & Support
                         </Badge>
                         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                            Get in <span className="text-primary">Touch</span>
+                            Help & <span className="text-primary">Support Center</span>
                         </h1>
                         <p className="max-w-[700px] text-muted-foreground text-lg md:text-xl">
-                            Have a question or feedback? We'd love to hear from you. Our support team is here to help.
+                            Find answers to common questions or reach out to our team. We're here to help you make the most of your time banking journey.
                         </p>
                     </div>
                 </div>
             </section>
 
             {/* Contact Section */}
-            <section className="w-full py-16 md:py-24 lg:py-32 bg-background">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <section className="w-full py-16 md:py-24 lg:py-28 bg-background">
+                <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Contact Info */}
                         <div className="space-y-6">
@@ -116,7 +166,7 @@ export default function ContactPage() {
                             {/* Email */}
                             <div className="bg-card/50 border border-border/50 rounded-lg p-6 hover:border-primary/30 hover:bg-card/80 transition-all duration-200">
                                 <div className="flex items-start gap-4">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10 flex-shrink-0">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10 shrink-0">
                                         <Mail className="h-6 w-6 text-blue-500" />
                                     </div>
                                     <div>
@@ -130,7 +180,7 @@ export default function ContactPage() {
                             {/* Phone */}
                             <div className="bg-card/50 border border-border/50 rounded-lg p-6 hover:border-primary/30 hover:bg-card/80 transition-all duration-200">
                                 <div className="flex items-start gap-4">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10 flex-shrink-0">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10 shrink-0">
                                         <Phone className="h-6 w-6 text-green-500" />
                                     </div>
                                     <div>
@@ -144,7 +194,7 @@ export default function ContactPage() {
                             {/* Location */}
                             <div className="bg-card/50 border border-border/50 rounded-lg p-6 hover:border-primary/30 hover:bg-card/80 transition-all duration-200">
                                 <div className="flex items-start gap-4">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500/10 flex-shrink-0">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500/10 shrink-0">
                                         <MapPin className="h-6 w-6 text-purple-500" />
                                     </div>
                                     <div>
@@ -261,99 +311,138 @@ export default function ContactPage() {
                 </div>
             </section>
 
-            {/* FAQ CTA */}
-            <section className="relative w-full py-16 md:py-24 lg:py-32 overflow-hidden border-t border-border/40 bg-muted/30">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col items-center space-y-6 text-center">
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                            Looking for Quick <span className="text-primary">Answers</span>?
-                        </h2>
-                        <p className="mx-auto max-w-[600px] text-muted-foreground text-lg">
-                            Check out our FAQ page for answers to common questions about Wibi and Time Banking.
-                        </p>
-                        <Link href="/faq">
-                            <Button size="lg" className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                                Visit FAQ
-                            </Button>
-                        </Link>
+            {/* FAQ Section */}
+            <section className="w-full py-16 md:py-24 lg:py-28 bg-muted/30 border-t border-border/40">
+                <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                        {/* FAQ Content */}
+                        <div className="lg:col-span-2 space-y-8">
+                            <div>
+                                <h2 className="text-3xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
+                                <p className="text-muted-foreground text-lg">Quick answers to common questions about Wibi.</p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {faqCategories.map((category) => (
+                                    <button
+                                        key={category}
+                                        onClick={() => setSelectedCategory(category)}
+                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                            selectedCategory === category
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'bg-background border border-border/50 text-muted-foreground hover:bg-muted'
+                                        }`}
+                                    >
+                                        {category}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="space-y-4">
+                                {filteredFAQs.map((faq, index) => (
+                                    <motion.div
+                                        key={faq.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="bg-card/50 border border-border/50 rounded-xl overflow-hidden hover:bg-card/80 transition-colors"
+                                    >
+                                        <button
+                                            onClick={() => setExpandedFAQId(expandedFAQId === faq.id ? null : faq.id)}
+                                            className="w-full p-6 flex items-center justify-between text-left transition-colors"
+                                        >
+                                            <div className="flex-1">
+                                                <p className="font-semibold text-foreground text-lg leading-snug">
+                                                    {faq.question}
+                                                </p>
+                                                <p className="text-xs text-primary font-medium mt-2 uppercase tracking-wider">
+                                                    {faq.category}
+                                                </p>
+                                            </div>
+                                            <ChevronDown
+                                                className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${
+                                                    expandedFAQId === faq.id ? 'rotate-180' : ''
+                                                }`}
+                                            />
+                                        </button>
+
+                                        {expandedFAQId === faq.id && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="bg-muted/30 border-t border-border/50 p-6"
+                                            >
+                                                <p className="text-muted-foreground leading-relaxed">
+                                                    {faq.answer}
+                                                </p>
+                                            </motion.div>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Quick Links */}
+                        <div className="space-y-8">
+                            <h3 className="text-2xl font-bold text-foreground">Quick Resources</h3>
+                            <div className="grid gap-4">
+                                <a
+                                    href="/how-it-works"
+                                    className="flex items-center gap-4 p-5 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 rounded-2xl transition-all group"
+                                >
+                                    <div className="p-3 rounded-xl bg-blue-500/10 group-hover:scale-110 transition-transform">
+                                        <FileText className="w-6 h-6 text-blue-500" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-bold text-foreground">Documentation</p>
+                                        <p className="text-sm text-muted-foreground">Detailed platform guides</p>
+                                    </div>
+                                    <ExternalLink className="w-5 h-5 text-muted-foreground" />
+                                </a>
+
+                                <a
+                                    href="/community"
+                                    className="flex items-center gap-4 p-5 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/20 rounded-2xl transition-all group"
+                                >
+                                    <div className="p-3 rounded-xl bg-purple-500/10 group-hover:scale-110 transition-transform">
+                                        <MessageSquare className="w-6 h-6 text-purple-500" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-bold text-foreground">Community Forum</p>
+                                        <p className="text-sm text-muted-foreground">Ask the community</p>
+                                    </div>
+                                    <ExternalLink className="w-5 h-5 text-muted-foreground" />
+                                </a>
+
+                                <a
+                                    href="#"
+                                    className="flex items-center gap-4 p-5 bg-green-500/5 hover:bg-green-500/10 border border-green-500/20 rounded-2xl transition-all group"
+                                >
+                                    <div className="p-3 rounded-xl bg-green-500/10 group-hover:scale-110 transition-transform">
+                                        <Bug className="w-6 h-6 text-green-500" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-bold text-foreground">Internal Status</p>
+                                        <p className="text-sm text-muted-foreground">Check system health</p>
+                                    </div>
+                                    <ExternalLink className="w-5 h-5 text-muted-foreground" />
+                                </a>
+                            </div>
+
+                            <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
+                                <h4 className="font-bold text-foreground">Report a Bug</h4>
+                                <p className="text-sm text-muted-foreground">Found an issue? Help us improve by reporting it directly to our tech team.</p>
+                                <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10">
+                                    Open Bug Report
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="w-full py-12 md:py-16 border-t border-border/40">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                                    <img src="/wibi.png" alt="Wibi Logo" className="h-5 w-5 rounded-md" />
-                                </div>
-                                <span className="text-lg font-bold text-primary">Wibi</span>
-                            </div>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Platform peer-to-peer skill exchange untuk pelajar menggunakan sistem Time Banking.
-                            </p>
-                        </div>
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-semibold text-foreground">Platform</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li>
-                                    <Link href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors">Marketplace</Link>
-                                </li>
-                                <li>
-                                    <Link href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</Link>
-                                </li>
-                                <li>
-                                    <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-semibold text-foreground">Support</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li>
-                                    <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
-                                </li>
-                                <li>
-                                    <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
-                                </li>
-                                <li>
-                                    <Link href="/terms" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-semibold text-foreground">Connect</h4>
-                            <div className="flex gap-4">
-                                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                                    </svg>
-                                    <span className="sr-only">Facebook</span>
-                                </Link>
-                                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                                    </svg>
-                                    <span className="sr-only">Instagram</span>
-                                </Link>
-                                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                                    </svg>
-                                    <span className="sr-only">Twitter</span>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-                        &copy; {new Date().getFullYear()} Wibi Time Banking. All rights reserved.
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }

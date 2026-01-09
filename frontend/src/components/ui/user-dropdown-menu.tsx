@@ -103,7 +103,7 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
         {
             icon: HelpCircle,
             label: 'Help & Support',
-            href: '/help',
+            href: '/contact',
             group: 'secondary',
         },
     ];
@@ -289,7 +289,7 @@ function MenuItem({ icon: Icon, label, href, onClick }: MenuItemProps) {
     return (
         <Link href={href} onClick={onClick}>
             <div className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200">
-                <Icon className="h-4 w-4 flex-shrink-0" />
+                <Icon className="h-4 w-4 shrink-0" />
                 <span>{label}</span>
             </div>
         </Link>

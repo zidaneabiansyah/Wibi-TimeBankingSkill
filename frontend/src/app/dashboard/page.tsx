@@ -274,7 +274,7 @@ function DashboardContent() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 to-transparent hover:border-secondary/50 transition-all duration-300">
+                            <Card className="border-secondary/30 bg-linear-to-br from-secondary/5 to-transparent hover:border-secondary/50 transition-all duration-300">
                                 <CardHeader className="pb-3">
                                     <CardTitle className="text-lg flex items-center gap-2 text-primary">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
@@ -419,7 +419,7 @@ function DashboardContent() {
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Top Rated Teachers</h2>
-                            <Link href="/badges">
+                            <Link href="/community#leaderboard">
                                 <Button variant="ghost" size="sm">View All</Button>
                             </Link>
                         </div>
@@ -560,7 +560,7 @@ function DashboardContent() {
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Your Badges</h2>
-                            <Link href="/badges">
+                            <Link href="/profile">
                                 <Button variant="ghost" size="sm">View All</Button>
                             </Link>
                         </div>
