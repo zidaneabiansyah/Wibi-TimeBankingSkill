@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { badgeService } from '@/lib/services';
 import type { LeaderboardEntry } from '@/lib/services/badge.service';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Trophy, Medal, Star, Crown, ArrowUp, User } from 'lucide-react';
 
 interface LeaderboardTableProps {

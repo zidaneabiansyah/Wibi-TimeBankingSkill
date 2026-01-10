@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { useBadgeStore } from '@/stores'
 import { Badge } from '@/components/ui/badge'
 import Confetti from 'react-confetti'
@@ -14,10 +14,9 @@ export default function AchievementPopup() {
 
     useEffect(() => {
         if (newBadges.length > 0) {
-            // Play sound effect here if desired
             const audio = new Audio('/sounds/achievement.mp3')
             audio.volume = 0.5
-            audio.play().catch(() => { }) // Ignore auto-play errors
+            audio.play().catch(() => { })
         }
     }, [newBadges])
 
@@ -53,7 +52,7 @@ export default function AchievementPopup() {
                     className="bg-card border-2 border-yellow-400 shadow-2xl rounded-xl p-8 max-w-sm w-full text-center pointer-events-auto relative overflow-hidden"
                 >
                     {/* Background Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-yellow-500/10 via-transparent to-transparent animate-pulse" />
+                    <div className="absolute inset-0 bg-linear-to-tr from-yellow-500/10 via-transparent to-transparent animate-pulse" />
 
                     <m.div
                         initial={{ rotate: -180, scale: 0 }}
@@ -68,7 +67,7 @@ export default function AchievementPopup() {
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="text-2xl font-bold mb-2 bg-gradient-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent"
+                        className="text-2xl font-bold mb-2 bg-linear-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent"
                     >
                         Badge Unlocked!
                     </m.h2>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { X, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 
 interface MobileMenuDrawerProps {
