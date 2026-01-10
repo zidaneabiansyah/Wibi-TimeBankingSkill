@@ -96,6 +96,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 
 	// API v1 group
 	v1 := router.Group("/api/v1")
+	v1.Use(middleware.RateLimitMiddleware(60)) // Default limit: 60 req/min
 	{
 		// Health check
 		v1.GET("/health", func(c *gin.Context) {
@@ -111,11 +112,12 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		// Auth routes (public)
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/register", authHandler.Register)
-			auth.POST("/login", authHandler.Login)
+			// Strict limits for sensitive auth operations
+			auth.POST("/register", middleware.RateLimitMiddleware(10), authHandler.Register)
+			auth.POST("/login", middleware.RateLimitMiddleware(10), authHandler.Login)
 			auth.GET("/verify-email", authHandler.VerifyEmail)
-			auth.POST("/forgot-password", authHandler.ForgotPassword)
-			auth.POST("/reset-password", authHandler.ResetPassword)
+			auth.POST("/forgot-password", middleware.RateLimitMiddleware(5), authHandler.ForgotPassword)
+			auth.POST("/reset-password", middleware.RateLimitMiddleware(5), authHandler.ResetPassword)
 			auth.POST("/logout", middleware.AuthMiddleware(), authHandler.Logout)
 			auth.GET("/profile", middleware.AuthMiddleware(), authHandler.GetProfile)
 		}

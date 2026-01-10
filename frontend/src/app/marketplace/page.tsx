@@ -12,6 +12,7 @@ import { Header, Footer } from "@/components/layout";
 import { SkillCard } from "@/components/ui/skill-card";
 import { useSkillStore } from "@/stores/skill.store";
 import { Search, Filter, X, Star, Clock } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 import type { Skill } from "@/types";
 
 const categories = [
@@ -58,24 +59,11 @@ export default function MarketplacePage() {
     const [selectedRating, setSelectedRating] = useState('all');
     const [locationQuery, setLocationQuery] = useState('');
     const [sortBy, setSortBy] = useState('newest');
-    const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [debouncedLocation, setDebouncedLocation] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
-    // Debounce search and location
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(searchQuery);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedLocation(locationQuery);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [locationQuery]);
+    // Use debounced values for search and location
+    const debouncedSearch = useDebounce(searchQuery, 300);
+    const debouncedLocation = useDebounce(locationQuery, 500);
 
     // Fetch skills when filters or page changes
     useEffect(() => {

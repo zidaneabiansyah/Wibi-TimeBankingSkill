@@ -73,11 +73,6 @@ export const LazyProfile = dynamic(
     { loading: LoadingComponent, ssr: true }
 )
 
-export const LazyBadges = dynamic(
-    () => import('@/app/badges/page'),
-    { loading: LoadingComponent, ssr: true }
-)
-
 /**
  * Lazy-loaded component components
  * These are loaded on-demand within pages

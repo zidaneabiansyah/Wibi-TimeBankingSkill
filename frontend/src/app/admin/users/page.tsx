@@ -25,6 +25,7 @@ import {
 import { Search, MoreVertical, UserCheck, UserX, Eye, Loader2, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { adminService } from '@/lib/services/admin.service';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface User {
     id: number;
@@ -52,6 +53,7 @@ export default function UsersPage() {
             ? initialFilter as 'active' | 'suspended' | 'verification'
             : 'all'
     );
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     // Update filter when URL params change
     useEffect(() => {
@@ -102,9 +104,9 @@ export default function UsersPage() {
 
     const filteredUsers = users.filter((user) => {
         const matchesSearch =
-            user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.username.toLowerCase().includes(searchQuery.toLowerCase());
+            user.full_name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+            user.username.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
 
         const matchesFilter =
             filterStatus === 'all' ||

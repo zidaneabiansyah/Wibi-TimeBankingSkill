@@ -15,6 +15,8 @@ import Dither from "@/components/Dither";
 import { ArrowLeft, Github, Mail, Lock, User, BookOpen, MapPin, Smartphone, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useDebounce } from '@/hooks/use-debounce';
+import { useEffect } from 'react';
 
 // Password strength calculator
 const calculatePasswordStrength = (password: string): { score: number; label: string; color: string } => {
@@ -71,32 +73,32 @@ export default function RegisterPage() {
     return calculatePasswordStrength(passwordInput);
   }, [passwordInput]);
 
-  // Debounced username check
-  const checkUsernameDebounced = useMemo(() => {
-    let timeout: NodeJS.Timeout;
-    return (username: string) => {
-      clearTimeout(timeout);
-      if (!username || username.length < 3) {
-        setUsernameAvailable(null);
-        return;
-      }
+  const debouncedUsername = useDebounce(usernameInput, 500);
+
+  // Username check effect
+  useEffect(() => {
+    if (!debouncedUsername || debouncedUsername.length < 3) {
+      setUsernameAvailable(null);
+      return;
+    }
+
+    const checkUsername = async () => {
       setCheckingUsername(true);
-      timeout = setTimeout(async () => {
-        try {
-          const result = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/check-username/${username}`
-          );
-          // If endpoint doesn't exist, assume available
-          setUsernameAvailable(true);
-          setCheckingUsername(false);
-        } catch (err) {
-          // Assume available if endpoint fails
-          setUsernameAvailable(true);
-          setCheckingUsername(false);
-        }
-      }, 500);
+      try {
+        const result = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/check-username/${debouncedUsername}`
+        );
+        // If endpoint doesn't exist, assume available (hack for UI demo if needed)
+        setUsernameAvailable(true);
+      } catch (err) {
+        setUsernameAvailable(true);
+      } finally {
+        setCheckingUsername(false);
+      }
     };
-  }, []);
+
+    checkUsername();
+  }, [debouncedUsername]);
 
   const {
     register,
@@ -188,7 +190,7 @@ export default function RegisterPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <div className="flex-shrink-0 pt-0.5">
+                  <div className="shrink-0 pt-0.5">
                     <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
                     </svg>
@@ -227,7 +229,6 @@ export default function RegisterPage() {
                       onChange={(e) => {
                         register('username').onChange?.(e);
                         setUsernameInput(e.target.value);
-                        checkUsernameDebounced(e.target.value);
                       }}
                       disabled={isLoading}
                       className="pl-10 bg-muted/40 border-border/40 focus:border-primary/50 focus:bg-background transition-colors duration-200"
@@ -300,7 +301,7 @@ export default function RegisterPage() {
                             transition={{ duration: 0.3 }}
                           />
                         </div>
-                        <span className="text-xs font-medium text-muted-foreground min-w-[3rem] text-right">
+                        <span className="text-xs font-medium text-muted-foreground min-w-12 text-right">
                           {passwordStrength.label}
                         </span>
                       </div>
