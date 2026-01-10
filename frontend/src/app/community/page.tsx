@@ -10,7 +10,7 @@ const LeaderboardTabs = dynamic(
   () => import('@/components/badge/LeaderboardTabs').then((mod) => mod.LeaderboardTabs),
   { ssr: false, loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-3xl" /> }
 );
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import gsap from 'gsap';
 import { Footer, Header } from '@/components/layout';
 
@@ -178,7 +178,7 @@ export default function CommunityPage() {
                     </div>
 
                     {/* Leaderboard Section */}
-                    <motion.section 
+                    <m.section 
                         id="leaderboard"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -199,7 +199,7 @@ export default function CommunityPage() {
                         <div className="bg-card/50 backdrop-blur-md rounded-3xl border border-border/50 p-6 sm:p-12 shadow-2xl shadow-primary/5">
                             <LeaderboardTabs limit={15} />
                         </div>
-                    </motion.section>
+                    </m.section>
                 </div>
             </main>
             <Footer />

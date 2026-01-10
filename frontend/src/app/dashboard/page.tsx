@@ -20,7 +20,7 @@ import TransactionDetailModal from "@/components/transaction/TransactionDetailMo
 import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
 import { ErrorState } from "@/components/ui/error-state";
 import { EmptyState } from "@/components/ui/empty-state";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Calendar, Award, Receipt, Zap, TrendingUp, Users, Star } from "lucide-react";
 import type { Transaction, Session, Skill } from "@/types";
 
@@ -113,7 +113,7 @@ function DashboardContent() {
                     </div>
 
                     {/* Stats Cards - Animated Grid */}
-                    <motion.div 
+                    <m.div 
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
                         initial="hidden"
                         animate="visible"
@@ -129,7 +129,7 @@ function DashboardContent() {
                         }}
                     >
                         {/* Credit Balance Card */}
-                        <motion.div
+                        <m.div
                             variants={{
                                 hidden: { opacity: 0, y: 20 },
                                 visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -163,10 +163,10 @@ function DashboardContent() {
                                     )}
                                 </CardContent>
                             </Card>
-                        </motion.div>
+                        </m.div>
 
                         {/* Sessions as Teacher */}
-                        <motion.div
+                        <m.div
                             variants={{
                                 hidden: { opacity: 0, y: 20 },
                                 visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -198,10 +198,10 @@ function DashboardContent() {
                                     )}
                                 </CardContent>
                             </Card>
-                        </motion.div>
+                        </m.div>
 
                         {/* Sessions as Student */}
-                        <motion.div
+                        <m.div
                             variants={{
                                 hidden: { opacity: 0, y: 20 },
                                 visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -233,10 +233,10 @@ function DashboardContent() {
                                     )}
                                 </CardContent>
                             </Card>
-                        </motion.div>
+                        </m.div>
 
                         {/* Average Rating */}
-                        <motion.div
+                        <m.div
                             variants={{
                                 hidden: { opacity: 0, y: 20 },
                                 visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -264,12 +264,12 @@ function DashboardContent() {
                                     )}
                                 </CardContent>
                             </Card>
-                        </motion.div>
-                    </motion.div>
+                        </m.div>
+                    </m.div>
 
                     {/* Pending Requests Alert */}
                     {pendingRequests.length > 0 && (
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
@@ -288,7 +288,7 @@ function DashboardContent() {
                                     <p className="text-sm text-muted-foreground">Students are waiting for your approval</p>
                                     <div className="space-y-2">
                                         {pendingRequests.slice(0, 3).map((session: Session) => (
-                                            <motion.div
+                                            <m.div
                                                 key={session.id}
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
@@ -301,7 +301,7 @@ function DashboardContent() {
                                                 <Button size="sm" className="ml-2 bg-primary hover:bg-primary/90" onClick={() => handleOpenApprovalModal(session)}>
                                                     Review
                                                 </Button>
-                                            </motion.div>
+                                            </m.div>
                                         ))}
                                     </div>
                                     {pendingRequests.length > 3 && (
@@ -313,11 +313,11 @@ function DashboardContent() {
                                     )}
                                 </CardContent>
                             </Card>
-                        </motion.div>
+                        </m.div>
                     )}
 
                     {/* Upcoming Sessions */}
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, amount: 0.1 }}
@@ -344,7 +344,7 @@ function DashboardContent() {
                                 variant="card"
                             />
                         ) : (
-                            <motion.div 
+                            <m.div 
                                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                                 initial="hidden"
                                 whileInView="visible"
@@ -360,7 +360,7 @@ function DashboardContent() {
                                 }}
                             >
                                 {upcomingSessions.map((session: Session) => (
-                                    <motion.div
+                                    <m.div
                                         key={session.id}
                                         variants={{
                                             hidden: { opacity: 0, y: 20 },
@@ -409,11 +409,11 @@ function DashboardContent() {
                                                 </CardFooter>
                                             </Card>
                                         </Link>
-                                    </motion.div>
+                                    </m.div>
                                 ))}
-                            </motion.div>
+                            </m.div>
                         )}
-                    </motion.div>
+                    </m.div>
 
     {/* Leaderboard Section */}
                     <div>

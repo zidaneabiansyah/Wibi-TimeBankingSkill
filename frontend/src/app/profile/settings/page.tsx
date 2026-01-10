@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { UserProfile } from '@/types';
 import { useUserStore } from '@/stores/user.store';
 import { useAuthStore } from '@/stores/auth.store';
@@ -264,14 +264,14 @@ export default function SettingsPage() {
                 <Header />
 
                 <main className="container mx-auto px-4 py-8 max-w-6xl">
-                    <motion.div
+                    <m.div
                         className="space-y-8"
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
                     >
                         {/* Header with Back Button */}
-                        <motion.div variants={itemVariants} className="flex items-center gap-3">
+                        <m.div variants={itemVariants} className="flex items-center gap-3">
 
                             <div>
                                 <h1 className="text-3xl font-bold text-foreground mb-1">
@@ -281,11 +281,11 @@ export default function SettingsPage() {
                                     Manage your account and preferences
                                 </p>
                             </div>
-                        </motion.div>
+                        </m.div>
 
-                        <motion.div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <m.div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                             {/* Sidebar Navigation */}
-                            <motion.div variants={itemVariants} className="lg:col-span-1">
+                            <m.div variants={itemVariants} className="lg:col-span-1">
                             <nav className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-2 space-y-1">
                                 <button
                                     onClick={() => router.back()}
@@ -308,14 +308,14 @@ export default function SettingsPage() {
                                     </button>
                                 ))}
                             </nav>
-                        </motion.div>
+                        </m.div>
 
                         {/* Settings Content */}
-                        <motion.div variants={itemVariants} className="lg:col-span-3">
+                        <m.div variants={itemVariants} className="lg:col-span-3">
                             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 space-y-6">
                                 {/* Profile Section */}
                                 {activeSection === 'profile' && (
-                                    <motion.div
+                                    <m.div
                                         className="space-y-6"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
@@ -480,12 +480,12 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 )}
 
                                 {/* Account Settings */}
                                 {activeSection === 'account' && (
-                                    <motion.div
+                                    <m.div
                                         className="space-y-6"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
@@ -555,12 +555,12 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 )}
 
                                 {/* Preferences */}
                                 {activeSection === 'preferences' && (
-                                    <motion.div
+                                    <m.div
                                         className="space-y-6"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
@@ -629,12 +629,12 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 )}
 
                                 {/* Privacy Settings */}
                                 {activeSection === 'privacy' && (
-                                    <motion.div
+                                    <m.div
                                         className="space-y-6"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
@@ -702,12 +702,12 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 )}
 
                                 {/* Notifications */}
                                 {activeSection === 'notifications' && (
-                                    <motion.div
+                                    <m.div
                                         className="space-y-6"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
@@ -777,34 +777,34 @@ export default function SettingsPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 )}
 
                                 {/* Action Buttons */}
-                                <motion.div
+                                <m.div
                                     variants={itemVariants}
                                     className="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700"
                                 >
                                     <div className="flex items-center gap-2">
                                         {saveStatus === 'success' && (
-                                            <motion.div
+                                            <m.div
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 className="flex items-center gap-2 text-green-600 dark:text-green-400"
                                             >
                                                 <CheckCircle className="w-5 h-5" />
                                                 <span className="text-sm font-medium">Saved successfully</span>
-                                            </motion.div>
+                                            </m.div>
                                         )}
                                         {saveStatus === 'error' && (
-                                            <motion.div
+                                            <m.div
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 className="flex items-center gap-2 text-red-600 dark:text-red-400"
                                             >
                                                 <AlertCircle className="w-5 h-5" />
                                                 <span className="text-sm font-medium">Failed to save</span>
-                                            </motion.div>
+                                            </m.div>
                                         )}
                                     </div>
 
@@ -815,11 +815,11 @@ export default function SettingsPage() {
                                     >
                                         {isLoading2 ? 'Saving...' : 'Save Changes'}
                                     </Button>
-                                </motion.div>
+                                </m.div>
                             </div>
-                        </motion.div>
-                    </motion.div>
-                </motion.div>
+                        </m.div>
+                    </m.div>
+                </m.div>
                 </main>
             </div>
         </ProtectedRoute>

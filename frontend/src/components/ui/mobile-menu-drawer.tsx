@@ -79,7 +79,7 @@ export function MobileMenuDrawer({
             {/* Backdrop */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
+                    <m.div
                         variants={overlayVariants}
                         initial="hidden"
                         animate="visible"
@@ -94,7 +94,7 @@ export function MobileMenuDrawer({
             {/* Drawer */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
+                    <m.div
                         variants={drawerVariants}
                         initial="hidden"
                         animate="visible"
@@ -120,7 +120,7 @@ export function MobileMenuDrawer({
 
                         {/* Content */}
                         <div className="p-4">{children}</div>
-                    </motion.div>
+                    </m.div>
                 )}
             </AnimatePresence>
         </>

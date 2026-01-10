@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import Dither from "@/components/Dither";
 import { ArrowLeft, Github, Mail, Lock, User, BookOpen, MapPin, Smartphone, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useEffect } from 'react';
 
@@ -127,7 +127,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen w-full">
       {/* Left Side - Register Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-4 sm:p-8 overflow-y-auto">
-        <motion.div 
+        <m.div 
           className="w-full max-w-md space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -185,7 +185,7 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
-                <motion.div 
+                <m.div 
                   className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm flex items-start gap-3"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -196,7 +196,7 @@ export default function RegisterPage() {
                     </svg>
                   </div>
                   <span>{error}</span>
-                </motion.div>
+                </m.div>
               )}
               
               <div className="grid grid-cols-2 gap-4">
@@ -294,7 +294,7 @@ export default function RegisterPage() {
                       {/* Bar & Label Strength */}
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
-                          <motion.div
+                          <m.div
                             className={`h-full transition-all ${passwordStrength.color}`}
                             initial={{ width: 0 }}
                             animate={{ width: `${(passwordStrength.score / 4) * 100}%` }}
@@ -454,7 +454,7 @@ export default function RegisterPage() {
               </Link>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Right Side - Dither Background & Branding */}

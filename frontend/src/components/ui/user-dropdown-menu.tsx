@@ -180,7 +180,7 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
             {/* Dropdown Menu */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
+                    <m.div
                         variants={dropdownVariants}
                         initial="hidden"
                         animate="visible"
@@ -271,7 +271,7 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
                                 <span>Logout</span>
                             </button>
                         </div>
-                    </motion.div>
+                    </m.div>
                 )}
             </AnimatePresence>
         </div>

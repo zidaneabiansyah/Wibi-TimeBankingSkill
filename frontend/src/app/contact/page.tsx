@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, HelpCircle, ChevronDown, FileText, Bug, MessageSquare, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Footer, Header } from '@/components/layout';
 
 interface FAQItem {
@@ -340,7 +340,7 @@ export default function ContactPage() {
 
                             <div className="space-y-4">
                                 {filteredFAQs.map((faq, index) => (
-                                    <motion.div
+                                    <m.div
                                         key={faq.id}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -367,7 +367,7 @@ export default function ContactPage() {
                                         </button>
 
                                         {expandedFAQId === faq.id && (
-                                            <motion.div
+                                            <m.div
                                                 initial={{ opacity: 0, height: 0 }}
                                                 animate={{ opacity: 1, height: 'auto' }}
                                                 exit={{ opacity: 0, height: 0 }}
@@ -376,9 +376,9 @@ export default function ContactPage() {
                                                 <p className="text-muted-foreground leading-relaxed">
                                                     {faq.answer}
                                                 </p>
-                                            </motion.div>
+                                            </m.div>
                                         )}
-                                    </motion.div>
+                                    </m.div>
                                 ))}
                             </div>
                         </div>

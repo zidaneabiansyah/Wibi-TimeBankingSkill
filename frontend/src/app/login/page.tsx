@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import Dither from "@/components/Dither";
 import { ArrowLeft, Github, Mail, Lock } from 'lucide-react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -100,7 +100,7 @@ export default function LoginPage() {
 
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-4 sm:p-8">
-        <motion.div 
+        <m.div 
           className="w-full max-w-md space-y-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,7 +164,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
-                <motion.div 
+                <m.div 
                   className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm flex items-center gap-2"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -173,7 +173,7 @@ export default function LoginPage() {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
                   </svg>
                   <span>{error}</span>
-                </motion.div>
+                </m.div>
               )}
               
               <div className="space-y-2">
@@ -258,7 +258,7 @@ export default function LoginPage() {
               </Link>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

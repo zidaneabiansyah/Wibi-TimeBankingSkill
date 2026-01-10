@@ -46,7 +46,7 @@ export default function AchievementPopup() {
                     gravity={0.15}
                 />
 
-                <motion.div
+                <m.div
                     initial={{ scale: 0.5, opacity: 0, y: 50 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.5, opacity: 0, y: -50 }}
@@ -55,43 +55,43 @@ export default function AchievementPopup() {
                     {/* Background Shine Effect */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-yellow-500/10 via-transparent to-transparent animate-pulse" />
 
-                    <motion.div
+                    <m.div
                         initial={{ rotate: -180, scale: 0 }}
                         animate={{ rotate: 0, scale: 1 }}
                         transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
                         className="text-6xl mb-4 inline-block drop-shadow-lg"
                     >
                         {badge.icon}
-                    </motion.div>
+                    </m.div>
 
-                    <motion.h2
+                    <m.h2
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.4 }}
                         className="text-2xl font-bold mb-2 bg-gradient-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent"
                     >
                         Badge Unlocked!
-                    </motion.h2>
+                    </m.h2>
 
-                    <motion.h3
+                    <m.h3
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.5 }}
                         className="text-xl font-semibold mb-2"
                     >
                         {badge.name}
-                    </motion.h3>
+                    </m.h3>
 
-                    <motion.p
+                    <m.p
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.6 }}
                         className="text-muted-foreground mb-6"
                     >
                         {badge.description}
-                    </motion.p>
+                    </m.p>
 
-                    <motion.div
+                    <m.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.7 }}
@@ -111,8 +111,8 @@ export default function AchievementPopup() {
                         >
                             {currentBadgeIndex < newBadges.length - 1 ? 'Next Badge' : 'Awesome!'}
                         </button>
-                    </motion.div>
-                </motion.div>
+                    </m.div>
+                </m.div>
             </div>
         </AnimatePresence>
     )

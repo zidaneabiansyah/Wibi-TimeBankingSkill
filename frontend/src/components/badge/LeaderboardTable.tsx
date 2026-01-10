@@ -74,7 +74,7 @@ export function LeaderboardTable({
                     const isFirst = rank === 1;
                     
                     return (
-                        <motion.div
+                        <m.div
                             key={entry.user_id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ export function LeaderboardTable({
                                     <span className="text-[10px] opacity-80 font-bold lowercase">{type === 'rating' ? 'stars' : type}</span>
                                 </div>
                             </div>
-                        </motion.div>
+                        </m.div>
                     );
                 })}
             </div>
@@ -138,7 +138,7 @@ export function LeaderboardTable({
                     </div>
                     <div className="space-y-3">
                         {others.map((entry, index) => (
-                            <motion.div
+                            <m.div
                                 key={entry.user_id}
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -164,7 +164,7 @@ export function LeaderboardTable({
                                         {type}
                                     </div>
                                 </div>
-                            </motion.div>
+                            </m.div>
                         ))}
                     </div>
                 </div>

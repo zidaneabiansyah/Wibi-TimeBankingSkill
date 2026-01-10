@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
 import { LeaderboardTable } from './LeaderboardTable';
 import { useBadgeStore } from '@/stores';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import {
     Select,
     SelectContent,
@@ -102,7 +102,7 @@ export function LeaderboardTabs({ limit = 10 }: LeaderboardTabsProps) {
                         <p className="text-sm text-muted-foreground animate-pulse">Fetching global rankings...</p>
                     </div>
                 ) : (
-                    <motion.div
+                    <m.div
                         key={`${selectedType}-${timeRange}`}
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -113,7 +113,7 @@ export function LeaderboardTabs({ limit = 10 }: LeaderboardTabsProps) {
                             type={selectedType}
                             isLoading={isLoading && !currentEntries.length}
                         />
-                    </motion.div>
+                    </m.div>
                 )}
             </div>
         </div>

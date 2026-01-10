@@ -13,7 +13,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { LoadingSpinner, LoadingSkeleton } from '@/components/ui/loading';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Plus, Edit, Trash2, Star, Users, Clock, TrendingUp, BookOpen } from 'lucide-react';
 import type { Skill, UserSkill } from '@/types';
 
@@ -64,7 +64,7 @@ export default function MySkillsPage() {
 
                 <main className="container mx-auto px-4 py-8 max-w-7xl">
                     {/* Header */}
-                    <motion.div className="flex items-center justify-between mb-8" {...fadeInUp}>
+                    <m.div className="flex items-center justify-between mb-8" {...fadeInUp}>
                         <div>
                             <h1 className="text-3xl font-bold">My Skills</h1>
                             <p className="text-muted-foreground mt-1">
@@ -77,17 +77,17 @@ export default function MySkillsPage() {
                                 Add Skill
                             </Button>
                         </Link>
-                    </motion.div>
+                    </m.div>
 
                     {/* Error State */}
                     {error && (
-                        <motion.div className="mb-6" {...fadeInUp}>
+                        <m.div className="mb-6" {...fadeInUp}>
                             <ErrorState
                                 title="Error Loading Skills"
                                 message={error}
                                 onRetry={() => window.location.reload()}
                             />
-                        </motion.div>
+                        </m.div>
                     )}
 
                     {/* Loading State */}
@@ -108,7 +108,7 @@ export default function MySkillsPage() {
                     ) : userSkills && userSkills.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {userSkills.map((skill: UserSkill, index: number) => (
-                                <motion.div
+                                <m.div
                                     key={skill.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -212,11 +212,11 @@ export default function MySkillsPage() {
                                             </Button>
                                         </div>
                                     </Card>
-                                </motion.div>
+                                </m.div>
                             ))}
                         </div>
                     ) : (
-                        <motion.div {...fadeInUp}>
+                        <m.div {...fadeInUp}>
                             <EmptyState
                                 icon={BookOpen}
                                 title="No Skills Yet"
@@ -227,7 +227,7 @@ export default function MySkillsPage() {
                                 }}
                                 variant="card"
                             />
-                        </motion.div>
+                        </m.div>
                     )}
                 </main>
             </div>
