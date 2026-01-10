@@ -114,7 +114,8 @@ export default function LoginPage() {
                 alt="Wibi Logo" 
                 width={40} 
                 height={40}
-                className="rounded-lg flex-shrink-0"
+                priority
+                className="rounded-lg shrink-0"
               />
               {/* Dikembalikan ke text-xl font-bold agar tidak pecah/wrap */}
               <span className="text-xl font-bold tracking-tight text-foreground">

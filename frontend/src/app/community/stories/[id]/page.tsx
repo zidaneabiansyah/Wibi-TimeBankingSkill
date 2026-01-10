@@ -9,6 +9,8 @@ import { useCommunityStore } from '@/stores/community.store';
 import { NestedComments } from '@/components/community';
 import type { SuccessStory, StoryComment } from '@/types';
 import { toast } from 'sonner';
+import { sanitizeHTML } from '@/lib/utils/sanitization';
+import OptimizedImage from '@/components/common/OptimizedImage';
 
 export default function StoryDetailPage() {
     const params = useParams();
@@ -144,10 +146,12 @@ export default function StoryDetailPage() {
                     {/* Image */}
                     {(selectedStory.featured_image_url || (selectedStory.images && selectedStory.images.length > 0)) && (
                         <div className="relative h-96 w-full overflow-hidden bg-muted">
-                            <img
+                            <OptimizedImage
                                 src={selectedStory.featured_image_url || selectedStory.images[0]}
                                 alt={selectedStory.title}
-                                className="h-full w-full object-cover"
+                                fill
+                                priority
+                                className="object-cover"
                             />
                         </div>
                     )}
@@ -162,9 +166,10 @@ export default function StoryDetailPage() {
                             <span>{new Date(selectedStory.created_at).toLocaleDateString()}</span>
                         </div>
 
-                        <div className="prose dark:prose-invert max-w-none mb-6">
-                            <p>{selectedStory.description}</p>
-                        </div>
+                        <div 
+                            className="prose dark:prose-invert max-w-none mb-6"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedStory.description) }}
+                        />
 
                         {selectedStory.tags && selectedStory.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2 mb-6">

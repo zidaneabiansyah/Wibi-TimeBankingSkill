@@ -14,6 +14,7 @@ import { communityService } from '@/lib/services/community.service';
 import { useCommunityStore } from '@/stores/community.store';
 import type { ForumThread, ForumReply } from '@/types';
 import { toast } from 'sonner';
+import { sanitizeHTML } from '@/lib/utils/sanitization';
 
 export default function ForumThreadPage() {
     const params = useParams();
@@ -172,9 +173,10 @@ export default function ForumThreadPage() {
                         </span>
                     </div>
 
-                    <div className="prose dark:prose-invert max-w-none mb-6">
-                        <p>{selectedThread.content}</p>
-                    </div>
+                    <div 
+                        className="prose dark:prose-invert max-w-none mb-6"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedThread.content) }}
+                    />
 
                     {selectedThread.tags && selectedThread.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2">
@@ -252,7 +254,10 @@ export default function ForumThreadPage() {
                                         <Trash2 className="h-4 w-4 mr-1" /> Delete
                                     </Button>
                                 </div>
-                                <p className="text-muted-foreground">{reply.content}</p>
+                                <div 
+                                    className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(reply.content) }}
+                                />
                             </div>
                         ))
                     )}
