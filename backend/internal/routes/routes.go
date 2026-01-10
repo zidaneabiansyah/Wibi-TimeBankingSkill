@@ -27,7 +27,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	// Initialize brute force tracker
 	loginTracker := middleware.NewLoginBruteForceTracker(10, 5*time.Minute)
 
-	// Initialize handlers
+	// Initialize handlers	
 	authHandler := InitializeAuthHandler(db, loginTracker)
 	adminHandler := InitializeAdminHandler(db)
 	skillHandler := InitializeSkillHandler(db)

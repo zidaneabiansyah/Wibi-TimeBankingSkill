@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	"log"
 
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
@@ -163,7 +164,9 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		Description:   "Credit hold for session booking: " + session.Title,
 		SessionID:     &session.ID,
 	}
-	_ = s.transactionRepo.Create(holdTransaction)
+	if err := s.transactionRepo.Create(holdTransaction); err != nil {
+		log.Printf("ERROR: Failed to create hold transaction for session %d: %v", session.ID, err)
+	}
 
 	// Reload session with relationships
 	session, err = s.sessionRepo.GetByID(session.ID)
@@ -344,7 +347,9 @@ func (s *SessionService) RejectSession(teacherID, sessionID uint, req *dto.Rejec
 			Description:   "Credit hold released for rejected session: " + session.Title,
 			SessionID:     &session.ID,
 		}
-		_ = s.transactionRepo.Create(refundTransaction)
+		if err := s.transactionRepo.Create(refundTransaction); err != nil {
+			log.Printf("ERROR: Failed to create refund transaction for session %d: %v", session.ID, err)
+		}
 	}
 
 	// Update session
@@ -660,7 +665,9 @@ func (s *SessionService) completeSession(session *models.Session) error {
 		Description:   "Earned from teaching session: " + session.Title,
 		SessionID:     &session.ID,
 	}
-	_ = s.transactionRepo.Create(earnedTransaction)
+	if err := s.transactionRepo.Create(earnedTransaction); err != nil {
+		log.Printf("ERROR: Failed to create earned transaction for teacher %d: %v", session.TeacherID, err)
+	}
 
 	// Record the spent transaction for student (finalized)
 	spentTransaction := &models.Transaction{
@@ -672,7 +679,9 @@ func (s *SessionService) completeSession(session *models.Session) error {
 		Description:   "Spent on learning session: " + session.Title,
 		SessionID:     &session.ID,
 	}
-	_ = s.transactionRepo.Create(spentTransaction)
+	if err := s.transactionRepo.Create(spentTransaction); err != nil {
+		log.Printf("ERROR: Failed to create spent transaction for student %d: %v", session.StudentID, err)
+	}
 
 	// Update skill statistics
 	// Increment session count for this teaching skill

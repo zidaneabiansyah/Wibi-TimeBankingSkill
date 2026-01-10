@@ -4,6 +4,7 @@ import (
   "errors"
   "os"
   "strings"
+  "log"
 
   "github.com/timebankingskill/backend/internal/dto"
   "github.com/timebankingskill/backend/internal/models"
@@ -122,7 +123,10 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     BalanceAfter:  3.0,
     Description:   "Welcome bonus - Free credits to get started",
   }
-  _ = s.transactionRepo.Create(transaction)
+  if err := s.transactionRepo.Create(transaction); err != nil {
+    // Log error but don't fail registration as user is already created
+    log.Printf("ERROR: Failed to create initial transaction for user %d: %v", user.ID, err)
+  }
 
   // Generate verification token (24 hour expiry)
   verificationToken, err := utils.GenerateEmailVerificationToken(user.Email)

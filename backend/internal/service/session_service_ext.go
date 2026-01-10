@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/timebankingskill/backend/internal/models"
@@ -83,29 +84,38 @@ func (s *SessionService) AdminCompleteSession(sessionID uint) error {
 	// 2. Transfer credits using session.CreditAmount
 	amount := session.CreditAmount
 
+	// Get teacher balance
+	teacherBalance, _ := s.transactionRepo.GetUserBalance(session.TeacherID)
+	// Get student balance
+	studentBalance, _ := s.transactionRepo.GetUserBalance(session.StudentID)
+
 	// Create earned transaction for teacher
 	earnedTransaction := &models.Transaction{
 		UserID:        session.TeacherID,
 		Type:          models.TransactionEarned,
 		Amount:        amount,
-		BalanceBefore: 0,
-		BalanceAfter:  0,
+		BalanceBefore: teacherBalance,
+		BalanceAfter:  teacherBalance + amount,
 		Description:   "Earned from session (Admin completed)",
 		SessionID:     &session.ID,
 	}
-	_ = s.transactionRepo.Create(earnedTransaction)
+	if err := s.transactionRepo.Create(earnedTransaction); err != nil {
+		log.Printf("ERROR: AdminCompleteSession: failed to create earned transaction: %v", err)
+	}
 	
 	// Create spent transaction for student
 	spentTransaction := &models.Transaction{
 		UserID:        session.StudentID,
 		Type:          models.TransactionSpent,
 		Amount:        -amount,
-		BalanceBefore: 0,
-		BalanceAfter:  0,
+		BalanceBefore: studentBalance,
+		BalanceAfter:  studentBalance - amount,
 		Description:   "Spent on session (Admin completed)",
 		SessionID:     &session.ID,
 	}
-	_ = s.transactionRepo.Create(spentTransaction)
+	if err := s.transactionRepo.Create(spentTransaction); err != nil {
+		log.Printf("ERROR: AdminCompleteSession: failed to create spent transaction: %v", err)
+	}
 	
 	s.notificationService.CreateNotification(
 		session.TeacherID,

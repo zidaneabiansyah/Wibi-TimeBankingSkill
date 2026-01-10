@@ -31,32 +31,6 @@ func NewTransactionService(
 // CreateTransaction creates a new transaction record and records balance history
 // This function records the transaction history but does NOT update user balance
 // Balance is updated separately through UpdateUserBalance
-//
-// Transaction Recording:
-//   - Records balance before and after transaction
-//   - Creates audit trail for all credit movements
-//   - Supports optional session linking for context
-//
-// Balance Validation:
-//   - Prevents negative balance for spend/hold transactions
-//   - Allows negative balance for refunds (to correct errors)
-//   - Validates sufficient credits before deduction
-//
-// Parameters:
-//   - userID: User performing the transaction
-//   - txType: Type of transaction (earned, spent, hold, refund, bonus, penalty)
-//   - amount: Credit amount (positive for earnings, negative for spending)
-//   - description: Human-readable description of transaction
-//   - sessionID: Optional session ID for context
-//
-// Returns:
-//   - *Transaction: Created transaction record
-//   - error: If balance check fails or database error
-//
-// Example:
-//   tx, err := transactionService.CreateTransaction(
-//     userID, TransactionEarned, 10.0, "Earned from teaching", &sessionID,
-//   )
 func (s *TransactionService) CreateTransaction(
 	userID uint,
 	txType models.TransactionType,

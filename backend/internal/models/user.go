@@ -21,16 +21,16 @@ type User struct {
 	
 	// Profile Info
 	School      string  `json:"school"`
-	Grade       string  `json:"grade"`        // e.g., "10", "11", "12"
-	Major       string  `json:"major"`        // e.g., "IPA", "IPS"
+	Grade       string  `json:"grade"`        
+	Major       string  `json:"major"`        
 	Bio         string  `gorm:"type:text" json:"bio"`
-	Avatar      string  `json:"avatar"`       // URL to profile picture
+	Avatar      string  `json:"avatar"`       
 	PhoneNumber string  `json:"phone_number"`
-	Location    string  `json:"location"`     // City/Region
+	Location    string  `json:"location"`     
 	
 	// Time Banking
-	CreditBalance float64 `gorm:"default:3.0" json:"credit_balance"` // Total balance
-	CreditHeld    float64 `gorm:"default:0" json:"credit_held"`       // Credits in escrow/pending sessions
+	CreditBalance float64 `gorm:"default:3.0" json:"credit_balance"` 
+	CreditHeld    float64 `gorm:"default:0" json:"credit_held"`       
 	TotalEarned   float64 `gorm:"default:0" json:"total_earned"`
 	TotalSpent    float64 `gorm:"default:0" json:"total_spent"`
 	

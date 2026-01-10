@@ -51,7 +51,7 @@ func Connect(cfg *config.DatabaseConfig) error {
 	// Assign to global variable
 	DB = db
 
-	log.Println("✅ Database connected successfully")
+	log.Println("Database connected successfully")
 	return nil
 }
 
@@ -65,7 +65,7 @@ func AutoMigrate() error {
   // GORM AutoMigrate is idempotent - safe to run multiple times
   // It only creates tables that don't exist and adds missing columns
   // This ensures new models (like Notification) are always created
-  log.Println("🔄 Running database migrations...")
+  log.Println("Running database migrations...")
 
   err := models.AutoMigrate(DB)
   if err != nil {
@@ -77,7 +77,7 @@ func AutoMigrate() error {
     log.Printf("⚠️  Warning: Failed to create indexes: %v", err)
   }
 
-  log.Println("✅ Database migrations completed")
+  log.Println("Database migrations completed")
   return nil
 }
 
@@ -87,7 +87,7 @@ func SeedInitialData() error {
     return fmt.Errorf("database not connected")
   }
 
-  log.Println("🌱 Seeding initial data...")
+  log.Println("Seeding initial data...")
 
   // Seed admin (always check, independent of other data)
   if err := seedAdmin(); err != nil {
@@ -104,7 +104,7 @@ func SeedInitialData() error {
     log.Printf("⚠️  Warning: Failed to seed badges: %v", err)
   }
 
-  log.Println("✅ Initial data seeding completed")
+  log.Println("Initial data seeding completed")
   return nil
 }
 
@@ -240,7 +240,7 @@ func seedAdmin() error {
   var existingAdmin models.Admin
   result := DB.Where("email = ?", "admin@wibi.com").First(&existingAdmin)
   if result.Error == nil {
-    log.Println("✅ Admin user already exists, skipping admin seed")
+    log.Println("Admin user already exists, skipping admin seed")
     return nil
   }
 
@@ -263,7 +263,7 @@ func seedAdmin() error {
     return fmt.Errorf("failed to create admin user: %w", err)
   }
 
-  log.Println("✅ Admin user created successfully")
+  log.Println("Admin user created successfully")
   log.Println("   Email: admin@wibi.com")
   log.Println("   Password: Admin123")
   log.Println("   Role: super_admin")
