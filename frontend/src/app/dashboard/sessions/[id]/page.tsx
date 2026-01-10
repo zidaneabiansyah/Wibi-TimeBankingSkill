@@ -13,9 +13,16 @@ import { sessionService } from '@/lib/services/session.service'
 import { toast } from 'sonner'
 import { 
     ArrowLeft, Calendar, Clock, User, MapPin, Link as LinkIcon, 
-    FileText, Loader2, Video, CheckCircle2, Circle, AlertCircle
+    FileText, Loader2, Video, CheckCircle2, Circle, AlertCircle, Info
 } from 'lucide-react'
 import { SessionTimer } from '@/components/session/SessionTimer'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { getSessionCreditStatus } from '@/lib/utils/session-status'
 import type { Session } from '@/types'
 
 function SessionTimeline({ session }: { session: Session }) {
@@ -239,11 +246,26 @@ function SessionDetailContent() {
                             <p className="text-muted-foreground mt-1">{session.user_skill?.skill?.name}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge className="text-base">{session.status}</Badge>
+                            <Badge variant="outline" className="text-base capitalize">
+                                {session.status.replace('_', ' ')}
+                            </Badge>
                             {session.credit_held && (
-                                <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
-                                    Credits in Escrow
-                                </Badge>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Badge 
+                                                variant={getSessionCreditStatus(session, user?.id || 0).variant} 
+                                                className="text-sm cursor-help flex items-center gap-1"
+                                            >
+                                                {getSessionCreditStatus(session, user?.id || 0).label}
+                                                <Info className="h-4 w-4" />
+                                            </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{getSessionCreditStatus(session, user?.id || 0).description}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             )}
                         </div>
                     </div>

@@ -160,10 +160,10 @@ export function MobileMenuItem({
                 className
             )}
         >
-            {icon && <span className="flex-shrink-0">{icon}</span>}
+            {icon && <span className="shrink-0">{icon}</span>}
             <span className="flex-1 text-left font-medium">{label}</span>
             {badge && (
-                <span className="flex-shrink-0 inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground">
+                <span className="shrink-0 inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground">
                     {badge}
                 </span>
             )}

@@ -18,10 +18,11 @@ import { LeaderboardCard } from "@/components/dashboard/LeaderboardCard";
 import SessionApprovalModal from "@/components/session/SessionApprovalModal";
 import TransactionDetailModal from "@/components/transaction/TransactionDetailModal";
 import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
-import { ErrorState } from "@/components/ui/error-state";
 import { EmptyState } from "@/components/ui/empty-state";
 import { m } from "framer-motion";
-import { Calendar, Award, Receipt, Zap, TrendingUp, Users, Star } from "lucide-react";
+import { Calendar, Award, Receipt, Zap, TrendingUp, Users, Star, Info } from "lucide-react";
+import { getSessionCreditStatus } from '@/lib/utils/session-status';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Transaction, Session, Skill } from "@/types";
 
 // Format date
@@ -379,9 +380,29 @@ function DashboardContent() {
                                                                 {session.scheduled_at ? formatDate(session.scheduled_at) : 'Not scheduled'}
                                                             </CardDescription>
                                                         </div>
-                                                        <Badge variant="outline" className="shrink-0 capitalize border-border/50">
-                                                            {session.status}
-                                                        </Badge>
+                                                         <div className="flex flex-col items-end gap-1 shrink-0">
+                                                            <Badge variant="outline" className="capitalize border-border/50">
+                                                                {session.status.replace('_', ' ')}
+                                                            </Badge>
+                                                            {session.credit_held && (
+                                                                <TooltipProvider>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Badge 
+                                                                                variant={getSessionCreditStatus(session, user?.id || 0).variant}
+                                                                                className="text-[10px] py-0 h-4 cursor-help flex items-center gap-0.5"
+                                                                            >
+                                                                                {getSessionCreditStatus(session, user?.id || 0).label}
+                                                                                <Info className="h-2.5 w-2.5" />
+                                                                            </Badge>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>
+                                                                            <p className="text-xs">{getSessionCreditStatus(session, user?.id || 0).description}</p>
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                </TooltipProvider>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </CardHeader>
                                                 <CardContent className="space-y-3">

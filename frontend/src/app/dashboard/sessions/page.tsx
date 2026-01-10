@@ -5,13 +5,15 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Header } from '@/components/layout';
 import { ProtectedRoute } from '@/components/auth';
 import { useSessionStore } from '@/stores/session.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { toast } from 'sonner';
-import { Calendar } from 'lucide-react';
+import { Calendar, Info } from 'lucide-react';
+import { getSessionCreditStatus } from '@/lib/utils/session-status';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Session, SessionStatus } from '@/types';
 
 function formatDate(dateString: string | null) {
@@ -89,15 +91,30 @@ function SessionCard({ session, currentUserId, onAction }: {
                     </svg>
                     <span>{session.duration} hour{session.duration !== 1 ? 's' : ''} • {session.credit_amount} credits</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex flex-wrap items-center gap-2 text-sm pt-1">
                     <Badge variant="outline" className="capitalize">{session.mode}</Badge>
+                    
                     {session.credit_held && (
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
-                            Credits in Escrow
-                        </Badge>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Badge 
+                                        variant={getSessionCreditStatus(session, currentUserId).variant} 
+                                        className="cursor-help flex items-center gap-1"
+                                    >
+                                        {getSessionCreditStatus(session, currentUserId).label}
+                                        <Info className="h-3 w-3" />
+                                    </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{getSessionCreditStatus(session, currentUserId).description}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     )}
+                    
                     {session.meeting_link && (
-                        <a href={session.meeting_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        <a href={session.meeting_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-auto">
                             Join Meeting
                         </a>
                     )}

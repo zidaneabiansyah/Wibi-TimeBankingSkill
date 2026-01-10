@@ -65,15 +65,15 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
 
     const menuItems = [
         {
-            icon: User,
-            label: 'My Profile',
-            href: '/profile',
-            group: 'main',
-        },
-        {
             icon: LayoutDashboard,
             label: 'Dashboard',
             href: '/dashboard',
+            group: 'main',
+        },
+        {
+            icon: User,
+            label: 'My Profile',
+            href: '/profile',
             group: 'main',
         },
         {
