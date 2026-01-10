@@ -143,24 +143,36 @@ const nextConfig = {
         ],
     },
 
-    // Headers for caching
+    // Headers for performance and caching
     async headers() {
         return [
             {
-                source: '/api/:path*',
+                // General API responses - light caching for speed
+                source: '/api/v1/:path*',
                 headers: [
                     {
                         key: 'Cache-Control',
-                        value: 'public, max-age=60, s-maxage=60',
+                        value: 'public, max-age=10, stale-while-revalidate=50',
                     },
                 ],
             },
             {
+                // Static images and assets - long lived
                 source: '/images/:path*',
                 headers: [
                     {
                         key: 'Cache-Control',
                         value: 'public, max-age=31536000, immutable',
+                    },
+                ],
+            },
+            {
+                // Allow bfcache for main pages (remove no-store if present globally)
+                source: '/(about|how-it-works|faq|terms|contact)',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=0, must-revalidate',
                     },
                 ],
             },

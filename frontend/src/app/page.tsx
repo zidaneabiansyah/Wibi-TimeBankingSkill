@@ -5,14 +5,17 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Zap, BookOpen, TrendingUp, Users, Star, ArrowRight } from "lucide-react";
 import { Footer, Header } from "@/components/layout";
 import dynamic from 'next/dynamic';
 
 const DotLottieReact = dynamic(
   () => import('@lottiefiles/dotlottie-react').then((mod) => mod.DotLottieReact),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <div className="w-full h-full bg-muted/20 animate-pulse rounded-lg" />
+  }
 );
 
 // Animation variants
@@ -44,7 +47,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top_right,var(--tw-linear-stops))] from-primary/10 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[radial-linear(ellipse_at_bottom_left,var(--tw-linear-stops))] from-secondary/5 via-transparent to-transparent opacity-40" />
         
-        <motion.div 
+        <m.div 
           className="relative mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16"
           initial="initial"
           animate="animate"
@@ -52,15 +55,15 @@ export default function Home() {
         >
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             {/* Left Content */}
-            <motion.div className="space-y-8" variants={fadeInUp}>
+            <m.div className="space-y-8" variants={fadeInUp}>
               <div className="space-y-6">
-                <motion.div variants={fadeInUp}>
+                <m.div variants={fadeInUp}>
                   <Badge variant="outline" className="px-3 py-1 text-xs font-medium border-primary/30 text-primary bg-primary/5 w-fit">
                     🎓 Welcome to Wibi
                   </Badge>
-                </motion.div>
+                </m.div>
 
-                <motion.h1 
+                <m.h1 
                   className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight"
                   variants={fadeInUp}
                 >
@@ -69,17 +72,17 @@ export default function Home() {
                   <span className="bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse-slow">
                     Valuable
                   </span>
-                </motion.h1>
+                </m.h1>
 
-                <motion.p 
+                <m.p 
                   className="max-w-[640px] text-lg text-muted-foreground leading-relaxed"
                   variants={fadeInUp}
                 >
                   Platform peer-to-peer skill exchange untuk pelajar. Belajar dan ajarkan skill tanpa uang, hanya dengan waktu. Bergabunglah dengan komunitas kami.
-                </motion.p>
+                </m.p>
               </div>
 
-              <motion.div 
+              <m.div 
                 className="flex flex-col sm:flex-row gap-4 pt-4"
                 variants={fadeInUp}
               >
@@ -94,10 +97,10 @@ export default function Home() {
                     Explore Skills
                   </Button>
                 </Link>
-              </motion.div>
+              </m.div>
 
               {/* Trust Indicators */}
-              <motion.div 
+              <m.div 
                 className="flex flex-col sm:flex-row gap-6 pt-4 text-sm text-muted-foreground"
                 variants={fadeInUp}
               >
@@ -113,11 +116,11 @@ export default function Home() {
                   </div>
                   <span>15K+ Hours Exchanged</span>
                 </div>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
 
             {/* Right - Hero Image */}
-            <motion.div 
+            <m.div 
               className="flex items-center justify-center lg:justify-end"
               initial={{ opacity: 0, scale: 0.9, x: 20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -131,41 +134,41 @@ export default function Home() {
                   className="w-full h-full"
                 />
               </div>
-            </motion.div>
+            </m.div>
           </div>
-        </motion.div>
+        </m.div>
       </section>
 
       {/* How It Works */}
       <section className="relative w-full py-16 md:py-24 lg:py-28 border-t border-border/40">
         <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
-          <motion.div 
+          <m.div 
             className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp}>
+            <m.div variants={fadeInUp}>
               <Badge className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary border-primary/20">
                 How It Works
               </Badge>
-            </motion.div>
-            <motion.h2 
+            </m.div>
+            <m.h2 
               className="text-4xl md:text-5xl font-bold tracking-tight"
               variants={fadeInUp}
             >
               Time Banking Made Simple
-            </motion.h2>
-            <motion.p 
+            </m.h2>
+            <m.p 
               className="max-w-[700px] text-muted-foreground text-lg"
               variants={fadeInUp}
             >
               1 hour teaching = 1 Time Credit = 1 hour learning. No money involved, pure skill exchange.
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
 
-          <motion.div 
+          <m.div 
             className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
             initial="initial"
             whileInView="animate"
@@ -197,7 +200,7 @@ export default function Home() {
             ].map((item, idx) => {
               const IconComponent = item.icon;
               return (
-                <motion.div key={idx} variants={fadeInUp}>
+                <m.div key={idx} variants={fadeInUp}>
                   <Card className="relative h-full flex flex-col overflow-hidden group hover:border-primary transition-all duration-300">
                     {/* Gradient background */}
                     <div className={`absolute inset-0 bg-linear-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
@@ -222,43 +225,43 @@ export default function Home() {
                     {/* Accent line on hover */}
                     <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Card>
-                </motion.div>
+                </m.div>
               );
             })}
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
       {/* Featured Skills */}
       <section className="relative w-full py-16 md:py-24 lg:py-28 border-t border-border/40">
         <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
-          <motion.div 
+          <m.div 
             className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp}>
+            <m.div variants={fadeInUp}>
               <Badge className="px-3 py-1 text-xs font-medium bg-secondary/10 text-secondary border-secondary/20">
                 Popular Skills
               </Badge>
-            </motion.div>
-            <motion.h2 
+            </m.div>
+            <m.h2 
               className="text-4xl md:text-5xl font-bold tracking-tight"
               variants={fadeInUp}
             >
               Explore What's Popular
-            </motion.h2>
-            <motion.p 
+            </m.h2>
+            <m.p 
               className="max-w-[700px] text-muted-foreground text-lg"
               variants={fadeInUp}
             >
               Browse the most sought-after skills taught by our community members.
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
 
-          <motion.div 
+          <m.div 
             className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
             initial="initial"
             whileInView="animate"
@@ -288,7 +291,7 @@ export default function Home() {
                 tutors: "30+"
               },
             ].map((skill, idx) => (
-              <motion.div key={idx} variants={fadeInUp}>
+              <m.div key={idx} variants={fadeInUp}>
                 <Card className="relative h-full flex flex-col group overflow-hidden hover:border-primary transition-all duration-300">
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between mb-2">
@@ -312,9 +315,9 @@ export default function Home() {
                   {/* Accent line */}
                   <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Card>
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -322,7 +325,7 @@ export default function Home() {
       <section className="relative w-full py-16 md:py-24 lg:py-28 overflow-hidden border-t border-border/40">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-secondary/5" />
         
-        <motion.div 
+        <m.div 
           className="relative mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16"
           initial="initial"
           whileInView="animate"
@@ -330,27 +333,27 @@ export default function Home() {
           variants={staggerContainer}
         >
           <div className="flex flex-col items-center space-y-8 text-center">
-            <motion.div variants={fadeInUp}>
+            <m.div variants={fadeInUp}>
               <Badge className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary border-primary/20">
                 Get Started Today
               </Badge>
-            </motion.div>
+            </m.div>
 
-            <motion.h2 
+            <m.h2 
               className="text-5xl md:text-6xl font-bold tracking-tight leading-tight"
               variants={fadeInUp}
             >
               Ready to Exchange Skills?
-            </motion.h2>
+            </m.h2>
 
-            <motion.p 
+            <m.p 
               className="mx-auto max-w-[600px] text-muted-foreground text-lg leading-relaxed"
               variants={fadeInUp}
             >
               Join 1,200+ students who are already learning and teaching without spending money.
-            </motion.p>
+            </m.p>
 
-            <motion.div 
+            <m.div 
               className="flex flex-col sm:flex-row gap-4 pt-4"
               variants={fadeInUp}
             >
@@ -365,9 +368,9 @@ export default function Home() {
                   Learn More
                 </Button>
               </Link>
-            </motion.div>
+            </m.div>
           </div>
-        </motion.div>
+        </m.div>
       </section>
 
       {/* Footer */}

@@ -132,13 +132,32 @@ export function useNotificationWebSocket() {
 
     /**
      * Effect: Connect on mount, disconnect on unmount
+     * Also handle page visibility/bfcache events
      */
     useEffect(() => {
+        const handlePageHide = () => {
+            // Disconnect when page is hidden (e.g. going to bfcache)
+            disconnect();
+        };
+
+        const handlePageShow = (event: PageTransitionEvent) => {
+            // Reconnect if we're coming from bfcache (persisted is true)
+            // or if we just need to refresh connection
+            if (user) {
+                connect();
+            }
+        };
+
         if (user) {
             connect();
         }
 
+        window.addEventListener('pagehide', handlePageHide);
+        window.addEventListener('pageshow', handlePageShow);
+
         return () => {
+            window.removeEventListener('pagehide', handlePageHide);
+            window.removeEventListener('pageshow', handlePageShow);
             disconnect();
         };
     }, [user]);

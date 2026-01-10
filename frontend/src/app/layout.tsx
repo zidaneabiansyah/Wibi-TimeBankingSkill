@@ -86,6 +86,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+import { FramerProvider } from "@/components/providers/FramerProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -103,15 +105,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PWAProvider>
-            <AdminProvider>
-              <AuthProvider>
-                {children}
-              </AuthProvider>
-            </AdminProvider>
-            <AchievementPopup />
-            <Sonner />
-          </PWAProvider>
+          <FramerProvider>
+            <PWAProvider>
+              <AdminProvider>
+                <AuthProvider>
+                  {children}
+                </AuthProvider>
+              </AdminProvider>
+              <AchievementPopup />
+              <Sonner />
+            </PWAProvider>
+          </FramerProvider>
         </ThemeProvider>
       </body>
     </html>
