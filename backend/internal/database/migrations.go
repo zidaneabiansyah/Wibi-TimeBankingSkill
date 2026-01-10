@@ -95,6 +95,14 @@ func createPerformanceIndexes(db *gorm.DB) error {
 		"CREATE INDEX IF NOT EXISTS idx_reviews_reviewee_hidden ON reviews(reviewee_id, is_hidden)",
 		// Transaction indexes for user history
 		"CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions(user_id, created_at DESC)",
+		// Forum indexes
+		"CREATE INDEX IF NOT EXISTS idx_forum_threads_category ON forum_threads(category_id, created_at DESC)",
+		"CREATE INDEX IF NOT EXISTS idx_forum_replies_thread ON forum_replies(thread_id, created_at ASC)",
+		// Stories indexes
+		"CREATE INDEX IF NOT EXISTS idx_stories_category_user ON stories(category, user_id)",
+		"CREATE INDEX IF NOT EXISTS idx_stories_published ON stories(is_published, created_at DESC)",
+		// Skill search index
+		"CREATE INDEX IF NOT EXISTS idx_skills_name_search ON skills(name)",
 	}
 
 	// Execute all index creation queries

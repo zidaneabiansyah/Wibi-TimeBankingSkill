@@ -36,6 +36,11 @@ func (h *StoryHandler) CreateStory(c *gin.Context) {
 		return
 	}
 
+	// Sanitize inputs
+	req.Title = utils.SanitizeStrict(req.Title)
+	req.Content = utils.SanitizeHTML(req.Content)
+	req.Category = utils.SanitizeStrict(req.Category)
+
 	story, err := h.storyService.CreateStory(userID.(uint), &req)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
@@ -150,6 +155,20 @@ func (h *StoryHandler) UpdateStory(c *gin.Context) {
 		return
 	}
 
+	// Sanitize inputs
+	if req.Title != nil {
+		sanitizedTitle := utils.SanitizeStrict(*req.Title)
+		req.Title = &sanitizedTitle
+	}
+	if req.Content != nil {
+		sanitizedContent := utils.SanitizeHTML(*req.Content)
+		req.Content = &sanitizedContent
+	}
+	if req.Category != nil {
+		sanitizedCategory := utils.SanitizeStrict(*req.Category)
+		req.Category = &sanitizedCategory
+	}
+
 	story, err := h.storyService.UpdateStory(uint(storyID), userID.(uint), &req)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
@@ -196,6 +215,9 @@ func (h *StoryHandler) CreateComment(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
 		return
 	}
+
+	// Sanitize inputs
+	req.Content = utils.SanitizeHTML(req.Content)
 
 	comment, err := h.storyService.CreateComment(userID.(uint), &req)
 	if err != nil {

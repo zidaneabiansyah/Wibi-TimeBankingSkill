@@ -52,9 +52,10 @@ func (s *StoryService) CreateStory(userID uint, req *dto.CreateStoryRequest) (*m
 	}
 
 	story := &models.SuccessStory{
-		UserID:      userID,
+		UserID:           userID,
 		Title:            req.Title,
-		Description:      req.Description,
+		Description:      req.Content,
+		Category:         req.Category,
 		FeaturedImageURL: req.FeaturedImageURL,
 		Images:           req.Images,
 		Tags:             req.Tags,
@@ -114,12 +115,23 @@ func (s *StoryService) UpdateStory(storyID, userID uint, req *dto.UpdateStoryReq
 		return nil, errors.New("unauthorized")
 	}
 
-	story.Title = req.Title
-	story.Description = req.Description
-	story.FeaturedImageURL = req.FeaturedImageURL
+	if req.Title != nil {
+		story.Title = *req.Title
+	}
+	if req.Content != nil {
+		story.Description = *req.Content
+	}
+	if req.Category != nil {
+		story.Category = *req.Category
+	}
+	if req.FeaturedImageURL != nil {
+		story.FeaturedImageURL = *req.FeaturedImageURL
+	}
 	story.Images = req.Images
 	story.Tags = req.Tags
-	story.IsPublished = req.IsPublished
+	if req.IsPublished != nil {
+		story.IsPublished = *req.IsPublished
+	}
 
 	if err := s.storyRepo.UpdateStory(story); err != nil {
 		return nil, fmt.Errorf("failed to update story: %w", err)

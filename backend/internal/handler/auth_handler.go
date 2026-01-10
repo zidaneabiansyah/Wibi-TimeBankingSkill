@@ -1,22 +1,27 @@
 package handler
 
 import (
-  "net/http"
+	"net/http"
 
-  "github.com/gin-gonic/gin"
-  "github.com/timebankingskill/backend/internal/dto"
-  "github.com/timebankingskill/backend/internal/service"
-  "github.com/timebankingskill/backend/internal/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/timebankingskill/backend/internal/dto"
+	"github.com/timebankingskill/backend/internal/middleware"
+	"github.com/timebankingskill/backend/internal/service"
+	"github.com/timebankingskill/backend/internal/utils"
 )
 
 // AuthHandler handles authentication HTTP requests
 type AuthHandler struct {
   authService *service.AuthService
+  tracker      *middleware.LoginBruteForceTracker
 }
 
 // NewAuthHandler creates a new auth handler
-func NewAuthHandler(authService *service.AuthService) *AuthHandler {
-  return &AuthHandler{authService: authService}
+func NewAuthHandler(authService *service.AuthService, tracker *middleware.LoginBruteForceTracker) *AuthHandler {
+  return &AuthHandler{
+    authService: authService,
+    tracker:     tracker,
+  }
 }
 
 // Register handles user registration
@@ -68,10 +73,16 @@ func (h *AuthHandler) Login(c *gin.Context) {
   // Call service
   response, err := h.authService.Login(&req)
   if err != nil {
+    if h.tracker != nil {
+      h.tracker.RecordFailure(c.ClientIP())
+    }
     utils.SendError(c, http.StatusUnauthorized, err.Error(), nil)
     return
   }
 
+  if h.tracker != nil {
+    h.tracker.Reset(c.ClientIP())
+  }
   utils.SendSuccess(c, http.StatusOK, "Login successful", response)
 }
 

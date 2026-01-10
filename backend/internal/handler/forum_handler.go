@@ -49,6 +49,10 @@ func (h *ForumHandler) CreateThread(c *gin.Context) {
 		return
 	}
 
+	// Sanitize inputs
+	req.Title = utils.SanitizeStrict(req.Title)
+	req.Content = utils.SanitizeHTML(req.Content)
+
 	thread, err := h.forumService.CreateThread(userID.(uint), &req)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
@@ -134,6 +138,16 @@ func (h *ForumHandler) UpdateThread(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
 		return
+	}
+
+	// Sanitize inputs
+	if req.Title != nil {
+		sanitizedTitle := utils.SanitizeStrict(*req.Title)
+		req.Title = &sanitizedTitle
+	}
+	if req.Content != nil {
+		sanitizedContent := utils.SanitizeHTML(*req.Content)
+		req.Content = &sanitizedContent
 	}
 
 	thread, err := h.forumService.UpdateThread(uint(threadID), userID.(uint), &req)
@@ -249,6 +263,9 @@ func (h *ForumHandler) CreateReply(c *gin.Context) {
 		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
 		return
 	}
+
+	// Sanitize inputs
+	req.Content = utils.SanitizeHTML(req.Content)
 
 	reply, err := h.forumService.CreateReply(userID.(uint), &req)
 	if err != nil {

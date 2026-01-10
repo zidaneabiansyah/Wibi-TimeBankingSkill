@@ -14,8 +14,8 @@ type CreateThreadRequest struct {
 
 // UpdateThreadRequest is the request to update a forum thread
 type UpdateThreadRequest struct {
-	Title   string           `json:"title" binding:"required,min=3,max=200"`
-	Content string           `json:"content" binding:"required,min=10"`
+	Title   *string          `json:"title"`
+	Content *string          `json:"content"`
 	Tags    models.JSONArray `json:"tags"`
 }
 
@@ -78,7 +78,8 @@ type ForumCategoryResponse struct {
 // CreateStoryRequest is the request to create a success story
 type CreateStoryRequest struct {
 	Title            string           `json:"title" binding:"required,min=3,max=200"`
-	Description      string           `json:"description" binding:"required,min=10"`
+	Content          string           `json:"content" binding:"required,min=10"`
+	Category         string           `json:"category" binding:"required"`
 	FeaturedImageURL string           `json:"featured_image_url"`
 	Images           models.JSONArray `json:"images"`
 	Tags             models.JSONArray `json:"tags"`
@@ -87,12 +88,13 @@ type CreateStoryRequest struct {
 
 // UpdateStoryRequest is the request to update a success story
 type UpdateStoryRequest struct {
-	Title            string           `json:"title" binding:"required,min=3,max=200"`
-	Description      string           `json:"description" binding:"required,min=10"`
-	FeaturedImageURL string           `json:"featured_image_url"`
+	Title            *string          `json:"title"`
+	Content          *string          `json:"content"`
+	Category         *string          `json:"category"`
+	FeaturedImageURL *string          `json:"featured_image_url"`
 	Images           models.JSONArray `json:"images"`
 	Tags             models.JSONArray `json:"tags"`
-	IsPublished      bool             `json:"is_published"`
+	IsPublished      *bool            `json:"is_published"`
 }
 
 // StoryResponse is the response for a success story

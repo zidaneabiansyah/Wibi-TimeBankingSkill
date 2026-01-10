@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/service"
 	"github.com/timebankingskill/backend/internal/utils"
 )
@@ -175,13 +178,23 @@ func (h *BadgeHandler) PinBadge(c *gin.Context) {
 	})
 }
 
-// GetBadgeLeaderboard retrieves top users by badge count
-// GET /api/v1/leaderboard/badges?limit=10
 func (h *BadgeHandler) GetBadgeLeaderboard(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 10
+	}
+
+	// Try to get from cache
+	cacheKey := fmt.Sprintf("%s:%d", utils.CacheKeyLeaderboardBadge, limit)
+	var cachedLeaderboard []dto.LeaderboardEntry
+	if utils.GetCache().GetJSON(cacheKey, &cachedLeaderboard) {
+		utils.SendSuccess(c, http.StatusOK, "Badge leaderboard retrieved from cache", gin.H{
+			"type":    "badges",
+			"entries": cachedLeaderboard,
+			"total":   len(cachedLeaderboard),
+		})
+		return
 	}
 
 	leaderboard, err := h.badgeService.GetBadgeLeaderboard(limit)
@@ -195,6 +208,9 @@ func (h *BadgeHandler) GetBadgeLeaderboard(c *gin.Context) {
 		leaderboard[i].Rank = i + 1
 	}
 
+	// Save to cache (TTL: 5 minutes)
+	utils.GetCache().SetWithTTL(cacheKey, leaderboard, 5*time.Minute)
+
 	utils.SendSuccess(c, http.StatusOK, "Badge leaderboard retrieved successfully", gin.H{
 		"type":    "badges",
 		"entries": leaderboard,
@@ -202,13 +218,23 @@ func (h *BadgeHandler) GetBadgeLeaderboard(c *gin.Context) {
 	})
 }
 
-// GetRarityLeaderboard retrieves top users by badge rarity
-// GET /api/v1/leaderboard/rarity?limit=10
 func (h *BadgeHandler) GetRarityLeaderboard(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 10
+	}
+
+	// Try to get from cache
+	cacheKey := fmt.Sprintf("%s:%d", utils.CacheKeyLeaderboardRarity, limit)
+	var cachedLeaderboard []dto.LeaderboardEntry
+	if utils.GetCache().GetJSON(cacheKey, &cachedLeaderboard) {
+		utils.SendSuccess(c, http.StatusOK, "Rarity leaderboard retrieved from cache", gin.H{
+			"type":    "rarity",
+			"entries": cachedLeaderboard,
+			"total":   len(cachedLeaderboard),
+		})
+		return
 	}
 
 	leaderboard, err := h.badgeService.GetRarityLeaderboard(limit)
@@ -222,6 +248,9 @@ func (h *BadgeHandler) GetRarityLeaderboard(c *gin.Context) {
 		leaderboard[i].Rank = i + 1
 	}
 
+	// Save to cache
+	utils.GetCache().SetWithTTL(cacheKey, leaderboard, 5*time.Minute)
+
 	utils.SendSuccess(c, http.StatusOK, "Rarity leaderboard retrieved successfully", gin.H{
 		"type":    "rarity",
 		"entries": leaderboard,
@@ -229,13 +258,23 @@ func (h *BadgeHandler) GetRarityLeaderboard(c *gin.Context) {
 	})
 }
 
-// GetSessionLeaderboard retrieves top users by session count
-// GET /api/v1/leaderboard/sessions?limit=10
 func (h *BadgeHandler) GetSessionLeaderboard(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 10
+	}
+
+	// Try to get from cache
+	cacheKey := fmt.Sprintf("%s:%d", utils.CacheKeyLeaderboardSession, limit)
+	var cachedLeaderboard []dto.LeaderboardEntry
+	if utils.GetCache().GetJSON(cacheKey, &cachedLeaderboard) {
+		utils.SendSuccess(c, http.StatusOK, "Session leaderboard retrieved from cache", gin.H{
+			"type":    "sessions",
+			"entries": cachedLeaderboard,
+			"total":   len(cachedLeaderboard),
+		})
+		return
 	}
 
 	leaderboard, err := h.badgeService.GetSessionLeaderboard(limit)
@@ -249,6 +288,9 @@ func (h *BadgeHandler) GetSessionLeaderboard(c *gin.Context) {
 		leaderboard[i].Rank = i + 1
 	}
 
+	// Save to cache
+	utils.GetCache().SetWithTTL(cacheKey, leaderboard, 5*time.Minute)
+
 	utils.SendSuccess(c, http.StatusOK, "Session leaderboard retrieved successfully", gin.H{
 		"type":    "sessions",
 		"entries": leaderboard,
@@ -256,13 +298,23 @@ func (h *BadgeHandler) GetSessionLeaderboard(c *gin.Context) {
 	})
 }
 
-// GetRatingLeaderboard retrieves top users by average rating
-// GET /api/v1/leaderboard/rating?limit=10
 func (h *BadgeHandler) GetRatingLeaderboard(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 10
+	}
+
+	// Try to get from cache
+	cacheKey := fmt.Sprintf("%s:%d", utils.CacheKeyLeaderboardRating, limit)
+	var cachedLeaderboard []dto.LeaderboardEntry
+	if utils.GetCache().GetJSON(cacheKey, &cachedLeaderboard) {
+		utils.SendSuccess(c, http.StatusOK, "Rating leaderboard retrieved from cache", gin.H{
+			"type":    "rating",
+			"entries": cachedLeaderboard,
+			"total":   len(cachedLeaderboard),
+		})
+		return
 	}
 
 	leaderboard, err := h.badgeService.GetRatingLeaderboard(limit)
@@ -276,6 +328,9 @@ func (h *BadgeHandler) GetRatingLeaderboard(c *gin.Context) {
 		leaderboard[i].Rank = i + 1
 	}
 
+	// Save to cache
+	utils.GetCache().SetWithTTL(cacheKey, leaderboard, 5*time.Minute)
+
 	utils.SendSuccess(c, http.StatusOK, "Rating leaderboard retrieved successfully", gin.H{
 		"type":    "rating",
 		"entries": leaderboard,
@@ -283,13 +338,23 @@ func (h *BadgeHandler) GetRatingLeaderboard(c *gin.Context) {
 	})
 }
 
-// GetCreditLeaderboard retrieves top users by credits earned
-// GET /api/v1/leaderboard/credits?limit=10
 func (h *BadgeHandler) GetCreditLeaderboard(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 10
+	}
+
+	// Try to get from cache
+	cacheKey := fmt.Sprintf("%s:%d", utils.CacheKeyLeaderboardCredit, limit)
+	var cachedLeaderboard []dto.LeaderboardEntry
+	if utils.GetCache().GetJSON(cacheKey, &cachedLeaderboard) {
+		utils.SendSuccess(c, http.StatusOK, "Credit leaderboard retrieved from cache", gin.H{
+			"type":    "credits",
+			"entries": cachedLeaderboard,
+			"total":   len(cachedLeaderboard),
+		})
+		return
 	}
 
 	leaderboard, err := h.badgeService.GetCreditLeaderboard(limit)
@@ -302,6 +367,9 @@ func (h *BadgeHandler) GetCreditLeaderboard(c *gin.Context) {
 	for i := range leaderboard {
 		leaderboard[i].Rank = i + 1
 	}
+
+	// Save to cache
+	utils.GetCache().SetWithTTL(cacheKey, leaderboard, 5*time.Minute)
 
 	utils.SendSuccess(c, http.StatusOK, "Credit leaderboard retrieved successfully", gin.H{
 		"type":    "credits",

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -20,8 +21,14 @@ import (
 
 // SetupRoutes configures all application routes
 func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
+	// Global security headers
+	router.Use(middleware.SecurityHeadersMiddleware())
+
+	// Initialize brute force tracker
+	loginTracker := middleware.NewLoginBruteForceTracker(10, 5*time.Minute)
+
 	// Initialize handlers
-	authHandler := InitializeAuthHandler(db)
+	authHandler := InitializeAuthHandler(db, loginTracker)
 	adminHandler := InitializeAdminHandler(db)
 	skillHandler := InitializeSkillHandler(db)
 	userHandler := InitializeUserHandler(db)
@@ -114,7 +121,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		{
 			// Strict limits for sensitive auth operations
 			auth.POST("/register", middleware.RateLimitMiddleware(10), authHandler.Register)
-			auth.POST("/login", middleware.RateLimitMiddleware(10), authHandler.Login)
+			auth.POST("/login", middleware.RateLimitMiddleware(10), middleware.BruteForceMiddleware(loginTracker), authHandler.Login)
 			auth.GET("/verify-email", authHandler.VerifyEmail)
 			auth.POST("/forgot-password", middleware.RateLimitMiddleware(5), authHandler.ForgotPassword)
 			auth.POST("/reset-password", middleware.RateLimitMiddleware(5), authHandler.ResetPassword)

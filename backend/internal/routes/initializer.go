@@ -1,11 +1,11 @@
 package routes
 
 import (
-
 	"fmt"
 
 	"github.com/timebankingskill/backend/internal/config"
 	"github.com/timebankingskill/backend/internal/handler"
+	"github.com/timebankingskill/backend/internal/middleware"
 	"github.com/timebankingskill/backend/internal/repository"
 	"github.com/timebankingskill/backend/internal/service"
 	"github.com/timebankingskill/backend/internal/websocket"
@@ -13,11 +13,11 @@ import (
 )
 
 // InitializeAuthHandler initializes auth handler with dependencies
-func InitializeAuthHandler(db *gorm.DB) *handler.AuthHandler {
+func InitializeAuthHandler(db *gorm.DB, tracker *middleware.LoginBruteForceTracker) *handler.AuthHandler {
 	userRepo := repository.NewUserRepository(db)
 	transactionRepo := repository.NewTransactionRepository(db)
 	authService := service.NewAuthService(userRepo, transactionRepo)
-	return handler.NewAuthHandler(authService)
+	return handler.NewAuthHandler(authService, tracker)
 }
 
 // InitializeAdminHandler initializes admin handler with dependencies

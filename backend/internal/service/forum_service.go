@@ -128,8 +128,12 @@ func (s *ForumService) UpdateThread(threadID, userID uint, req *dto.UpdateThread
 		return nil, errors.New("unauthorized")
 	}
 
-	thread.Title = req.Title
-	thread.Content = req.Content
+	if req.Title != nil {
+		thread.Title = *req.Title
+	}
+	if req.Content != nil {
+		thread.Content = *req.Content
+	}
 	thread.Tags = req.Tags
 
 	if err := s.forumRepo.UpdateThread(thread); err != nil {

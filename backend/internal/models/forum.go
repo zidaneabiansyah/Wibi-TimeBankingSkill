@@ -59,6 +59,7 @@ type SuccessStory struct {
 	User        *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	Title       string    `json:"title"`
 	Description string    `gorm:"type:text" json:"description"`
+	Category    string    `gorm:"index" json:"category"`
 	FeaturedImageURL string `json:"featured_image_url"`
 	Images      JSONArray `gorm:"type:jsonb" json:"images"`
 	Tags        JSONArray `gorm:"type:jsonb" json:"tags"`
