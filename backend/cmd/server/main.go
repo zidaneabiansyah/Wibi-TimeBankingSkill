@@ -77,6 +77,7 @@ func main() {
   }
 
   // Apply middleware
+  router.Use(middleware.RequestIDMiddleware())
   router.Use(middleware.Logger())
   router.Use(middleware.Recovery())
   router.Use(middleware.CORSWithConfig(cfg))
@@ -91,6 +92,8 @@ func main() {
 
   // Add monitoring endpoints
   router.GET("/health", middleware.HealthCheckMiddleware())
+  router.GET("/ready", middleware.ReadinessCheckMiddleware())
+  router.GET("/live", middleware.LivenessCheckMiddleware())
   router.GET("/metrics", middleware.MetricsMiddleware())
 
   // Start server
