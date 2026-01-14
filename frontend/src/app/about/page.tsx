@@ -210,7 +210,7 @@ export default function AboutPage() {
                 <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-primary/5 mx-auto mb-4 flex items-center justify-center text-4xl">
                   👨‍💻
                 </div>
-                <h3 className="font-semibold text-lg">Wibi Team</h3>
+                <h3 className="font-semibold text-lg">Zidane Abiansyah</h3>
                 <p className="text-muted-foreground text-sm">Founder & Developer</p>
                 <p className="text-muted-foreground text-xs mt-3">
                   Passionate about creating tools that help students succeed together.
