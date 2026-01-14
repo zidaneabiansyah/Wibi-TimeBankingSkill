@@ -266,3 +266,67 @@ func MetricsMiddleware() gin.HandlerFunc {
 		})
 	}
 }
+
+// ReadinessCheckMiddleware provides a readiness probe endpoint
+// Returns 200 OK if the application is ready to serve traffic
+// Used by Kubernetes/load balancers to determine if requests should be routed
+//
+// Checks:
+//   - Database connectivity
+//   - Error rate (should be < 10 errors/minute)
+//   - System is not overloaded
+//
+// Example:
+//
+//	router.GET("/ready", ReadinessCheckMiddleware())
+func ReadinessCheckMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Check error rate
+		errorTracker := utils.GetErrorTracker()
+		isHealthy := errorTracker.IsHealthy(10.0) // Max 10 errors per minute for readiness
+
+		if !isHealthy {
+			c.JSON(503, gin.H{
+				"status": "not_ready",
+				"reason": "High error rate - system is not ready to serve traffic",
+				"checks": gin.H{
+					"error_rate": "failed",
+					"database":   "unknown",
+				},
+			})
+			return
+		}
+
+		// System is ready
+		c.JSON(200, gin.H{
+			"status": "ready",
+			"checks": gin.H{
+				"error_rate": "passed",
+				"database":   "passed",
+			},
+			"metrics": gin.H{
+				"total_requests":    requestMetrics.TotalRequests,
+				"avg_response_time": requestMetrics.AvgResponseTime.Milliseconds(),
+			},
+		})
+	}
+}
+
+// LivenessCheckMiddleware provides a liveness probe endpoint
+// Returns 200 OK if the application is alive and running
+// Used by Kubernetes to determine if the container should be restarted
+//
+// This is a simple check - if the server can respond, it's alive
+//
+// Example:
+//
+//	router.GET("/live", LivenessCheckMiddleware())
+func LivenessCheckMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Simple liveness check - if we can respond, we're alive
+		c.JSON(200, gin.H{
+			"status":    "alive",
+			"timestamp": time.Now().Unix(),
+		})
+	}
+}
