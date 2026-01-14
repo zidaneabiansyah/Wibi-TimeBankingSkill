@@ -14,7 +14,6 @@ import {
     LayoutDashboard,
     BookOpen,
     Calendar,
-    Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -86,12 +85,6 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
             icon: Calendar,
             label: 'My Sessions',
             href: '/dashboard/sessions',
-            group: 'main',
-        },
-        {
-            icon: Users,
-            label: 'Community',
-            href: '/community',
             group: 'main',
         },
         {

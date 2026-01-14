@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   IconClock,
@@ -12,8 +12,10 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { Header, Footer } from "@/components/layout";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function HowItWorksPage() {
+  const { isAuthenticated } = useAuthStore();
   const features = [
     {
       title: "Everyone's Time is Equal",
@@ -302,9 +304,9 @@ export default function HowItWorksPage() {
               Join our community today and start exchanging skills with other students.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/register">
+              <Link href={isAuthenticated ? "/dashboard" : "/register"}>
                 <Button size="lg" className="w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                  Sign Up Now
+                  {isAuthenticated ? "Go to Dashboard" : "Sign Up Now"}
                 </Button>
               </Link>
               <Link href="/marketplace">

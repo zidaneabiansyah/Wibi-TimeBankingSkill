@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Header, Footer } from "@/components/layout";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function AboutPage() {
+  const { isAuthenticated } = useAuthStore();
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -200,8 +202,8 @@ export default function AboutPage() {
               A passionate team of students who believe in the power of peer-to-peer learning.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center">
+          <div className="flex justify-center max-w-4xl mx-auto">
+            <Card className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors text-center max-w-xs">
               <CardContent className="pt-8">
                 <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-primary/5 mx-auto mb-4 flex items-center justify-center text-4xl">
                   👨‍💻
@@ -229,9 +231,9 @@ export default function AboutPage() {
               Start exchanging skills with other students today. It's free to join!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/register">
+              <Link href={isAuthenticated ? "/dashboard" : "/register"}>
                 <Button size="lg" className="w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                  Get Started
+                  {isAuthenticated ? "Go to Dashboard" : "Get Started"}
                 </Button>
               </Link>
               <Link href="/marketplace">

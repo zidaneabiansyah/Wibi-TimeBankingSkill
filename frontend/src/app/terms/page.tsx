@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
 import { Footer, Header } from '@/components/layout';
+import { useAuthStore } from '@/stores/auth.store';
 
 const sections = [
     { id: 'acceptance', title: '1. Acceptance of Terms' },
@@ -26,6 +27,7 @@ const sections = [
 ];
 
 export default function TermsPage() {
+    const { isAuthenticated } = useAuthStore();
     const [activeSection, setActiveSection] = useState('acceptance');
 
     useEffect(() => {
@@ -286,9 +288,9 @@ export default function TermsPage() {
                             By signing up, you agree to our Terms of Service and Privacy Policy.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Link href="/register">
+                            <Link href={isAuthenticated ? "/dashboard" : "/register"}>
                                 <Button size="lg" className="w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                                    Sign Up Now
+                                    {isAuthenticated ? "Go to Dashboard" : "Sign Up Now"}
                                 </Button>
                             </Link>
                             <Link href="/contact">

@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wibi - Time Banking Skill Platform",
+  title: "Wibi - Waktu Indonesia Berbagi Ilmu",
   description: "Share skills, earn credits, grow together. A peer-to-peer time banking platform for students to exchange knowledge and services.",
   keywords: [
     "time banking",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     canonical: "https://wibi.app",
   },
   openGraph: {
-    title: "Wibi - Time Banking Skill Platform",
+    title: "Wibi - Waktu Indonesia Berbagi Ilmu",
     description: "Share skills, earn credits, grow together.",
     type: "website",
     locale: "en_US",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wibi - Time Banking Skill Platform",
+    title: "Wibi - Waktu Indonesia Berbagi Ilmu",
     description: "Share skills, earn credits, grow together.",
     images: ["/og-image.png"],
     creator: "@wibiapp",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black",
-    title: "Wibi",
+    title: "Wibi - Waktu Indonesia Berbagi Ilmu",
   },
   formatDetection: {
     telephone: false,

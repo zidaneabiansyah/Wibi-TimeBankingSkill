@@ -9,6 +9,7 @@ import { m } from "framer-motion";
 import { Zap, BookOpen, TrendingUp, Users, Star, ArrowRight } from "lucide-react";
 import { Footer, Header } from "@/components/layout";
 import dynamic from 'next/dynamic';
+import { useAuthStore } from "@/stores/auth.store";
 
 const DotLottieReact = dynamic(
   () => import('@lottiefiles/dotlottie-react').then((mod) => mod.DotLottieReact),
@@ -35,6 +36,7 @@ const staggerContainer = {
 };
 
 export default function Home() {
+  const { isAuthenticated } = useAuthStore();
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header/Navigation */}
@@ -86,9 +88,9 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4 pt-4"
                 variants={fadeInUp}
               >
-                <Link href="/register" className="w-full sm:w-auto">
+                <Link href={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto">
                   <Button size="lg" className="w-full sm:w-auto px-8 font-semibold flex items-center gap-2">
-                    Get Started
+                    {isAuthenticated ? "Go to Dashboard" : "Get Started"}
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -357,9 +359,9 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-4 pt-4"
               variants={fadeInUp}
             >
-              <Link href="/register" className="w-full sm:w-auto">
+              <Link href={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto px-8 font-semibold flex items-center justify-center gap-2">
-                  Sign Up Free
+                  {isAuthenticated ? "Go to Dashboard" : "Sign Up Free"}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
