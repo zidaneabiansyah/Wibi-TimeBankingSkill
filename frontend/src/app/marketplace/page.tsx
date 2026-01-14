@@ -140,7 +140,7 @@ export default function MarketplacePage() {
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-yellow-500 mr-1">
                                                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                                             </svg>
-                                                            {(skill as any).max_teacher_rating?.toFixed(1) || '5.0'}
+                                                            {skill.max_teacher_rating?.toFixed(1) || '5.0'}
                                                         </div>
                                                         <span className="text-muted-foreground/30 text-[10px]">•</span>
                                                         <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{skill.category}</span>
@@ -320,7 +320,7 @@ export default function MarketplacePage() {
                                                 <div className="flex items-center gap-3 text-xs md:text-sm pt-2 border-t border-border/10">
                                                     <div className="flex items-center gap-1.5">
                                                         <Star className="h-3.5 w-3.5 fill-secondary text-secondary" />
-                                                        <span className="font-semibold">5.0</span>
+                                                        <span className="font-semibold">{skill.max_teacher_rating?.toFixed(1) || '5.0'}</span>
                                                         <span className="text-muted-foreground">
                                                             ({skill.total_teachers || 0} teachers)
                                                         </span>

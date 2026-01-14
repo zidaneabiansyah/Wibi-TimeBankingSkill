@@ -177,7 +177,11 @@ export default function SkillDetailPage() {
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p className="text-2xl font-bold">1</p>
+                                                <p className="text-2xl font-bold">
+                                                    {skill.min_rate === skill.max_rate 
+                                                        ? (skill.min_rate || 1)
+                                                        : `${skill.min_rate || 0}-${skill.max_rate || 0}`}
+                                                </p>
                                                 <p className="text-xs text-muted-foreground">Credit/hour</p>
                                             </div>
                                         </div>

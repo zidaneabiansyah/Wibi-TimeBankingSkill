@@ -91,10 +91,12 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 
 	query := r.db.Model(&models.Skill{}).
 		Select("skills.*, " +
-			"COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, " +
-			"COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate, " +
+			"(SELECT COUNT(*) FROM user_skills WHERE user_skills.skill_id = skills.id AND user_skills.is_available = true) as total_teachers, " +
+			"(SELECT COUNT(*) FROM learning_skills WHERE learning_skills.skill_id = skills.id) as total_learners, " +
+			"COALESCE(MIN(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as min_rate, " +
+			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as max_rate, " +
 			"COALESCE(SUM(user_skills.total_sessions), 0) as total_sessions, " +
-			"COALESCE(MAX(user_skills.average_rating), 0) as max_teacher_rating").
+			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.average_rating END), 0) as max_teacher_rating").
 		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
 		Group("skills.id")
 
@@ -146,10 +148,12 @@ func (r *SkillRepository) GetRecommendations(limit int) ([]models.Skill, error) 
 	// Simplified recommendation: highest rated and most popular
 	err := r.db.Model(&models.Skill{}).
 		Select("skills.*, " +
-			"COALESCE(MIN(user_skills.hourly_rate), 0) as min_rate, " +
-			"COALESCE(MAX(user_skills.hourly_rate), 0) as max_rate, " +
+			"(SELECT COUNT(*) FROM user_skills WHERE user_skills.skill_id = skills.id AND user_skills.is_available = true) as total_teachers, " +
+			"(SELECT COUNT(*) FROM learning_skills WHERE learning_skills.skill_id = skills.id) as total_learners, " +
+			"COALESCE(MIN(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as min_rate, " +
+			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as max_rate, " +
 			"COALESCE(SUM(user_skills.total_sessions), 0) as total_sessions, " +
-			"COALESCE(MAX(user_skills.average_rating), 0) as max_teacher_rating").
+			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.average_rating END), 0) as max_teacher_rating").
 		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
 		Group("skills.id").
 		Order("max_teacher_rating DESC, total_sessions DESC").
@@ -162,7 +166,17 @@ func (r *SkillRepository) GetRecommendations(limit int) ([]models.Skill, error) 
 // GetByID finds a skill by ID
 func (r *SkillRepository) GetByID(id uint) (*models.Skill, error) {
 	var skill models.Skill
-	err := r.db.First(&skill, id).Error
+	err := r.db.Model(&models.Skill{}).
+		Select("skills.*, " +
+			"(SELECT COUNT(*) FROM user_skills WHERE user_skills.skill_id = skills.id AND user_skills.is_available = true) as total_teachers, " +
+			"(SELECT COUNT(*) FROM learning_skills WHERE learning_skills.skill_id = skills.id) as total_learners, " +
+			"COALESCE(MIN(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as min_rate, " +
+			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as max_rate, " +
+			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.average_rating END), 0) as max_teacher_rating").
+		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
+		Where("skills.id = ?", id).
+		Group("skills.id").
+		First(&skill).Error
 	if err != nil {
 		return nil, err
 	}

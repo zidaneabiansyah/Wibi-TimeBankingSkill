@@ -105,6 +105,7 @@ export interface Skill {
     total_learners: number;
     min_rate: number;
     max_rate: number;
+    max_teacher_rating: number;
     created_at: string;
 }
 

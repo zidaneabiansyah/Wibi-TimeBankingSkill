@@ -29,9 +29,10 @@ type SkillResponse struct {
 	Icon           string  `json:"icon"`
 	TotalTeachers  int     `json:"total_teachers"`
 	TotalLearners  int     `json:"total_learners"`
-	MinRate        float64 `json:"min_rate"`
-	MaxRate        float64 `json:"max_rate"`
-	CreatedAt      time.Time `json:"created_at"`
+	MinRate          float64   `json:"min_rate"`
+	MaxRate          float64   `json:"max_rate"`
+	MaxTeacherRating float64   `json:"max_teacher_rating"`
+	CreatedAt        time.Time `json:"created_at"`
 }
 
 type SkillListResponse struct {
@@ -120,9 +121,10 @@ func ToSkillResponse(skill *models.Skill) SkillResponse {
 		Icon:           skill.Icon,
 		TotalTeachers:  skill.TotalTeachers,
 		TotalLearners:  skill.TotalLearners,
-		MinRate:        skill.MinRate,
-		MaxRate:        skill.MaxRate,
-		CreatedAt:      skill.CreatedAt,
+		MinRate:          skill.MinRate,
+		MaxRate:          skill.MaxRate,
+		MaxTeacherRating: skill.MaxTeacherRating,
+		CreatedAt:        skill.CreatedAt,
 	}
 }
 
