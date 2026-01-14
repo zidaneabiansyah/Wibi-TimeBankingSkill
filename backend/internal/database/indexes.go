@@ -114,7 +114,7 @@ func CreatePerformanceIndexes(db *gorm.DB) error {
 		// Availability indexes - scheduling
 		{
 			name:  "idx_availability_user_day",
-			query: "CREATE INDEX IF NOT EXISTS idx_availability_user_day ON availability(user_id, day_of_week, is_active) WHERE is_active = true",
+			query: "CREATE INDEX IF NOT EXISTS idx_availability_user_day ON availabilities(user_id, day_of_week, is_active) WHERE is_active = true",
 		},
 	}
 

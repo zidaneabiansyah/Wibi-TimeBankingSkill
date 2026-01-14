@@ -162,13 +162,13 @@ func createPerformanceIndexes(db *gorm.DB) error {
 		// Forum replies by thread
 		"CREATE INDEX IF NOT EXISTS idx_forum_replies_thread ON forum_replies(thread_id, created_at ASC)",
 		// Published stories
-		"CREATE INDEX IF NOT EXISTS idx_stories_published ON stories(is_published, created_at DESC) WHERE is_published = true",
+		"CREATE INDEX IF NOT EXISTS idx_stories_published ON success_stories(is_published, created_at DESC) WHERE is_published = true",
 		// User's stories
-		"CREATE INDEX IF NOT EXISTS idx_stories_user ON stories(user_id, created_at DESC)",
+		"CREATE INDEX IF NOT EXISTS idx_stories_user ON success_stories(user_id, created_at DESC)",
 
 		// ===== AVAILABILITY INDEXES (Scheduling) =====
 		// Teacher availability by day
-		"CREATE INDEX IF NOT EXISTS idx_availability_user_day ON availability(user_id, day_of_week, is_active) WHERE is_active = true",
+		"CREATE INDEX IF NOT EXISTS idx_availability_user_day ON availabilities(user_id, day_of_week, is_active) WHERE is_active = true",
 	}
 
 	// Execute all index creation queries
