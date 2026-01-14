@@ -46,6 +46,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	progressHandler := InitializeSkillProgressHandler(db)
 	analyticsHandler := InitializeAnalyticsHandler(db)
 	availabilityHandler := InitializeAvailabilityHandler(db)
+	favoriteHandler := InitializeFavoriteHandler(db)
+	templateHandler := InitializeTemplateHandler(db)
 
 	// WebSocket endpoints (manually handle auth since headers aren't sent in WS handshake)
 	router.GET("/api/v1/ws/whiteboard/:sessionId", func(c *gin.Context) {
@@ -387,6 +389,24 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			{
 				endorsements.POST("", endorsementHandler.CreateEndorsement)                   // POST /api/v1/endorsements
 				endorsements.DELETE("/:id", endorsementHandler.DeleteEndorsement)             // DELETE /api/v1/endorsements/:id
+			}
+
+			// Favorites routes
+			favorites := protected.Group("/favorites")
+			{
+				favorites.POST("", favoriteHandler.AddFavorite)          // POST /api/v1/favorites
+				favorites.GET("", favoriteHandler.GetFavorites)          // GET /api/v1/favorites
+				favorites.DELETE("/:id", favoriteHandler.RemoveFavorite) // DELETE /api/v1/favorites/:id
+				favorites.GET("/check/:id", favoriteHandler.CheckFavorite) // GET /api/v1/favorites/check/:id
+			}
+
+			// Templates routes
+			templates := protected.Group("/templates")
+			{
+				templates.POST("", templateHandler.CreateTemplate)       // POST /api/v1/templates
+				templates.GET("", templateHandler.GetUserTemplates)      // GET /api/v1/templates
+				templates.PUT("/:id", templateHandler.UpdateTemplate)    // PUT /api/v1/templates/:id
+				templates.DELETE("/:id", templateHandler.DeleteTemplate) // DELETE /api/v1/templates/:id
 			}
 		}
 	}

@@ -222,3 +222,17 @@ func InitializeAvailabilityHandler(db *gorm.DB) *handler.AvailabilityHandler {
 	availabilityService := service.NewAvailabilityService(availabilityRepo)
 	return handler.NewAvailabilityHandler(availabilityService)
 }
+
+// InitializeFavoriteHandler initializes favorite handler with dependencies
+func InitializeFavoriteHandler(db *gorm.DB) *handler.FavoriteHandler {
+	favoriteRepo := repository.NewFavoriteRepository(db)
+	favoriteService := service.NewFavoriteService(favoriteRepo)
+	return handler.NewFavoriteHandler(favoriteService)
+}
+
+// InitializeTemplateHandler initializes template handler with dependencies
+func InitializeTemplateHandler(db *gorm.DB) *handler.TemplateHandler {
+	templateRepo := repository.NewTemplateRepository(db)
+	templateService := service.NewTemplateService(templateRepo)
+	return handler.NewTemplateHandler(templateService)
+}

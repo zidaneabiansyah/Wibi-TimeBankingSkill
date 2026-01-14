@@ -32,6 +32,8 @@ func AutoMigrate(db *gorm.DB) error {
 		&Milestone{},
 		&Availability{},
 		&Report{},
+		&Favorite{},
+		&SessionTemplate{},
 	}
 	
 	successCount := 0
