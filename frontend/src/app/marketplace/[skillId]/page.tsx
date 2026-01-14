@@ -12,6 +12,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useSkillStore } from '@/stores/skill.store';
 import type { Skill, UserSkill } from '@/types';
 import { TeacherAvailability } from '@/components/marketplace/TeacherAvailability';
+import { FavoriteButton } from '@/components/favorite';
 
 export default function SkillDetailPage() {
     const params = useParams();
@@ -246,9 +247,12 @@ export default function SkillDetailPage() {
                                                         <CardTitle className="text-lg truncate">{teacher.user?.full_name || 'Teacher'}</CardTitle>
                                                         <CardDescription className="truncate">@{teacher.user?.username || 'unknown'}</CardDescription>
                                                     </div>
-                                                    {teacher.is_available && (
-                                                        <div className="flex h-3 w-3 rounded-full bg-green-500 ring-2 ring-green-500/20" title="Available" />
-                                                    )}
+                                                    <div className="flex items-center gap-2">
+                                                        {teacher.user && <FavoriteButton teacherId={teacher.user.id} size="sm" />}
+                                                        {teacher.is_available && (
+                                                            <div className="flex h-3 w-3 rounded-full bg-green-500 ring-2 ring-green-500/20" title="Available" />
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="space-y-4">

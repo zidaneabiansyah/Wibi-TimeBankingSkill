@@ -17,6 +17,7 @@ import {
     Download,
     Calendar,
 } from 'lucide-react';
+import { UserGrowthChart, SessionTrendChart, CreditFlowChart } from './_components/AdminCharts';
 import type { PlatformAnalytics } from '@/types';
 
 export default function AnalyticsPage() {
@@ -154,13 +155,16 @@ export default function AnalyticsPage() {
                         <CardDescription>New user registrations over time</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
-                            <div className="text-center text-muted-foreground">
-                                <BarChart3 className="mx-auto h-12 w-12 mb-2" />
-                                <p>Chart will be displayed here</p>
-                                <p className="text-sm">User growth trend visualization</p>
+                        {analytics?.user_growth ? (
+                            <UserGrowthChart data={analytics.user_growth} />
+                        ) : (
+                            <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
+                                <div className="text-center text-muted-foreground">
+                                    <BarChart3 className="mx-auto h-12 w-12 mb-2" />
+                                    <p>No growth data available</p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -171,13 +175,16 @@ export default function AnalyticsPage() {
                         <CardDescription>Sessions completed over time</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
-                            <div className="text-center text-muted-foreground">
-                                <GraduationCap className="mx-auto h-12 w-12 mb-2" />
-                                <p>Chart will be displayed here</p>
-                                <p className="text-sm">Session activity visualization</p>
+                        {analytics?.session_trend ? (
+                            <SessionTrendChart data={analytics.session_trend} />
+                        ) : (
+                            <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
+                                <div className="text-center text-muted-foreground">
+                                    <GraduationCap className="mx-auto h-12 w-12 mb-2" />
+                                    <p>No activity data available</p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -188,13 +195,16 @@ export default function AnalyticsPage() {
                         <CardDescription>Credits earned and spent over time</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
-                            <div className="text-center text-muted-foreground">
-                                <CreditCard className="mx-auto h-12 w-12 mb-2" />
-                                <p>Chart will be displayed here</p>
-                                <p className="text-sm">Credit flow visualization</p>
+                        {analytics?.credit_flow ? (
+                            <CreditFlowChart data={analytics.credit_flow.map(d => ({ ...d, value: Number(d.value) }))} />
+                        ) : (
+                            <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
+                                <div className="text-center text-muted-foreground">
+                                    <CreditCard className="mx-auto h-12 w-12 mb-2" />
+                                    <p>No flow data available</p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </CardContent>
                 </Card>
 

@@ -14,6 +14,8 @@ import {
     LayoutDashboard,
     BookOpen,
     Calendar,
+    Heart,
+    FileText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -85,6 +87,18 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
             icon: Calendar,
             label: 'My Sessions',
             href: '/dashboard/sessions',
+            group: 'main',
+        },
+        {
+            icon: Heart,
+            label: 'Favorites',
+            href: '/profile/favorites',
+            group: 'main',
+        },
+        {
+            icon: FileText,
+            label: 'Templates',
+            href: '/profile/templates',
             group: 'main',
         },
         {

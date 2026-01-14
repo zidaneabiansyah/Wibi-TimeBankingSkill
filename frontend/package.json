@@ -48,6 +48,7 @@
     "react-hook-form": "^7.67.0",
     "react-use": "^17.6.0",
     "sonner": "^2.0.7",
+    "recharts": "^3.6.0",
     "tailwind-merge": "^3.4.0",
     "three": "^0.167.1",
     "tldraw": "^4.2.1",
