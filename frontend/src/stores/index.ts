@@ -6,3 +6,5 @@ export { useTransactionStore } from './transaction.store';
 export { useReviewStore } from './review.store';
 export { useBadgeStore } from './badge.store';
 export { useAvailabilityStore } from './availability.store';
+export { useFavoriteStore } from './favorite.store';
+export { useTemplateStore } from './template.store';

@@ -713,3 +713,36 @@ export interface DrawingEventMessage {
     session_id: number;
     timestamp: number;
 }
+
+export interface Favorite {
+    id: number;
+    user_id: number;
+    teacher_id: number;
+    teacher?: UserProfile;
+    created_at: string;
+}
+
+export interface SessionTemplate {
+    id: number;
+    user_id: number;
+    user_skill_id: number;
+    title: string;
+    description: string;
+    duration: number;
+    mode: SessionMode;
+    location?: string;
+    meeting_link?: string;
+    user_skill?: UserSkill;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateTemplateRequest {
+    user_skill_id: number;
+    title: string;
+    description: string;
+    duration: number;
+    mode: SessionMode;
+    location?: string;
+    meeting_link?: string;
+}
