@@ -89,7 +89,7 @@ func (h *SkillHandler) GetSkills(c *gin.Context) {
 	// Get skills from service
 	skills, total, err := h.skillService.GetAllSkills(limit, offset, category, search, dayOfWeek, minRating, location, sortBy)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch skills", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -134,7 +134,7 @@ func (h *SkillHandler) GetSkillByID(c *gin.Context) {
 
 	skill, err := h.skillService.GetSkillByID(uint(id))
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "Skill not found", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (h *SkillHandler) GetRecommendedSkills(c *gin.Context) {
 
 	skills, err := h.skillService.GetRecommendedSkills(limit)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch recommendations", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -187,7 +187,7 @@ func (h *SkillHandler) GetSkillTeachers(c *gin.Context) {
 
 	teachers, err := h.skillService.GetSkillTeachers(uint(id))
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch teachers", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -211,7 +211,7 @@ func (h *SkillHandler) GetUserSkillByID(c *gin.Context) {
 
 	userSkill, err := h.skillService.GetUserSkillByID(uint(id))
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "User skill not found", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -236,7 +236,7 @@ func (h *SkillHandler) CreateSkill(c *gin.Context) {
 
 	err := h.skillService.CreateSkill(skill)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Failed to create skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -268,11 +268,7 @@ func (h *SkillHandler) UpdateSkill(c *gin.Context) {
 
 	err = h.skillService.UpdateSkill(uint(id), updates)
 	if err != nil {
-		if err.Error() == "skill not found" {
-			utils.SendError(c, http.StatusNotFound, "Skill not found", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to update skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -293,11 +289,7 @@ func (h *SkillHandler) DeleteSkill(c *gin.Context) {
 
 	err = h.skillService.DeleteSkill(uint(id))
 	if err != nil {
-		if err.Error() == "skill not found" {
-			utils.SendError(c, http.StatusNotFound, "Skill not found", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to delete skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -336,7 +328,7 @@ func (h *SkillHandler) AddUserSkill(c *gin.Context) {
 
 	err := h.skillService.AddUserSkill(userID.(uint), userSkill)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Failed to add skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -364,7 +356,7 @@ func (h *SkillHandler) GetUserSkills(c *gin.Context) {
 
 	userSkills, err := h.skillService.GetUserSkills(userID.(uint))
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch user skills", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -416,11 +408,7 @@ func (h *SkillHandler) UpdateUserSkill(c *gin.Context) {
 
 	err = h.skillService.UpdateUserSkill(userID.(uint), uint(skillID), updates)
 	if err != nil {
-		if err.Error() == "user skill not found" {
-			utils.SendError(c, http.StatusNotFound, "User skill not found", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to update skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -455,11 +443,7 @@ func (h *SkillHandler) DeleteUserSkill(c *gin.Context) {
 
 	err = h.skillService.DeleteUserSkill(userID.(uint), uint(skillID))
 	if err != nil {
-		if err.Error() == "user skill not found" {
-			utils.SendError(c, http.StatusNotFound, "User skill not found", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to delete skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -492,7 +476,7 @@ func (h *SkillHandler) AddLearningSkill(c *gin.Context) {
 
 	err := h.skillService.AddLearningSkill(userID.(uint), learningSkill)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Failed to add learning skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -520,7 +504,7 @@ func (h *SkillHandler) GetLearningSkills(c *gin.Context) {
 
 	learningSkills, err := h.skillService.GetLearningSkills(userID.(uint))
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch learning skills", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -551,11 +535,7 @@ func (h *SkillHandler) DeleteLearningSkill(c *gin.Context) {
 
 	err = h.skillService.DeleteLearningSkill(userID.(uint), uint(skillID))
 	if err != nil {
-		if err.Error() == "learning skill not found" {
-			utils.SendError(c, http.StatusNotFound, "Learning skill not found", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to remove learning skill", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 

@@ -14,8 +14,8 @@ type CreateThreadRequest struct {
 
 // UpdateThreadRequest is the request to update a forum thread
 type UpdateThreadRequest struct {
-	Title   *string          `json:"title"`
-	Content *string          `json:"content"`
+	Title   *string          `json:"title" binding:"omitempty,min=3,max=200"`
+	Content *string          `json:"content" binding:"omitempty,min=10"`
 	Tags    models.JSONArray `json:"tags"`
 }
 
@@ -88,10 +88,10 @@ type CreateStoryRequest struct {
 
 // UpdateStoryRequest is the request to update a success story
 type UpdateStoryRequest struct {
-	Title            *string          `json:"title"`
-	Content          *string          `json:"content"`
-	Category         *string          `json:"category"`
-	FeaturedImageURL *string          `json:"featured_image_url"`
+	Title            *string          `json:"title" binding:"omitempty,min=3,max=200"`
+	Content          *string          `json:"content" binding:"omitempty,min=10"`
+	Category         *string          `json:"category" binding:"omitempty"`
+	FeaturedImageURL *string          `json:"featured_image_url" binding:"omitempty,url"`
 	Images           models.JSONArray `json:"images"`
 	Tags             models.JSONArray `json:"tags"`
 	IsPublished      *bool            `json:"is_published"`
@@ -142,7 +142,7 @@ type CommentResponse struct {
 type CreateEndorsementRequest struct {
 	UserID  uint   `json:"user_id" binding:"required"`
 	SkillID uint   `json:"skill_id" binding:"required"`
-	Message string `json:"message"`
+	Message string `json:"message" binding:"omitempty,max=500"`
 }
 
 // EndorsementResponse is the response for an endorsement

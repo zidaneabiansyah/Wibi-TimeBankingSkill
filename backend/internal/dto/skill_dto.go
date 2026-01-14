@@ -15,10 +15,10 @@ type CreateSkillRequest struct {
 }
 
 type UpdateSkillRequest struct {
-	Name        string `json:"name"`
-	Category    string `json:"category"`
-	Description string `json:"description"`
-	Icon        string `json:"icon"`
+	Name        string `json:"name" binding:"omitempty,min=2"`
+	Category    string `json:"category" binding:"omitempty"`
+	Description string `json:"description" binding:"omitempty,max=1000"`
+	Icon        string `json:"icon" binding:"omitempty"`
 }
 
 type SkillResponse struct {
@@ -46,24 +46,24 @@ type SkillListResponse struct {
 
 type CreateUserSkillRequest struct {
 	SkillID             uint    `json:"skill_id" binding:"required"`
-	Level               string  `json:"level" binding:"required"`
-	Description         string  `json:"description"`
-	YearsOfExperience   int     `json:"years_of_experience"`
-	ProofURL            string  `json:"proof_url"`
-	ProofType           string  `json:"proof_type"`
-	HourlyRate          float64 `json:"hourly_rate"`
+	Level               string  `json:"level" binding:"required,oneof=beginner intermediate advanced expert"`
+	Description         string  `json:"description" binding:"omitempty,max=500"`
+	YearsOfExperience   int     `json:"years_of_experience" binding:"min=0,max=60"`
+	ProofURL            string  `json:"proof_url" binding:"omitempty,url"`
+	ProofType           string  `json:"proof_type" binding:"omitempty,oneof=certificate portfolio github LinkedIn other"`
+	HourlyRate          float64 `json:"hourly_rate" binding:"min=0,max=20"`
 	OnlineOnly          bool    `json:"online_only"`
 	OfflineOnly         bool    `json:"offline_only"`
 	IsAvailable         bool    `json:"is_available"`
 }
 
 type UpdateUserSkillRequest struct {
-	Level               string  `json:"level"`
-	Description         string  `json:"description"`
-	YearsOfExperience   int     `json:"years_of_experience"`
-	ProofURL            string  `json:"proof_url"`
-	ProofType           string  `json:"proof_type"`
-	HourlyRate          float64 `json:"hourly_rate"`
+	Level               string  `json:"level" binding:"omitempty,oneof=beginner intermediate advanced expert"`
+	Description         string  `json:"description" binding:"omitempty,max=500"`
+	YearsOfExperience   int     `json:"years_of_experience" binding:"min=0,max=60"`
+	ProofURL            string  `json:"proof_url" binding:"omitempty,url"`
+	ProofType           string  `json:"proof_type" binding:"omitempty,oneof=certificate portfolio github LinkedIn other"`
+	HourlyRate          float64 `json:"hourly_rate" binding:"min=0,max=20"`
 	OnlineOnly          bool    `json:"online_only"`
 	OfflineOnly         bool    `json:"offline_only"`
 	IsAvailable         *bool   `json:"is_available"`
@@ -94,9 +94,9 @@ type UserSkillResponse struct {
 
 type CreateLearningSkillRequest struct {
 	SkillID      uint   `json:"skill_id" binding:"required"`
-	DesiredLevel string `json:"desired_level"`
-	Priority     int    `json:"priority"`
-	Notes        string `json:"notes"`
+	DesiredLevel string `json:"desired_level" binding:"omitempty,oneof=beginner intermediate advanced expert"`
+	Priority     int    `json:"priority" binding:"min=1,max=5"`
+	Notes        string `json:"notes" binding:"omitempty,max=500"`
 }
 
 type LearningSkillResponse struct {

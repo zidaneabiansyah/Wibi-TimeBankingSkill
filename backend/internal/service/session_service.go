@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/repository"
+	"github.com/timebankingskill/backend/internal/utils"
 )
 
 type NotificationServiceInterface interface {
@@ -78,17 +78,17 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 	// Get the user skill to find the teacher
 	userSkill, err := s.skillRepo.GetUserSkillByID(req.UserSkillID)
 	if err != nil {
-		return nil, errors.New("skill not found")
+		return nil, utils.ErrSkillNotFound
 	}
 
 	// Validate teacher is not the student
 	if userSkill.UserID == studentID {
-		return nil, errors.New("you cannot book a session with yourself")
+		return nil, utils.ErrSelfBooking
 	}
 
 	// Check if skill is available
 	if !userSkill.IsAvailable {
-		return nil, errors.New("this skill is currently not available for booking")
+		return nil, utils.ErrSkillNotAvailable
 	}
 
 	// Check if there's already an active session
@@ -97,13 +97,13 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		return nil, err
 	}
 	if exists {
-		return nil, errors.New("you already have an active session request for this skill")
+		return nil, utils.ErrSessionConflict
 	}
 
 	// Get student to check credit balance
 	student, err := s.userRepo.GetByID(studentID)
 	if err != nil {
-		return nil, errors.New("student not found")
+		return nil, utils.ErrUserNotFound
 	}
 
 	// Calculate credit amount
@@ -115,19 +115,19 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 	// Check if student has enough credits (Available = Total - Held)
 	availableBalance := student.CreditBalance - student.CreditHeld
 	if availableBalance < creditAmount {
-		return nil, errors.New("insufficient available credit balance")
+		return nil, utils.ErrInsufficientCredits
 	}
 
 	// Validate scheduled time is in the future
 	if req.ScheduledAt.Before(time.Now()) {
-		return nil, errors.New("scheduled time must be in the future")
+		return nil, utils.ErrInvalidSchedule
 	}
 
 	// CREDIT HOLD PHASE: Mark credits as held immediately upon booking
 	// These credits are now in escrow and cannot be used for other sessions
 	student.CreditHeld += creditAmount
 	if err := s.userRepo.Update(student); err != nil {
-		return nil, errors.New("failed to hold credits")
+		return nil, utils.ErrInternal
 	}
 
 	// Create session
@@ -233,17 +233,17 @@ func (s *SessionService) ApproveSession(teacherID, sessionID uint, req *dto.Appr
 	// Fetch session from database
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Authorization check: verify teacher owns this session
 	if session.TeacherID != teacherID {
-		return nil, errors.New("you are not authorized to approve this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Status check: only pending sessions can be approved
 	if session.Status != models.StatusPending {
-		return nil, errors.New("session is not pending approval")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	// Update session status to approved
@@ -265,7 +265,7 @@ func (s *SessionService) ApproveSession(teacherID, sessionID uint, req *dto.Appr
 
 	// Persist session changes
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to approve session")
+		return nil, utils.ErrInternal
 	}
 
 	// Send notification to student about session approval
@@ -312,29 +312,29 @@ func (s *SessionService) ApproveSession(teacherID, sessionID uint, req *dto.Appr
 func (s *SessionService) RejectSession(teacherID, sessionID uint, req *dto.RejectSessionRequest) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify teacher owns this session
 	if session.TeacherID != teacherID {
-		return nil, errors.New("you are not authorized to reject this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Verify session is pending
 	if session.Status != models.StatusPending {
-		return nil, errors.New("session is not pending")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	// If credits were held, release them back to student's available balance
 	if session.CreditHeld && !session.CreditReleased {
 		student, err := s.userRepo.GetByID(session.StudentID)
 		if err != nil {
-			return nil, errors.New("student not found")
+			return nil, utils.ErrUserNotFound
 		}
 
 		student.CreditHeld -= session.CreditAmount
 		if err := s.userRepo.Update(student); err != nil {
-			return nil, errors.New("failed to release held credits")
+			return nil, utils.ErrInternal
 		}
 
 		// Record refund transaction (release held credits)
@@ -358,7 +358,7 @@ func (s *SessionService) RejectSession(teacherID, sessionID uint, req *dto.Rejec
 	session.CancelledBy = &teacherID
 
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to reject session")
+		return nil, utils.ErrInternal
 	}
 
 	return dto.MapSessionToResponse(session), nil
@@ -389,19 +389,19 @@ func (s *SessionService) RejectSession(teacherID, sessionID uint, req *dto.Rejec
 func (s *SessionService) CheckIn(userID, sessionID uint) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify user is part of this session
 	isTeacher := session.TeacherID == userID
 	isStudent := session.StudentID == userID
 	if !isTeacher && !isStudent {
-		return nil, errors.New("you are not part of this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Verify session can be checked in
 	if !session.CanCheckIn() {
-		return nil, errors.New("session cannot be checked in yet")
+		return nil, utils.ErrCantCheckInYet
 	}
 
 	now := time.Now()
@@ -409,14 +409,14 @@ func (s *SessionService) CheckIn(userID, sessionID uint) (*dto.SessionResponse, 
 	// Mark user's check-in
 	if isTeacher {
 		if session.TeacherCheckedIn {
-			return nil, errors.New("you have already checked in")
+			return nil, utils.ErrAlreadyCheckedIn
 		}
 		session.TeacherCheckedIn = true
 		session.TeacherCheckedInAt = &now
 	}
 	if isStudent {
 		if session.StudentCheckedIn {
-			return nil, errors.New("you have already checked in")
+			return nil, utils.ErrAlreadyCheckedIn
 		}
 		session.StudentCheckedIn = true
 		session.StudentCheckedInAt = &now
@@ -483,7 +483,7 @@ func (s *SessionService) CheckIn(userID, sessionID uint) (*dto.SessionResponse, 
 	}
 
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to check in")
+		return nil, utils.ErrInternal
 	}
 
 	// Reload session with relationships
@@ -518,17 +518,17 @@ func (s *SessionService) CheckIn(userID, sessionID uint) (*dto.SessionResponse, 
 func (s *SessionService) StartSession(userID, sessionID uint) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify user is part of this session
 	if session.TeacherID != userID && session.StudentID != userID {
-		return nil, errors.New("you are not part of this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Verify session can be started
 	if !session.CanBeStarted() {
-		return nil, errors.New("session cannot be started")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	// Update session
@@ -537,7 +537,7 @@ func (s *SessionService) StartSession(userID, sessionID uint) (*dto.SessionRespo
 	session.StartedAt = &now
 
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to start session")
+		return nil, utils.ErrInternal
 	}
 
 	return dto.MapSessionToResponse(session), nil
@@ -570,19 +570,19 @@ func (s *SessionService) StartSession(userID, sessionID uint) (*dto.SessionRespo
 func (s *SessionService) ConfirmCompletion(userID, sessionID uint, req *dto.CompleteSessionRequest) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify user is part of this session
 	isTeacher := session.TeacherID == userID
 	isStudent := session.StudentID == userID
 	if !isTeacher && !isStudent {
-		return nil, errors.New("you are not part of this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Verify session is in progress
 	if session.Status != models.StatusInProgress {
-		return nil, errors.New("session is not in progress")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	// Update confirmation
@@ -609,7 +609,7 @@ func (s *SessionService) ConfirmCompletion(userID, sessionID uint, req *dto.Comp
 		}
 	} else {
 		if err := s.sessionRepo.Update(session); err != nil {
-			return nil, errors.New("failed to confirm completion")
+			return nil, utils.ErrInternal
 		}
 	}
 
@@ -632,12 +632,12 @@ func (s *SessionService) completeSession(session *models.Session) error {
 	// Fetch parties from database
 	teacher, err := s.userRepo.GetByID(session.TeacherID)
 	if err != nil {
-		return errors.New("teacher not found")
+		return utils.ErrUserNotFound
 	}
 
 	student, err := s.userRepo.GetByID(session.StudentID)
 	if err != nil {
-		return errors.New("student not found")
+		return utils.ErrUserNotFound
 	}
 
 	// RELEASE AND TRANSFER:
@@ -649,10 +649,10 @@ func (s *SessionService) completeSession(session *models.Session) error {
 	teacher.CreditBalance += session.CreditAmount
 
 	if err := s.userRepo.Update(student); err != nil {
-		return errors.New("failed to update student balance")
+		return utils.ErrInternal
 	}
 	if err := s.userRepo.Update(teacher); err != nil {
-		return errors.New("failed to transfer credits to teacher")
+		return utils.ErrInternal
 	}
 
 	// Record the earned transaction for teacher
@@ -721,29 +721,29 @@ func (s *SessionService) completeSession(session *models.Session) error {
 func (s *SessionService) CancelSession(userID, sessionID uint, req *dto.CancelSessionRequest) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify user is part of this session
 	if session.TeacherID != userID && session.StudentID != userID {
-		return nil, errors.New("you are not part of this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Can only cancel pending or approved sessions
 	if session.Status != models.StatusPending && session.Status != models.StatusApproved {
-		return nil, errors.New("session cannot be cancelled")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	// If credits were held, release them back to student's available balance
 	if session.CreditHeld && !session.CreditReleased {
 		student, err := s.userRepo.GetByID(session.StudentID)
 		if err != nil {
-			return nil, errors.New("student not found")
+			return nil, utils.ErrUserNotFound
 		}
 
 		student.CreditHeld -= session.CreditAmount
 		if err := s.userRepo.Update(student); err != nil {
-			return nil, errors.New("failed to release held credits")
+			return nil, utils.ErrInternal
 		}
 
 		// Record refund transaction (release held credits)
@@ -765,7 +765,7 @@ func (s *SessionService) CancelSession(userID, sessionID uint, req *dto.CancelSe
 	session.CancellationReason = req.Reason
 
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to cancel session")
+		return nil, utils.ErrInternal
 	}
 
 	return dto.MapSessionToResponse(session), nil
@@ -775,12 +775,12 @@ func (s *SessionService) CancelSession(userID, sessionID uint, req *dto.CancelSe
 func (s *SessionService) GetSession(userID, sessionID uint) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify user is part of this session
 	if session.TeacherID != userID && session.StudentID != userID {
-		return nil, errors.New("you are not authorized to view this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	return dto.MapSessionToResponse(session), nil
@@ -853,17 +853,17 @@ func (s *SessionService) GetPendingRequests(teacherID uint) ([]dto.SessionRespon
 func (s *SessionService) DisputeSession(userID, sessionID uint, req *dto.CancelSessionRequest) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	// Verify user is part of this session
 	if session.TeacherID != userID && session.StudentID != userID {
-		return nil, errors.New("you are not part of this session")
+		return nil, utils.ErrNotAuthorized
 	}
 
 	// Can only dispute if in progress, pending confirmation, or approved
 	if session.Status == models.StatusCompleted || session.Status == models.StatusCancelled || session.Status == models.StatusRejected {
-		return nil, errors.New("session is already finalized and cannot be disputed")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	// Update session
@@ -871,7 +871,7 @@ func (s *SessionService) DisputeSession(userID, sessionID uint, req *dto.CancelS
 	session.Notes += "\n\n[DISPUTE] By User ID " + strconv.Itoa(int(userID)) + ": " + req.Reason
 
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to dispute session")
+		return nil, utils.ErrInternal
 	}
 
 	return dto.MapSessionToResponse(session), nil
@@ -882,11 +882,11 @@ func (s *SessionService) DisputeSession(userID, sessionID uint, req *dto.CancelS
 func (s *SessionService) AdminResolveSession(sessionID uint, resolution string) (*dto.SessionResponse, error) {
 	session, err := s.sessionRepo.GetByID(sessionID)
 	if err != nil {
-		return nil, errors.New("session not found")
+		return nil, utils.ErrSessionNotFound
 	}
 
 	if session.Status != models.StatusDisputed {
-		return nil, errors.New("only disputed sessions can be resolved by admin")
+		return nil, utils.ErrInvalidStatus
 	}
 
 	if resolution == "refund" {
@@ -916,11 +916,11 @@ func (s *SessionService) AdminResolveSession(sessionID uint, resolution string) 
 		}
 		// completeSession already sets StatusCompleted
 	} else {
-		return nil, errors.New("invalid resolution (must be 'refund' or 'payout')")
+		return nil, utils.ErrInvalidResolution
 	}
 
 	if err := s.sessionRepo.Update(session); err != nil {
-		return nil, errors.New("failed to resolve dispute")
+		return nil, utils.ErrInternal
 	}
 
 	return dto.MapSessionToResponse(session), nil

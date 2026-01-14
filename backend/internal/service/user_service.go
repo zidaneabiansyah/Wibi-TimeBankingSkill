@@ -64,7 +64,7 @@ func (s *UserService) UpdateUserProfile(userID uint, updates *models.User) error
 	existingUser, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("user not found")
+			return utils.ErrUserNotFound
 		}
 		return err
 	}
@@ -77,7 +77,7 @@ func (s *UserService) UpdateUserProfile(userID uint, updates *models.User) error
 		// Check if username is already taken by another user
 		existingByUsername, _ := s.userRepo.GetByUsername(updates.Username)
 		if existingByUsername != nil && existingByUsername.ID != userID {
-			return errors.New("username already taken")
+			return utils.ErrUsernameTaken
 		}
 		existingUser.Username = updates.Username
 	}
@@ -133,25 +133,25 @@ func (s *UserService) ChangePassword(userID uint, oldPassword, newPassword strin
 	user, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("user not found")
+			return utils.ErrUserNotFound
 		}
 		return err
 	}
 
 	// Verify old password
 	if !utils.CheckPasswordHash(oldPassword, user.Password) {
-		return errors.New("invalid current password")
+		return utils.ErrInvalidPassword
 	}
 
 	// Validate new password
 	if len(newPassword) < 6 {
-		return errors.New("new password must be at least 6 characters")
+		return utils.ErrPasswordTooShort
 	}
 
 	// Hash new password
 	hashedPassword, err := utils.HashPassword(newPassword)
 	if err != nil {
-		return errors.New("failed to hash new password")
+		return utils.ErrInternal
 	}
 
 	// Update password

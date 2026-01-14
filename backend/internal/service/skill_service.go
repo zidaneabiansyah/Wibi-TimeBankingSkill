@@ -5,6 +5,7 @@ import (
 
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/repository"
+	"github.com/timebankingskill/backend/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -44,17 +45,17 @@ func (s *SkillService) GetSkillTeachers(skillID uint) ([]models.UserSkill, error
 	if repo, ok := s.skillRepo.(*repository.SkillRepository); ok {
 		return repo.GetTeachersBySkillID(skillID)
 	}
-	return nil, errors.New("repository does not support this operation")
+	return nil, utils.ErrInternal
 }
 
 // CreateSkill creates a new skill (admin only)
 func (s *SkillService) CreateSkill(skill *models.Skill) error {
 	// Validate required fields
 	if skill.Name == "" {
-		return errors.New("skill name is required")
+		return utils.ErrSkillNameRequired
 	}
 	if skill.Category == "" {
-		return errors.New("skill category is required")
+		return utils.ErrSkillCategoryRequired
 	}
 
 	return s.skillRepo.Create(skill)
@@ -66,7 +67,7 @@ func (s *SkillService) UpdateSkill(id uint, updates *models.Skill) error {
 	existingSkill, err := s.skillRepo.GetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("skill not found")
+			return utils.ErrSkillNotFound
 		}
 		return err
 	}
@@ -94,7 +95,7 @@ func (s *SkillService) DeleteSkill(id uint) error {
 	_, err := s.skillRepo.GetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("skill not found")
+			return utils.ErrSkillNotFound
 		}
 		return err
 	}
@@ -132,7 +133,7 @@ func (s *SkillService) AddUserSkill(userID uint, userSkill *models.UserSkill) er
 	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("user not found")
+			return utils.ErrUserNotFound
 		}
 		return err
 	}
@@ -141,7 +142,7 @@ func (s *SkillService) AddUserSkill(userID uint, userSkill *models.UserSkill) er
 	_, err = s.skillRepo.GetByID(userSkill.SkillID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("skill not found")
+			return utils.ErrSkillNotFound
 		}
 		return err
 	}
@@ -151,16 +152,16 @@ func (s *SkillService) AddUserSkill(userID uint, userSkill *models.UserSkill) er
 
 	// Validate required fields
 	if userSkill.Level == "" {
-		return errors.New("skill level is required")
+		return utils.ErrSkillLevelRequired
 	}
 	if userSkill.HourlyRate < 0 {
-		return errors.New("hourly rate must be non-negative")
+		return utils.ErrInvalidHourlyRate
 	}
 
 	// Check if user already has this skill
 	existing, _ := s.skillRepo.GetUserSkill(userID, userSkill.SkillID)
 	if existing != nil {
-		return errors.New("user already has this skill")
+		return utils.ErrDuplicateSkill
 	}
 
 	return s.skillRepo.CreateUserSkill(userSkill)
@@ -177,7 +178,7 @@ func (s *SkillService) GetUserSkillByID(id uint) (*models.UserSkill, error) {
 	if repo, ok := s.skillRepo.(*repository.SkillRepository); ok {
 		return repo.GetUserSkillByID(id)
 	}
-	return nil, errors.New("repository does not support this operation")
+	return nil, utils.ErrInternal
 }
 
 // UpdateUserSkill updates user's skill details
@@ -186,7 +187,7 @@ func (s *SkillService) UpdateUserSkill(userID uint, skillID uint, updates *model
 	existing, err := s.skillRepo.GetUserSkill(userID, skillID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("user skill not found")
+			return utils.ErrUserSkillNotFound
 		}
 		return err
 	}
@@ -223,7 +224,7 @@ func (s *SkillService) DeleteUserSkill(userID uint, skillID uint) error {
 	_, err := s.skillRepo.GetUserSkill(userID, skillID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("user skill not found")
+			return utils.ErrUserSkillNotFound
 		}
 		return err
 	}
@@ -239,7 +240,7 @@ func (s *SkillService) AddLearningSkill(userID uint, learningSkill *models.Learn
 	_, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("user not found")
+			return utils.ErrUserNotFound
 		}
 		return err
 	}
@@ -248,7 +249,7 @@ func (s *SkillService) AddLearningSkill(userID uint, learningSkill *models.Learn
 	_, err = s.skillRepo.GetByID(learningSkill.SkillID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("skill not found")
+			return utils.ErrSkillNotFound
 		}
 		return err
 	}
@@ -259,7 +260,7 @@ func (s *SkillService) AddLearningSkill(userID uint, learningSkill *models.Learn
 	// Check if user already wants to learn this skill
 	existing, _ := s.skillRepo.GetLearningSkill(userID, learningSkill.SkillID)
 	if existing != nil {
-		return errors.New("skill already in learning wishlist")
+		return utils.ErrDuplicateWishlist
 	}
 
 	return s.skillRepo.CreateLearningSkill(learningSkill)
@@ -276,7 +277,7 @@ func (s *SkillService) DeleteLearningSkill(userID uint, skillID uint) error {
 	_, err := s.skillRepo.GetLearningSkill(userID, skillID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("learning skill not found")
+			return utils.ErrSkillNotFound
 		}
 		return err
 	}

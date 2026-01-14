@@ -45,7 +45,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
   // Call service
   response, err := h.authService.Register(&req)
   if err != nil {
-    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 
@@ -76,7 +76,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
     if h.tracker != nil {
       h.tracker.RecordFailure(c.ClientIP())
     }
-    utils.SendError(c, http.StatusUnauthorized, err.Error(), nil)
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 
@@ -105,7 +105,7 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
   // Call service
   profile, err := h.authService.GetProfile(userID.(uint))
   if err != nil {
-    utils.SendError(c, http.StatusNotFound, "User not found", err)
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 
@@ -143,7 +143,7 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 
   err := h.authService.VerifyEmail(token)
   if err != nil {
-    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 
@@ -168,7 +168,7 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 
   err := h.authService.ForgotPassword(&req)
   if err != nil {
-    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 
@@ -193,7 +193,7 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 
   err := h.authService.ResetPassword(&req)
   if err != nil {
-    utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 

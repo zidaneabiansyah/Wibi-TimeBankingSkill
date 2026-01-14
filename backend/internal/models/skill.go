@@ -43,7 +43,7 @@ type Skill struct {
 	// Stats
 	TotalTeachers int `gorm:"default:0" json:"total_teachers"`
 	TotalLearners int `gorm:"default:0" json:"total_learners"`
-	TotalSessions int `gorm:"-" json:"total_sessions"`
+	TotalSessions int `gorm:"default:0" json:"total_sessions"`
 	
 	MinRate          float64 `json:"min_rate"`
 	MaxRate          float64 `json:"max_rate"`
@@ -100,6 +100,14 @@ func (UserSkill) TableName() string {
 	return "user_skills"
 }
 
+func (us *UserSkill) AfterSave(tx *gorm.DB) (err error) {
+	return updateSkillStats(tx, us.SkillID)
+}
+
+func (us *UserSkill) AfterDelete(tx *gorm.DB) (err error) {
+	return updateSkillStats(tx, us.SkillID)
+}
+
 // LearningSkill represents skills that a user wants to learn (wishlist)
 type LearningSkill struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
@@ -122,4 +130,49 @@ type LearningSkill struct {
 // TableName specifies the table name for LearningSkill model
 func (LearningSkill) TableName() string {
 	return "learning_skills"
+}
+
+func (ls *LearningSkill) AfterSave(tx *gorm.DB) (err error) {
+	return updateSkillLearnerStats(tx, ls.SkillID)
+}
+
+func (ls *LearningSkill) AfterDelete(tx *gorm.DB) (err error) {
+	return updateSkillLearnerStats(tx, ls.SkillID)
+}
+
+func updateSkillStats(tx *gorm.DB, skillID uint) error {
+	var stats struct {
+		TotalTeachers    int
+		MinRate          float64
+		MaxRate          float64
+		MaxTeacherRating float64
+		TotalSessions    int
+	}
+
+	err := tx.Model(&UserSkill{}).
+		Where("skill_id = ? AND is_available = ?", skillID, true).
+		Select("COUNT(*) as total_teachers, COALESCE(MIN(hourly_rate), 0) as min_rate, COALESCE(MAX(hourly_rate), 0) as max_rate, COALESCE(MAX(average_rating), 0) as max_teacher_rating, COALESCE(SUM(total_sessions), 0) as total_sessions").
+		Scan(&stats).Error
+	
+	if err != nil {
+		return err
+	}
+
+	return tx.Model(&Skill{}).Where("id = ?", skillID).Updates(map[string]interface{}{
+		"total_teachers":     stats.TotalTeachers,
+		"min_rate":           stats.MinRate,
+		"max_rate":           stats.MaxRate,
+		"max_teacher_rating": stats.MaxTeacherRating,
+		"total_sessions":     stats.TotalSessions,
+	}).Error
+}
+
+func updateSkillLearnerStats(tx *gorm.DB, skillID uint) error {
+	var totalLearners int64
+	err := tx.Model(&LearningSkill{}).Where("skill_id = ?", skillID).Count(&totalLearners).Error
+	if err != nil {
+		return err
+	}
+
+	return tx.Model(&Skill{}).Where("id = ?", skillID).Update("total_learners", totalLearners).Error
 }

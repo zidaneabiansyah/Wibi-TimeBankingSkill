@@ -8,8 +8,8 @@ import (
 type CreateReviewRequest struct {
 	SessionID           uint    `json:"session_id" binding:"required"`
 	Rating              int     `json:"rating" binding:"required,min=1,max=5"`
-	Comment             string  `json:"comment"`
-	Tags                string  `json:"tags"` // Comma-separated or JSON
+	Comment             string  `json:"comment" binding:"omitempty,max=1000"`
+	Tags                string  `json:"tags" binding:"omitempty,max=200"` // Comma-separated or JSON
 	CommunicationRating *int    `json:"communication_rating" binding:"omitempty,min=1,max=5"`
 	PunctualityRating   *int    `json:"punctuality_rating" binding:"omitempty,min=1,max=5"`
 	KnowledgeRating     *int    `json:"knowledge_rating" binding:"omitempty,min=1,max=5"`
@@ -18,8 +18,8 @@ type CreateReviewRequest struct {
 // UpdateReviewRequest represents a request to update a review
 type UpdateReviewRequest struct {
 	Rating              int     `json:"rating" binding:"omitempty,min=1,max=5"`
-	Comment             string  `json:"comment"`
-	Tags                string  `json:"tags"`
+	Comment             string  `json:"comment" binding:"omitempty,max=1000"`
+	Tags                string  `json:"tags" binding:"omitempty,max=200"`
 	CommunicationRating *int    `json:"communication_rating" binding:"omitempty,min=1,max=5"`
 	PunctualityRating   *int    `json:"punctuality_rating" binding:"omitempty,min=1,max=5"`
 	KnowledgeRating     *int    `json:"knowledge_rating" binding:"omitempty,min=1,max=5"`

@@ -57,7 +57,7 @@ func (h *SessionHandler) BookSession(c *gin.Context) {
 
 	session, err := h.sessionService.BookSession(userID, &req)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (h *SessionHandler) GetSession(c *gin.Context) {
 
 	session, err := h.sessionService.GetSession(userID, uint(sessionID))
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "Session not found", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (h *SessionHandler) GetUserSessions(c *gin.Context) {
 
 	sessions, err := h.sessionService.GetUserSessions(userID, role, status, limit, offset)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch sessions", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -144,7 +144,7 @@ func (h *SessionHandler) GetUpcomingSessions(c *gin.Context) {
 
 	sessions, err := h.sessionService.GetUpcomingSessions(userID, limit)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch upcoming sessions", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -162,7 +162,7 @@ func (h *SessionHandler) GetPendingRequests(c *gin.Context) {
 
 	sessions, err := h.sessionService.GetPendingRequests(userID)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch pending requests", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -192,7 +192,7 @@ func (h *SessionHandler) ApproveSession(c *gin.Context) {
 
 	session, err := h.sessionService.ApproveSession(userID, uint(sessionID), &req)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -222,7 +222,7 @@ func (h *SessionHandler) RejectSession(c *gin.Context) {
 
 	session, err := h.sessionService.RejectSession(userID, uint(sessionID), &req)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -247,7 +247,7 @@ func (h *SessionHandler) CheckIn(c *gin.Context) {
 
 	session, err := h.sessionService.CheckIn(userID, uint(sessionID))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -271,7 +271,7 @@ func (h *SessionHandler) StartSession(c *gin.Context) {
 
 	session, err := h.sessionService.StartSession(userID, uint(sessionID))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -300,7 +300,7 @@ func (h *SessionHandler) ConfirmCompletion(c *gin.Context) {
 
 	session, err := h.sessionService.ConfirmCompletion(userID, uint(sessionID), &req)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -330,7 +330,7 @@ func (h *SessionHandler) CancelSession(c *gin.Context) {
 
 	session, err := h.sessionService.CancelSession(userID, uint(sessionID), &req)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -359,7 +359,7 @@ func (h *SessionHandler) DisputeSession(c *gin.Context) {
 
 	session, err := h.sessionService.DisputeSession(userID, uint(sessionID), &req)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -382,7 +382,7 @@ func (h *SessionHandler) AdminResolveSession(c *gin.Context) {
 
 	session, err := h.sessionService.AdminResolveSession(uint(sessionID), resolution)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, err.Error(), nil)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 

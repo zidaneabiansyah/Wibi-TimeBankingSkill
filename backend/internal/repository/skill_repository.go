@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/timebankingskill/backend/internal/models"
+	"github.com/timebankingskill/backend/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -89,16 +90,7 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 	var skills []models.Skill
 	var total int64
 
-	query := r.db.Model(&models.Skill{}).
-		Select("skills.*, " +
-			"(SELECT COUNT(*) FROM user_skills WHERE user_skills.skill_id = skills.id AND user_skills.is_available = true) as total_teachers, " +
-			"(SELECT COUNT(*) FROM learning_skills WHERE learning_skills.skill_id = skills.id) as total_learners, " +
-			"COALESCE(MIN(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as min_rate, " +
-			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as max_rate, " +
-			"COALESCE(SUM(user_skills.total_sessions), 0) as total_sessions, " +
-			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.average_rating END), 0) as max_teacher_rating").
-		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
-		Group("skills.id")
+	query := r.db.Model(&models.Skill{})
 
 	// Apply filters
 	if category != "" {
@@ -107,31 +99,44 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 	if search != "" {
 		query = query.Where("skills.name ILIKE ? OR skills.description ILIKE ?", "%"+search+"%", "%"+search+"%")
 	}
-	if dayOfWeek != nil {
-		query = query.Joins("JOIN availabilities ON availabilities.user_id = user_skills.user_id").
-			Where("availabilities.day_of_week = ? AND availabilities.is_active = ?", *dayOfWeek, true)
-	}
-	if location != "" {
-		query = query.Joins("JOIN users ON users.id = user_skills.user_id").
-			Where("users.location ILIKE ?", "%"+location+"%")
-	}
-	if minRating != nil {
-		query = query.Having("MAX(user_skills.average_rating) >= ?", *minRating)
+	
+	// Join conditions for filtering
+	needJoin := dayOfWeek != nil || location != "" || minRating != nil
+	if needJoin {
+		query = query.Joins("JOIN user_skills ON user_skills.skill_id = skills.id AND user_skills.is_available = true")
+		
+		if dayOfWeek != nil {
+			query = query.Joins("JOIN availabilities ON availabilities.user_id = user_skills.user_id").
+				Where("availabilities.day_of_week = ? AND availabilities.is_active = ?", *dayOfWeek, true)
+		}
+		if location != "" {
+			query = query.Joins("JOIN users ON users.id = user_skills.user_id").
+				Where("users.location ILIKE ?", "%"+location+"%")
+		}
+		if minRating != nil {
+			query = query.Where("user_skills.average_rating >= ?", *minRating)
+		}
+		
+		query = query.Group("skills.id")
 	}
 
 	// Count total
-	countQuery := r.db.Table("(?) as grouped", query).Count(&total)
-	if countQuery.Error != nil {
-		return nil, 0, countQuery.Error
+	countQuery := query
+	if needJoin {
+		countQuery = r.db.Table("(?) as grouped", query)
+	}
+	
+	if err := countQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
 
 	// Apply sorting
 	sortOrder := "skills.created_at DESC"
 	switch sortBy {
 	case "popular":
-		sortOrder = "total_sessions DESC"
+		sortOrder = "skills.total_sessions DESC"
 	case "rating":
-		sortOrder = "max_teacher_rating DESC"
+		sortOrder = "skills.max_teacher_rating DESC"
 	case "newest":
 		sortOrder = "skills.created_at DESC"
 	}
@@ -144,18 +149,7 @@ func (r *SkillRepository) GetAllWithFilters(limit, offset int, category, search 
 // GetRecommendations returns recommended skills
 func (r *SkillRepository) GetRecommendations(limit int) ([]models.Skill, error) {
 	var skills []models.Skill
-
-	// Simplified recommendation: highest rated and most popular
 	err := r.db.Model(&models.Skill{}).
-		Select("skills.*, " +
-			"(SELECT COUNT(*) FROM user_skills WHERE user_skills.skill_id = skills.id AND user_skills.is_available = true) as total_teachers, " +
-			"(SELECT COUNT(*) FROM learning_skills WHERE learning_skills.skill_id = skills.id) as total_learners, " +
-			"COALESCE(MIN(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as min_rate, " +
-			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as max_rate, " +
-			"COALESCE(SUM(user_skills.total_sessions), 0) as total_sessions, " +
-			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.average_rating END), 0) as max_teacher_rating").
-		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
-		Group("skills.id").
 		Order("max_teacher_rating DESC, total_sessions DESC").
 		Limit(limit).
 		Find(&skills).Error
@@ -166,18 +160,11 @@ func (r *SkillRepository) GetRecommendations(limit int) ([]models.Skill, error) 
 // GetByID finds a skill by ID
 func (r *SkillRepository) GetByID(id uint) (*models.Skill, error) {
 	var skill models.Skill
-	err := r.db.Model(&models.Skill{}).
-		Select("skills.*, " +
-			"(SELECT COUNT(*) FROM user_skills WHERE user_skills.skill_id = skills.id AND user_skills.is_available = true) as total_teachers, " +
-			"(SELECT COUNT(*) FROM learning_skills WHERE learning_skills.skill_id = skills.id) as total_learners, " +
-			"COALESCE(MIN(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as min_rate, " +
-			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.hourly_rate END), 0) as max_rate, " +
-			"COALESCE(MAX(CASE WHEN user_skills.is_available = true THEN user_skills.average_rating END), 0) as max_teacher_rating").
-		Joins("LEFT JOIN user_skills ON user_skills.skill_id = skills.id").
-		Where("skills.id = ?", id).
-		Group("skills.id").
-		First(&skill).Error
+	err := r.db.First(&skill, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utils.ErrSkillNotFound
+		}
 		return nil, err
 	}
 	return &skill, nil

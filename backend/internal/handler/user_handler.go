@@ -32,7 +32,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 
 	user, err := h.userService.GetUserProfile(userID.(uint))
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "User not found", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -70,11 +70,7 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 
 	err := h.userService.UpdateUserProfile(userID.(uint), updates)
 	if err != nil {
-		if err.Error() == "username already taken" {
-			utils.SendError(c, http.StatusConflict, "Username already taken", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to update profile", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -101,11 +97,7 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 
 	err := h.userService.ChangePassword(userID.(uint), req.CurrentPassword, req.NewPassword)
 	if err != nil {
-		if err.Error() == "invalid current password" {
-			utils.SendError(c, http.StatusBadRequest, "Invalid current password", err)
-			return
-		}
-		utils.SendError(c, http.StatusBadRequest, "Failed to change password", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -123,7 +115,7 @@ func (h *UserHandler) GetStats(c *gin.Context) {
 
 	stats, err := h.userService.GetUserStats(userID.(uint))
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to get user stats", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -158,7 +150,7 @@ func (h *UserHandler) UpdateAvatar(c *gin.Context) {
 
 	err := h.userService.UpdateAvatar(userID.(uint), req.Avatar)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Failed to update avatar", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -176,7 +168,7 @@ func (h *UserHandler) GetPublicProfile(c *gin.Context) {
 
 	profile, err := h.userService.GetPublicProfile(uint(id))
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "User not found", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
@@ -208,13 +200,13 @@ func (h *UserHandler) GetPublicProfileByUsername(c *gin.Context) {
 
 	user, err := h.userService.GetUserByUsername(username)
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "User not found", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 
 	profile, err := h.userService.GetPublicProfile(user.ID)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to get profile", err)
+		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
 

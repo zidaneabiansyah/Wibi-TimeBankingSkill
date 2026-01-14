@@ -10,7 +10,7 @@ import (
 	"github.com/timebankingskill/backend/internal/models"
 )
 
-// Mock repositories (simplified)
+// Mock repositories 
 type MockUserRepo struct{ mock.Mock }
 func (m *MockUserRepo) Create(u *models.User) error { return nil }
 func (m *MockUserRepo) GetByID(id uint) (*models.User, error) {
@@ -28,6 +28,10 @@ func (m *MockUserRepo) Update(u *models.User) error {
 func (m *MockUserRepo) Delete(id uint) error { return nil }
 func (m *MockUserRepo) GetByUsername(e string) (*models.User, error) { return nil, nil }
 func (m *MockUserRepo) List(l, o int) ([]models.User, int64, error) { return nil, 0, nil }
+func (m *MockUserRepo) GetAllWithFilters(l, o int, s, st string) ([]models.User, int64, error) { return nil, 0, nil }
+func (m *MockUserRepo) CountTotal() (int64, error) { return 0, nil }
+func (m *MockUserRepo) CountActive() (int64, error) { return 0, nil }
+func (m *MockUserRepo) GetGrowthTrend(d int) ([]models.DailyStat, error) { return nil, nil }
 
 type MockSessionRepo struct{ mock.Mock }
 func (m *MockSessionRepo) Create(s *models.Session) error { 
@@ -61,6 +65,12 @@ func (m *MockSessionRepo) ExistsActiveSession(teacherID, studentID, userSkillID 
 	args := m.Called(teacherID, studentID, userSkillID)
 	return args.Bool(0), args.Error(1)
 }
+func (m *MockSessionRepo) GetSessionsStartingSoon(min int) ([]models.Session, error) { return nil, nil }
+func (m *MockSessionRepo) CountTotal() (int64, error) { return 0, nil }
+func (m *MockSessionRepo) CountCompleted() (int64, error) { return 0, nil }
+func (m *MockSessionRepo) GetAllWithFilters(l, o int, s, st string) ([]models.Session, int64, error) { return nil, 0, nil }
+func (m *MockSessionRepo) GetSessionTrend(d int) ([]models.DailyStat, error) { return nil, nil }
+func (m *MockSessionRepo) GetAverageDuration() (float64, error) { return 0, nil }
 
 type MockTransactionRepo struct{ mock.Mock }
 func (m *MockTransactionRepo) Create(t *models.Transaction) error { 
@@ -72,6 +82,10 @@ func (m *MockTransactionRepo) GetUserTransactions(u uint, t string, l, o int) ([
 func (m *MockTransactionRepo) GetUserBalance(u uint) (float64, error) { return 0, nil }
 func (m *MockTransactionRepo) FindByUserID(u uint, l int) ([]models.Transaction, error) { return nil, nil }
 func (m *MockTransactionRepo) GetUserTransactionHistory(u uint, l, o int) ([]models.Transaction, int64, error) { return nil, 0, nil }
+func (m *MockTransactionRepo) CountTotal() (int64, error) { return 0, nil }
+func (m *MockTransactionRepo) GetTotalVolume() (float64, error) { return 0, nil }
+func (m *MockTransactionRepo) GetAllWithFilters(l, o int, t, s string) ([]models.Transaction, int64, error) { return nil, 0, nil }
+func (m *MockTransactionRepo) GetCreditVolumeTrend(d int) ([]models.DailyStat, error) { return nil, nil }
 
 type MockSkillRepo struct{ mock.Mock }
 func (m *MockSkillRepo) GetByID(id uint) (*models.Skill, error) { 
@@ -103,6 +117,7 @@ func (m *MockSkillRepo) GetLearningSkill(u, s uint) (*models.LearningSkill, erro
 func (m *MockSkillRepo) CreateLearningSkill(l *models.LearningSkill) error { return nil }
 func (m *MockSkillRepo) DeleteLearningSkill(u, s uint) error { return nil }
 func (m *MockSkillRepo) GetTeachersBySkillID(s uint) ([]models.UserSkill, error) { return nil, nil }
+func (m *MockSkillRepo) CountTotal() (int64, error) { return 0, nil }
 
 type MockNotificationService struct{ mock.Mock }
 func (m *MockNotificationService) CreateNotification(userID uint, nType models.NotificationType, title, message string, data map[string]interface{}) (*models.Notification, error) {
@@ -195,4 +210,90 @@ func TestBookSessionEscrow(t *testing.T) {
 	sessionRepo.AssertExpectations(t)
 	skillRepo.AssertExpectations(t)
 	notifService.AssertExpectations(t)
+}
+
+func TestCompleteSessionEscrow(t *testing.T) {
+	userRepo := new(MockUserRepo)
+	sessionRepo := new(MockSessionRepo)
+	txRepo := new(MockTransactionRepo)
+	skillRepo := new(MockSkillRepo)
+	notifService := new(MockNotificationService)
+	badgeService := new(MockBadgeService)
+
+	s := NewSessionService(
+		sessionRepo,
+		userRepo,
+		txRepo,
+		skillRepo,
+		badgeService,
+		notifService,
+	)
+
+	student := &models.User{
+		ID:             1,
+		FullName:       "Student",
+		CreditBalance: 7.0,
+		CreditHeld:    3.0,
+	}
+
+	teacher := &models.User{
+		ID:             2,
+		FullName:       "Teacher",
+		CreditBalance: 5.0,
+	}
+
+	session := &models.Session{
+		ID:             1,
+		TeacherID:      2,
+		StudentID:      1,
+		Status:         models.StatusInProgress,
+		CreditAmount:   3.0,
+		CreditHeld:     true,
+		Duration:       1.5,
+		CreditReleased: false,
+		TeacherConfirmed: true, // Pre-confirm as teacher so it completes with student
+	}
+
+	// Mock expectations in calling order
+	sessionRepo.On("GetByID", uint(1)).Return(session, nil)
+	userRepo.On("GetByID", uint(1)).Return(student, nil)
+	userRepo.On("GetByID", uint(2)).Return(teacher, nil)
+	
+	// Update student (release held credits)
+	userRepo.On("Update", mock.MatchedBy(func(u *models.User) bool {
+		return u.ID == 1 && u.CreditHeld == 0.0
+	})).Return(nil)
+	
+	// Update teacher (add credits)
+	userRepo.On("Update", mock.MatchedBy(func(u *models.User) bool {
+		return u.ID == 2 && u.CreditBalance == 8.0
+	})).Return(nil)
+	
+	// Update session status
+	sessionRepo.On("Update", mock.MatchedBy(func(sess *models.Session) bool {
+		return sess.Status == models.StatusCompleted && sess.CreditReleased == true
+	})).Return(nil)
+	
+	// Create payout transaction
+	txRepo.On("Create", mock.Anything).Return(nil)
+	
+	// Post-completion logic
+	skillRepo.On("GetUserSkillByID", mock.Anything).Return(&models.UserSkill{SkillID: 1}, nil)
+	skillRepo.On("GetByID", uint(1)).Return(&models.Skill{Name: "Math"}, nil)
+	notifService.On("CreateNotification", uint(2), models.NotificationTypeSession, mock.Anything, mock.Anything, mock.Anything).Return(&models.Notification{}, nil)
+	notifService.On("CreateNotification", uint(1), models.NotificationTypeSession, mock.Anything, mock.Anything, mock.Anything).Return(&models.Notification{}, nil)
+
+	// Execute
+	resp, err := s.ConfirmCompletion(1, 1, &dto.CompleteSessionRequest{}) // sessionID=1, studentID=1
+
+	// Assertions
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 0.0, student.CreditHeld)
+	assert.Equal(t, 8.0, teacher.CreditBalance)
+	assert.Equal(t, models.StatusCompleted, session.Status)
+	
+	userRepo.AssertExpectations(t)
+	sessionRepo.AssertExpectations(t)
+	txRepo.AssertExpectations(t)
 }

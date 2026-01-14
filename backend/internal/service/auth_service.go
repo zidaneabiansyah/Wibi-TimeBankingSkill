@@ -74,7 +74,7 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     return nil, err
   }
   if exists {
-    return nil, errors.New("email already registered")
+    return nil, utils.ErrEmailAlreadyRegistered
   }
 
   // Check if username already exists
@@ -83,13 +83,13 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     return nil, err
   }
   if exists {
-    return nil, errors.New("username already taken")
+    return nil, utils.ErrUsernameTaken
   }
 
   // Hash password
   hashedPassword, err := utils.HashPassword(req.Password)
   if err != nil {
-    return nil, errors.New("failed to hash password")
+    return nil, utils.ErrInternal
   }
 
   // Create user (not verified yet)
@@ -110,8 +110,7 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 
   // Save user
   if err := s.userRepo.Create(user); err != nil {
-    // Log detailed error for debugging
-    return nil, errors.New("failed to create user: " + err.Error())
+    return nil, utils.ErrInternal
   }
 
   // Create initial transaction for welcome bonus
@@ -184,28 +183,28 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
   // Find user by email
   user, err := s.userRepo.GetByEmail(strings.ToLower(req.Email))
   if err != nil {
-    return nil, errors.New("invalid email or password")
+    return nil, utils.ErrInvalidCredentials
   }
 
   // Check if user is active
   if !user.IsActive {
-    return nil, errors.New("account is deactivated")
+    return nil, utils.ErrAccountDeactivated
   }
 
   // Check if email is verified
   if !user.IsVerified {
-    return nil, errors.New("please verify your email before logging in")
+    return nil, utils.ErrEmailNotVerified
   }
 
   // Verify password
   if err := utils.CheckPassword(user.Password, req.Password); err != nil {
-    return nil, errors.New("invalid email or password")
+    return nil, utils.ErrInvalidCredentials
   }
 
   // Generate JWT token
   token, err := utils.GenerateToken(user.ID, user.Email)
   if err != nil {
-    return nil, errors.New("failed to generate token")
+    return nil, utils.ErrInternal
   }
 
   // Prepare response
@@ -231,19 +230,19 @@ func (s *AuthService) GetProfile(userID uint) (*dto.UserProfile, error) {
 // validateRegistration validates registration request
 func (s *AuthService) validateRegistration(req *dto.RegisterRequest) error {
   if len(req.Password) < 6 {
-    return errors.New("password must be at least 6 characters")
+    return utils.ErrPasswordTooShort
   }
   if len(req.Username) < 3 {
-    return errors.New("username must be at least 3 characters")
+    return utils.ErrUsernameTooShort
   }
   if req.FullName == "" {
-    return errors.New("full name is required")
+    return utils.ErrFullNameRequired
   }
   if req.School == "" {
-    return errors.New("school is required")
+    return utils.ErrSchoolRequired
   }
   if req.Grade == "" {
-    return errors.New("grade is required")
+    return utils.ErrGradeRequired
   }
   return nil
 }
@@ -292,13 +291,13 @@ func (s *AuthService) VerifyEmail(token string) error {
   // Find user by email
   user, err := s.userRepo.GetByEmail(email)
   if err != nil {
-    return errors.New("user not found")
+    return utils.ErrUserNotFound
   }
 
   // Update is_verified flag
   user.IsVerified = true
   if err := s.userRepo.Update(user); err != nil {
-    return errors.New("failed to verify email: " + err.Error())
+    return utils.ErrInternal
   }
 
   return nil
@@ -335,7 +334,7 @@ func (s *AuthService) ForgotPassword(req *dto.ForgotPasswordRequest) error {
   // Generate reset token (1 hour expiry)
   resetToken, err := utils.GeneratePasswordResetToken(user.Email)
   if err != nil {
-    return errors.New("failed to generate reset token: " + err.Error())
+    return utils.ErrInternal
   }
 
   // Build reset link
@@ -374,12 +373,12 @@ func (s *AuthService) ForgotPassword(req *dto.ForgotPasswordRequest) error {
 func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
   // Validate passwords match
   if req.NewPassword != req.ConfirmPassword {
-    return errors.New("passwords do not match")
+    return utils.ErrPasswordsDoNotMatch
   }
 
   // Validate password strength
   if len(req.NewPassword) < 6 {
-    return errors.New("password must be at least 6 characters")
+    return utils.ErrPasswordTooShort
   }
 
   // Verify token and extract email
@@ -391,19 +390,19 @@ func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
   // Find user by email
   user, err := s.userRepo.GetByEmail(email)
   if err != nil {
-    return errors.New("user not found")
+    return utils.ErrUserNotFound
   }
 
   // Hash new password
   hashedPassword, err := utils.HashPassword(req.NewPassword)
   if err != nil {
-    return errors.New("failed to hash password")
+    return utils.ErrInternal
   }
 
   // Update password
   user.Password = hashedPassword
   if err := s.userRepo.Update(user); err != nil {
-    return errors.New("failed to update password: " + err.Error())
+    return utils.ErrInternal
   }
 
   return nil

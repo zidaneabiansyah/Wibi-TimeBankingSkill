@@ -9,20 +9,20 @@ import (
 // User Profile DTOs
 
 type UpdateProfileRequest struct {
-	FullName    string `json:"full_name"`
-	Username    string `json:"username"`
-	School      string `json:"school"`
-	Grade       string `json:"grade"`
-	Major       string `json:"major"`
-	Bio         string `json:"bio"`
-	PhoneNumber string `json:"phone_number"`
-	Location    string `json:"location"`
-	Avatar      string `json:"avatar"`
+	FullName    string `json:"full_name" binding:"omitempty,min=2,max=100"`
+	Username    string `json:"username" binding:"omitempty,min=3,max=30"`
+	School      string `json:"school" binding:"omitempty"`
+	Grade       string `json:"grade" binding:"omitempty"`
+	Major       string `json:"major" binding:"omitempty"`
+	Bio         string `json:"bio" binding:"omitempty,max=1000"`
+	PhoneNumber string `json:"phone_number" binding:"omitempty,max=20"`
+	Location    string `json:"location" binding:"omitempty,max=200"`
+	Avatar      string `json:"avatar" binding:"omitempty,url"`
 }
 
 type ChangePasswordRequest struct {
 	CurrentPassword string `json:"current_password" binding:"required"`
-	NewPassword     string `json:"new_password" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required,min=6"`
 }
 
 type UpdateAvatarRequest struct {
