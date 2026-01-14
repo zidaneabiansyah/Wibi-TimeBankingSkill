@@ -34,7 +34,12 @@ func (h *FavoriteHandler) AddFavorite(c *gin.Context) {
 		return
 	}
 
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
+
 	if userID == input.TeacherID {
 		utils.SendError(c, http.StatusBadRequest, "You cannot favorite yourself", nil)
 		return
@@ -63,7 +68,11 @@ func (h *FavoriteHandler) RemoveFavorite(c *gin.Context) {
 		return
 	}
 
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 
 	if err := h.service.RemoveFavorite(userID, uint(teacherID)); err != nil {
 		utils.SendError(c, http.StatusInternalServerError, "Failed to remove favorite", err)
@@ -82,7 +91,11 @@ func (h *FavoriteHandler) RemoveFavorite(c *gin.Context) {
 // @Success 200 {object} utils.SuccessResponse
 // @Router /api/v1/favorites [get]
 func (h *FavoriteHandler) GetFavorites(c *gin.Context) {
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
@@ -115,7 +128,11 @@ func (h *FavoriteHandler) CheckFavorite(c *gin.Context) {
 		return
 	}
 
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 
 	isFavorite, err := h.service.IsFavorite(userID, uint(teacherID))
 	if err != nil {

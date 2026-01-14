@@ -32,7 +32,11 @@ func (h *TemplateHandler) CreateTemplate(c *gin.Context) {
 		return
 	}
 
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 	template.UserID = userID
 
 	if err := h.service.CreateTemplate(&template); err != nil {
@@ -50,7 +54,11 @@ func (h *TemplateHandler) CreateTemplate(c *gin.Context) {
 // @Success 200 {object} utils.SuccessResponse
 // @Router /api/v1/templates [get]
 func (h *TemplateHandler) GetUserTemplates(c *gin.Context) {
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 
 	templates, err := h.service.GetUserTemplates(userID)
 	if err != nil {
@@ -79,7 +87,11 @@ func (h *TemplateHandler) UpdateTemplate(c *gin.Context) {
 		return
 	}
 
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 	
 	existing, err := h.service.GetTemplateByID(uint(id))
 	if err != nil {
@@ -113,7 +125,11 @@ func (h *TemplateHandler) UpdateTemplate(c *gin.Context) {
 func (h *TemplateHandler) DeleteTemplate(c *gin.Context) {
 	idStr := c.Param("id")
 	id, _ := strconv.ParseUint(idStr, 10, 32)
-	userID := c.MustGet("userID").(uint)
+	userID, ok := getUserID(c)
+	if !ok {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
 
 	if err := h.service.DeleteTemplate(uint(id), userID); err != nil {
 		utils.SendError(c, http.StatusInternalServerError, "Failed to delete template", err)
