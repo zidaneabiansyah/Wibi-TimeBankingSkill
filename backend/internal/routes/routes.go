@@ -99,6 +99,48 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		whiteboardws.HandleWhiteboardConnection(conn, sessionID, user)
 	})
 
+	// WebRTC Signaling endpoint
+	router.GET("/api/v1/ws/video/:sessionId", func(c *gin.Context) {
+		tokenString := c.Query("token")
+		if tokenString == "" {
+			c.JSON(401, gin.H{"error": "Unauthorized: Missing token"})
+			return
+		}
+
+		claims, err := utils.ValidateToken(tokenString)
+		if err != nil {
+			c.JSON(401, gin.H{"error": "Unauthorized: Invalid token"})
+			return
+		}
+
+		userID := uint(claims.UserID)
+		userName := "User " + fmt.Sprint(userID) 
+		sessionIDStr := c.Param("sessionId")
+
+		var sessionID uint
+		if _, err := fmt.Sscanf(sessionIDStr, "%d", &sessionID); err != nil {
+			c.JSON(400, gin.H{"error": "Invalid session ID"})
+			return
+		}
+
+		upgrader := websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool { return true },
+		}
+
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			log.Printf("WebRTC WebSocket upgrade error: %v", err)
+			return
+		}
+
+		user := &models.User{
+			ID:       userID,
+			FullName: userName,
+		}
+
+		whiteboardws.HandleWebRTCConnection(conn, sessionID, user)
+	})
+
 	// Notification WebSocket endpoint
 	notificationWS := InitializeNotificationWebSocket(db)
 	router.GET("/api/v1/ws/notifications", notificationWS.HandleConnection)

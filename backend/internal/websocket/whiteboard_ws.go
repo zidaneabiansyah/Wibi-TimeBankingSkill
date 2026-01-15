@@ -11,12 +11,11 @@ import (
 
 // WhiteboardMessage represents a drawing event message
 type WhiteboardMessage struct {
-	Type      string      `json:"type"`      // "draw", "erase", "clear", "cursor", "user_join", "user_leave"
+	Type      string      `json:"type"`      // "update", "clear", "cursor", "user_join", "user_leave"
 	SessionID uint        `json:"session_id"`
 	UserID    uint        `json:"user_id"`
 	UserName  string      `json:"user_name"`
-	Stroke    interface{} `json:"stroke,omitempty"`
-	Cursor    *CursorPos  `json:"cursor,omitempty"`
+	Data      interface{} `json:"data,omitempty"` // Flexible payload for tldraw records/deltas
 	Timestamp int64       `json:"timestamp"`
 }
 

@@ -11,8 +11,6 @@ type StartVideoSessionRequest struct {
 type StartVideoSessionResponse struct {
 	ID       uint   `json:"id"`
 	RoomID   string `json:"room_id"`
-	JitsiURL string `json:"jitsi_url"`
-	Token    string `json:"token"`
 	Status   string `json:"status"`
 }
 
@@ -46,18 +44,4 @@ type VideoHistoryResponse struct {
 	Duration         int        `json:"duration"`
 	ParticipantCount int        `json:"participant_count"`
 	Status           string     `json:"status"`
-}
-
-// JitsiTokenRequest is the request to generate Jitsi token
-type JitsiTokenRequest struct {
-	RoomID   string `json:"room_id" binding:"required"`
-	UserID   uint   `json:"user_id" binding:"required"`
-	UserName string `json:"user_name" binding:"required"`
-}
-
-// JitsiTokenResponse is the response with Jitsi token
-type JitsiTokenResponse struct {
-	Token    string `json:"token"`
-	RoomID   string `json:"room_id"`
-	JitsiURL string `json:"jitsi_url"`
 }

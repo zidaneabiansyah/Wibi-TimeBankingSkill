@@ -155,13 +155,7 @@ func InitializeVideoSessionHandler(db *gorm.DB, cfg *config.Config) *handler.Vid
 	notificationRepo := repository.NewNotificationRepository(db)
 	notificationService := service.NewNotificationService(notificationRepo, userRepo)
 	
-	jitsiService, err := service.NewJitsiService(cfg)
-	if err != nil {
-		// Log error but continue (service will likely fail on token generation if key was essential but malformed)
-		fmt.Printf("⚠️ WARNING: Failed to initialize Jitsi service: %v\n", err)
-	}
-
-	videoSessionService := service.NewVideoSessionServiceWithNotification(videoSessionRepo, sessionRepo, userRepo, notificationService, jitsiService, cfg)
+	videoSessionService := service.NewVideoSessionServiceWithNotification(videoSessionRepo, sessionRepo, userRepo, notificationService, nil, cfg)
 	return handler.NewVideoSessionHandler(videoSessionService)
 }
 
