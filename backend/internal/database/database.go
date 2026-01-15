@@ -43,8 +43,8 @@ func Connect(cfg *config.DatabaseConfig) error {
 	// Optimize connection pool for production
 	// MaxIdleConns: connections to keep alive
 	// MaxOpenConns: maximum number of open connections
-	sqlDB.SetMaxIdleConns(25)
-	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(2)
+	sqlDB.SetMaxOpenConns(4)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	sqlDB.SetConnMaxIdleTime(10 * time.Minute)
 

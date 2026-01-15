@@ -14,9 +14,36 @@ import { toast } from 'sonner';
 import type { Session } from '@/types';
 import { CheckCircle2, Clock, Users, Video, MapPin, ExternalLink, Timer, AlertCircle, PenTool, LayoutDashboard } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TldrawWhiteboard } from '@/components/whiteboard';
-import { ClassroomLayout } from '@/components/classroom/ClassroomLayout';
+import dynamic from 'next/dynamic';
 import { sessionService } from '@/lib/services/session.service';
+
+const ClassroomLayout = dynamic(
+    () => import('@/components/classroom/ClassroomLayout').then(mod => mod.ClassroomLayout),
+    {
+        ssr: false, loading: () => (
+            <div className="h-[600px] flex items-center justify-center animate-pulse bg-muted rounded-lg border border-dashed">
+                <div className="text-center">
+                    <Video className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p>Loading Classroom View...</p>
+                </div>
+            </div>
+        )
+    }
+);
+
+const TldrawWhiteboard = dynamic(
+    () => import('@/components/whiteboard').then(mod => mod.TldrawWhiteboard),
+    {
+        ssr: false, loading: () => (
+            <div className="h-[600px] flex items-center justify-center animate-pulse bg-muted rounded-lg border border-dashed">
+                <div className="text-center">
+                    <PenTool className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p>Loading Whiteboard...</p>
+                </div>
+            </div>
+        )
+    }
+);
 
 /**
  * SessionTimer - Real-time timer component for active sessions
@@ -29,7 +56,7 @@ function SessionTimer({ startedAt, duration }: { startedAt: string | null; durat
         if (!startedAt) return;
 
         const startTime = new Date(startedAt).getTime();
-        
+
         const updateElapsed = () => {
             const now = Date.now();
             const elapsedMs = now - startTime;
@@ -142,13 +169,13 @@ function SessionRoomContent() {
 
     const [isCheckingIn, setIsCheckingIn] = useState(false);
     const [isCompleting, setIsCompleting] = useState(false);
-    
+
 
     // Fetch session on mount and poll for updates
     useEffect(() => {
         if (sessionId) {
             fetchSession(sessionId);
-            
+
             // Poll every 5 seconds to get partner's check-in status
             const interval = setInterval(() => {
                 fetchSession(sessionId);
@@ -228,12 +255,11 @@ function SessionRoomContent() {
                                 {currentSession.user_skill?.skill?.name || 'Session'} • {currentSession.duration} hour{currentSession.duration !== 1 ? 's' : ''}
                             </p>
                         </div>
-                        <Badge 
-                            className={`${
-                                sessionInProgress ? 'bg-green-500' : 
-                                currentSession.status === 'approved' ? 'bg-blue-500' : 
-                                currentSession.status === 'completed' ? 'bg-gray-500' : 'bg-yellow-500'
-                            } text-white capitalize`}
+                        <Badge
+                            className={`${sessionInProgress ? 'bg-green-500' :
+                                    currentSession.status === 'approved' ? 'bg-blue-500' :
+                                        currentSession.status === 'completed' ? 'bg-gray-500' : 'bg-yellow-500'
+                                } text-white capitalize`}
                         >
                             {currentSession.status.replace('_', ' ')}
                         </Badge>
@@ -278,8 +304,8 @@ function SessionRoomContent() {
                                             </CardContent>
                                             <CardFooter>
                                                 {!myCheckIn ? (
-                                                    <Button 
-                                                        className="w-full" 
+                                                    <Button
+                                                        className="w-full"
                                                         onClick={handleCheckIn}
                                                         disabled={isCheckingIn}
                                                     >
@@ -297,9 +323,9 @@ function SessionRoomContent() {
 
                                     {/* Timer (during session) */}
                                     {sessionInProgress && (
-                                        <SessionTimer 
-                                            startedAt={currentSession.started_at} 
-                                            duration={currentSession.duration} 
+                                        <SessionTimer
+                                            startedAt={currentSession.started_at}
+                                            duration={currentSession.duration}
                                         />
                                     )}
 
@@ -337,8 +363,8 @@ function SessionRoomContent() {
                                             </CardContent>
                                             <CardFooter>
                                                 {!myConfirmation ? (
-                                                    <Button 
-                                                        className="w-full" 
+                                                    <Button
+                                                        className="w-full"
                                                         onClick={handleComplete}
                                                         disabled={isCompleting}
                                                     >
@@ -394,7 +420,7 @@ function SessionRoomContent() {
                                                 <div>
                                                     <p className="font-medium">Scheduled Time</p>
                                                     <p className="text-sm text-muted-foreground">
-                                                        {currentSession.scheduled_at 
+                                                        {currentSession.scheduled_at
                                                             ? new Date(currentSession.scheduled_at).toLocaleString()
                                                             : 'Not scheduled'}
                                                     </p>
@@ -413,9 +439,9 @@ function SessionRoomContent() {
                                                     <Video className="h-5 w-5 text-muted-foreground" />
                                                     <div className="flex-1">
                                                         <p className="font-medium">Meeting Link</p>
-                                                        <a 
-                                                            href={currentSession.meeting_link} 
-                                                            target="_blank" 
+                                                        <a
+                                                            href={currentSession.meeting_link}
+                                                            target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="text-sm text-primary hover:underline flex items-center gap-1"
                                                         >
@@ -488,9 +514,9 @@ function SessionRoomContent() {
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-0 h-[600px] border rounded-lg overflow-hidden bg-white">
-                                    <TldrawWhiteboard 
-                                        sessionId={sessionId} 
-                                        isReadOnly={currentSession.status === 'completed'} 
+                                    <TldrawWhiteboard
+                                        sessionId={sessionId}
+                                        isReadOnly={currentSession.status === 'completed'}
                                     />
                                 </CardContent>
                             </Card>

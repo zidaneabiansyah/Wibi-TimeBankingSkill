@@ -123,24 +123,70 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
         if (!enabled || !sessionId) return;
 
         const startLocalStream = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                setLocalStream(stream);
+            let stream: MediaStream | null = null;
+            
+            // Try different media constraints if the full set fails
+            const constraintOptions = [
+                { video: true, audio: true },
+                { video: true, audio: false },
+                { video: false, audio: true }
+            ];
 
-                // Setup WebSocket
+            for (const constraints of constraintOptions) {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    if (stream) {
+                        setLocalStream(stream);
+                        setError(null);
+                        break;
+                    }
+                } catch (err: any) {
+                    console.warn(`Constraint ${JSON.stringify(constraints)} failed:`, err.name);
+                    // If NotReadableError, the device is definitely locked or busy
+                    if (err.name === 'NotReadableError') {
+                        setError('Camera or Microphone is already in use by another application.');
+                    }
+                }
+            }
+
+            if (!stream) {
+                setError('Failed to access camera/microphone. You can still use the whiteboard.');
+            }
+
+            try {
+                // Setup WebSocket even if media fails (so they can at least use signaling/whiteboard)
                 const token = localStorage.getItem('token');
-                const wsUrl = `${process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws') || 'ws://localhost:8080/api/v1'}/ws/video/${sessionId}?token=${token}`;
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+                const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+                
+                // Construct base WS URL correctly
+                const baseWsUrl = apiUrl.startsWith('http') 
+                    ? apiUrl.replace(/^http/, 'ws') 
+                    : `${wsProtocol}://${window.location.host}${apiUrl}`;
+
+                const wsUrl = `${baseWsUrl}/ws/video/${sessionId}?token=${encodeURIComponent(token || '')}`;
+                
+                console.log('🔌 Connecting to Signaling WS:', wsUrl.split('?')[0]);
                 const ws = new WebSocket(wsUrl);
 
                 ws.onopen = () => {
+                    console.log('Signaling WebSocket connected');
                     setIsJoined(true);
+                };
+
+                ws.onerror = (ev) => {
+                    console.error('Signaling WebSocket error:', ev);
+                };
+
+                ws.onclose = (ev) => {
+                    console.log('Signaling WebSocket closed:', ev.code, ev.reason);
+                    setIsJoined(false);
                 };
 
                 ws.onmessage = async (event) => {
                     const msg: WebRTCMessage = JSON.parse(event.data);
                     switch (msg.type) {
                         case 'user_join':
-                            // When someone joins, the one already there initiates the call
                             initiateCall();
                             break;
                         case 'offer':
@@ -163,9 +209,9 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                 };
 
                 wsRef.current = ws;
-            } catch (err) {
-                console.error('WebRTC start error:', err);
-                setError('Failed to access camera/microphone');
+            } catch (wsErr) {
+                console.error('WebSocket setup error:', wsErr);
+                setError('Failed to connect to video server');
             }
         };
 

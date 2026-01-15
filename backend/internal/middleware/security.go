@@ -22,7 +22,8 @@ func SecurityHeadersMiddleware() gin.HandlerFunc {
 
 		// Content Security Policy
 		// Restrict where resources can be loaded from
-		c.Header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:8080 ws://localhost:8080;")
+		csp := "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src *;"
+		c.Header("Content-Security-Policy", csp)
 
 		// Referrer Policy
 		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")

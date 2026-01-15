@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: "Wibi",
     images: [
       {
-        url: "/og-image.png",
+        url: "/wibi.png",
         width: 1200,
         height: 630,
         alt: "Wibi Platform",
@@ -55,15 +55,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Wibi - Waktu Indonesia Berbagi Ilmu",
     description: "Share skills, earn credits, grow together.",
-    images: ["/og-image.png"],
+    images: ["/wibi.png"],
     creator: "@wibiapp",
   },
   icons: {
-    icon: [
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-      { url: "/wibi.png", sizes: "any" },
-    ],
+    icon: "/wibi.png",
     shortcut: "/wibi.png",
     apple: "/wibi.png",
   },

@@ -52,63 +52,17 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	// WebSocket endpoints (manually handle auth since headers aren't sent in WS handshake)
 	router.GET("/api/v1/ws/whiteboard/:sessionId", func(c *gin.Context) {
 		tokenString := c.Query("token")
+		log.Printf("[WS Debug] Whiteboard connection attempt for session %s mit token: %v", c.Param("sessionId"), tokenString != "")
+		
 		if tokenString == "" {
+			log.Printf("❌ Whiteboard WS: Missing token")
 			c.JSON(401, gin.H{"error": "Unauthorized: Missing token"})
 			return
 		}
 
 		claims, err := utils.ValidateToken(tokenString)
 		if err != nil {
-			c.JSON(401, gin.H{"error": "Unauthorized: Invalid token"})
-			return
-		}
-
-		userID := uint(claims.UserID)
-		// Assuming claims has Username or we can fetch it, for now using "User" prefix if not in claims
-		userName := "User " + fmt.Sprint(userID) 
-
-		sessionIDStr := c.Param("sessionId")
-
-		// Parse session ID
-		var sessionID uint
-		if _, err := fmt.Sscanf(sessionIDStr, "%d", &sessionID); err != nil {
-			c.JSON(400, gin.H{"error": "Invalid session ID"})
-			return
-		}
-
-		// Upgrade connection
-		upgrader := websocket.Upgrader{
-			CheckOrigin: func(r *http.Request) bool {
-				return true // Allow all origins for now
-			},
-		}
-
-		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			log.Printf("WebSocket upgrade error: %v", err)
-			return
-		}
-
-		// Create mock user object
-		user := &models.User{
-			ID:       userID,
-			FullName: userName,
-		}
-
-		// Handle whiteboard connection
-		whiteboardws.HandleWhiteboardConnection(conn, sessionID, user)
-	})
-
-	// WebRTC Signaling endpoint
-	router.GET("/api/v1/ws/video/:sessionId", func(c *gin.Context) {
-		tokenString := c.Query("token")
-		if tokenString == "" {
-			c.JSON(401, gin.H{"error": "Unauthorized: Missing token"})
-			return
-		}
-
-		claims, err := utils.ValidateToken(tokenString)
-		if err != nil {
+			log.Printf("❌ Whiteboard WS: Token validation failed: %v", err)
 			c.JSON(401, gin.H{"error": "Unauthorized: Invalid token"})
 			return
 		}
@@ -119,6 +73,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 
 		var sessionID uint
 		if _, err := fmt.Sscanf(sessionIDStr, "%d", &sessionID); err != nil {
+			log.Printf("❌ Whiteboard WS: Invalid session ID: %s", sessionIDStr)
 			c.JSON(400, gin.H{"error": "Invalid session ID"})
 			return
 		}
@@ -129,7 +84,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 
 		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
-			log.Printf("WebRTC WebSocket upgrade error: %v", err)
+			log.Printf("❌ Whiteboard WS: Upgrade error: %v", err)
 			return
 		}
 
@@ -138,6 +93,55 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			FullName: userName,
 		}
 
+		log.Printf("✅ Whiteboard WS: User %d connected to session %d", userID, sessionID)
+		whiteboardws.HandleWhiteboardConnection(conn, sessionID, user)
+	})
+
+	// WebRTC Signaling endpoint
+	router.GET("/api/v1/ws/video/:sessionId", func(c *gin.Context) {
+		tokenString := c.Query("token")
+		log.Printf("[WS Debug] Video connection attempt for session %s mit token: %v", c.Param("sessionId"), tokenString != "")
+
+		if tokenString == "" {
+			log.Printf("❌ Video WS: Missing token")
+			c.JSON(401, gin.H{"error": "Unauthorized: Missing token"})
+			return
+		}
+
+		claims, err := utils.ValidateToken(tokenString)
+		if err != nil {
+			log.Printf("❌ Video WS: Token validation failed: %v", err)
+			c.JSON(401, gin.H{"error": "Unauthorized: Invalid token"})
+			return
+		}
+
+		userID := uint(claims.UserID)
+		userName := "User " + fmt.Sprint(userID) 
+		sessionIDStr := c.Param("sessionId")
+
+		var sessionID uint
+		if _, err := fmt.Sscanf(sessionIDStr, "%d", &sessionID); err != nil {
+			log.Printf("❌ Video WS: Invalid session ID: %s", sessionIDStr)
+			c.JSON(400, gin.H{"error": "Invalid session ID"})
+			return
+		}
+
+		upgrader := websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool { return true },
+		}
+
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			log.Printf("❌ Video WS: Upgrade error: %v", err)
+			return
+		}
+
+		user := &models.User{
+			ID:       userID,
+			FullName: userName,
+		}
+
+		log.Printf("✅ Video WS: User %d connected to session %d", userID, sessionID)
 		whiteboardws.HandleWebRTCConnection(conn, sessionID, user)
 	})
 

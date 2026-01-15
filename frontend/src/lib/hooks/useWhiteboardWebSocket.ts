@@ -43,8 +43,17 @@ export function useWhiteboardWebSocket({
 
         try {
             const token = localStorage.getItem('token');
-            const wsUrl = `${process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws') || 'ws://localhost:8080/api/v1'}/ws/whiteboard/${sessionId}?token=${token}`;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            
+            // Construct base WS URL correctly
+            const baseWsUrl = apiUrl.startsWith('http') 
+                ? apiUrl.replace(/^http/, 'ws') 
+                : `${wsProtocol}://${window.location.host}${apiUrl}`;
+            
+            const wsUrl = `${baseWsUrl}/ws/whiteboard/${sessionId}?token=${encodeURIComponent(token || '')}`;
 
+            console.log('🔌 Connecting to Whiteboard WS:', wsUrl.split('?')[0]); // Log without token for security
             const ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
