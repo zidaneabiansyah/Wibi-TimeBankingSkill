@@ -70,7 +70,7 @@ const initialState = {
     isLoadingLearningSkills: false,
     error: null,
     currentPage: 1,
-    pageSize: 12,
+    pageSize: 24,
 };
 
 export const useSkillStore = create<SkillState>((set, get) => ({
