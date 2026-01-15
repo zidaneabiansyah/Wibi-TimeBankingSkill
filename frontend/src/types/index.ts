@@ -517,8 +517,6 @@ export interface VideoSessionResponse {
     participant_count: number;
     recording_url?: string;
     status: 'active' | 'completed' | 'cancelled';
-    jitsi_token?: string;
-    jitsi_url?: string;
     created_at: string;
     updated_at: string;
 }

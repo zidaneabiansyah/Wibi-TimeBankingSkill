@@ -15,7 +15,7 @@ import type { Session } from '@/types';
 import { CheckCircle2, Clock, Users, Video, MapPin, ExternalLink, Timer, AlertCircle, PenTool, LayoutDashboard } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TldrawWhiteboard } from '@/components/whiteboard';
-import { VideoRoom } from '@/components/video';
+import { ClassroomLayout } from '@/components/classroom/ClassroomLayout';
 import { sessionService } from '@/lib/services/session.service';
 
 /**
@@ -143,13 +143,6 @@ function SessionRoomContent() {
     const [isCheckingIn, setIsCheckingIn] = useState(false);
     const [isCompleting, setIsCompleting] = useState(false);
     
-    // Video state
-    const [videoData, setVideoData] = useState<{
-        room_id: string;
-        token: string;
-        jitsi_url: string;
-    } | null>(null);
-    const [isVideoLoading, setIsVideoLoading] = useState(false);
 
     // Fetch session on mount and poll for updates
     useEffect(() => {
@@ -191,18 +184,6 @@ function SessionRoomContent() {
         }
     };
 
-    const handleVideoStart = async () => {
-        try {
-            setIsVideoLoading(true);
-            const data = await sessionService.startVideoSession(sessionId);
-            setVideoData(data);
-            toast.success('Joined video session');
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to start video session');
-        } finally {
-            setIsVideoLoading(false);
-        }
-    };
 
     if (!currentSession || !user) {
         return (
@@ -261,13 +242,17 @@ function SessionRoomContent() {
                     <Tabs defaultValue="details" className="w-full">
                         <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
                             <TabsTrigger value="details">Details</TabsTrigger>
-                            <TabsTrigger value="video" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
-                                Video
+                            <TabsTrigger value="classroom" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
+                                Classroom
                             </TabsTrigger>
                             <TabsTrigger value="whiteboard" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
                                 Whiteboard
                             </TabsTrigger>
                         </TabsList>
+
+                        <TabsContent value="classroom" className="mt-6">
+                            <ClassroomLayout sessionId={sessionId} />
+                        </TabsContent>
 
                         <TabsContent value="details" className="mt-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -493,53 +478,6 @@ function SessionRoomContent() {
                             </div>
                         </TabsContent>
 
-                        <TabsContent value="video" className="mt-6">
-                            <Card className="border-none shadow-none bg-transparent">
-                                <CardHeader className="px-0 pt-0">
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <CardTitle>Video Session</CardTitle>
-                                            <CardDescription>
-                                                Secure video calling powered by Jitsi.
-                                            </CardDescription>
-                                        </div>
-                                        {!videoData && sessionInProgress && (
-                                            <Button onClick={handleVideoStart} disabled={isVideoLoading}>
-                                                {isVideoLoading ? (
-                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                                ) : <Video className="h-4 w-4 mr-2" />}
-                                                Join Video Call
-                                            </Button>
-                                        )}
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="p-0 border rounded-lg overflow-hidden bg-black min-h-[600px] flex items-center justify-center">
-                                    {videoData ? (
-                                        <VideoRoom 
-                                            roomName={videoData.room_id} 
-                                            jwt={videoData.token} 
-                                        />
-                                    ) : (
-                                        <div className="text-center text-muted-foreground p-12">
-                                            <div className="mb-4 bg-muted/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                                                <Video className="h-8 w-8" />
-                                            </div>
-                                            <h3 className="text-lg font-medium text-white mb-2">Ready to join?</h3>
-                                            <p className="max-w-xs mx-auto mb-6">
-                                                Join the video call to start interacting with your partner face-to-face.
-                                            </p>
-                                            {sessionInProgress ? (
-                                                <Button onClick={handleVideoStart} disabled={isVideoLoading} variant="secondary">
-                                                    Join Video Call
-                                                </Button>
-                                            ) : (
-                                                <p className="text-sm">Session is not active. Video call is disabled.</p>
-                                            )}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
 
                         <TabsContent value="whiteboard" className="mt-6">
                             <Card className="border-none shadow-none bg-transparent">

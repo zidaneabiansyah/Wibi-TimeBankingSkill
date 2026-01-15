@@ -3,11 +3,11 @@ import { useWhiteboardStore } from '@/stores/whiteboard.store';
 import type { DrawingStroke } from '@/types';
 
 interface WhiteboardMessage {
-    type: 'draw' | 'erase' | 'clear' | 'cursor' | 'user_join' | 'user_leave';
+    type: 'update' | 'clear' | 'user_join' | 'user_leave' | 'cursor';
     session_id: number;
     user_id: number;
     user_name: string;
-    stroke?: DrawingStroke;
+    data?: any; // tldraw record/delta
     cursor?: { x: number; y: number };
     timestamp: number;
 }
@@ -15,13 +15,20 @@ interface WhiteboardMessage {
 interface UseWhiteboardWebSocketProps {
     sessionId: number;
     enabled?: boolean;
+    onUpdate?: (data: any) => void;
+    onClear?: () => void;
 }
 
 /**
  * Hook for WebSocket connection to whiteboard
  * Handles real-time drawing synchronization
  */
-export function useWhiteboardWebSocket({ sessionId, enabled = true }: UseWhiteboardWebSocketProps) {
+export function useWhiteboardWebSocket({ 
+    sessionId, 
+    enabled = true,
+    onUpdate,
+    onClear
+}: UseWhiteboardWebSocketProps) {
     const wsRef = useRef<WebSocket | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const reconnectAttemptsRef = useRef(0);
@@ -50,20 +57,13 @@ export function useWhiteboardWebSocket({ sessionId, enabled = true }: UseWhitebo
                     const message: WhiteboardMessage = JSON.parse(event.data);
 
                     switch (message.type) {
-                        case 'draw':
-                            if (message.stroke) {
-                                addStroke(message.stroke);
+                        case 'update':
+                            if (message.data && onUpdate) {
+                                onUpdate(message.data);
                             }
                             break;
-
-                        case 'erase':
-                            if (message.stroke) {
-                                addStroke(message.stroke);
-                            }
-                            break;
-
                         case 'clear':
-                            clearStrokes();
+                            if (onClear) onClear();
                             break;
 
                         case 'user_join':
@@ -110,44 +110,30 @@ export function useWhiteboardWebSocket({ sessionId, enabled = true }: UseWhitebo
         } catch (error) {
             console.error('Failed to create WebSocket connection:', error);
         }
-    }, [sessionId, enabled, addStroke, clearStrokes]);
+    }, [sessionId, enabled, onUpdate, onClear]);
 
-    // Send drawing event
-    const sendDrawing = useCallback((stroke: DrawingStroke) => {
+    // Send update event (tldraw delta)
+    const sendUpdate = useCallback((data: any) => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            const message: WhiteboardMessage = {
-                type: 'draw',
+            const message: Partial<WhiteboardMessage> = {
+                type: 'update',
                 session_id: sessionId,
-                user_id: 0, // Will be set by server
-                user_name: '', // Will be set by server
-                stroke,
+                data,
                 timestamp: Date.now(),
             };
-
-            try {
-                wsRef.current.send(JSON.stringify(message));
-            } catch (error) {
-                console.error('Failed to send drawing:', error);
-            }
+            wsRef.current.send(JSON.stringify(message));
         }
     }, [sessionId]);
 
     // Send clear event
     const sendClear = useCallback(() => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            const message: WhiteboardMessage = {
+            const message: Partial<WhiteboardMessage> = {
                 type: 'clear',
                 session_id: sessionId,
-                user_id: 0,
-                user_name: '',
                 timestamp: Date.now(),
             };
-
-            try {
-                wsRef.current.send(JSON.stringify(message));
-            } catch (error) {
-                console.error('Failed to send clear:', error);
-            }
+            wsRef.current.send(JSON.stringify(message));
         }
     }, [sessionId]);
 
@@ -192,7 +178,7 @@ export function useWhiteboardWebSocket({ sessionId, enabled = true }: UseWhitebo
 
     return {
         isConnected,
-        sendDrawing,
+        sendUpdate,
         sendClear,
         sendCursor,
     };

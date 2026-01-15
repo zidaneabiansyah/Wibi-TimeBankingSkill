@@ -4,14 +4,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { 
     Tldraw, 
     useEditor,
-    TldrawUiMenuItem,
-    TLUiOverrides,
-    TLUiAssetUrlOverrides,
     Editor,
     TLRecord,
     StoreSnapshot,
     loadSnapshot,
-    getSnapshot
+    getSnapshot,
+    HistoryEntry
 } from 'tldraw';
 import 'tldraw/tldraw.css';
 import { whiteboardService } from '@/lib/services/whiteboard.service';
@@ -115,10 +113,37 @@ export function TldrawWhiteboard({ sessionId, isReadOnly = false }: TldrawWhiteb
     const [initialSnapshot, setInitialSnapshot] = useState<StoreSnapshot<TLRecord> | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Callback when remote update is received
+    const handleRemoteUpdate = useCallback((data: any) => {
+        if (!editor) return;
+        
+        // Apply changes from remote
+        editor.store.mergeRemoteChanges(() => {
+            const { changes } = data;
+            if (changes.added) editor.store.put(Object.values(changes.added) as any[]);
+            if (changes.updated) {
+                Object.values(changes.updated).forEach(([from, to]: any) => {
+                    editor.store.put([to] as any[]);
+                });
+            }
+            if (changes.removed) editor.store.remove(Object.keys(changes.removed) as any[]);
+        });
+    }, [editor]);
+
+    const handleRemoteClear = useCallback(() => {
+        if (!editor) return;
+        const allShapeIds = editor.getCurrentPageShapeIds();
+        if (allShapeIds.size > 0) {
+            editor.deleteShapes(Array.from(allShapeIds));
+        }
+    }, [editor]);
+
     // WebSocket for real-time synchronization
-    const { isConnected, sendDrawing, sendClear } = useWhiteboardWebSocket({
+    const { isConnected, sendUpdate, sendClear } = useWhiteboardWebSocket({
         sessionId,
         enabled: !isReadOnly,
+        onUpdate: handleRemoteUpdate,
+        onClear: handleRemoteClear
     });
 
     // Load existing whiteboard data
@@ -234,8 +259,21 @@ export function TldrawWhiteboard({ sessionId, isReadOnly = false }: TldrawWhiteb
         // Set read-only mode
         if (isReadOnly) {
             editor.updateInstanceState({ isReadonly: true });
+            return;
         }
-    }, [isReadOnly]);
+
+        // Listen for local changes to broadcast
+        const unlisten = editor.store.listen((entry: HistoryEntry<TLRecord>) => {
+            if (entry.source !== 'user') return; // only broadcast user changes
+            
+            // We only broadcast "changes" part of the entry
+            sendUpdate({
+                changes: entry.changes
+            });
+        }, { scope: 'document', source: 'user' });
+
+        return unlisten;
+    }, [isReadOnly, sendUpdate]);
 
     if (isLoading) {
         return (
