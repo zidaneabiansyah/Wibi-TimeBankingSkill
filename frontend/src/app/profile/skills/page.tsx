@@ -6,16 +6,16 @@ import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout';
 import { ProtectedRoute } from '@/components/auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useSkillStore } from '@/stores/skill.store';
 import { useAuthStore } from '@/stores/auth.store';
-import { LoadingSpinner, LoadingSkeleton } from '@/components/ui/loading';
+import { LoadingSkeleton } from '@/components/ui/loading';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { m } from 'framer-motion';
-import { Plus, Edit, Trash2, Star, Users, Clock, TrendingUp, BookOpen } from 'lucide-react';
-import type { Skill, UserSkill } from '@/types';
+import { Plus, Edit, Trash2, Star, Users, Clock, BookOpen } from 'lucide-react';
+import type { UserSkill } from '@/types';
 
 export default function MySkillsPage() {
     const router = useRouter();
@@ -116,10 +116,10 @@ export default function MySkillsPage() {
                                 >
                                     <Card className="group h-full flex flex-col overflow-hidden border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card/70 hover:shadow-lg hover:shadow-primary/10">
                                         {/* Accent Line */}
-                                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary via-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         
                                         {/* Image/Icon Hero Section */}
-                                        <div className="w-full aspect-video bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
+                                        <div className="w-full aspect-video bg-linear-to-br from-primary/10 via-secondary/5 to-primary/5 flex items-center justify-center overflow-hidden relative">
                                             {skill.skill?.icon ? (
                                                 <span className="text-6xl group-hover:scale-110 transition-transform duration-300">
                                                     {skill.skill.icon}
@@ -146,7 +146,7 @@ export default function MySkillsPage() {
                                                         <span className="text-xs font-medium text-secondary">{skill.hourly_rate || 1} Credits/hr</span>
                                                     </div>
                                                 </div>
-                                                <Badge variant="secondary" className="flex-shrink-0 bg-secondary/10 text-secondary border-secondary/20 capitalize">
+                                                <Badge variant="secondary" className="shrink-0 bg-secondary/10 text-secondary border-secondary/20 capitalize">
                                                     {skill.level}
                                                 </Badge>
                                             </div>

@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 
 	"github.com/timebankingskill/backend/internal/config"
 	"github.com/timebankingskill/backend/internal/handler"
@@ -155,7 +154,7 @@ func InitializeVideoSessionHandler(db *gorm.DB, cfg *config.Config) *handler.Vid
 	notificationRepo := repository.NewNotificationRepository(db)
 	notificationService := service.NewNotificationService(notificationRepo, userRepo)
 	
-	videoSessionService := service.NewVideoSessionServiceWithNotification(videoSessionRepo, sessionRepo, userRepo, notificationService, nil, cfg)
+	videoSessionService := service.NewVideoSessionServiceWithNotification(videoSessionRepo, sessionRepo, userRepo, notificationService, cfg)
 	return handler.NewVideoSessionHandler(videoSessionService)
 }
 
