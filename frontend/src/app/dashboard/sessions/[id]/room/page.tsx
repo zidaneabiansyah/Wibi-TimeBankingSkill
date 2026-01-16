@@ -31,20 +31,6 @@ const ClassroomLayout = dynamic(
     }
 );
 
-const TldrawWhiteboard = dynamic(
-    () => import('@/components/whiteboard').then(mod => mod.TldrawWhiteboard),
-    {
-        ssr: false, loading: () => (
-            <div className="h-[600px] flex items-center justify-center animate-pulse bg-muted rounded-lg border border-dashed">
-                <div className="text-center">
-                    <PenTool className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                    <p>Loading Whiteboard...</p>
-                </div>
-            </div>
-        )
-    }
-);
-
 /**
  * SessionTimer - Real-time timer component for active sessions
  * Shows elapsed time since session started
@@ -266,18 +252,18 @@ function SessionRoomContent() {
                     </div>
 
                     <Tabs defaultValue="details" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+                        <TabsList className="grid w-full grid-cols-2 lg:w-[300px]">
                             <TabsTrigger value="details">Details</TabsTrigger>
                             <TabsTrigger value="classroom" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
                                 Classroom
                             </TabsTrigger>
-                            <TabsTrigger value="whiteboard" disabled={!sessionInProgress && currentSession.status !== 'completed'}>
-                                Whiteboard
-                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="classroom" className="mt-6">
-                            <ClassroomLayout sessionId={sessionId} />
+                            <ClassroomLayout 
+                                sessionId={sessionId} 
+                                onLeave={() => router.push('/dashboard/sessions')}
+                            />
                         </TabsContent>
 
                         <TabsContent value="details" className="mt-6">
@@ -505,22 +491,6 @@ function SessionRoomContent() {
                         </TabsContent>
 
 
-                        <TabsContent value="whiteboard" className="mt-6">
-                            <Card className="border-none shadow-none bg-transparent">
-                                <CardHeader className="px-0 pt-0">
-                                    <CardTitle>Session Whiteboard</CardTitle>
-                                    <CardDescription>
-                                        Collaborate in real-time. Changes are saved automatically.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-0 h-[600px] border rounded-lg overflow-hidden bg-white">
-                                    <TldrawWhiteboard
-                                        sessionId={sessionId}
-                                        isReadOnly={currentSession.status === 'completed'}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
                     </Tabs>
                 </div>
             </main>
