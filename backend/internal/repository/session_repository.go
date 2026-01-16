@@ -145,12 +145,12 @@ func (r *SessionRepository) GetPendingSessionsForTeacher(teacherID uint) ([]mode
 	return sessions, err
 }
 
-// GetUpcomingSessions gets approved sessions scheduled in the future
+// GetUpcomingSessions gets approved sessions scheduled in the future or sessions in progress
 func (r *SessionRepository) GetUpcomingSessions(userID uint, limit int) ([]models.Session, error) {
 	var sessions []models.Session
 	err := r.db.Preload("Teacher").Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").
-		Where("(teacher_id = ? OR student_id = ?) AND status = ? AND scheduled_at > NOW()",
-			userID, userID, models.StatusApproved).
+		Where("(teacher_id = ? OR student_id = ?) AND ((status = ? AND scheduled_at > ?) OR status = ?)",
+			userID, userID, models.StatusApproved, time.Now(), models.StatusInProgress).
 		Order("scheduled_at ASC").
 		Limit(limit).
 		Find(&sessions).Error

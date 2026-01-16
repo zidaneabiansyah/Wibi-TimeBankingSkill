@@ -20,7 +20,7 @@ import TransactionDetailModal from "@/components/transaction/TransactionDetailMo
 import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
 import { EmptyState } from "@/components/ui/empty-state";
 import { m } from "framer-motion";
-import { Calendar, Award, Receipt, Zap, TrendingUp, Users, Star, Info } from "lucide-react";
+import { Calendar, Award, Receipt, Zap, TrendingUp, Users, Star, Info, PlayCircle } from "lucide-react";
 import { getSessionCreditStatus } from '@/lib/utils/session-status';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Transaction, Session, Skill } from "@/types";
@@ -368,20 +368,40 @@ function DashboardContent() {
                                             visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
                                         }}
                                     >
-                                        <Link href={`/dashboard/sessions`}>
-                                            <Card className="h-full border-border/30 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer group">
+                                        <Link href={session.status === 'in_progress' ? `/dashboard/sessions/${session.id}/room` : `/dashboard/sessions`}>
+                                            <Card className={`h-full border-border/30 hover:shadow-lg transition-all duration-300 cursor-pointer group ${
+                                                session.status === 'in_progress' 
+                                                    ? 'border-primary/50 shadow-md shadow-primary/5 bg-primary/5' 
+                                                    : 'hover:border-primary/40 hover:shadow-primary/10'
+                                            }`}>
                                                 <CardHeader className="pb-4">
                                                     <div className="flex justify-between items-start gap-2">
                                                         <div className="flex-1 min-w-0">
-                                                            <CardTitle className="text-lg group-hover:text-primary transition-colors truncate">
-                                                                {session.title}
-                                                            </CardTitle>
-                                                            <CardDescription className="text-xs mt-1">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <CardTitle className={`text-lg transition-colors truncate ${
+                                                                    session.status === 'in_progress' ? 'text-primary' : 'group-hover:text-primary'
+                                                                }`}>
+                                                                    {session.title}
+                                                                </CardTitle>
+                                                                {session.status === 'in_progress' && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <span className="relative flex h-2 w-2">
+                                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                                                        </span>
+                                                                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider animate-pulse">Live</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <CardDescription className="text-xs">
                                                                 {session.scheduled_at ? formatDate(session.scheduled_at) : 'Not scheduled'}
                                                             </CardDescription>
                                                         </div>
                                                          <div className="flex flex-col items-end gap-1 shrink-0">
-                                                            <Badge variant="outline" className="capitalize border-border/50">
+                                                            <Badge 
+                                                                variant={session.status === 'in_progress' ? 'default' : 'outline'} 
+                                                                className="capitalize border-border/50"
+                                                            >
                                                                 {session.status.replace('_', ' ')}
                                                             </Badge>
                                                             {session.credit_held && (
@@ -407,11 +427,11 @@ function DashboardContent() {
                                                 </CardHeader>
                                                 <CardContent className="space-y-3">
                                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <Calendar className="h-4 w-4 text-secondary" />
+                                                        <Calendar className={`h-4 w-4 ${session.status === 'in_progress' ? 'text-primary' : 'text-secondary'}`} />
                                                         <span>{session.duration} hour{session.duration !== 1 ? 's' : ''}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <Users className="h-4 w-4 text-secondary" />
+                                                        <Users className={`h-4 w-4 ${session.status === 'in_progress' ? 'text-primary' : 'text-secondary'}`} />
                                                         <span className="truncate">
                                                             {session.teacher_id === user?.id 
                                                                 ? `Teaching ${session.student?.full_name || 'Student'}`
@@ -421,11 +441,22 @@ function DashboardContent() {
                                                 </CardContent>
                                                 <CardFooter className="pt-0">
                                                     <Button 
-                                                        variant="outline" 
+                                                        variant={session.status === 'in_progress' ? 'default' : 'outline'} 
                                                         size="sm" 
-                                                        className="w-full border-border/40 hover:border-primary/50 group-hover:bg-primary/5 transition-all"
+                                                        className={`w-full transition-all ${
+                                                            session.status === 'in_progress'
+                                                                ? 'shadow-lg shadow-primary/20 hover:scale-[1.02]'
+                                                                : 'border-border/40 hover:border-primary/50 group-hover:bg-primary/5'
+                                                        }`}
                                                     >
-                                                        View Details →
+                                                        {session.status === 'in_progress' ? (
+                                                            <span className="flex items-center gap-1.5 font-bold">
+                                                                <PlayCircle className="h-4 w-4" />
+                                                                Join Room NOW
+                                                            </span>
+                                                        ) : (
+                                                            "View Details →"
+                                                        )}
                                                     </Button>
                                                 </CardFooter>
                                             </Card>
