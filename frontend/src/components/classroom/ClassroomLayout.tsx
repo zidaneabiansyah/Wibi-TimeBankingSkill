@@ -173,7 +173,7 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
     );
 }
 
-// Video Mode Layout - Partner video large, self as PiP
+// Video Mode Layout - side-by-side videos
 function VideoModeLayout({
     localStream,
     remoteStream,
@@ -186,40 +186,38 @@ function VideoModeLayout({
     userName: string;
 }) {
     return (
-        <div className="relative w-full h-full bg-zinc-900">
-            {/* Main Video (Partner) */}
-            <div className="absolute inset-0">
+        <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center p-4 gap-4">
+            {/* Partner Video - Large */}
+            <div className="relative flex-1 max-w-[50%] aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
                 {remoteStream ? (
                     <VideoRenderer stream={remoteStream} muted={false} />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-zinc-400">
-                        <div className="w-24 h-24 rounded-full bg-zinc-700 flex items-center justify-center mb-4">
-                            <Users className="w-12 h-12 text-zinc-500" />
+                        <div className="w-20 h-20 rounded-full bg-zinc-700 flex items-center justify-center mb-3">
+                            <Users className="w-10 h-10 text-zinc-500" />
                         </div>
-                        <span className="text-lg font-medium">Waiting for partner...</span>
+                        <span className="text-base font-medium">Waiting for partner...</span>
                         <span className="text-sm text-zinc-500 mt-1">They'll appear here when they join</span>
                     </div>
                 )}
-            </div>
-            
-            {/* Partner Name Badge */}
-            {remoteStream && (
-                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur px-3 py-1.5 rounded-lg text-white text-sm font-medium">
+                {/* Partner Name Badge */}
+                <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg text-white text-sm font-medium">
                     Partner
                 </div>
-            )}
+            </div>
 
-            {/* Self Video (PiP) */}
-            <div className="absolute bottom-4 right-4 w-48 aspect-video rounded-xl overflow-hidden shadow-2xl border-2 border-zinc-700 bg-zinc-900 transition-all hover:scale-105">
+            {/* Self Video - Large */}
+            <div className="relative flex-1 max-w-[50%] aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
                 {localStream && isVideoEnabled ? (
                     <VideoRenderer stream={localStream} muted={true} />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-zinc-500 bg-zinc-800">
-                        <VideoOff className="w-6 h-6 mb-1" />
-                        <span className="text-xs">Camera Off</span>
+                        <VideoOff className="w-10 h-10 mb-2" />
+                        <span className="text-sm">Camera Off</span>
                     </div>
                 )}
-                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur px-2 py-0.5 rounded text-white text-xs">
+                {/* Self Name Badge */}
+                <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg text-white text-sm font-medium">
                     {userName}
                 </div>
             </div>
@@ -227,7 +225,7 @@ function VideoModeLayout({
     );
 }
 
-// Whiteboard Mode Layout - Whiteboard main, videos in sidebar
+// Whiteboard Mode Layout - whiteboard fullscreen, video small at bottom center
 function WhiteboardModeLayout({
     sessionId,
     localStream,
@@ -242,47 +240,42 @@ function WhiteboardModeLayout({
     userName: string;
 }) {
     return (
-        <div className="flex w-full h-full">
-            {/* Whiteboard Area */}
-            <div className="flex-1 relative bg-white rounded-lg m-2 mr-0 overflow-hidden shadow-inner">
+        <div className="relative w-full h-full">
+            {/* Whiteboard Area - Full screen */}
+            <div className="absolute inset-0 bg-white rounded-lg m-2 overflow-hidden shadow-inner">
                 <TldrawWhiteboard sessionId={sessionId} />
             </div>
 
-            {/* Video Sidebar */}
-            <div className="w-56 flex flex-col gap-2 p-2">
-                {/* Partner Video */}
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-zinc-800 shadow-lg border border-zinc-700">
+            {/* Video Overlay - Small, bottom center like Discord */}
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
+                <div className="relative w-40 h-28 rounded-xl overflow-hidden bg-zinc-800 shadow-2xl border border-zinc-600 hover:scale-105 transition-transform cursor-pointer">
+                    {/* Show remote stream if available, otherwise local */}
                     {remoteStream ? (
                         <VideoRenderer stream={remoteStream} muted={false} />
-                    ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-zinc-500">
-                            <Users className="w-8 h-8 mb-1" />
-                            <span className="text-xs">Waiting...</span>
-                        </div>
-                    )}
-                    <div className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-white text-[10px]">
-                        Partner
-                    </div>
-                </div>
-
-                {/* Self Video */}
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-zinc-800 shadow-lg border border-zinc-700">
-                    {localStream && isVideoEnabled ? (
+                    ) : localStream && isVideoEnabled ? (
                         <VideoRenderer stream={localStream} muted={true} />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-zinc-500">
-                            <VideoOff className="w-6 h-6 mb-1" />
-                            <span className="text-xs">Camera Off</span>
+                            <Users className="w-6 h-6 mb-1" />
+                            <span className="text-[10px]">No video</span>
                         </div>
                     )}
-                    <div className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-white text-[10px]">
-                        {userName}
+                    
+                    {/* Name badge */}
+                    <div className="absolute bottom-1.5 left-1.5 bg-black/70 px-2 py-0.5 rounded text-white text-[10px] font-medium flex items-center gap-1">
+                        {remoteStream ? 'Partner' : userName.split(' ')[0]}
+                    </div>
+                    
+                    {/* More options hint - like Discord */}
+                    <div className="absolute top-1.5 right-1.5 bg-black/50 rounded p-1 opacity-0 hover:opacity-100 transition-opacity">
+                        <Users className="w-3 h-3 text-white" />
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+
 
 // Control Button Component
 function ControlButton({
