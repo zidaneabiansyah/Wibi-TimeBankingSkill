@@ -103,7 +103,12 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
 
         const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
             if (pcRef.current) {
-                await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+                // Only set remote answer if we're in the correct state
+                if (pcRef.current.signalingState === 'have-local-offer') {
+                    await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+                } else {
+                    console.warn('Ignoring answer - signaling state is:', pcRef.current.signalingState);
+                }
             }
         };
 

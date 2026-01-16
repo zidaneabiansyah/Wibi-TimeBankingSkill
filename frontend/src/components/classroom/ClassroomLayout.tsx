@@ -27,16 +27,20 @@ type ViewMode = 'video' | 'whiteboard';
 
 export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
     const { user } = useAuthStore();
-    const { localStream, remoteStream, isJoined, error } = useWebRTC({
-        sessionId,
-        userId: user?.id || 0,
-    });
-
+    
     const [viewMode, setViewMode] = useState<ViewMode>('video');
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // WebRTC hook - always enabled when classroom is open for voice/video communication
+    // The hook internally manages its own connection lifecycle
+    const { localStream, remoteStream, isJoined, error } = useWebRTC({
+        sessionId,
+        userId: user?.id || 0,
+        enabled: true, // Always enabled for video/voice, regardless of view mode
+    });
 
     // Toggle video track
     const toggleVideo = () => {
@@ -80,16 +84,21 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
         >
             {/* Main Content Area */}
             <div className="flex-1 relative overflow-hidden">
-                {viewMode === 'video' ? (
-                    // VIDEO MODE - Partner large, self PiP
+                {/* VIDEO MODE - Always render video components, visibility controlled by mode */}
+                <div className={cn(
+                    "absolute inset-0 transition-opacity duration-300",
+                    viewMode === 'video' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                )}>
                     <VideoModeLayout
                         localStream={localStream}
                         remoteStream={remoteStream}
                         isVideoEnabled={isVideoEnabled}
                         userName={user?.full_name || 'You'}
                     />
-                ) : (
-                    // WHITEBOARD MODE - Whiteboard main, videos sidebar
+                </div>
+
+                {/* WHITEBOARD MODE - Only mount when in whiteboard mode for performance */}
+                {viewMode === 'whiteboard' && (
                     <WhiteboardModeLayout
                         sessionId={sessionId}
                         localStream={localStream}
