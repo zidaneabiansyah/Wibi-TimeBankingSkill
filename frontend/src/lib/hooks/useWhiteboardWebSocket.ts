@@ -96,11 +96,16 @@ export function useWhiteboardWebSocket({
             };
 
             ws.onerror = (error) => {
-                console.error('❌ WebSocket error:', error);
+                console.error('❌ WebSocket error - ReadyState:', ws.readyState);
+                console.error('Connection URL:', wsUrl.split('?')[0]);
             };
 
-            ws.onclose = () => {
-                console.log('❌ WebSocket disconnected');
+            ws.onclose = (event) => {
+                console.log('⚠️ Whiteboard WebSocket disconnected:', {
+                    code: event.code,
+                    reason: event.reason || 'No reason provided',
+                    wasClean: event.wasClean
+                });
                 wsRef.current = null;
 
                 // Attempt to reconnect

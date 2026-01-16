@@ -322,14 +322,31 @@ function ControlButton({
     );
 }
 
-// Video Renderer Component
-function VideoRenderer({ stream, muted }: { stream: MediaStream; muted: boolean }) {
+// Video Renderer Component - Memoized to prevent re-renders
+const VideoRenderer = React.memo(function VideoRenderer({ 
+    stream, 
+    muted 
+}: { 
+    stream: MediaStream; 
+    muted: boolean;
+}) {
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
-        if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+        const video = videoRef.current;
+        if (video && stream) {
+            // Only set srcObject if it's different
+            if (video.srcObject !== stream) {
+                video.srcObject = stream;
+            }
         }
+        
+        return () => {
+            // Cleanup on unmount
+            if (video) {
+                video.srcObject = null;
+            }
+        };
     }, [stream]);
 
     return (
@@ -341,4 +358,4 @@ function VideoRenderer({ stream, muted }: { stream: MediaStream; muted: boolean 
             className="w-full h-full object-cover"
         />
     );
-}
+});

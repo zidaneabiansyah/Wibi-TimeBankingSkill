@@ -156,6 +156,15 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
             try {
                 // Setup WebSocket even if media fails (so they can at least use signaling/whiteboard)
                 const token = localStorage.getItem('token');
+                
+                // Debug token presence
+                if (!token) {
+                    console.error('❌ No token found in localStorage - user may not be logged in');
+                    setError('Not authenticated. Please log in again.');
+                    return;
+                }
+                console.log('🔑 Token found:', token.substring(0, 30) + '...');
+                
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
                 const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
                 
@@ -164,23 +173,32 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                     ? apiUrl.replace(/^http/, 'ws') 
                     : `${wsProtocol}://${window.location.host}${apiUrl}`;
 
-                const wsUrl = `${baseWsUrl}/ws/video/${sessionId}?token=${encodeURIComponent(token || '')}`;
+                const wsUrl = `${baseWsUrl}/ws/video/${sessionId}?token=${encodeURIComponent(token)}`;
                 
                 console.log('🔌 Connecting to Signaling WS:', wsUrl.split('?')[0]);
                 const ws = new WebSocket(wsUrl);
 
                 ws.onopen = () => {
-                    console.log('Signaling WebSocket connected');
+                    console.log('✅ Signaling WebSocket connected');
                     setIsJoined(true);
                 };
 
                 ws.onerror = (ev) => {
-                    console.error('Signaling WebSocket error:', ev);
+                    console.error('❌ Signaling WebSocket error - ReadyState:', ws.readyState);
+                    console.error('Connection URL:', wsUrl.split('?')[0]);
+                    setError('Failed to connect to signaling server. Please check if the backend is running.');
                 };
 
                 ws.onclose = (ev) => {
-                    console.log('Signaling WebSocket closed:', ev.code, ev.reason);
+                    console.log('⚠️ Signaling WebSocket closed:', {
+                        code: ev.code,
+                        reason: ev.reason || 'No reason provided',
+                        wasClean: ev.wasClean
+                    });
                     setIsJoined(false);
+                    if (ev.code !== 1000 && ev.code !== 1001) {
+                        setError(`Connection closed unexpectedly (code: ${ev.code})`);
+                    }
                 };
 
                 ws.onmessage = async (event) => {
