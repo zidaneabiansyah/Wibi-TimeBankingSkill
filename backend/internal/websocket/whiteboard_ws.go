@@ -239,5 +239,5 @@ func getCurrentTimestamp() int64 {
 }
 
 func getDeadline() time.Time {
-	return time.Now().Add(60 * time.Second)
+	return time.Now().Add(300 * time.Second) 
 }

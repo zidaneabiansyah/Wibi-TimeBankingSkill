@@ -123,6 +123,7 @@ func (h *WebRTCHub) broadcastToOthers(sender *WebRTCClient, message *WebRTCMessa
 
 // HandleWebRTCConnection handles a new signaling connection
 func HandleWebRTCConnection(conn *websocket.Conn, sessionID uint, user *models.User) {
+	log.Printf("[WebRTC] Starting connection handler for user %d in session %d", user.ID, sessionID)
 	hub := GetOrCreateWebRTCHub(sessionID)
 
 	client := &WebRTCClient{
@@ -133,6 +134,7 @@ func HandleWebRTCConnection(conn *websocket.Conn, sessionID uint, user *models.U
 		Send:      make(chan *WebRTCMessage, 256),
 	}
 
+	log.Printf("[WebRTC] Registering client for user %d", user.ID)
 	hub.Register <- client
 
 	go client.readPump(hub)
@@ -141,21 +143,25 @@ func HandleWebRTCConnection(conn *websocket.Conn, sessionID uint, user *models.U
 
 func (c *WebRTCClient) readPump(hub *WebRTCHub) {
 	defer func() {
+		log.Printf("[WebRTC] readPump ending for user %d", c.UserID)
 		hub.Unregister <- c
 		c.Conn.Close()
 	}()
 
 	c.Conn.SetReadLimit(512 * 1024) // 512KB limit for SDP
-	c.Conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+	c.Conn.SetReadDeadline(time.Now().Add(300 * time.Second)) 
 	c.Conn.SetPongHandler(func(string) error {
-		c.Conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+		c.Conn.SetReadDeadline(time.Now().Add(300 * time.Second))
 		return nil
 	})
+
+	log.Printf("[WebRTC] readPump started for user %d", c.UserID)
 
 	for {
 		var msg WebRTCMessage
 		err := c.Conn.ReadJSON(&msg)
 		if err != nil {
+			log.Printf("[WebRTC] readPump error for user %d: %v", c.UserID, err)
 			break
 		}
 
@@ -164,6 +170,7 @@ func (c *WebRTCClient) readPump(hub *WebRTCHub) {
 		msg.SessionID = c.SessionID
 		msg.Timestamp = time.Now().UnixMilli()
 
+		log.Printf("[WebRTC] Received message type '%s' from user %d", msg.Type, c.UserID)
 		hub.broadcastToOthers(c, &msg)
 	}
 }
