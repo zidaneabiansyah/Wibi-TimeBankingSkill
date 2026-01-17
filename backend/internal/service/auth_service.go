@@ -36,7 +36,7 @@ func NewAuthService(userRepo *repository.UserRepository, transactionRepo *reposi
 //   5. Grants 3.0 welcome bonus credits (starting balance)
 //   6. Creates initial transaction record for audit trail
 //   7. Generates verification token (24 hour expiry)
-//   8. Sends verification email via Brevo
+//   8. Sends verification email via Resend
 //   9. Returns registration response (user cannot login until verified)
 //
 // Welcome Bonus:
@@ -308,7 +308,7 @@ func (s *AuthService) VerifyEmail(token string) error {
 // Password Reset Flow:
 //   1. Validates email exists in system
 //   2. Generates reset token (JWT with 1 hour expiry)
-//   3. Sends email with reset link via Brevo
+//   3. Sends email with reset link via Resend
 //   4. Returns success message
 //
 // Security:
