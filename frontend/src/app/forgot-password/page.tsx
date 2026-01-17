@@ -10,8 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Mail, AlertCircle, CheckCircle } from 'lucide-react';
-import Image from 'next/image';
+import { ArrowLeft, Mail, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { authService } from '@/lib/services/auth.service';
 import { m } from 'framer-motion';
 
@@ -44,7 +43,7 @@ export default function ForgotPasswordPage() {
             await authService.forgotPassword(data.email);
             setSubmittedEmail(data.email);
             setSubmitted(true);
-            toast.success('Check your email for password reset instructions');
+            toast.success('Reset link sent!');
         } catch (error: any) {
             toast.error(error.message || 'Failed to send reset email');
         } finally {
@@ -53,12 +52,11 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
             <m.div 
-                className="w-full max-w-md"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+                className="w-full max-w-lg"
             >
                 {/* Back Link */}
                 <div className="mb-6">
@@ -72,66 +70,53 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 {/* Card */}
-                <div className="bg-card border rounded-2xl shadow-sm p-8">
-                    {/* Logo Header */}
-                    <div className="flex items-center justify-center gap-3 mb-8">
-                        <Image 
-                            src="/wibi.png" 
-                            alt="Wibi Logo" 
-                            width={40} 
-                            height={40}
-                            priority
-                            className="rounded-lg"
-                        />
-                        <span className="text-xl font-bold tracking-tight">Wibi</span>
-                    </div>
-
+                <div className="bg-card rounded-3xl shadow-xl border border-white/5 p-8 sm:p-10">
                     {!submitted ? (
                         <>
                             {/* Header */}
-                            <div className="text-center mb-6">
-                                <h1 className="text-xl font-semibold mb-2">Forgot your password?</h1>
+                            <div className="text-center mb-8">
+                                <h1 className="text-2xl font-bold text-foreground mb-2">Forgot Password?</h1>
                                 <p className="text-sm text-muted-foreground">
                                     Enter your email and we'll send you a reset link
                                 </p>
                             </div>
 
                             {/* Info Box */}
-                            <div className="bg-muted/50 rounded-lg p-4 mb-6 flex gap-3">
-                                <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                <p className="text-sm text-muted-foreground">
-                                    The reset link will expire in <strong className="text-foreground">1 hour</strong> for security.
+                            <div className="bg-primary/5 rounded-2xl p-5 mb-8 flex gap-4 border border-primary/10">
+                                <AlertCircle className="w-6 h-6 text-primary shrink-0" />
+                                <p className="text-sm text-primary/80 leading-relaxed">
+                                    A password reset link will be sent to your inbox. The link will expire in <strong className="text-primary font-bold">1 hour</strong> for security.
                                 </p>
                             </div>
 
                             {/* Form */}
-                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email Address</Label>
+                                    <Label htmlFor="email" className="text-muted-foreground font-normal">Email Address</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40 pointer-events-none" />
                                         <Input
                                             id="email"
                                             type="email"
                                             placeholder="you@example.com"
                                             {...register('email')}
                                             disabled={isLoading}
-                                            className="pl-10 h-11"
+                                            className="pl-12 h-12 bg-white/5 border-white/5 focus:ring-primary focus:border-primary rounded-xl text-lg transition-all"
                                         />
                                     </div>
                                     {errors.email && (
-                                        <p className="text-xs text-destructive">{errors.email.message}</p>
+                                        <p className="text-xs text-destructive font-medium">{errors.email.message}</p>
                                     )}
                                 </div>
 
                                 <Button
-                                    className="w-full h-11"
+                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-base font-semibold transition-all hover:shadow-lg hover:shadow-primary/20"
                                     type="submit"
                                     disabled={isLoading || !email}
                                 >
                                     {isLoading ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
                                             Sending...
                                         </>
                                     ) : (
@@ -141,11 +126,13 @@ export default function ForgotPasswordPage() {
                             </form>
 
                             {/* Footer */}
-                            <div className="mt-6 text-center text-sm text-muted-foreground">
-                                Remember your password?{' '}
-                                <Link href="/login" className="text-primary hover:underline font-medium">
-                                    Login here
-                                </Link>
+                            <div className="mt-10 text-center text-sm border-t pt-8 border-white/5">
+                                <p className="text-muted-foreground">
+                                    Remember your password?{' '}
+                                    <Link href="/login" className="text-primary hover:underline font-bold ml-1 transition-all">
+                                        Login here
+                                    </Link>
+                                </p>
                             </div>
                         </>
                     ) : (
@@ -153,56 +140,42 @@ export default function ForgotPasswordPage() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                         >
-                            {/* Success Header */}
-                            <div className="flex flex-col items-center text-center gap-4 mb-6">
-                                <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-4">
-                                    <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
+                            {/* Success State */}
+                            <div className="flex flex-col items-center text-center gap-6 py-6">
+                                <div className="bg-success/10 w-20 h-20 rounded-full flex items-center justify-center">
+                                    <CheckCircle className="w-12 h-12 text-success" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-semibold mb-2">Email Sent!</h2>
-                                    <p className="text-sm text-muted-foreground">
+                                    <h2 className="text-2xl font-bold text-foreground mb-3">Email Sent!</h2>
+                                    <p className="text-muted-foreground leading-relaxed max-w-xs mx-auto">
                                         We've sent a password reset link to<br />
-                                        <span className="font-semibold text-foreground">{submittedEmail}</span>
+                                        <span className="font-bold text-foreground">{submittedEmail}</span>
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Next Steps */}
-                            <div className="bg-muted/50 rounded-lg p-4 mb-6 space-y-2">
-                                <h3 className="font-semibold text-sm">Next steps:</h3>
-                                <ol className="space-y-1 text-sm text-muted-foreground">
-                                    <li>1. Check your inbox for the reset email</li>
-                                    <li>2. Click the password reset link</li>
-                                    <li>3. Create a new password</li>
-                                </ol>
-                            </div>
-
-                            {/* Tip */}
-                            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-6">
-                                <p className="text-sm text-amber-800 dark:text-amber-200">
-                                    💡 Check spam folder if you don't see the email.
-                                </p>
-                            </div>
-
                             {/* Actions */}
-                            <div className="space-y-3">
-                                <Button className="w-full h-11" onClick={() => router.push('/login')}>
+                            <div className="space-y-4 mt-8">
+                                <Button 
+                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-base font-semibold transition-all" 
+                                    onClick={() => router.push('/login')}
+                                >
                                     Return to Login
                                 </Button>
-                                <Button variant="outline" className="w-full h-11" onClick={() => setSubmitted(false)}>
+                                <Button 
+                                    variant="outline" 
+                                    className="w-full h-12 border-white/10 text-muted-foreground rounded-xl hover:bg-white/5 hover:text-foreground transition-all font-medium" 
+                                    onClick={() => setSubmitted(false)}
+                                >
                                     Try Another Email
                                 </Button>
                             </div>
+
+                            <p className="mt-8 text-center text-xs text-muted-foreground/40">
+                                Check spam folder if you don't see the email within a few minutes.
+                            </p>
                         </m.div>
                     )}
-                </div>
-
-                {/* Footer */}
-                <div className="mt-6 text-center text-sm text-muted-foreground">
-                    Need help?{' '}
-                    <a href="mailto:support@wibi.com" className="text-primary hover:underline font-medium">
-                        Contact support
-                    </a>
                 </div>
             </m.div>
         </div>
