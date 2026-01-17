@@ -1,23 +1,11 @@
 package utils
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
+	"net/smtp"
 	"os"
 )
-
-// ResendEmailRequest represents a Resend email send request
-type ResendEmailRequest struct {
-	From    string   `json:"from"`
-	To      []string `json:"to"`
-	Subject string   `json:"subject"`
-	HTML    string   `json:"html"`
-	Text    string   `json:"text,omitempty"`
-}
 
 // Email template base styles matching Wibi website design
 const emailBaseStyles = `
@@ -52,17 +40,6 @@ const emailBaseStyles = `
 		background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
 		padding: 32px 40px;
 		text-align: center;
-	}
-	
-	.header-icon {
-		width: 56px;
-		height: 56px;
-		background: rgba(255, 255, 255, 0.2);
-		border-radius: 12px;
-		margin: 0 auto 16px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	}
 	
 	.header h1 {
@@ -105,12 +82,24 @@ const emailBaseStyles = `
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 15px;
-		box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
-		transition: all 0.2s;
 	}
 	
-	.button:hover {
-		box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+	.code-container {
+		text-align: center;
+		margin: 32px 0;
+	}
+	
+	.code-box {
+		display: inline-block;
+		background: linear-gradient(180deg, #262626 0%, #1a1a1a 100%);
+		border: 2px solid #f97316;
+		border-radius: 12px;
+		padding: 16px 32px;
+		font-size: 32px;
+		font-weight: 700;
+		color: #f97316;
+		font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+		letter-spacing: 8px;
 	}
 	
 	.info-box {
@@ -141,12 +130,6 @@ const emailBaseStyles = `
 		margin: 0;
 	}
 	
-	.divider {
-		height: 1px;
-		background: rgba(255, 255, 255, 0.1);
-		margin: 32px 0;
-	}
-	
 	.footer {
 		text-align: center;
 		padding: 24px 40px;
@@ -165,37 +148,31 @@ const emailBaseStyles = `
 		font-size: 13px;
 		margin: 0;
 	}
-	
-	.footer-links {
-		margin-top: 16px;
-	}
-	
-	.footer-links a {
-		color: #737373;
-		font-size: 12px;
-		text-decoration: none;
-		margin: 0 12px;
-	}
-	
-	.footer-links a:hover {
-		color: #f97316;
-	}
 </style>
 `
 
-// SendVerificationEmail sends email with 6-digit verification code via Resend
+// SendVerificationEmail sends email with 6-digit verification code via Mailtrap SMTP
 func SendVerificationEmail(recipientEmail string, recipientName string, verificationCode string) error {
-	apiKey := os.Getenv("RESEND_API_KEY")
-	if apiKey == "" {
-		log.Println("⚠️  RESEND_API_KEY not set, skipping email sending")
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPass := os.Getenv("SMTP_PASS")
+	fromEmail := os.Getenv("EMAIL_FROM")
+
+	if smtpHost == "" || smtpUser == "" || smtpPass == "" {
+		log.Println("⚠️  SMTP credentials not set, skipping email sending")
 		log.Printf("📧 [DEV] Verification code for %s: %s", recipientEmail, verificationCode)
 		return nil
 	}
 
-	fromEmail := os.Getenv("EMAIL_FROM")
 	if fromEmail == "" {
-		fromEmail = "Wibi <onboarding@resend.dev>"
+		fromEmail = "noreply@wibi.local"
 	}
+	if smtpPort == "" {
+		smtpPort = "587"
+	}
+
+	subject := "Your Wibi verification code: " + verificationCode
 
 	htmlContent := fmt.Sprintf(`
 <!DOCTYPE html>
@@ -205,42 +182,11 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Verify your email - Wibi</title>
 	%s
-	<style>
-		.code-container {
-			text-align: center;
-			margin: 32px 0;
-		}
-		.code-digits {
-			display: inline-flex;
-			gap: 8px;
-			justify-content: center;
-		}
-		.code-digit {
-			width: 48px;
-			height: 56px;
-			background: linear-gradient(180deg, #262626 0%%, #1a1a1a 100%%);
-			border: 2px solid #f97316;
-			border-radius: 12px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 28px;
-			font-weight: 700;
-			color: #f97316;
-			font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-		}
-	</style>
 </head>
 <body>
 	<div class="wrapper">
 		<div class="card">
 			<div class="header">
-				<div class="header-icon">
-					<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-						<polyline points="22 4 12 14.01 9 11.01"></polyline>
-					</svg>
-				</div>
 				<h1>Verify Your Email</h1>
 			</div>
 			
@@ -254,14 +200,7 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 				</p>
 				
 				<div class="code-container">
-					<div class="code-digits">
-						<div class="code-digit">%c</div>
-						<div class="code-digit">%c</div>
-						<div class="code-digit">%c</div>
-						<div class="code-digit">%c</div>
-						<div class="code-digit">%c</div>
-						<div class="code-digit">%c</div>
-					</div>
+					<div class="code-box">%s</div>
 				</div>
 				
 				<div class="info-box">
@@ -276,156 +215,115 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 			<div class="footer">
 				<p class="footer-logo">Wibi</p>
 				<p class="footer-text">Waktu Indonesia Berbagi Ilmu<br>Time Banking Skill Platform</p>
-				<div class="footer-links">
-					<a href="#">Help Center</a>
-					<a href="#">Privacy Policy</a>
-					<a href="#">Terms of Service</a>
-				</div>
 			</div>
 		</div>
 	</div>
 </body>
 </html>
-	`, emailBaseStyles, recipientName, 
-		verificationCode[0], verificationCode[1], verificationCode[2], 
-		verificationCode[3], verificationCode[4], verificationCode[5])
+	`, emailBaseStyles, recipientName, verificationCode)
 
-	textContent := fmt.Sprintf(
-		"Hello %s!\n\nWelcome to Wibi - Waktu Indonesia Berbagi Ilmu!\n\nYour verification code is: %s\n\nThis code will expire in 5 minutes.\n\nIf you didn't create an account, you can safely ignore this email.\n\n---\nWibi - Time Banking Skill Platform",
-		recipientName,
-		verificationCode,
-	)
-
-	request := ResendEmailRequest{
-		From:    fromEmail,
-		To:      []string{recipientEmail},
-		Subject: "✉️ Your Wibi verification code: " + verificationCode,
-		HTML:    htmlContent,
-		Text:    textContent,
-	}
-
-	return sendEmail(request, apiKey, recipientEmail, "verification")
+	return sendSMTPEmail(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, recipientEmail, subject, htmlContent)
 }
 
-// SendPasswordResetEmail sends password reset link via Resend
+// SendPasswordResetEmail sends password reset link via Mailtrap SMTP
 func SendPasswordResetEmail(recipientEmail string, recipientName string, resetLink string) error {
-	apiKey := os.Getenv("RESEND_API_KEY")
-	if apiKey == "" {
-		log.Println("⚠️  RESEND_API_KEY not set, skipping email sending")
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPass := os.Getenv("SMTP_PASS")
+	fromEmail := os.Getenv("EMAIL_FROM")
+
+	if smtpHost == "" || smtpUser == "" || smtpPass == "" {
+		log.Println("⚠️  SMTP credentials not set, skipping email sending")
 		log.Printf("📧 [DEV] Password reset link for %s: %s", recipientEmail, resetLink)
 		return nil
 	}
 
-	fromEmail := os.Getenv("EMAIL_FROM")
 	if fromEmail == "" {
-		fromEmail = "Wibi Security <onboarding@resend.dev>"
+		fromEmail = "security@wibi.local"
+	}
+	if smtpPort == "" {
+		smtpPort = "587"
 	}
 
+	subject := "Reset Your Wibi Password"
+
 	htmlContent := fmt.Sprintf(`
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Reset your password - Wibi</title>
-	%s
-</head>
-<body>
-	<div class="wrapper">
-		<div class="card">
-			<div class="header" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-				<div class="header-icon">
-					<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-						<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-					</svg>
-				</div>
-				<h1>Reset Your Password</h1>
-			</div>
-			
-			<div class="content">
-				<p class="greeting">Hello %s,</p>
-				<p class="text">
-					We received a request to reset your password for your Wibi account. Click the button below to create a new password:
-				</p>
-				
-				<div class="button-wrapper">
-					<a href="%s" class="button" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);">Reset Password</a>
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Reset your password - Wibi</title>
+		%s
+	</head>
+	<body>
+		<div class="wrapper">
+			<div class="card">
+				<div class="header" style="background: linear-gradient(135deg, #ef4444 0%%, #dc2626 100%%);">
+					<h1>Reset Your Password</h1>
 				</div>
 				
-				<div class="warning-box">
-					<p>⚠️ <strong>Security Notice:</strong> This link will expire in <strong>1 hour</strong>. If you didn't request this reset, you can safely ignore this email - your account is still secure.</p>
+				<div class="content">
+					<p class="greeting">Hello %s,</p>
+					<p class="text">
+						We received a request to reset your password for your Wibi account. Click the button below to create a new password:
+					</p>
+					
+					<div class="button-wrapper">
+						<a href="%s" class="button" style="background: linear-gradient(135deg, #ef4444 0%%, #dc2626 100%%);">Reset Password</a>
+					</div>
+					
+					<div class="warning-box">
+						<p>⚠️ <strong>Security Notice:</strong> This link will expire in <strong>1 hour</strong>. If you didn't request this reset, you can safely ignore this email.</p>
+					</div>
+					
+					<p class="text" style="font-size: 13px; color: #737373;">
+						<strong>Why did you receive this?</strong><br>
+						Someone (hopefully you) requested a password reset for your Wibi account.
+					</p>
 				</div>
 				
-				<div class="divider"></div>
-				
-				<p class="text" style="font-size: 13px; color: #737373;">
-					<strong>Why did you receive this?</strong><br>
-					Someone (hopefully you) requested a password reset for your Wibi account. If this wasn't you, your account is still secure and you can ignore this email.
-				</p>
-			</div>
-			
-			<div class="footer">
-				<p class="footer-logo">Wibi Security</p>
-				<p class="footer-text">Waktu Indonesia Berbagi Ilmu<br>Time Banking Skill Platform</p>
-				<div class="footer-links">
-					<a href="#">Help Center</a>
-					<a href="#">Privacy Policy</a>
-					<a href="#">Terms of Service</a>
+				<div class="footer">
+					<p class="footer-logo">Wibi Security</p>
+					<p class="footer-text">Waktu Indonesia Berbagi Ilmu<br>Time Banking Skill Platform</p>
 				</div>
 			</div>
 		</div>
-	</div>
-</body>
-</html>
+	</body>
+	</html>
 	`, emailBaseStyles, recipientName, resetLink)
 
-	textContent := fmt.Sprintf(
-		"Hello %s,\n\nWe received a request to reset your password for your Wibi account.\n\nClick the link below to create a new password:\n%s\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, you can safely ignore this email.\n\n---\nWibi Security - Time Banking Skill Platform",
-		recipientName,
-		resetLink,
-	)
-
-	request := ResendEmailRequest{
-		From:    fromEmail,
-		To:      []string{recipientEmail},
-		Subject: "🔐 Reset Your Wibi Password",
-		HTML:    htmlContent,
-		Text:    textContent,
-	}
-
-	return sendEmail(request, apiKey, recipientEmail, "password reset")
+	return sendSMTPEmail(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, recipientEmail, subject, htmlContent)
 }
 
-// sendEmail is a helper function to send emails via Resend API
-func sendEmail(request ResendEmailRequest, apiKey string, recipientEmail string, emailType string) error {
-	jsonData, err := json.Marshal(request)
-	if err != nil {
-		return fmt.Errorf("failed to marshal email request: %w", err)
+// sendSMTPEmail is a helper function to send emails via SMTP (Mailtrap)
+func sendSMTPEmail(host, port, username, password, from, to, subject, htmlBody string) error {
+	// SMTP authentication
+	auth := smtp.PlainAuth("", username, password, host)
+
+	// Build email headers and body
+	headers := make(map[string]string)
+	headers["From"] = from
+	headers["To"] = to
+	headers["Subject"] = subject
+	headers["MIME-Version"] = "1.0"
+	headers["Content-Type"] = "text/html; charset=UTF-8"
+
+	message := ""
+	for k, v := range headers {
+		message += fmt.Sprintf("%s: %s\r\n", k, v)
 	}
+	message += "\r\n" + htmlBody
 
-	req, err := http.NewRequest("POST", "https://api.resend.com/emails", bytes.NewBuffer(jsonData))
+	// Send email
+	addr := fmt.Sprintf("%s:%s", host, port)
+	err := smtp.SendMail(addr, auth, from, []string{to}, []byte(message))
 	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
+		log.Printf("❌ SMTP error: %v", err)
 		return fmt.Errorf("failed to send email: %w", err)
 	}
-	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
-
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		log.Printf("❌ Resend API error (status %d): %s", resp.StatusCode, string(body))
-		return fmt.Errorf("resend API error: %s", string(body))
-	}
-
-	log.Printf("✅ %s email sent to %s", emailType, recipientEmail)
+	log.Printf("✅ Email sent to %s (via Mailtrap)", to)
 	return nil
 }
