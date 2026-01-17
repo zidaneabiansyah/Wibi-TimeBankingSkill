@@ -426,26 +426,33 @@ func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
   // Verify token and extract email
   email, err := utils.VerifyPasswordResetToken(req.Token)
   if err != nil {
+    log.Printf("ResetPassword: token verification failed: %v", err)
     return err
   }
+  log.Printf("ResetPassword: token verified for email: %s", email)
 
   // Find user by email
   user, err := s.userRepo.GetByEmail(email)
   if err != nil {
+    log.Printf("ResetPassword: user not found: %v", err)
     return utils.ErrUserNotFound
   }
+  log.Printf("ResetPassword: found user ID: %d", user.ID)
 
   // Hash new password
   hashedPassword, err := utils.HashPassword(req.NewPassword)
   if err != nil {
+    log.Printf("ResetPassword: password hash failed: %v", err)
     return utils.ErrInternal
   }
+  log.Printf("ResetPassword: password hashed successfully")
 
-  // Update password
-  user.Password = hashedPassword
-  if err := s.userRepo.Update(user); err != nil {
+  // Update password only (avoid updating other fields that might cause issues)
+  if err := s.userRepo.UpdatePassword(user.ID, hashedPassword); err != nil {
+    log.Printf("ResetPassword: database update failed: %v", err)
     return utils.ErrInternal
   }
+  log.Printf("ResetPassword: password updated successfully for user ID: %d", user.ID)
 
   return nil
 }

@@ -1,7 +1,7 @@
 package repository
 
 import (
-  	"errors"
+  "errors"
 	"strconv"
 
 	"github.com/timebankingskill/backend/internal/models"
@@ -150,4 +150,12 @@ func (r *UserRepository) GetGrowthTrend(days int) ([]models.DailyStat, error) {
 	`, strconv.Itoa(days)+" days").Scan(&stats).Error
 
 	return stats, err
+}
+
+// UpdatePassword updates only the password field for a user
+func (r *UserRepository) UpdatePassword(userID uint, hashedPassword string) error {
+	return r.db.Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("password", hashedPassword).
+		Error
 }

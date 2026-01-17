@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/timebankingskill/backend/internal/dto"
@@ -218,6 +220,15 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 
   err := h.authService.ResetPassword(&req)
   if err != nil {
+    // Debug: log the actual error
+    log.Printf("DEBUG ResetPassword error: %v", err)
+    
+    // Token parse/validation errors should be 400, not 500
+    errStr := err.Error()
+    if strings.Contains(errStr, "token") || strings.Contains(errStr, "expired") || strings.Contains(errStr, "invalid") {
+      utils.SendError(c, http.StatusBadRequest, "Invalid or expired reset token. Please request a new password reset.", nil)
+      return
+    }
     utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }

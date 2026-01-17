@@ -175,15 +175,15 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 	subject := "Your Wibi verification code: " + verificationCode
 
 	htmlContent := fmt.Sprintf(`
-<!DOCTYPE html>
-<html>
-<head>
+	<!DOCTYPE html>
+	<html>
+	<head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Verify your email - Wibi</title>
 	%s
-</head>
-<body>
+	</head>
+	<body>
 	<div class="wrapper">
 		<div class="card">
 			<div class="header">
@@ -218,8 +218,8 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 			</div>
 		</div>
 	</div>
-</body>
-</html>
+	</body>
+	</html>
 	`, emailBaseStyles, recipientName, verificationCode)
 
 	return sendSMTPEmail(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, recipientEmail, subject, htmlContent)
