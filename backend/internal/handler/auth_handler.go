@@ -125,29 +125,54 @@ func (h *AuthHandler) Logout(c *gin.Context) {
   utils.SendSuccess(c, http.StatusOK, "Logout successful", nil)
 }
 
-// VerifyEmail handles email verification via link
-// @Summary Verify user email
+// VerifyEmail handles email verification via 6-digit code
+// @Summary Verify user email with code
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param token query string true "Verification token"
+// @Param request body dto.VerifyEmailRequest true "Email and verification code"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
-// @Router /auth/verify-email [get]
+// @Router /auth/verify-email [post]
 func (h *AuthHandler) VerifyEmail(c *gin.Context) {
-  token := c.Query("token")
-  if token == "" {
-    utils.SendError(c, http.StatusBadRequest, "Verification token is required", nil)
+  var req dto.VerifyEmailRequest
+  if err := c.ShouldBindJSON(&req); err != nil {
+    utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
     return
   }
 
-  err := h.authService.VerifyEmail(token)
+  err := h.authService.VerifyEmailWithCode(req.Email, req.Code)
   if err != nil {
     utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
     return
   }
 
-  utils.SendSuccess(c, http.StatusOK, "Email verified successfully", nil)
+  utils.SendSuccess(c, http.StatusOK, "Email verified successfully! You can now login.", nil)
+}
+
+// ResendVerificationCode sends a new verification code to the user
+// @Summary Resend verification code
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body dto.ResendCodeRequest true "Email"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /auth/resend-verification [post]
+func (h *AuthHandler) ResendVerificationCode(c *gin.Context) {
+  var req dto.ResendCodeRequest
+  if err := c.ShouldBindJSON(&req); err != nil {
+    utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
+    return
+  }
+
+  err := h.authService.ResendVerificationCode(req.Email)
+  if err != nil {
+    utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+    return
+  }
+
+  utils.SendSuccess(c, http.StatusOK, "New verification code has been sent to your email", nil)
 }
 
 // ForgotPassword handles password reset request

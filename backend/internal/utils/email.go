@@ -183,12 +183,12 @@ const emailBaseStyles = `
 </style>
 `
 
-// SendVerificationEmail sends email verification link via Resend
-func SendVerificationEmail(recipientEmail string, recipientName string, verificationLink string) error {
+// SendVerificationEmail sends email with 6-digit verification code via Resend
+func SendVerificationEmail(recipientEmail string, recipientName string, verificationCode string) error {
 	apiKey := os.Getenv("RESEND_API_KEY")
 	if apiKey == "" {
 		log.Println("⚠️  RESEND_API_KEY not set, skipping email sending")
-		log.Printf("📧 [DEV] Verification link for %s: %s", recipientEmail, verificationLink)
+		log.Printf("📧 [DEV] Verification code for %s: %s", recipientEmail, verificationCode)
 		return nil
 	}
 
@@ -205,6 +205,31 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Verify your email - Wibi</title>
 	%s
+	<style>
+		.code-container {
+			text-align: center;
+			margin: 32px 0;
+		}
+		.code-digits {
+			display: inline-flex;
+			gap: 8px;
+			justify-content: center;
+		}
+		.code-digit {
+			width: 48px;
+			height: 56px;
+			background: linear-gradient(180deg, #262626 0%%, #1a1a1a 100%%);
+			border: 2px solid #f97316;
+			border-radius: 12px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 28px;
+			font-weight: 700;
+			color: #f97316;
+			font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+		}
+	</style>
 </head>
 <body>
 	<div class="wrapper">
@@ -225,15 +250,22 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 					Welcome to Wibi - Waktu Indonesia Berbagi Ilmu! We're excited to have you join our community of skill sharers.
 				</p>
 				<p class="text">
-					Please verify your email address by clicking the button below to complete your registration:
+					Enter this verification code to complete your registration:
 				</p>
 				
-				<div class="button-wrapper">
-					<a href="%s" class="button">Verify Email Address</a>
+				<div class="code-container">
+					<div class="code-digits">
+						<div class="code-digit">%c</div>
+						<div class="code-digit">%c</div>
+						<div class="code-digit">%c</div>
+						<div class="code-digit">%c</div>
+						<div class="code-digit">%c</div>
+						<div class="code-digit">%c</div>
+					</div>
 				</div>
 				
 				<div class="info-box">
-					<p>⏰ This verification link will expire in <strong>24 hours</strong>.</p>
+					<p>⏰ This code will expire in <strong>5 minutes</strong>.</p>
 				</div>
 				
 				<p class="text" style="font-size: 13px; color: #737373;">
@@ -254,18 +286,20 @@ func SendVerificationEmail(recipientEmail string, recipientName string, verifica
 	</div>
 </body>
 </html>
-	`, emailBaseStyles, recipientName, verificationLink)
+	`, emailBaseStyles, recipientName, 
+		verificationCode[0], verificationCode[1], verificationCode[2], 
+		verificationCode[3], verificationCode[4], verificationCode[5])
 
 	textContent := fmt.Sprintf(
-		"Hello %s!\n\nWelcome to Wibi - Waktu Indonesia Berbagi Ilmu!\n\nPlease verify your email by visiting: %s\n\nThis link will expire in 24 hours.\n\nIf you didn't create an account, you can safely ignore this email.\n\n---\nWibi - Time Banking Skill Platform",
+		"Hello %s!\n\nWelcome to Wibi - Waktu Indonesia Berbagi Ilmu!\n\nYour verification code is: %s\n\nThis code will expire in 5 minutes.\n\nIf you didn't create an account, you can safely ignore this email.\n\n---\nWibi - Time Banking Skill Platform",
 		recipientName,
-		verificationLink,
+		verificationCode,
 	)
 
 	request := ResendEmailRequest{
 		From:    fromEmail,
 		To:      []string{recipientEmail},
-		Subject: "✉️ Verify your Wibi email address",
+		Subject: "✉️ Your Wibi verification code: " + verificationCode,
 		HTML:    htmlContent,
 		Text:    textContent,
 	}

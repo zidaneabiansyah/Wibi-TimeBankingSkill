@@ -126,24 +126,19 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
     log.Printf("ERROR: Failed to create initial transaction for user %d: %v", user.ID, err)
   }
 
-  // Generate verification token (24 hour expiry)
-  verificationToken, err := utils.GenerateEmailVerificationToken(user.Email)
-  if err != nil {
-    // User created but email sending will fail, continue anyway
-    // Return response so user knows to check email
+  // Generate 6-digit verification code (5 minute expiry)
+  verificationCode := utils.Generate6DigitCode()
+  codeExpiry := utils.GetVerificationCodeExpiry() // 5 minutes from now
+  
+  user.VerificationCode = verificationCode
+  user.VerificationCodeExpiry = &codeExpiry
+  
+  if err := s.userRepo.Update(user); err != nil {
+    log.Printf("ERROR: Failed to save verification code for user %d: %v", user.ID, err)
   }
 
-  // Build verification link - NOTE: Update this with your frontend URL
-  frontendURL := os.Getenv("FRONTEND_URL")
-  if frontendURL == "" {
-    frontendURL = "http://localhost:3000" // fallback for development
-  }
-  verificationLink := frontendURL + "/verify-email?token=" + verificationToken
-
-  // Send verification email
-  if verificationToken != "" {
-    _ = utils.SendVerificationEmail(user.Email, user.FullName, verificationLink)
-  }
+  // Send verification email with 6-digit code
+  _ = utils.SendVerificationEmail(user.Email, user.FullName, verificationCode)
 
   // Prepare response (no token yet, user must verify email first)
   response := &dto.AuthResponse{
@@ -265,41 +260,89 @@ func (s *AuthService) mapUserToProfile(user *models.User) dto.UserProfile {
   }
 }
 
-// VerifyEmail marks user email as verified using verification token
-// This method is called when user clicks the verification link in email
+// VerifyEmailWithCode marks user email as verified using 6-digit code
+// This method is called when user enters the verification code from email
 //
 // Verification Flow:
-//   1. Validates the verification token (JWT with 24 hour expiry)
-//   2. Extracts email from token claims
-//   3. Finds user by email
+//   1. Finds user by email
+//   2. Validates the 6-digit code matches
+//   3. Checks if code has not expired (5 minute validity)
 //   4. Updates is_verified flag to true
-//   5. Returns success message
+//   5. Clears the verification code
 //
 // Parameters:
-//   - token: JWT token containing user email and expiration
+//   - email: User's email address
+//   - code: 6-digit verification code from email
 //
 // Returns:
-//   - error: If token invalid, expired, user not found, or database error
-func (s *AuthService) VerifyEmail(token string) error {
-  // Verify token and extract email
-  email, err := utils.VerifyEmailToken(token)
-  if err != nil {
-    return err
-  }
-
+//   - error: If code invalid, expired, user not found, or database error
+func (s *AuthService) VerifyEmailWithCode(email string, code string) error {
   // Find user by email
-  user, err := s.userRepo.GetByEmail(email)
+  user, err := s.userRepo.GetByEmail(strings.ToLower(email))
   if err != nil {
     return utils.ErrUserNotFound
   }
 
-  // Update is_verified flag
+  // Check if already verified
+  if user.IsVerified {
+    return utils.ErrAlreadyVerified
+  }
+
+  // Check if verification code matches
+  if user.VerificationCode != code {
+    return utils.ErrInvalidVerificationCode
+  }
+
+  // Check if code has expired
+  if user.VerificationCodeExpiry == nil || user.VerificationCodeExpiry.Before(utils.Now()) {
+    return utils.ErrVerificationCodeExpired
+  }
+
+  // Update is_verified flag and clear code
   user.IsVerified = true
+  user.VerificationCode = ""
+  user.VerificationCodeExpiry = nil
+  
   if err := s.userRepo.Update(user); err != nil {
     return utils.ErrInternal
   }
 
   return nil
+}
+
+// ResendVerificationCode generates and sends a new verification code
+// Used when user didn't receive the original code or it expired
+//
+// Parameters:
+//   - email: User's email address
+//
+// Returns:
+//   - error: If user not found, already verified, or email sending fails
+func (s *AuthService) ResendVerificationCode(email string) error {
+  // Find user by email
+  user, err := s.userRepo.GetByEmail(strings.ToLower(email))
+  if err != nil {
+    return utils.ErrUserNotFound
+  }
+
+  // Check if already verified
+  if user.IsVerified {
+    return utils.ErrAlreadyVerified
+  }
+
+  // Generate new 6-digit verification code (5 minute expiry)
+  verificationCode := utils.Generate6DigitCode()
+  codeExpiry := utils.GetVerificationCodeExpiry()
+  
+  user.VerificationCode = verificationCode
+  user.VerificationCodeExpiry = &codeExpiry
+  
+  if err := s.userRepo.Update(user); err != nil {
+    return utils.ErrInternal
+  }
+
+  // Send verification email with new code
+  return utils.SendVerificationEmail(user.Email, user.FullName, verificationCode)
 }
 
 // ForgotPassword initiates password reset process

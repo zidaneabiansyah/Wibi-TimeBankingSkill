@@ -170,7 +170,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			// Strict limits for sensitive auth operations
 			auth.POST("/register", middleware.RateLimitMiddleware(10), authHandler.Register)
 			auth.POST("/login", middleware.RateLimitMiddleware(10), middleware.BruteForceMiddleware(loginTracker), authHandler.Login)
-			auth.GET("/verify-email", authHandler.VerifyEmail)
+			auth.POST("/verify-email", middleware.RateLimitMiddleware(10), authHandler.VerifyEmail)
+			auth.POST("/resend-verification", middleware.RateLimitMiddleware(3), authHandler.ResendVerificationCode)
 			auth.POST("/forgot-password", middleware.RateLimitMiddleware(5), authHandler.ForgotPassword)
 			auth.POST("/reset-password", middleware.RateLimitMiddleware(5), authHandler.ResetPassword)
 			auth.POST("/logout", middleware.AuthMiddleware(), authHandler.Logout)

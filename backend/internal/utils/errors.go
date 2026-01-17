@@ -50,4 +50,9 @@ var (
 	ErrFullNameRequired       = errors.New("full name is required")
 	ErrSchoolRequired         = errors.New("school is required")
 	ErrGradeRequired          = errors.New("grade is required")
+	
+	// Verification Errors
+	ErrAlreadyVerified           = errors.New("email is already verified")
+	ErrInvalidVerificationCode   = errors.New("invalid verification code")
+	ErrVerificationCodeExpired   = errors.New("verification code has expired, please request a new one")
 )

@@ -53,3 +53,14 @@ type ResetPasswordRequest struct {
   NewPassword     string `json:"new_password" binding:"required,min=6"`
   ConfirmPassword string `json:"confirm_password" binding:"required"`
 }
+
+// VerifyEmailRequest represents email verification with 6-digit code
+type VerifyEmailRequest struct {
+  Email string `json:"email" binding:"required,email"`
+  Code  string `json:"code" binding:"required,len=6"`
+}
+
+// ResendCodeRequest represents request to resend verification code
+type ResendCodeRequest struct {
+  Email string `json:"email" binding:"required,email"`
+}

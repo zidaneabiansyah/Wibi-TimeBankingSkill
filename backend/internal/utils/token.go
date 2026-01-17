@@ -87,6 +87,26 @@ func GenerateRandomToken(length int) (string, error) {
 	return hex.EncodeToString(b), nil
 }
 
+// Generate6DigitCode generates a random 6-digit verification code
+func Generate6DigitCode() string {
+	b := make([]byte, 3)
+	rand.Read(b)
+	// Convert to 6-digit number (100000-999999)
+	code := int(b[0])<<16 | int(b[1])<<8 | int(b[2])
+	code = (code % 900000) + 100000
+	return fmt.Sprintf("%06d", code)
+}
+
+// GetVerificationCodeExpiry returns the expiry time for verification codes (5 minutes)
+func GetVerificationCodeExpiry() time.Time {
+	return time.Now().Add(5 * time.Minute)
+}
+
+// Now returns the current time (useful for mocking in tests)
+func Now() time.Time {
+	return time.Now()
+}
+
 // GeneratePasswordResetToken generates a token for password reset (1 hour expiry)
 func GeneratePasswordResetToken(email string) (string, error) {
 	secret := os.Getenv("JWT_SECRET")

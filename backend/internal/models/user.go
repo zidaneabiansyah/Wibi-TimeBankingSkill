@@ -49,8 +49,10 @@ type User struct {
 	UserBadges     []UserBadge    `gorm:"foreignKey:UserID" json:"badges,omitempty"`
 	
 	// Account Status
-	IsActive  bool `gorm:"default:true" json:"is_active"`
-	IsVerified bool `gorm:"default:false" json:"is_verified"`
+	IsActive           bool       `gorm:"default:true" json:"is_active"`
+	IsVerified         bool       `gorm:"default:false" json:"is_verified"`
+	VerificationCode   string     `gorm:"size:6" json:"-"`
+	VerificationCodeExpiry *time.Time `json:"-"`
 }
 
 // TableName specifies the table name for User model
