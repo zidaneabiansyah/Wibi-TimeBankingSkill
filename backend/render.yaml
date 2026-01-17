@@ -1,9 +1,10 @@
 services:
   - type: web
     name: wibi-backend
-    env: docker
+    env: go
     plan: free
-    dockerfilePath: ./Dockerfile
+    buildCommand: go build -o main ./cmd/server
+    startCommand: ./main
     envVars:
       - key: PORT
         value: 8080
@@ -26,7 +27,7 @@ services:
       - key: JWT_EXPIRY
         value: 168h
       - key: ALLOWED_ORIGINS
-        value: https://your-frontend.vercel.app
+        value: https://wibi-waktuindonesiaberbagiilmu.vercel.app
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY
