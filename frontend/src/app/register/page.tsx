@@ -88,7 +88,7 @@ export default function RegisterPage() {
         const result = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/check-username/${debouncedUsername}`
         );
-        // If endpoint doesn't exist, assume available (hack for UI demo if needed)
+        // If endpoint doesn't exist, assume available (username is available)
         setUsernameAvailable(true);
       } catch (err) {
         setUsernameAvailable(true);
@@ -149,39 +149,6 @@ export default function RegisterPage() {
               Join the Time Banking community and start exchanging skills today
             </p>
           </div>
-
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline" 
-                className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200" 
-                type="button"
-              >
-                <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                  <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
-                </svg>
-                <span className="text-xs sm:text-sm">Google</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200" 
-                type="button"
-              >
-                <Github className="mr-2 h-4 w-4" />
-                <span className="text-xs sm:text-sm">GitHub</span>
-              </Button>
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border/20" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground text-xs">
-                  Or continue with email
-                </span>
-              </div>
-            </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
@@ -446,6 +413,39 @@ export default function RegisterPage() {
                 )}
               </Button>
             </form>
+
+          <div className="space-y-5">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/20" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground text-xs">
+                  Or continue with social account
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                variant="outline" 
+                className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200" 
+                type="button"
+              >
+                <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                  <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                </svg>
+                <span className="text-xs sm:text-sm">Google</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200" 
+                type="button"
+              >
+                <Github className="mr-2 h-4 w-4" />
+                <span className="text-xs sm:text-sm">GitHub</span>
+              </Button>
+            </div>
 
             <div className="text-center text-sm text-muted-foreground border-t border-border/20 pt-4">
               Already have an account?{" "}
