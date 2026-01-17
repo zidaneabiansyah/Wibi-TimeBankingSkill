@@ -7,6 +7,7 @@ import { AdminProvider } from "@/components/auth/AdminProvider";
 import AchievementPopup from "@/components/gamification/AchievementPopup";
 import { PWAProvider } from "@/components/providers/pwa-provider";
 import { MobileOptimization } from "@/components/mobile-optimization";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -106,6 +107,7 @@ export default function RootLayout({
               <AdminProvider>
                 <AuthProvider>
                   {children}
+                <Analytics />
                 </AuthProvider>
               </AdminProvider>
               <AchievementPopup />
