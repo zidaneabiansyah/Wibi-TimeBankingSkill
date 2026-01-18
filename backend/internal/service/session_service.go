@@ -2,14 +2,16 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"time"
-	"log"
 
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/repository"
 	"github.com/timebankingskill/backend/internal/utils"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type NotificationServiceInterface interface {
@@ -21,6 +23,7 @@ type BadgeServiceInterface interface {
 }
 
 type SessionService struct {
+	db                  *gorm.DB
 	sessionRepo         repository.SessionRepositoryInterface
 	userRepo            repository.UserRepositoryInterface
 	transactionRepo     repository.TransactionRepositoryInterface
@@ -30,6 +33,7 @@ type SessionService struct {
 }
 
 func NewSessionService(
+	db *gorm.DB,
 	sessionRepo repository.SessionRepositoryInterface,
 	userRepo repository.UserRepositoryInterface,
 	transactionRepo repository.TransactionRepositoryInterface,
@@ -38,6 +42,7 @@ func NewSessionService(
 	notificationService NotificationServiceInterface,
 ) *SessionService {
 	return &SessionService{
+		db:                  db,
 		sessionRepo:         sessionRepo,
 		userRepo:            userRepo,
 		transactionRepo:     transactionRepo,
@@ -52,12 +57,12 @@ func NewSessionService(
 //   1. Validates teacher skill exists and is available
 //   2. Checks student has sufficient credit balance
 //   3. Validates no duplicate active session exists
-//   4. Creates session with "pending" status
+//   4. Creates session with "pending" status (atomic with row locking)
 //   5. Sends notification to teacher
 //
 // Credit Handling:
-//   - Credits are NOT deducted at booking time
-//   - Credits are held in escrow when teacher approves
+//   - Credits are held in escrow using database transaction with row locking
+//   - This prevents race conditions where concurrent bookings bypass credit check
 //   - Credits are transferred when session completes
 //
 // Parameters:
@@ -75,7 +80,7 @@ func NewSessionService(
 //     ScheduledAt: time.Now().Add(24 * time.Hour),
 //   })
 func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionRequest) (*dto.SessionResponse, error) {
-	// Get the user skill to find the teacher
+	// Get the user skill to find the teacher (outside transaction - read-only)
 	userSkill, err := s.skillRepo.GetUserSkillByID(req.UserSkillID)
 	if err != nil {
 		return nil, utils.ErrSkillNotFound
@@ -100,22 +105,10 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		return nil, utils.ErrSessionConflict
 	}
 
-	// Get student to check credit balance
-	student, err := s.userRepo.GetByID(studentID)
-	if err != nil {
-		return nil, utils.ErrUserNotFound
-	}
-
 	// Calculate credit amount
 	creditAmount := req.Duration * userSkill.HourlyRate
 	if creditAmount == 0 {
 		creditAmount = req.Duration // Default 1:1 ratio
-	}
-
-	// Check if student has enough credits (Available = Total - Held)
-	availableBalance := student.CreditBalance - student.CreditHeld
-	if availableBalance < creditAmount {
-		return nil, utils.ErrInsufficientCredits
 	}
 
 	// Validate scheduled time is in the future
@@ -123,58 +116,83 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		return nil, utils.ErrInvalidSchedule
 	}
 
-	// CREDIT HOLD PHASE: Mark credits as held immediately upon booking
-	// These credits are now in escrow and cannot be used for other sessions
-	student.CreditHeld += creditAmount
-	if err := s.userRepo.Update(student); err != nil {
-		return nil, utils.ErrInternal
-	}
+	// Variable to hold session ID for response
+	var createdSessionID uint
 
-	// Create session
-	session := &models.Session{
-		TeacherID:    userSkill.UserID,
-		StudentID:    studentID,
-		UserSkillID:  req.UserSkillID,
-		Title:        req.Title,
-		Description:  req.Description,
-		Duration:     req.Duration,
-		Mode:         models.SessionMode(req.Mode),
-		ScheduledAt:  &req.ScheduledAt,
-		Location:     req.Location,
-		MeetingLink:  req.MeetingLink,
-		CreditAmount: creditAmount,
-		Status:       models.StatusPending,
-		CreditHeld:   true, // Credits are now held
-	}
+	// CRITICAL: Use database transaction with row locking to prevent race conditions
+	// This ensures atomicity: either all operations succeed or none do
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		// Step 1: Lock user row with SELECT FOR UPDATE to prevent concurrent modifications
+		var student models.User
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			First(&student, studentID).Error; err != nil {
+			return utils.ErrUserNotFound
+		}
 
-	if err := s.sessionRepo.Create(session); err != nil {
-		// Rollback credit hold if session creation fails
-		student.CreditHeld -= creditAmount
-		_ = s.userRepo.Update(student)
-		return nil, fmt.Errorf("failed to create session: %v", err)
-	}
+		// Step 2: Check if student has enough credits (with locked row data)
+		availableBalance := student.CreditBalance - student.CreditHeld
+		if availableBalance < creditAmount {
+			return utils.ErrInsufficientCredits
+		}
 
-	// Record the hold transaction for audit trail
-	holdTransaction := &models.Transaction{
-		UserID:        studentID,
-		Type:          models.TransactionHold,
-		Amount:        creditAmount,
-		BalanceBefore: student.CreditBalance,
-		BalanceAfter:  student.CreditBalance,
-		Description:   "Credit hold for session booking: " + session.Title,
-		SessionID:     &session.ID,
-	}
-	if err := s.transactionRepo.Create(holdTransaction); err != nil {
-		log.Printf("ERROR: Failed to create hold transaction for session %d: %v", session.ID, err)
-	}
+		// Step 3: Hold credits (atomic update within transaction)
+		student.CreditHeld += creditAmount
+		if err := tx.Save(&student).Error; err != nil {
+			return utils.ErrInternal
+		}
 
-	// Reload session with relationships
-	session, err = s.sessionRepo.GetByID(session.ID)
+		// Step 4: Create session within the same transaction
+		session := &models.Session{
+			TeacherID:    userSkill.UserID,
+			StudentID:    studentID,
+			UserSkillID:  req.UserSkillID,
+			Title:        req.Title,
+			Description:  req.Description,
+			Duration:     req.Duration,
+			Mode:         models.SessionMode(req.Mode),
+			ScheduledAt:  &req.ScheduledAt,
+			Location:     req.Location,
+			MeetingLink:  req.MeetingLink,
+			CreditAmount: creditAmount,
+			Status:       models.StatusPending,
+			CreditHeld:   true,
+		}
+
+		if err := tx.Create(session).Error; err != nil {
+			return fmt.Errorf("failed to create session: %v", err)
+		}
+
+		createdSessionID = session.ID
+
+		// Step 5: Record the hold transaction for audit trail
+		holdTransaction := &models.Transaction{
+			UserID:        studentID,
+			Type:          models.TransactionHold,
+			Amount:        creditAmount,
+			BalanceBefore: student.CreditBalance,
+			BalanceAfter:  student.CreditBalance,
+			Description:   "Credit hold for session booking: " + session.Title,
+			SessionID:     &session.ID,
+		}
+		if err := tx.Create(holdTransaction).Error; err != nil {
+			log.Printf("ERROR: Failed to create hold transaction for session %d: %v", session.ID, err)
+			// Continue even if transaction record fails - session is more important
+		}
+
+		return nil // Commit transaction
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	// Send notification to teacher about new session request
+	// Reload session with relationships (outside transaction)
+	session, err := s.sessionRepo.GetByID(createdSessionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Send notification to teacher about new session request (outside transaction)
 	studentUser, _ := s.userRepo.GetByID(studentID)
 	skill, _ := s.skillRepo.GetByID(userSkill.SkillID)
 	notificationData := map[string]interface{}{
@@ -190,6 +208,7 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		notificationData,
 	)
 
+	log.Printf("✅ Session %d booked successfully with transaction (credit: %.2f held for user %d)", createdSessionID, creditAmount, studentID)
 	return dto.MapSessionToResponse(session), nil
 }
 

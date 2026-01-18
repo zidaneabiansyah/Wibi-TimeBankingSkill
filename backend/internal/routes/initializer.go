@@ -71,6 +71,7 @@ func InitializeSessionHandler(db *gorm.DB) *handler.SessionHandler {
 	badgeService := service.NewBadgeService(badgeRepo, userRepo, sessionRepo, notificationService)
 
 	sessionService := service.NewSessionService(
+		db,
 		sessionRepo,
 		userRepo,
 		transactionRepo,

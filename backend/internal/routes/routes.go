@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -71,12 +72,14 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		userName := "User " + fmt.Sprint(userID) 
 		sessionIDStr := c.Param("sessionId")
 
-		var sessionID uint
-		if _, err := fmt.Sscanf(sessionIDStr, "%d", &sessionID); err != nil {
+		// Secure input validation using strconv.ParseUint
+		sessionIDParsed, err := strconv.ParseUint(sessionIDStr, 10, 32)
+		if err != nil || sessionIDParsed == 0 {
 			log.Printf("❌ Whiteboard WS: Invalid session ID: %s", sessionIDStr)
 			c.JSON(400, gin.H{"error": "Invalid session ID"})
 			return
 		}
+		sessionID := uint(sessionIDParsed)
 
 		upgrader := websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool { return true },
@@ -119,12 +122,14 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		userName := "User " + fmt.Sprint(userID) 
 		sessionIDStr := c.Param("sessionId")
 
-		var sessionID uint
-		if _, err := fmt.Sscanf(sessionIDStr, "%d", &sessionID); err != nil {
+		// Secure input validation using strconv.ParseUint
+		sessionIDParsed, err := strconv.ParseUint(sessionIDStr, 10, 32)
+		if err != nil || sessionIDParsed == 0 {
 			log.Printf("❌ Video WS: Invalid session ID: %s", sessionIDStr)
 			c.JSON(400, gin.H{"error": "Invalid session ID"})
 			return
 		}
+		sessionID := uint(sessionIDParsed)
 
 		upgrader := websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool { return true },
