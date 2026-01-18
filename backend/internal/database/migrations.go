@@ -169,6 +169,16 @@ func createPerformanceIndexes(db *gorm.DB) error {
 		// ===== AVAILABILITY INDEXES (Scheduling) =====
 		// Teacher availability by day
 		"CREATE INDEX IF NOT EXISTS idx_availability_user_day ON availabilities(user_id, day_of_week, is_active) WHERE is_active = true",
+		
+		// ===== CREDIT ESCROW INDEXES (Audit Recommendation) =====
+		// Users with held credits (for escrow queries)
+		"CREATE INDEX IF NOT EXISTS idx_users_credit_held ON users(credit_held) WHERE credit_held > 0",
+		// Session credit status (for credit release/hold queries)
+		"CREATE INDEX IF NOT EXISTS idx_sessions_credit_status ON sessions(credit_held, credit_released) WHERE status IN ('approved', 'in_progress')",
+		// Transaction type filtering with user
+		"CREATE INDEX IF NOT EXISTS idx_transactions_type_user ON transactions(type, user_id, created_at DESC)",
+		// User skills price sorting (marketplace)
+		"CREATE INDEX IF NOT EXISTS idx_user_skills_price ON user_skills(hourly_rate ASC) WHERE is_available = true",
 	}
 
 	// Execute all index creation queries

@@ -25,6 +25,9 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	// Global security headers
 	router.Use(middleware.SecurityHeadersMiddleware())
 
+	// Gzip compression for responses (reduces bandwidth by 60-80%)
+	router.Use(middleware.GzipMiddleware())
+
 	// Initialize brute force tracker
 	loginTracker := middleware.NewLoginBruteForceTracker(10, 5*time.Minute)
 
