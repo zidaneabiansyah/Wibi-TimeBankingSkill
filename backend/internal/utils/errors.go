@@ -39,7 +39,7 @@ var (
 
 	ErrUsernameTaken    = errors.New("username already taken")
 	ErrInvalidPassword  = errors.New("invalid current password")
-	ErrPasswordTooShort = errors.New("password must be at least 6 characters")
+	ErrPasswordTooShort = errors.New("password must be at least 8 characters")
 
 	ErrEmailAlreadyRegistered = errors.New("email already registered")
 	ErrInvalidCredentials      = errors.New("invalid email or password")

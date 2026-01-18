@@ -221,24 +221,26 @@ func (s *AuthService) GetProfile(userID uint) (*dto.UserProfile, error) {
   return &profile, nil
 }
 
-// validateRegistration validates registration request
+// validateRegistration validates registration request with strong password policy
 func (s *AuthService) validateRegistration(req *dto.RegisterRequest) error {
-  if len(req.Password) < 6 {
-    return utils.ErrPasswordTooShort
-  }
-  if len(req.Username) < 3 {
-    return utils.ErrUsernameTooShort
-  }
-  if req.FullName == "" {
-    return utils.ErrFullNameRequired
-  }
-  if req.School == "" {
-    return utils.ErrSchoolRequired
-  }
-  if req.Grade == "" {
-    return utils.ErrGradeRequired
-  }
-  return nil
+	// Validate password with strong policy (8+ chars, uppercase, lowercase, number, special char)
+	// Also ensure password doesn't contain email
+	if err := utils.ValidatePasswordWithEmail(req.Password, req.Email); err != nil {
+		return err
+	}
+	if len(req.Username) < 3 {
+		return utils.ErrUsernameTooShort
+	}
+	if req.FullName == "" {
+		return utils.ErrFullNameRequired
+	}
+	if req.School == "" {
+		return utils.ErrSchoolRequired
+	}
+	if req.Grade == "" {
+		return utils.ErrGradeRequired
+	}
+	return nil
 }
 
 // mapUserToProfile maps user model to profile DTO
@@ -413,15 +415,15 @@ func (s *AuthService) ForgotPassword(req *dto.ForgotPasswordRequest) error {
 // Returns:
 //   - error: If token invalid, expired, passwords don't match, or database error
 func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
-  // Validate passwords match
-  if req.NewPassword != req.ConfirmPassword {
-    return utils.ErrPasswordsDoNotMatch
-  }
+  	// Validate passwords match
+	if req.NewPassword != req.ConfirmPassword {
+		return utils.ErrPasswordsDoNotMatch
+	}
 
-  // Validate password strength
-  if len(req.NewPassword) < 6 {
-    return utils.ErrPasswordTooShort
-  }
+	// Validate password strength with strong policy
+	if err := utils.ValidatePassword(req.NewPassword); err != nil {
+		return err
+	}  
 
   // Verify token and extract email
   email, err := utils.VerifyPasswordResetToken(req.Token)
