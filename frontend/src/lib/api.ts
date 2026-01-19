@@ -1,10 +1,11 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { ApiResponse } from '@/types';
 
-// Create axios instance
+// Create axios instance with cookie support
 const api: AxiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1',
     timeout: 30000,
+    withCredentials: true, // Enable cookie support (httpOnly cookies)
     headers: {
         'Content-Type': 'application/json',
     },
@@ -50,9 +51,18 @@ api.interceptors.response.use(
         if (error.response) {
             const { status, data } = error.response;
 
-            // Unauthorized - Clear token and redirect to login
+            // Unauthorized - Clear cookies via logout API
             if (status === 401) {
-                // Clear all auth tokens
+                // Call logout API to clear httpOnly cookie
+                // Don't await to avoid blocking the error
+                fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include', // Include cookies
+                }).catch(() => {
+                    // Ignore logout errors
+                });
+
+                // Clear localStorage tokens (backward compatible)
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 localStorage.removeItem('admin_token');
