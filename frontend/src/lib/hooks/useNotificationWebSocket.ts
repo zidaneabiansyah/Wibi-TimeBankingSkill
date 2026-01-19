@@ -51,7 +51,7 @@ export function useNotificationWebSocket() {
         // Get token from localStorage
         const token = localStorage.getItem('token');
         if (!token) {
-            console.warn('No token found for WebSocket connection');
+            console.warn('⚠️ No token found for WebSocket connection');
             return;
         }
 
@@ -63,49 +63,71 @@ export function useNotificationWebSocket() {
             // Add token as query parameter for WebSocket auth
             const wsUrl = `${protocol}//${baseUrl}/api/v1/ws/notifications?token=${token}`;
 
-            wsRef.current = new WebSocket(wsUrl);
-
-            wsRef.current.onopen = () => {
-                setConnected(true);
-                reconnectAttemptsRef.current = 0;
-            };
-
-            wsRef.current.onmessage = (event) => {
-                try {
-                    const notification: Notification = JSON.parse(event.data);
-                    addNotification(notification);
-
-                    // Show toast for new notifications
-                    toast.success(notification.title, {
-                        description: notification.message,
-                    });
-                } catch (error) {
-                    console.error('Failed to parse notification:', error);
+            // Check if backend is reachable before attempting WebSocket connection
+            // This prevents console errors when backend is not running
+            fetch(`${apiUrl.replace('/api/v1', '')}/health`, { 
+                method: 'GET',
+                signal: AbortSignal.timeout(3000) // 3 second timeout
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.warn('⚠️ Backend health check failed, skipping WebSocket connection');
+                    return;
                 }
-            };
+                
+                // Backend is healthy, proceed with WebSocket connection
+                wsRef.current = new WebSocket(wsUrl);
 
-            wsRef.current.onerror = () => {
+                wsRef.current.onopen = () => {
+                    setConnected(true);
+                    reconnectAttemptsRef.current = 0;
+                    console.log('✅ WebSocket connected');
+                };
+
+                wsRef.current.onmessage = (event) => {
+                    try {
+                        const notification: Notification = JSON.parse(event.data);
+                        addNotification(notification);
+
+                        // Show toast for new notifications
+                        toast.success(notification.title, {
+                            description: notification.message,
+                        });
+                    } catch (error) {
+                        console.error('❌ Failed to parse notification:', error);
+                    }
+                };
+
+                wsRef.current.onerror = (error) => {
+                    console.warn('⚠️ WebSocket error (backend may be offline)');
+                    setConnected(false);
+                };
+
+                wsRef.current.onclose = () => {
+                    setConnected(false);
+                    wsRef.current = null;
+
+                    // Only attempt to reconnect if not intentional disconnect
+                    if (!isIntentionalDisconnectRef.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
+                        const delay = getReconnectDelay();
+                        console.log(`🔄 WebSocket reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current + 1}/${maxReconnectAttempts})`);
+
+                        reconnectTimeoutRef.current = setTimeout(() => {
+                            reconnectAttemptsRef.current += 1;
+                            connect();
+                        }, delay);
+                    } else if (!isIntentionalDisconnectRef.current && reconnectAttemptsRef.current >= maxReconnectAttempts) {
+                        console.warn('⚠️ Max WebSocket reconnection attempts reached. Backend may be offline.');
+                    }
+                };
+            })
+            .catch((error) => {
+                // Backend is not reachable, skip WebSocket connection silently
+                console.warn('⚠️ Backend not reachable, WebSocket connection skipped');
                 setConnected(false);
-            };
-
-            wsRef.current.onclose = () => {
-                setConnected(false);
-                wsRef.current = null;
-
-                // Only attempt to reconnect if not intentional disconnect
-                if (!isIntentionalDisconnectRef.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
-                    const delay = getReconnectDelay();
-
-                    reconnectTimeoutRef.current = setTimeout(() => {
-                        reconnectAttemptsRef.current += 1;
-                        connect();
-                    }, delay);
-                } else if (!isIntentionalDisconnectRef.current && reconnectAttemptsRef.current >= maxReconnectAttempts) {
-                    console.error('❌ Max reconnection attempts reached');
-                }
-            };
+            });
         } catch (error) {
-            console.error('Failed to connect to WebSocket:', error);
+            console.error('❌ Failed to initialize WebSocket:', error);
             setConnected(false);
         }
     };

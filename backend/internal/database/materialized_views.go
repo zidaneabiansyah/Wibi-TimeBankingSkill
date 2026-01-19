@@ -40,10 +40,10 @@ func CreateMaterializedViews(db *gorm.DB) error {
 					COUNT(ub.id) AS badge_count,
 					COALESCE(SUM(
 						CASE 
-							WHEN b.rarity = 'legendary' THEN 10
-							WHEN b.rarity = 'epic' THEN 5
-							WHEN b.rarity = 'rare' THEN 3
-							WHEN b.rarity = 'uncommon' THEN 2
+							WHEN b.rarity = 5 THEN 10
+							WHEN b.rarity = 4 THEN 5
+							WHEN b.rarity = 3 THEN 3
+							WHEN b.rarity = 2 THEN 2
 							ELSE 1 
 						END
 					), 0) AS rarity_score
