@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "log"
+  "time"
 
   "github.com/gin-gonic/gin"
   "github.com/timebankingskill/backend/internal/config"
@@ -56,6 +57,15 @@ func main() {
   if err := database.SeedInitialData(); err != nil {
     log.Printf("⚠️  Warning: Failed to seed data: %v", err)
   }
+
+  // Create materialized views for query optimization
+  if err := database.CreateMaterializedViews(database.DB); err != nil {
+    log.Printf("⚠️  Warning: Failed to create materialized views: %v", err)
+  }
+
+  // Start materialized view auto-refresher (every 10 minutes)
+  stopRefresher := database.StartMaterializedViewRefresher(database.DB, 10*time.Minute)
+  defer close(stopRefresher)
 
   // Initialize Gin router
   router := gin.New()

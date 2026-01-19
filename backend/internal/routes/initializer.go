@@ -12,10 +12,11 @@ import (
 )
 
 // InitializeAuthHandler initializes auth handler with dependencies
+// Uses NewAuthServiceWithDB for one-time password reset token support
 func InitializeAuthHandler(db *gorm.DB, tracker *middleware.LoginBruteForceTracker) *handler.AuthHandler {
 	userRepo := repository.NewUserRepository(db)
 	transactionRepo := repository.NewTransactionRepository(db)
-	authService := service.NewAuthService(userRepo, transactionRepo)
+	authService := service.NewAuthServiceWithDB(userRepo, transactionRepo, db)
 	return handler.NewAuthHandler(authService, tracker)
 }
 
