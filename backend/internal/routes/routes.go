@@ -15,6 +15,7 @@ import (
 	"github.com/timebankingskill/backend/internal/config"
 	"github.com/timebankingskill/backend/internal/middleware"
 	"github.com/timebankingskill/backend/internal/models"
+	"github.com/timebankingskill/backend/internal/repository"
 	"github.com/timebankingskill/backend/internal/utils"
 	whiteboardws "github.com/timebankingskill/backend/internal/websocket"
 	"gorm.io/gorm"
@@ -52,6 +53,9 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	availabilityHandler := InitializeAvailabilityHandler(db)
 	favoriteHandler := InitializeFavoriteHandler(db)
 	templateHandler := InitializeTemplateHandler(db)
+
+	// Initialize repository for IDOR middleware
+	sessionRepo := repository.NewSessionRepository(db)
 
 	// WebSocket endpoints (manually handle auth since headers aren't sent in WS handshake)
 	router.GET("/api/v1/ws/whiteboard/:sessionId", func(c *gin.Context) {
@@ -329,39 +333,97 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				analytics.POST("/export", analyticsHandler.ExportAnalytics)       // POST /api/v1/analytics/export
 			}
 
-			// Sessions routes
+			// Sessions routes (with IDOR protection)
 			sessions := protected.Group("/sessions")
 			{
 				sessions.POST("", sessionHandler.BookSession)                    // POST /api/v1/sessions - Book a session
 				sessions.GET("", sessionHandler.GetUserSessions)                 // GET /api/v1/sessions - Get user's sessions
 				sessions.GET("/upcoming", sessionHandler.GetUpcomingSessions)    // GET /api/v1/sessions/upcoming
 				sessions.GET("/pending", sessionHandler.GetPendingRequests)      // GET /api/v1/sessions/pending - Teacher's pending requests
-				sessions.GET("/:id", sessionHandler.GetSession)                  // GET /api/v1/sessions/:id
-				sessions.POST("/:id/approve", sessionHandler.ApproveSession)     // POST /api/v1/sessions/:id/approve
-				sessions.POST("/:id/reject", sessionHandler.RejectSession)       // POST /api/v1/sessions/:id/reject
-				sessions.POST("/:id/checkin", sessionHandler.CheckIn)            // POST /api/v1/sessions/:id/checkin - Check in for session
-				sessions.POST("/:id/start", sessionHandler.StartSession)         // POST /api/v1/sessions/:id/start (legacy)
-				sessions.POST("/:id/complete", sessionHandler.ConfirmCompletion) // POST /api/v1/sessions/:id/complete
-				sessions.POST("/:id/cancel", sessionHandler.CancelSession)       // POST /api/v1/sessions/:id/cancel
-				sessions.POST("/:id/dispute", sessionHandler.DisputeSession)     // POST /api/v1/sessions/:id/dispute
+				
+				// Protected session routes (IDOR prevention)
+				sessions.GET("/:id", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sessionHandler.GetSession)                  
+				
+				sessions.POST("/:id/approve", 
+					middleware.RequireSessionTeacher(sessionRepo),
+					sessionHandler.ApproveSession)     
+				
+				sessions.POST("/:id/reject", 
+					middleware.RequireSessionTeacher(sessionRepo),
+					sessionHandler.RejectSession)       
+				
+				sessions.POST("/:id/checkin", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sessionHandler.CheckIn)            
+				
+				sessions.POST("/:id/start", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sessionHandler.StartSession)         
+				
+				sessions.POST("/:id/complete", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sessionHandler.ConfirmCompletion) 
+				
+				sessions.POST("/:id/cancel", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sessionHandler.CancelSession)       
+				
+				sessions.POST("/:id/dispute", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sessionHandler.DisputeSession)     
 
-				// Video session routes
-				sessions.POST("/:id/video/start", videoSessionHandler.StartVideoSession)     // POST /api/v1/sessions/:id/video/start
-				sessions.GET("/:id/video/status", videoSessionHandler.GetVideoSessionStatus) // GET /api/v1/sessions/:id/video/status
-				sessions.POST("/:id/video/end", videoSessionHandler.EndVideoSession)         // POST /api/v1/sessions/:id/video/end
+				// Video session routes (participants only)
+				sessions.POST("/:id/video/start", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					videoSessionHandler.StartVideoSession)     
+				
+				sessions.GET("/:id/video/status", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					videoSessionHandler.GetVideoSessionStatus) 
+				
+				sessions.POST("/:id/video/end", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					videoSessionHandler.EndVideoSession)         
 
-				// File sharing routes
-				sessions.POST("/:id/files/upload", sharedFileHandler.UploadFile)             // POST /api/v1/sessions/:id/files/upload
-				sessions.GET("/:id/files", sharedFileHandler.GetSessionFiles)                // GET /api/v1/sessions/:id/files
-				sessions.GET("/:id/files/stats", sharedFileHandler.GetSessionFileStats)      // GET /api/v1/sessions/:id/files/stats
-				sessions.POST("/:id/files/download/:fileId", sharedFileHandler.GetFile)      // GET /api/v1/sessions/:id/files/:fileId
+				// File sharing routes (participants only)
+				sessions.POST("/:id/files/upload", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sharedFileHandler.UploadFile)             
+				
+				sessions.GET("/:id/files", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sharedFileHandler.GetSessionFiles)                
+				
+				sessions.GET("/:id/files/stats", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sharedFileHandler.GetSessionFileStats)      
+				
+				sessions.POST("/:id/files/download/:fileId", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					sharedFileHandler.GetFile)      
 
-				// Whiteboard routes
-				sessions.GET("/:id/whiteboard", whiteboardHandler.GetOrCreateWhiteboard)     // GET /api/v1/sessions/:id/whiteboard
-				sessions.POST("/:id/whiteboard/save", whiteboardHandler.SaveDrawing)         // POST /api/v1/sessions/:id/whiteboard/save
-				sessions.POST("/:id/whiteboard/clear", whiteboardHandler.ClearWhiteboard)    // POST /api/v1/sessions/:id/whiteboard/clear
-				sessions.GET("/:id/whiteboard/data", whiteboardHandler.GetWhiteboard)        // GET /api/v1/sessions/:id/whiteboard/data
-				sessions.DELETE("/:id/whiteboard", whiteboardHandler.DeleteWhiteboard)       // DELETE /api/v1/sessions/:id/whiteboard
+				// Whiteboard routes (participants only)
+				sessions.GET("/:id/whiteboard", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					whiteboardHandler.GetOrCreateWhiteboard)     
+				
+				sessions.POST("/:id/whiteboard/save", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					whiteboardHandler.SaveDrawing)         
+				
+				sessions.POST("/:id/whiteboard/clear", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					whiteboardHandler.ClearWhiteboard)    
+				
+				sessions.GET("/:id/whiteboard/data", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					whiteboardHandler.GetWhiteboard)        
+				
+				sessions.DELETE("/:id/whiteboard", 
+					middleware.RequireSessionParticipant(sessionRepo),
+					whiteboardHandler.DeleteWhiteboard)       
 			}
 
 			// Progress Tracking routes

@@ -85,6 +85,10 @@ func (h *AuthHandler) Login(c *gin.Context) {
   if h.tracker != nil {
     h.tracker.Reset(c.ClientIP())
   }
+
+  // Set httpOnly cookie for security (protects from XSS)
+  utils.SetAuthCookie(c, response.Token)
+
   utils.SendSuccess(c, http.StatusOK, "Login successful", response)
 }
 
@@ -122,8 +126,10 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
 // @Success 200 {object} utils.SuccessResponse
 // @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
-  // Since we're using JWT, logout is handled client-side by removing the token
-  // This endpoint is just for consistency and can be used for logging/analytics
+  // Clear httpOnly cookie
+  utils.ClearAuthCookie(c)
+
+  // Also support client-side token removal for backward compatibility
   utils.SendSuccess(c, http.StatusOK, "Logout successful", nil)
 }
 
