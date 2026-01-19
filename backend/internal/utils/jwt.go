@@ -16,8 +16,9 @@ var ErrJWTSecretTooShort = errors.New("JWT_SECRET must be at least 32 characters
 
 // JWTClaims represents the claims in JWT token
 type JWTClaims struct {
-	UserID uint   `json:"user_id"`
-	Email  string `json:"email"`
+	UserID       uint   `json:"user_id"`
+	Email        string `json:"email"`
+	TokenVersion int    `json:"token_version"` // For session invalidation
 	jwt.RegisteredClaims
 }
 
@@ -34,16 +35,24 @@ func getJWTSecret() (string, error) {
 }
 
 // GenerateToken generates a new JWT token for a user
+// Deprecated: Use GenerateTokenWithVersion for new code
 func GenerateToken(userID uint, email string) (string, error) {
+	return GenerateTokenWithVersion(userID, email, 0)
+}
+
+// GenerateTokenWithVersion generates a JWT token with token version for invalidation support
+// When user changes password, increment TokenVersion to invalidate all old tokens
+func GenerateTokenWithVersion(userID uint, email string, tokenVersion int) (string, error) {
 	secret, err := getJWTSecret()
 	if err != nil {
 		return "", err
 	}
 
-	// Create claims
+	// Create claims with token version
 	claims := JWTClaims{
-		UserID: userID,
-		Email:  email,
+		UserID:       userID,
+		Email:        email,
+		TokenVersion: tokenVersion,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

@@ -53,6 +53,10 @@ type User struct {
 	IsVerified         bool       `gorm:"default:false" json:"is_verified"`
 	VerificationCode   string     `gorm:"size:6" json:"-"`
 	VerificationCodeExpiry *time.Time `json:"-"`
+	
+	// Token versioning - increment this to invalidate all existing tokens
+	// Used for security: invalidate tokens after password change
+	TokenVersion int `gorm:"default:0" json:"-"`
 }
 
 // TableName specifies the table name for User model

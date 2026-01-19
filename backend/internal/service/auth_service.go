@@ -4,17 +4,20 @@ import (
   "os"
   "strings"
   "log"
+  "time"
 
   "github.com/timebankingskill/backend/internal/dto"
   "github.com/timebankingskill/backend/internal/models"
   "github.com/timebankingskill/backend/internal/repository"
   "github.com/timebankingskill/backend/internal/utils"
+  "gorm.io/gorm"
 )
 
 // AuthService handles authentication business logic
 type AuthService struct {
   userRepo        *repository.UserRepository
   transactionRepo *repository.TransactionRepository
+  db              *gorm.DB
 }
 
 // NewAuthService creates a new auth service
@@ -22,6 +25,15 @@ func NewAuthService(userRepo *repository.UserRepository, transactionRepo *reposi
   return &AuthService{
     userRepo:        userRepo,
     transactionRepo: transactionRepo,
+  }
+}
+
+// NewAuthServiceWithDB creates a new auth service with database for one-time token tracking
+func NewAuthServiceWithDB(userRepo *repository.UserRepository, transactionRepo *repository.TransactionRepository, db *gorm.DB) *AuthService {
+  return &AuthService{
+    userRepo:        userRepo,
+    transactionRepo: transactionRepo,
+    db:              db,
   }
 }
 
@@ -195,8 +207,8 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
     return nil, utils.ErrInvalidCredentials
   }
 
-  // Generate JWT token
-  token, err := utils.GenerateToken(user.ID, user.Email)
+  // Generate JWT token with token version for session invalidation support
+  token, err := utils.GenerateTokenWithVersion(user.ID, user.Email, user.TokenVersion)
   if err != nil {
     return nil, utils.ErrInternal
   }
@@ -415,15 +427,25 @@ func (s *AuthService) ForgotPassword(req *dto.ForgotPasswordRequest) error {
 // Returns:
 //   - error: If token invalid, expired, passwords don't match, or database error
 func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
-  	// Validate passwords match
-	if req.NewPassword != req.ConfirmPassword {
-		return utils.ErrPasswordsDoNotMatch
-	}
+  // Validate passwords match
+  if req.NewPassword != req.ConfirmPassword {
+    return utils.ErrPasswordsDoNotMatch
+  }
 
-	// Validate password strength with strong policy
-	if err := utils.ValidatePassword(req.NewPassword); err != nil {
-		return err
-	}  
+  // Validate password strength with strong policy
+  if err := utils.ValidatePassword(req.NewPassword); err != nil {
+    return err
+  }
+
+  // Check if token has already been used (one-time token security)
+  tokenHash := utils.HashToken(req.Token)
+  if s.db != nil {
+    var usedToken models.UsedToken
+    if err := s.db.Where("token_hash = ?", tokenHash).First(&usedToken).Error; err == nil {
+      log.Printf("ResetPassword: token already used")
+      return utils.ErrInvalidToken
+    }
+  }
 
   // Verify token and extract email
   email, err := utils.VerifyPasswordResetToken(req.Token)
@@ -431,15 +453,14 @@ func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
     log.Printf("ResetPassword: token verification failed: %v", err)
     return err
   }
-  log.Printf("ResetPassword: token verified for email: %s", email)
+  log.Printf("ResetPassword: token verified for email (redacted)")
 
   // Find user by email
   user, err := s.userRepo.GetByEmail(email)
   if err != nil {
-    log.Printf("ResetPassword: user not found: %v", err)
+    log.Printf("ResetPassword: user not found")
     return utils.ErrUserNotFound
   }
-  log.Printf("ResetPassword: found user ID: %d", user.ID)
 
   // Hash new password
   hashedPassword, err := utils.HashPassword(req.NewPassword)
@@ -447,14 +468,34 @@ func (s *AuthService) ResetPassword(req *dto.ResetPasswordRequest) error {
     log.Printf("ResetPassword: password hash failed: %v", err)
     return utils.ErrInternal
   }
-  log.Printf("ResetPassword: password hashed successfully")
 
-  // Update password only (avoid updating other fields that might cause issues)
+  // Update password
   if err := s.userRepo.UpdatePassword(user.ID, hashedPassword); err != nil {
     log.Printf("ResetPassword: database update failed: %v", err)
     return utils.ErrInternal
   }
-  log.Printf("ResetPassword: password updated successfully for user ID: %d", user.ID)
 
+  // Increment token version to invalidate all existing tokens
+  user.TokenVersion++
+  if err := s.userRepo.Update(user); err != nil {
+    log.Printf("ResetPassword: token version update failed: %v", err)
+    // Non-critical, continue anyway
+  }
+
+  // Mark token as used (one-time use)
+  if s.db != nil {
+    usedToken := &models.UsedToken{
+      TokenHash:      tokenHash,
+      TokenType:      models.TokenTypePasswordReset,
+      UserID:         user.ID,
+      OriginalExpiry: time.Now().Add(24 * time.Hour), // For cleanup
+    }
+    if err := s.db.Create(usedToken).Error; err != nil {
+      log.Printf("ResetPassword: failed to mark token as used: %v", err)
+      // Non-critical, continue anyway
+    }
+  }
+
+  log.Printf("ResetPassword: password updated successfully")
   return nil
 }
