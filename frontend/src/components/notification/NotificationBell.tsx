@@ -26,7 +26,9 @@ export function NotificationBell() {
                 const count = await notificationService.getUnreadCount();
                 setUnreadCount(count);
             } catch (error) {
-                console.error('Failed to fetch unread count:', error);
+                // Silently fail if backend is not available
+                // This prevents error spam when backend is offline
+                setUnreadCount(0);
             } finally {
                 setIsLoading(false);
             }

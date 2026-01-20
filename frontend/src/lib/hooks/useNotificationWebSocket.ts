@@ -65,11 +65,15 @@ export function useNotificationWebSocket() {
 
             // Check if backend is reachable before attempting WebSocket connection
             // This prevents console errors when backend is not running
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+            
             fetch(`${apiUrl.replace('/api/v1', '')}/health`, { 
                 method: 'GET',
-                signal: AbortSignal.timeout(3000) // 3 second timeout
+                signal: controller.signal
             })
             .then(response => {
+                clearTimeout(timeoutId);
                 if (!response.ok) {
                     console.warn('⚠️ Backend health check failed, skipping WebSocket connection');
                     return;
@@ -122,12 +126,16 @@ export function useNotificationWebSocket() {
                 };
             })
             .catch((error) => {
+                clearTimeout(timeoutId);
                 // Backend is not reachable, skip WebSocket connection silently
-                console.warn('⚠️ Backend not reachable, WebSocket connection skipped');
+                // Don't log error if it's just a timeout/network error
+                if (error.name !== 'AbortError') {
+                    console.warn('⚠️ Backend not reachable, WebSocket connection skipped');
+                }
                 setConnected(false);
             });
         } catch (error) {
-            console.error('❌ Failed to initialize WebSocket:', error);
+            console.warn('⚠️ Failed to initialize WebSocket connection');
             setConnected(false);
         }
     };
