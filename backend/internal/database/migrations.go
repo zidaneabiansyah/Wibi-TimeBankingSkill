@@ -50,6 +50,33 @@ func addMissingColumns(db *gorm.DB) error {
 		fmt.Println("  ✓ credit_held column added")
 	}
 
+	// Add verification_code column to users table if it doesn't exist
+	if !db.Migrator().HasColumn("users", "verification_code") {
+		fmt.Println("  Adding verification_code column to users table...")
+		if err := db.Exec("ALTER TABLE users ADD COLUMN verification_code VARCHAR(6)").Error; err != nil {
+			return fmt.Errorf("failed to add verification_code column: %w", err)
+		}
+		fmt.Println("  ✓ verification_code column added")
+	}
+
+	// Add verification_code_expiry column to users table if it doesn't exist
+	if !db.Migrator().HasColumn("users", "verification_code_expiry") {
+		fmt.Println("  Adding verification_code_expiry column to users table...")
+		if err := db.Exec("ALTER TABLE users ADD COLUMN verification_code_expiry TIMESTAMPTZ").Error; err != nil {
+			return fmt.Errorf("failed to add verification_code_expiry column: %w", err)
+		}
+		fmt.Println("  ✓ verification_code_expiry column added")
+	}
+
+	// Add token_version column to users table if it doesn't exist
+	if !db.Migrator().HasColumn("users", "token_version") {
+		fmt.Println("  Adding token_version column to users table...")
+		if err := db.Exec("ALTER TABLE users ADD COLUMN token_version INTEGER DEFAULT 0").Error; err != nil {
+			return fmt.Errorf("failed to add token_version column: %w", err)
+		}
+		fmt.Println("  ✓ token_version column added")
+	}
+
 	return nil
 }
 

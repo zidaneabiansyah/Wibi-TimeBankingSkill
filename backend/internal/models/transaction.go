@@ -52,6 +52,14 @@ func (Transaction) TableName() string {
 	return "transactions"
 }
 
+// BeforeCreate hook to ensure Metadata has valid JSON
+func (t *Transaction) BeforeCreate(tx *gorm.DB) error {
+	if t.Metadata == "" {
+		t.Metadata = "{}"
+	}
+	return nil
+}
+
 // IsCredit checks if transaction adds credits
 func (t *Transaction) IsCredit() bool {
 	return t.Amount > 0

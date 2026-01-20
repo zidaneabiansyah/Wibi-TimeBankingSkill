@@ -81,10 +81,13 @@ func NewSessionService(
 //   })
 func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionRequest) (*dto.SessionResponse, error) {
 	// Get the user skill to find the teacher (outside transaction - read-only)
+	log.Printf("[BookSession] Step 1: Fetching UserSkill ID %d", req.UserSkillID)
 	userSkill, err := s.skillRepo.GetUserSkillByID(req.UserSkillID)
 	if err != nil {
+		log.Printf("[BookSession] ERROR: UserSkill not found - %v", err)
 		return nil, utils.ErrSkillNotFound
 	}
+	log.Printf("[BookSession] Step 1 OK: Found UserSkill, Teacher ID: %d", userSkill.UserID)
 
 	// Validate teacher is not the student
 	if userSkill.UserID == studentID {
@@ -92,18 +95,25 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 	}
 
 	// Check if skill is available
+	log.Printf("[BookSession] Step 2: Checking skill availability")
 	if !userSkill.IsAvailable {
+		log.Printf("[BookSession] ERROR: Skill not available")
 		return nil, utils.ErrSkillNotAvailable
 	}
+	log.Printf("[BookSession] Step 2 OK: Skill is available")
 
 	// Check if there's already an active session
+	log.Printf("[BookSession] Step 3: Checking for active sessions")
 	exists, err := s.sessionRepo.ExistsActiveSession(userSkill.UserID, studentID, req.UserSkillID)
 	if err != nil {
+		log.Printf("[BookSession] ERROR: Failed to check active sessions - %v", err)
 		return nil, err
 	}
 	if exists {
+		log.Printf("[BookSession] ERROR: Active session already exists")
 		return nil, utils.ErrSessionConflict
 	}
+	log.Printf("[BookSession] Step 3 OK: No active sessions found")
 
 	// Calculate credit amount
 	creditAmount := req.Duration * userSkill.HourlyRate
@@ -121,25 +131,35 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 
 	// CRITICAL: Use database transaction with row locking to prevent race conditions
 	// This ensures atomicity: either all operations succeed or none do
+	log.Printf("[BookSession] Step 4: Starting database transaction")
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		// Step 1: Lock user row with SELECT FOR UPDATE to prevent concurrent modifications
+		log.Printf("[BookSession] Tx Step 1: Locking user row for Student ID %d", studentID)
 		var student models.User
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 			First(&student, studentID).Error; err != nil {
+			log.Printf("[BookSession] Tx ERROR: User not found or lock failed - %v", err)
 			return utils.ErrUserNotFound
 		}
+		log.Printf("[BookSession] Tx Step 1 OK: User locked, Balance: %.2f, Held: %.2f", student.CreditBalance, student.CreditHeld)
 
 		// Step 2: Check if student has enough credits (with locked row data)
+		log.Printf("[BookSession] Tx Step 2: Checking credits (need: %.2f)", creditAmount)
 		availableBalance := student.CreditBalance - student.CreditHeld
 		if availableBalance < creditAmount {
+			log.Printf("[BookSession] Tx ERROR: Insufficient credits - Available: %.2f, Need: %.2f", availableBalance, creditAmount)
 			return utils.ErrInsufficientCredits
 		}
+		log.Printf("[BookSession] Tx Step 2 OK: Sufficient credits (Available: %.2f)", availableBalance)
 
 		// Step 3: Hold credits (atomic update within transaction)
+		log.Printf("[BookSession] Tx Step 3: Holding %.2f credits", creditAmount)
 		student.CreditHeld += creditAmount
 		if err := tx.Save(&student).Error; err != nil {
+			log.Printf("[BookSession] Tx ERROR: Failed to save user credit update - %v", err)
 			return utils.ErrInternal
 		}
+		log.Printf("[BookSession] Tx Step 3 OK: Credits held, New Held: %.2f", student.CreditHeld)
 
 		// Step 4: Create session within the same transaction
 		session := &models.Session{
@@ -159,8 +179,10 @@ func (s *SessionService) BookSession(studentID uint, req *dto.CreateSessionReque
 		}
 
 		if err := tx.Create(session).Error; err != nil {
+			log.Printf("[BookSession] ERROR: Failed to create session in DB - %v", err)
 			return fmt.Errorf("failed to create session: %v", err)
 		}
+		log.Printf("[BookSession] Transaction OK: Session created with ID %d", session.ID)
 
 		createdSessionID = session.ID
 

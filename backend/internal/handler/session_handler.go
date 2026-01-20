@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -51,12 +52,18 @@ func (h *SessionHandler) BookSession(c *gin.Context) {
 
 	var req dto.CreateSessionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("BookSession: Binding error - User %d, Error: %v", userID, err)
 		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
 		return
 	}
 
+	// Debug logging
+	log.Printf("BookSession: User %d - UserSkillID: %d, Title: %s, Duration: %.2f, Mode: %s, ScheduledAt: %v", 
+		userID, req.UserSkillID, req.Title, req.Duration, req.Mode, req.ScheduledAt)
+
 	session, err := h.sessionService.BookSession(userID, &req)
 	if err != nil {
+		log.Printf("BookSession: Service error - User %d, Error: %v", userID, err)
 		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
 		return
 	}
