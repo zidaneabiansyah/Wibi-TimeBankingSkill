@@ -218,7 +218,7 @@ function VideoModeLayout({
             {/* Self Video - Large */}
             <div className="relative flex-1 max-w-[50%] aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
                 {localStream && isVideoEnabled ? (
-                    <VideoRenderer stream={localStream} muted={true} />
+                    <VideoRenderer stream={localStream} muted={true} mirrored={true} />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-zinc-500 bg-zinc-800">
                         <VideoOff className="w-10 h-10 mb-2" />
@@ -262,7 +262,7 @@ function WhiteboardModeLayout({
                     {remoteStream ? (
                         <VideoRenderer stream={remoteStream} muted={false} />
                     ) : localStream && isVideoEnabled ? (
-                        <VideoRenderer stream={localStream} muted={true} />
+                        <VideoRenderer stream={localStream} muted={true} mirrored={true} />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-zinc-500">
                             <Users className="w-6 h-6 mb-1" />
@@ -327,10 +327,12 @@ function ControlButton({
 // Video Renderer Component - Memoized to prevent re-renders
 const VideoRenderer = React.memo(function VideoRenderer({ 
     stream, 
-    muted 
+    muted,
+    mirrored = false
 }: { 
     stream: MediaStream; 
     muted: boolean;
+    mirrored?: boolean;
 }) {
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -357,7 +359,7 @@ const VideoRenderer = React.memo(function VideoRenderer({
             autoPlay
             playsInline
             muted={muted}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${mirrored ? 'scale-x-[-1]' : ''}`}
         />
     );
 });

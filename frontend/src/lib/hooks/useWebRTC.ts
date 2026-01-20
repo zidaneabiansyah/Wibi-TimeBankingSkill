@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 interface WebRTCMessage {
     type: 'offer' | 'answer' | 'candidate' | 'user_join' | 'user_leave';
@@ -13,9 +13,6 @@ interface UseWebRTCProps {
     enabled?: boolean;
 }
 
-// Module-level map to track active sessions (prevents React Strict Mode double init)
-const activeSessions = new Map<string, boolean>();
-
 export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps) {
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -24,231 +21,114 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
 
     const pcRef = useRef<RTCPeerConnection | null>(null);
     const wsRef = useRef<WebSocket | null>(null);
-    const localStreamRef = useRef<MediaStream | null>(null);
-    const cleanupCalledRef = useRef(false);
-    const iceCandidateQueueRef = useRef<RTCIceCandidateInit[]>([]);
-    const remoteUserIdRef = useRef<number | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
+    const mountedRef = useRef(true);
+    
+    // Perfect negotiation pattern refs
+    const politeRef = useRef(false); // Will be set based on user IDs
     const makingOfferRef = useRef(false);
+    const ignoreOfferRef = useRef(false);
 
-    const configuration: RTCConfiguration = {
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-        ],
+    const config: RTCConfiguration = {
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     };
 
-    // Sync localStreamRef
     useEffect(() => {
-        localStreamRef.current = localStream;
-    }, [localStream]);
-
-    useEffect(() => {
-        if (!enabled || !sessionId || !userId || userId === 0) return;
-
-        // Module-level guard for React Strict Mode
-        const sessionKey = `${sessionId}-${userId}`;
-        if (activeSessions.get(sessionKey)) {
-            console.log('⚠️ Session already active, skipping');
+        mountedRef.current = true;
+        
+        if (!enabled || !sessionId || !userId) {
             return;
         }
-        activeSessions.set(sessionKey, true);
-        cleanupCalledRef.current = false;
 
-        let stream: MediaStream | null = null;
-        let ws: WebSocket | null = null;
         let pc: RTCPeerConnection | null = null;
+        let ws: WebSocket | null = null;
+        let stream: MediaStream | null = null;
 
-        const cleanup = () => {
-            if (cleanupCalledRef.current) return;
-            cleanupCalledRef.current = true;
-            activeSessions.delete(sessionKey);
-            
-            console.log('🧹 Cleanup WebRTC');
-            pc?.close();
-            ws?.close();
-            stream?.getTracks().forEach(t => t.stop());
-            
-            pcRef.current = null;
-            wsRef.current = null;
-            iceCandidateQueueRef.current = [];
-            remoteUserIdRef.current = null;
-            makingOfferRef.current = false;
+        const log = (msg: string, ...args: any[]) => {
+            console.log(`[WebRTC ${userId}]`, msg, ...args);
         };
 
-        const sendSignal = (type: string, payload: any) => {
+        const send = (type: string, payload?: any) => {
             if (ws?.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type, payload, session_id: sessionId }));
             }
         };
 
-        const createPC = (): RTCPeerConnection => {
-            const newPc = new RTCPeerConnection(configuration);
-
-            newPc.onicecandidate = (e) => {
-                if (e.candidate) sendSignal('candidate', e.candidate);
-            };
-
-            newPc.ontrack = (e) => {
-                console.log('📹 Got remote track:', e.track.kind);
-                if (!cleanupCalledRef.current && e.streams[0]) {
-                    setRemoteStream(e.streams[0]);
-                }
-            };
-
-            newPc.oniceconnectionstatechange = () => {
-                console.log('🔗 ICE:', newPc.iceConnectionState);
-                if (newPc.iceConnectionState === 'failed' || newPc.iceConnectionState === 'disconnected') {
-                    setRemoteStream(null);
-                }
-            };
-
-            return newPc;
-        };
-
-        const addTracks = () => {
-            if (localStreamRef.current && pc) {
-                const senders = pc.getSenders();
-                localStreamRef.current.getTracks().forEach(track => {
-                    if (!senders.some(s => s.track === track)) {
-                        console.log('➕ Add track:', track.kind);
-                        pc!.addTrack(track, localStreamRef.current!);
-                    }
-                });
-            }
-        };
-
-        const processQueue = async () => {
-            if (!pc || !pc.remoteDescription) return;
-            const queue = [...iceCandidateQueueRef.current];
-            iceCandidateQueueRef.current = [];
-            for (const c of queue) {
-                try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch {}
-            }
-        };
-
-        const handleOffer = async (offer: RTCSessionDescriptionInit, fromId: number) => {
-            if (!pc || cleanupCalledRef.current) return;
-            
-            console.log('📥 Offer from:', fromId, 'My ID:', userId);
-            remoteUserIdRef.current = fromId;
-
-            // Simple polite peer: lower ID is polite
-            const isPolite = userId < fromId;
-            const hasCollision = makingOfferRef.current || pc.signalingState !== 'stable';
-
-            if (hasCollision && !isPolite) {
-                console.log('🚫 Ignoring offer (collision, impolite)');
-                return;
-            }
-
+        const init = async () => {
+            // 1. Get media stream
             try {
-                if (hasCollision && isPolite) {
-                    console.log('🔙 Rollback (collision, polite)');
-                    await pc.setLocalDescription({ type: 'rollback' });
-                }
-
-                addTracks();
-                await pc.setRemoteDescription(new RTCSessionDescription(offer));
-                await processQueue();
-
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                sendSignal('answer', answer);
-                console.log('📤 Sent answer');
-            } catch (err) {
-                console.error('Offer error:', err);
-            }
-        };
-
-        const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
-            if (!pc || cleanupCalledRef.current) return;
-            
-            console.log('📥 Answer, state:', pc.signalingState);
-            
-            if (pc.signalingState !== 'have-local-offer') {
-                console.log('⚠️ Ignoring answer (wrong state)');
-                return;
-            }
-
-            try {
-                await pc.setRemoteDescription(new RTCSessionDescription(answer));
-                await processQueue();
-                console.log('✅ Answer applied');
-            } catch (err) {
-                console.error('Answer error:', err);
-            }
-        };
-
-        const handleCandidate = async (candidate: RTCIceCandidateInit) => {
-            if (!pc || cleanupCalledRef.current) return;
-            
-            if (!pc.remoteDescription) {
-                iceCandidateQueueRef.current.push(candidate);
-                return;
-            }
-            
-            try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch {}
-        };
-
-        const initiateCall = async (remoteId: number) => {
-            if (!pc || cleanupCalledRef.current) return;
-            
-            console.log('📞 User join:', remoteId, 'My ID:', userId);
-            
-            // Ignore if it's ourselves (shouldn't happen with backend fix)
-            if (remoteId === userId) {
-                console.log('⚠️ Ignoring self');
-                return;
-            }
-            
-            remoteUserIdRef.current = remoteId;
-
-            // Only higher ID sends offer
-            if (userId <= remoteId) {
-                console.log('⏳ Waiting for offer');
-                return;
-            }
-
-            if (pc.signalingState !== 'stable') {
-                console.log('⚠️ Not stable');
-                return;
-            }
-
-            try {
-                makingOfferRef.current = true;
-                addTracks();
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                sendSignal('offer', offer);
-                console.log('📤 Sent offer');
-            } catch (err) {
-                console.error('Offer creation error:', err);
-            } finally {
-                makingOfferRef.current = false;
-            }
-        };
-
-        const start = async () => {
-            // Get media
-            for (const c of [{ video: true, audio: true }, { video: true, audio: false }, { video: false, audio: true }]) {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            } catch {
                 try {
-                    stream = await navigator.mediaDevices.getUserMedia(c);
-                    if (stream) {
-                        console.log('🎥 Got media');
-                        localStreamRef.current = stream;
-                        setLocalStream(stream);
-                        setError(null);
-                        break;
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                } catch {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                    } catch (e) {
+                        log('❌ No media access');
                     }
-                } catch {}
+                }
             }
 
-            if (!stream) setError('No camera/mic access');
+            if (stream && mountedRef.current) {
+                log('🎥 Got media stream');
+                streamRef.current = stream;
+                setLocalStream(stream);
+            }
 
-            // Create PC
-            pc = createPC();
+            // 2. Create peer connection
+            pc = new RTCPeerConnection(config);
             pcRef.current = pc;
 
-            // Connect WS
+            // Add local tracks
+            if (stream) {
+                stream.getTracks().forEach(track => {
+                    log('➕ Adding local track:', track.kind);
+                    pc!.addTrack(track, stream!);
+                });
+            }
+
+            // Remote track handler
+            pc.ontrack = (event) => {
+                log('📹 Remote track received:', event.track.kind);
+                if (mountedRef.current && event.streams[0]) {
+                    log('✅ Setting remote stream');
+                    setRemoteStream(event.streams[0]);
+                }
+            };
+
+            // ICE candidate handler
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    log('🧊 Sending ICE candidate');
+                    send('candidate', event.candidate);
+                }
+            };
+
+            pc.oniceconnectionstatechange = () => {
+                log('🔗 ICE state:', pc?.iceConnectionState);
+            };
+
+            pc.onconnectionstatechange = () => {
+                log('📡 Connection state:', pc?.connectionState);
+            };
+
+            // Perfect negotiation: negotiation needed handler
+            pc.onnegotiationneeded = async () => {
+                log('🔄 Negotiation needed, polite:', politeRef.current);
+                try {
+                    makingOfferRef.current = true;
+                    await pc!.setLocalDescription();
+                    log('📤 Sending offer');
+                    send('offer', pc!.localDescription);
+                } catch (err) {
+                    log('❌ Offer error:', err);
+                } finally {
+                    makingOfferRef.current = false;
+                }
+            };
+
+            // 3. Connect WebSocket
             const token = localStorage.getItem('token');
             if (!token) {
                 setError('Not authenticated');
@@ -257,66 +137,129 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
 
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
             const wsUrl = apiUrl.replace(/^http/, 'ws') + `/ws/video/${sessionId}?token=${encodeURIComponent(token)}`;
-            
-            console.log('🔌 Connecting:', wsUrl.split('?')[0]);
+
+            log('🔌 Connecting to WebSocket');
             ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('✅ WS connected');
-                if (!cleanupCalledRef.current) setIsJoined(true);
+                log('✅ WebSocket connected');
+                if (mountedRef.current) setIsJoined(true);
             };
 
             ws.onerror = () => {
-                console.error('❌ WS error');
-                if (!cleanupCalledRef.current) setError('Connection failed');
+                log('❌ WebSocket error');
             };
 
             ws.onclose = () => {
-                console.log('⚠️ WS closed');
-                if (!cleanupCalledRef.current) setIsJoined(false);
+                log('⚠️ WebSocket closed');
+                if (mountedRef.current) setIsJoined(false);
             };
 
-            ws.onmessage = async (e) => {
-                if (cleanupCalledRef.current) return;
-                
-                try {
-                    const msg: WebRTCMessage = JSON.parse(e.data);
-                    console.log('📨', msg.type, 'from:', msg.user_id);
-                    
-                    switch (msg.type) {
-                        case 'user_join':
-                            await initiateCall(msg.user_id);
-                            break;
-                        case 'offer':
-                            await handleOffer(msg.payload, msg.user_id);
-                            break;
-                        case 'answer':
-                            await handleAnswer(msg.payload);
-                            break;
-                        case 'candidate':
-                            await handleCandidate(msg.payload);
-                            break;
-                        case 'user_leave':
-                            console.log('👋 User left');
-                            setRemoteStream(null);
-                            remoteUserIdRef.current = null;
-                            iceCandidateQueueRef.current = [];
-                            if (pc) {
-                                pc.close();
-                                pc = createPC();
-                                pcRef.current = pc;
+            ws.onmessage = async (event) => {
+                if (!mountedRef.current || !pc) return;
+
+                const msg: WebRTCMessage = JSON.parse(event.data);
+                log('📨', msg.type, 'from user:', msg.user_id);
+
+                switch (msg.type) {
+                    case 'user_join':
+                        // Set polite based on user IDs - lower ID is polite
+                        politeRef.current = userId < msg.user_id;
+                        log('👤 User joined, I am', politeRef.current ? 'polite' : 'impolite');
+                        
+                        // Only impolite peer (higher ID) initiates
+                        if (!politeRef.current) {
+                            log('📤 Initiating call as impolite peer');
+                            // Trigger negotiation by adding tracks or renegotiating
+                            try {
+                                const offer = await pc.createOffer();
+                                await pc.setLocalDescription(offer);
+                                send('offer', offer);
+                                log('📤 Sent initial offer');
+                            } catch (err) {
+                                log('❌ Init offer error:', err);
                             }
-                            break;
-                    }
-                } catch (err) {
-                    console.error('Message error:', err);
+                        }
+                        break;
+
+                    case 'offer':
+                        // Perfect negotiation offer handling
+                        const readyForOffer = !makingOfferRef.current && 
+                            (pc.signalingState === 'stable' || pc.signalingState === 'have-remote-offer');
+                        const offerCollision = !readyForOffer;
+
+                        log('📥 Offer collision?', offerCollision, 'polite?', politeRef.current);
+
+                        ignoreOfferRef.current = !politeRef.current && offerCollision;
+                        if (ignoreOfferRef.current) {
+                            log('🚫 Ignoring offer (impolite + collision)');
+                            return;
+                        }
+
+                        try {
+                            await pc.setRemoteDescription(msg.payload);
+                            log('✅ Set remote offer');
+                            
+                            const answer = await pc.createAnswer();
+                            await pc.setLocalDescription(answer);
+                            send('answer', answer);
+                            log('📤 Sent answer');
+                        } catch (err) {
+                            log('❌ Offer handling error:', err);
+                        }
+                        break;
+
+                    case 'answer':
+                        try {
+                            if (pc.signalingState === 'have-local-offer') {
+                                await pc.setRemoteDescription(msg.payload);
+                                log('✅ Set remote answer');
+                            } else {
+                                log('⚠️ Ignoring answer, state:', pc.signalingState);
+                            }
+                        } catch (err) {
+                            log('❌ Answer error:', err);
+                        }
+                        break;
+
+                    case 'candidate':
+                        try {
+                            if (msg.payload) {
+                                await pc.addIceCandidate(msg.payload);
+                                log('🧊 Added ICE candidate');
+                            }
+                        } catch (err) {
+                            if (!ignoreOfferRef.current) {
+                                log('⚠️ ICE candidate error:', err);
+                            }
+                        }
+                        break;
+
+                    case 'user_leave':
+                        log('👋 User left');
+                        setRemoteStream(null);
+                        break;
                 }
             };
         };
 
-        start();
-        return cleanup;
+        init();
+
+        return () => {
+            log('🧹 Cleanup');
+            mountedRef.current = false;
+            
+            if (pc) {
+                pc.close();
+            }
+            if (ws) {
+                ws.close();
+            }
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+            }
+        };
     }, [enabled, sessionId, userId]);
 
     return { localStream, remoteStream, isJoined, error };
