@@ -67,6 +67,27 @@ func (h *WebRTCHub) run() {
 		select {
 		case client := <-h.Register:
 			h.mu.Lock()
+			
+			// First, notify the new client about all existing users
+			// This ensures the new user knows who is already in the room
+			for existingClient := range h.Clients {
+				existingUserMsg := &WebRTCMessage{
+					Type:      "user_join",
+					SessionID: h.SessionID,
+					UserID:    existingClient.UserID,
+					UserName:  existingClient.UserName,
+					Timestamp: time.Now().UnixMilli(),
+				}
+				// Send to the new client
+				select {
+				case client.Send <- existingUserMsg:
+					log.Printf("[WebRTC] Notified new user %d about existing user %d", client.UserID, existingClient.UserID)
+				default:
+					log.Printf("[WebRTC] Failed to notify new user about existing user")
+				}
+			}
+			
+			// Add the new client to the room
 			h.Clients[client] = true
 			h.mu.Unlock()
 

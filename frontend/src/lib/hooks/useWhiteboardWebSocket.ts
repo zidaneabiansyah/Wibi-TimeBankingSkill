@@ -123,7 +123,10 @@ export function useWhiteboardWebSocket({
                 };
 
                 ws.onerror = () => {
-                    console.error('❌ Whiteboard WebSocket error - ReadyState:', ws.readyState);
+                    // Only log as warning since this often happens during navigation or React Strict Mode remount
+                    if (!isCleanedUpRef.current) {
+                        console.warn('⚠️ Whiteboard WebSocket error - ReadyState:', ws.readyState);
+                    }
                     isConnectingRef.current = false;
                 };
 
