@@ -53,8 +53,14 @@ export function useWhiteboardWebSocket({
     useEffect(() => {
         if (!enabled || !sessionId) return;
         
-        // Prevent multiple connections
-        if (isConnectingRef.current || wsRef.current?.readyState === WebSocket.OPEN) {
+        // Prevent multiple connections - stronger guard for Strict Mode
+        if (isConnectingRef.current) {
+            console.log('⚠️ Whiteboard already connecting, skipping...');
+            return;
+        }
+        
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            console.log('⚠️ Whiteboard already connected, skipping...');
             return;
         }
         

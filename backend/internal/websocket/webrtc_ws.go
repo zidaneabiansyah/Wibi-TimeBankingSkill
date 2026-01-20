@@ -68,9 +68,29 @@ func (h *WebRTCHub) run() {
 		case client := <-h.Register:
 			h.mu.Lock()
 			
-			// First, notify the new client about all existing users
-			// This ensures the new user knows who is already in the room
+			// Check if this user already has a connection (dedup for React Strict Mode)
+			var existingConnection *WebRTCClient
 			for existingClient := range h.Clients {
+				if existingClient.UserID == client.UserID {
+					existingConnection = existingClient
+					break
+				}
+			}
+			
+			// If user already connected, close old connection
+			if existingConnection != nil {
+				log.Printf("[WebRTC] User %d reconnecting, closing old connection", client.UserID)
+				delete(h.Clients, existingConnection)
+				close(existingConnection.Send)
+			}
+			
+			// Notify the new client about existing users (different users only)
+			for existingClient := range h.Clients {
+				// Skip notifying about same user (shouldn't happen after dedup, but just in case)
+				if existingClient.UserID == client.UserID {
+					continue
+				}
+				
 				existingUserMsg := &WebRTCMessage{
 					Type:      "user_join",
 					SessionID: h.SessionID,
@@ -78,7 +98,6 @@ func (h *WebRTCHub) run() {
 					UserName:  existingClient.UserName,
 					Timestamp: time.Now().UnixMilli(),
 				}
-				// Send to the new client
 				select {
 				case client.Send <- existingUserMsg:
 					log.Printf("[WebRTC] Notified new user %d about existing user %d", client.UserID, existingClient.UserID)
@@ -91,7 +110,7 @@ func (h *WebRTCHub) run() {
 			h.Clients[client] = true
 			h.mu.Unlock()
 
-			// Notify others that a peer joined
+			// Notify others that a peer joined (broadcastToOthers already excludes sender)
 			msg := &WebRTCMessage{
 				Type:      "user_join",
 				SessionID: h.SessionID,
