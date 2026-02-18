@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { transactionService } from '@/lib/services';
+import { transactionService, type TransferCreditsResponse } from '@/lib/services/transaction.service';
 import type { Transaction } from '@/types';
 
 interface TransactionHistoryResponse {
@@ -18,6 +18,7 @@ interface TransactionState {
 
     // Actions
     fetchTransactions: (limit?: number, offset?: number) => Promise<void>;
+    transferCredits: (recipientId: number, amount: number, message?: string) => Promise<TransferCreditsResponse>;
     clearError: () => void;
     reset: () => void;
 }
@@ -49,6 +50,25 @@ export const useTransactionStore = create<TransactionState>((set) => ({
             });
         } catch (error: any) {
             const errorMessage = error.message || 'Failed to fetch transactions';
+            set({
+                isLoading: false,
+                error: errorMessage,
+            });
+            throw error;
+        }
+    },
+
+    /**
+     * Transfer credits to another user
+     */
+    transferCredits: async (recipientId: number, amount: number, message?: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await transactionService.transferCredits(recipientId, amount, message);
+            set({ isLoading: false });
+            return response;
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.error || error.message || 'Failed to transfer credits';
             set({
                 isLoading: false,
                 error: errorMessage,

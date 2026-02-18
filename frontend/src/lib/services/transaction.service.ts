@@ -8,6 +8,20 @@ export interface TransactionHistoryResponse {
     offset: number;
 }
 
+export interface TransferCreditsRequest {
+    recipient_id: number;
+    amount: number;
+    message?: string;
+}
+
+export interface TransferCreditsResponse {
+    sender_id: number;
+    recipient_id: number;
+    amount: number;
+    new_balance: number;
+    message: string;
+}
+
 /**
  * Transaction service for handling credit transactions
  */
@@ -32,6 +46,24 @@ export const transactionService = {
      */
     getTransaction: async (id: number): Promise<Transaction> => {
         return apiClient.get<Transaction>(`/user/transactions/${id}`);
+    },
+
+    /**
+     * Transfer credits to another user
+     * @param recipientId - User ID to transfer credits to
+     * @param amount - Amount of credits to transfer
+     * @param message - Optional message to recipient
+     */
+    transferCredits: async (
+        recipientId: number,
+        amount: number,
+        message?: string
+    ): Promise<TransferCreditsResponse> => {
+        return apiClient.post<TransferCreditsResponse>('/user/transfer', {
+            recipient_id: recipientId,
+            amount,
+            message,
+        });
     },
 
     /**
