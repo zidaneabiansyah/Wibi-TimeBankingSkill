@@ -96,3 +96,76 @@ func (h *TransactionHandler) GetTransactionByID(c *gin.Context) {
 
 	utils.SendSuccess(c, http.StatusOK, "Transaction retrieved successfully", transaction)
 }
+
+// TransferCredits handles peer-to-peer credit transfers
+// POST /api/v1/user/transfer
+func (h *TransactionHandler) TransferCredits(c *gin.Context) {
+	// Get sender ID from context (authenticated user)
+	senderID, exists := c.Get("user_id")
+	if !exists {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
+
+	// Parse request body
+	var req dto.TransferCreditsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	// Validate amount
+	if req.Amount <= 0 {
+		utils.SendError(c, http.StatusBadRequest, "Transfer amount must be positive", nil)
+		return
+	}
+
+	// Perform transfer
+	err := h.transactionService.DirectTransfer(
+		senderID.(uint),
+		req.RecipientID,
+		req.Amount,
+		req.Message,
+	)
+
+	if err != nil {
+		// Check for specific error types to return appropriate status codes
+		errMsg := err.Error()
+		
+		// Insufficient credits - return 400 with specific message for UI alert
+		if len(errMsg) >= 20 && errMsg[:20] == "insufficient credits" {
+			utils.SendError(c, http.StatusBadRequest, errMsg, nil)
+			return
+		}
+		
+		// Recipient not found or inactive - return 404
+		if errMsg == "recipient not found" || errMsg == "recipient account is not active" {
+			utils.SendError(c, http.StatusNotFound, errMsg, nil)
+			return
+		}
+		
+		// Cannot transfer to self - return 400
+		if errMsg == "cannot transfer credits to yourself" {
+			utils.SendError(c, http.StatusBadRequest, errMsg, nil)
+			return
+		}
+		
+		// Other errors - return 500
+		utils.SendError(c, http.StatusInternalServerError, "Failed to transfer credits", err)
+		return
+	}
+
+	// Get new balance after transfer
+	newBalance, _ := h.transactionService.GetUserBalance(senderID.(uint))
+
+	// Return success response
+	response := dto.TransferCreditsResponse{
+		SenderID:    senderID.(uint),
+		RecipientID: req.RecipientID,
+		Amount:      req.Amount,
+		NewBalance:  newBalance,
+		Message:     "Credits transferred successfully",
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Credits transferred successfully", response)
+}

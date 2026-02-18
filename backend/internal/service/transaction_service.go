@@ -368,3 +368,136 @@ func (s *TransactionService) CalculateUserStats(userID uint) (map[string]interfa
 
 	return stats, nil
 }
+
+// DirectTransfer transfers credits directly from one user to another (peer-to-peer)
+// This is different from session-based transfers - used for gifting, helping friends, etc.
+// 
+// Transaction Flow:
+//   1. Validate sender has sufficient balance
+//   2. Validate recipient exists and is active
+//   3. Debit credits from sender
+//   4. Credit credits to recipient
+//   5. Send notification to recipient
+//
+// Error Handling:
+//   - Returns specific error for insufficient credits (for UI alert)
+//   - Returns error if recipient not found or inactive
+//   - Atomic operation: both transactions must succeed
+//
+// Parameters:
+//   - senderID: User sending credits
+//   - recipientID: User receiving credits
+//   - amount: Credit amount to transfer (must be positive)
+//   - message: Optional message to recipient
+//
+// Returns:
+//   - error: Specific error message for different failure scenarios
+func (s *TransactionService) DirectTransfer(
+	senderID uint,
+	recipientID uint,
+	amount float64,
+	message string,
+) error {
+	// Validate amount
+	if amount <= 0 {
+		return errors.New("transfer amount must be positive")
+	}
+
+	// Prevent self-transfer
+	if senderID == recipientID {
+		return errors.New("cannot transfer credits to yourself")
+	}
+
+	// Validate recipient exists and is active
+	recipient, err := s.userRepo.GetByID(recipientID)
+	if err != nil {
+		return errors.New("recipient not found")
+	}
+
+	if !recipient.IsActive {
+		return errors.New("recipient account is not active")
+	}
+
+	// Check sender balance
+	senderBalance, err := s.transactionRepo.GetUserBalance(senderID)
+	if err != nil {
+		return fmt.Errorf("failed to get sender balance: %w", err)
+	}
+
+	// CRITICAL: Check for insufficient credits
+	if senderBalance < amount {
+		return fmt.Errorf("insufficient credits: you have %.1f credits, need %.1f credits", 
+			senderBalance, amount)
+	}
+
+	// Get sender info for notification
+	sender, err := s.userRepo.GetByID(senderID)
+	if err != nil {
+		return fmt.Errorf("failed to get sender info: %w", err)
+	}
+
+	// Prepare descriptions
+	senderDescription := fmt.Sprintf("Transfer to %s", recipient.FullName)
+	if message != "" {
+		senderDescription = fmt.Sprintf("Transfer to %s: %s", recipient.FullName, message)
+	}
+
+	recipientDescription := fmt.Sprintf("Transfer from %s", sender.FullName)
+	if message != "" {
+		recipientDescription = fmt.Sprintf("Transfer from %s: %s", sender.FullName, message)
+	}
+
+	// Debit from sender (negative amount)
+	_, err = s.CreateTransaction(
+		senderID,
+		models.TransactionSpent,
+		-amount,
+		senderDescription,
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to debit sender: %w", err)
+	}
+
+	// Credit to recipient (positive amount)
+	_, err = s.CreateTransaction(
+		recipientID,
+		models.TransactionBonus, // Use bonus type for peer transfers
+		amount,
+		recipientDescription,
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to credit recipient: %w", err)
+	}
+
+	// Send notification to recipient
+	notificationData := map[string]interface{}{
+		"amount":    amount,
+		"sender_id": senderID,
+		"sender_name": sender.FullName,
+		"message":   message,
+	}
+	_, _ = s.notificationService.CreateNotification(
+		recipientID,
+		models.NotificationTypeCredit,
+		"Credits Received! 💰",
+		fmt.Sprintf("You received %.1f credits from %s", amount, sender.FullName),
+		notificationData,
+	)
+
+	// Send confirmation notification to sender
+	_, _ = s.notificationService.CreateNotification(
+		senderID,
+		models.NotificationTypeCredit,
+		"Transfer Successful ✅",
+		fmt.Sprintf("You sent %.1f credits to %s", amount, recipient.FullName),
+		map[string]interface{}{
+			"amount":        amount,
+			"recipient_id":  recipientID,
+			"recipient_name": recipient.FullName,
+		},
+	)
+
+	return nil
+}

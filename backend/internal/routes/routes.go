@@ -276,6 +276,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				// Transaction Management
 				user.GET("/transactions", transactionHandler.GetUserTransactions)    // GET /api/v1/user/transactions
 				user.GET("/transactions/:id", transactionHandler.GetTransactionByID) // GET /api/v1/user/transactions/1
+				user.POST("/transfer", transactionHandler.TransferCredits)           // POST /api/v1/user/transfer
 
 				// Video Session Management
 				user.GET("/video-history", videoSessionHandler.GetVideoHistory)      // GET /api/v1/user/video-history
