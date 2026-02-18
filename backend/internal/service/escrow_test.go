@@ -140,6 +140,7 @@ func TestBookSessionEscrow(t *testing.T) {
 	badgeService := new(MockBadgeService)
 
 	s := NewSessionService(
+		nil,
 		sessionRepo,
 		userRepo,
 		txRepo,
@@ -221,6 +222,7 @@ func TestCompleteSessionEscrow(t *testing.T) {
 	badgeService := new(MockBadgeService)
 
 	s := NewSessionService(
+		nil,
 		sessionRepo,
 		userRepo,
 		txRepo,

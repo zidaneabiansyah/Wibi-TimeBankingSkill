@@ -6,6 +6,8 @@ backend/.env.local
 backend/tmp/
 backend/main
 backend/server
+backend/*.log
+backend/migrations/
 
 # Frontend  
 frontend/.env
@@ -14,13 +16,19 @@ frontend/.next/
 frontend/out/
 frontend/node_modules/
 frontend/.swc/
+frontend/coverage/
 frontend/tsconfig.tsbuildinfo
+
+# Root temporary files
+tmp/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+.agents/
+docs/
 
 # OS
 .DS_Store

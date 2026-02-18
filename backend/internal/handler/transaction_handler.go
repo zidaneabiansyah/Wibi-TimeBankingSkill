@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/service"
 	"github.com/timebankingskill/backend/internal/utils"
 )
