@@ -1,118 +1,121 @@
-# 🎓 Wibi - Waktu Indonesia Berbagi Ilmu
-## Time Banking Skill Platform untuk Pelajar
+# Wibi - Waktu Indonesia Berbagi Ilmu
 
-> **Berbagi ilmu, tukar waktu, tumbuh bersama** 🚀
+## Time Banking Skill Exchange Platform
 
-Wibi adalah platform peer-to-peer yang revolusioner untuk pertukaran skill berbasis sistem Time Banking. Pelajar dapat mengajar skill mereka dan belajar skill baru tanpa perlu uang - hanya dengan menukar waktu!
+Wibi is a peer-to-peer skill exchange platform based on the Time Banking system, enabling students to teach and learn skills through time-based credit transactions without monetary exchange.
 
----
+## Core Concept: Time Banking
 
-## 💡 Konsep Time Banking
+The platform operates on a fundamental principle where time serves as the universal currency:
 
-**Waktu = Mata Uang**
+- 1 hour of teaching = 1 Time Credit
+- 1 Time Credit = 1 hour of learning
+- All skills are valued equally regardless of type or complexity
+- Zero monetary transactions required
 
-Dalam Wibi, semua orang memiliki nilai yang sama. Tidak peduli skill apa yang Anda ajarkan, 1 jam mengajar = 1 Time Credit yang dapat digunakan untuk belajar skill lain.
+### Key Advantages
 
-```
-┌─────────────────────────────────────────┐
-│  1 Jam Mengajar = 1 Time Credit         │
-│  1 Time Credit = 1 Jam Belajar          │
-│  Semua Skill Dihargai Sama              │
-│  Tanpa Uang, Murni Pertukaran Skill     │
-└─────────────────────────────────────────┘
-```
+- **Equity**: Equal valuation of all skills and knowledge
+- **Community Building**: Fosters peer-to-peer learning networks
+- **Accessibility**: Removes financial barriers to skill acquisition
+- **Reciprocity**: Encourages both teaching and learning behaviors
 
-### Mengapa Time Banking?
-- ✨ **Adil**: Semua skill dihargai sama
-- 🤝 **Komunitas**: Membangun jaringan pelajar
-- 💰 **Gratis**: Tidak ada biaya, hanya pertukaran
-- 🌱 **Pertumbuhan**: Belajar dan mengajar sekaligus
+## Technology Stack
 
-## 🛠️ Tech Stack
-
-### 🎨 Frontend
-- **Framework**: Next.js 16 (App Router)
+### Frontend Architecture
+- **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS + shadcn/ui
+- **Styling**: Tailwind CSS with shadcn/ui component library
 - **State Management**: Zustand
-- **Date Handling**: date-fns
-- **Icons**: Lucide React
+- **HTTP Client**: Axios
+- **Date Utilities**: date-fns
+- **UI Icons**: Lucide React
+- **Real-time**: WebSocket, WebRTC
+- **Testing**: Jest, React Testing Library, Playwright
 
-### ⚙️ Backend
-- **Language**: Go (Golang)
-- **Framework**: Gin Web Framework
+### Backend Architecture
+- **Language**: Go 1.25
+- **Web Framework**: Gin
 - **ORM**: GORM
 - **Authentication**: JWT (JSON Web Tokens)
-- **Database**: PostgreSQL
-- **Architecture**: Clean Architecture (MVC Pattern)
+- **Database**: PostgreSQL 14+
+- **Architecture Pattern**: Clean Architecture (MVC)
+- **API Documentation**: Swagger/OpenAPI
+- **Security**: Bcrypt, Rate Limiting, CORS, Input Sanitization
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 wibi/
-├── backend/                    # Go API Server
-│   ├── cmd/main.go            # Entry point
+├── backend/
+│   ├── cmd/server/              # Application entry point
 │   ├── internal/
-│   │   ├── config/            # Configuration
-│   │   ├── database/          # Database setup
-│   │   ├── dto/               # Data Transfer Objects
-│   │   ├── handler/           # HTTP handlers
-│   │   ├── middleware/        # Auth & middleware
-│   │   ├── models/            # Database models
-│   │   ├── repository/        # Data access layer
-│   │   ├── routes/            # API routes
-│   │   ├── service/           # Business logic
-│   │   └── utils/             # Utilities
-│   └── migrations/            # Database migrations
+│   │   ├── config/              # Configuration management
+│   │   ├── database/            # Database connection and migrations
+│   │   ├── dto/                 # Data Transfer Objects
+│   │   ├── handler/             # HTTP request handlers
+│   │   ├── middleware/          # Authentication and middleware
+│   │   ├── models/              # Database models (19 tables)
+│   │   ├── repository/          # Data access layer
+│   │   ├── routes/              # API route definitions
+│   │   ├── service/             # Business logic layer
+│   │   ├── utils/               # Utility functions
+│   │   └── websocket/           # WebSocket handlers
+│   ├── migrations/              # SQL migration files
+│   ├── docs/                    # Swagger documentation
+│   └── tests/                   # Unit and integration tests
 │
-├── frontend/                   # Next.js Application
+├── frontend/
 │   ├── src/
-│   │   ├── app/               # Pages & layouts
-│   │   ├── components/        # React components
-│   │   │   ├── badge/         # Badge components
-│   │   │   ├── session/       # Session components
-│   │   │   ├── skill/         # Skill components
-│   │   │   └── ui/            # shadcn/ui components
+│   │   ├── app/                 # Next.js pages and layouts
+│   │   ├── components/          # React components
+│   │   │   ├── auth/            # Authentication components
+│   │   │   ├── badge/           # Gamification components
+│   │   │   ├── session/         # Session management
+│   │   │   ├── skill/           # Skill marketplace
+│   │   │   ├── transaction/     # Credit transactions
+│   │   │   └── ui/              # shadcn/ui base components
 │   │   ├── lib/
-│   │   │   ├── api/           # API client
-│   │   │   └── services/      # Service layer
-│   │   ├── stores/            # Zustand stores
-│   │   └── types/             # TypeScript types
-│   └── public/                # Static assets
+│   │   │   ├── api/             # API client configuration
+│   │   │   └── services/        # Service layer
+│   │   ├── stores/              # Zustand state stores
+│   │   ├── types/               # TypeScript type definitions
+│   │   └── hooks/               # Custom React hooks
+│   └── public/                  # Static assets
 │
-└── README.md                  # This file
+└── README.md
 ```
 
-## 🚀 Getting Started
+## Installation and Setup
 
 ### Prerequisites
-- **Node.js** 18+ (Frontend)
-- **Go** 1.21+ (Backend)
-- **PostgreSQL** 14+ (Database)
-- **Git** (Version control)
+- Node.js 18 or higher
+- Go 1.21 or higher
+- PostgreSQL 14 or higher
+- Git
 
-### 🔧 Backend Setup
+### Backend Configuration
 
 ```bash
 # Navigate to backend directory
 cd backend
 
-# Download dependencies
+# Install dependencies
 go mod download
 
-# Set up environment variables
+# Configure environment variables
 cp .env.example .env
-# Edit .env with your database credentials
+# Edit .env with your database credentials and JWT secret
 
 # Run database migrations
-go run cmd/main.go migrate
+go run cmd/server/main.go
 
-# Start the server
-go run cmd/main.go
-# Server runs on http://localhost:8080
+# Start development server
+go run cmd/server/main.go
+# Server available at http://localhost:8080
 ```
 
-### 🎨 Frontend Setup
+### Frontend Configuration
 
 ```bash
 # Navigate to frontend directory
@@ -121,130 +124,350 @@ cd frontend
 # Install dependencies
 npm install
 
-# Set up environment variables
+# Configure environment variables
 cp .env.example .env.local
-# Edit .env.local with your API URL
+# Set NEXT_PUBLIC_API_URL to your backend URL
 
 # Start development server
 npm run dev
-# App runs on http://localhost:3000
+# Application available at http://localhost:3000
 ```
 
-## ✨ Features
+## Core Features
 
-### 🔐 Authentication & User Management
-- ✅ User registration & login with JWT
-- ✅ User profile management
-- ✅ Password change & avatar upload
-- ✅ Role-based access control
+### Authentication and User Management
+- JWT-based authentication with token refresh
+- User registration and email verification
+- Profile management with avatar upload
+- Password reset functionality
+- Role-based access control (User/Admin)
 
-### 🎓 Skill Management
-- ✅ Browse skill marketplace
-- ✅ Add teaching skills
-- ✅ Add learning wishlist
-- ✅ Skill categories & levels
-- ✅ Search & filter skills
+### Skill Marketplace
+- Browse and search skill catalog (17 pre-seeded skills)
+- Filter by category (Academic, Technical, Creative, Language, Sports)
+- Add teaching skills with experience level and hourly rate
+- Create learning wishlist with priority levels
+- View teacher profiles with ratings and reviews
 
-### 📅 Session Management
-- ✅ Request sessions from tutors
-- ✅ Approve/reject session requests
-- ✅ Schedule sessions (online/offline)
-- ✅ Session status tracking
-- ✅ Session completion & confirmation
+### Session Management
+- Request sessions from skill teachers
+- Approve/reject session requests
+- Schedule sessions (online/offline/hybrid modes)
+- Real-time session status tracking
+- Check-in system for both parties
+- Mutual completion confirmation
+- Session cancellation with reason tracking
+- Dispute resolution system
 
-### 💳 Credit System
-- ✅ Time Credit balance tracking
-- ✅ Credit hold during sessions
-- ✅ Credit transfer on completion
-- ✅ Transaction history
-- ✅ Bonus credits for achievements
+### Credit System
+- Time Credit balance tracking
+- Credit hold mechanism during active sessions
+- Automatic credit transfer upon session completion
+- Comprehensive transaction history
+- Peer-to-peer credit transfers
+- Bonus credits for achievements and milestones
+- Transaction rollback for cancelled sessions
 
-### ⭐ Review & Rating System
-- ✅ Rate tutors & students
-- ✅ Detailed rating breakdown
-- ✅ Review comments & feedback
-- ✅ Rating summaries
-- ✅ Public profile ratings
+### Review and Rating System
+- Rate teachers and students (1-5 stars)
+- Detailed rating breakdown (Communication, Knowledge, Punctuality, Helpfulness)
+- Written review comments
+- Public rating summaries on profiles
+- Review moderation and reporting
 
-### 🏆 Gamification
-- ✅ Badge system (4 types: Achievement, Milestone, Quality, Special)
-- ✅ Automatic badge awarding
-- ✅ Pin favorite badges
-- ✅ 5 leaderboards (Badges, Rarity, Sessions, Rating, Credits)
-- ✅ Rarity levels (Common to Legendary)
-- ✅ Bonus credits for rare badges
+### Gamification System
+- Badge system with 4 types (Achievement, Milestone, Quality, Special)
+- Automatic badge awarding based on criteria
+- Badge pinning for profile display
+- 5 leaderboards (Badges, Rarity, Sessions, Rating, Credits)
+- Rarity levels (Common, Uncommon, Rare, Epic, Legendary)
+- Bonus credit rewards for rare badges
 
-## 👥 User Flow
+### Real-time Features
+- WebSocket notifications for instant updates
+- WebRTC video calling for online sessions
+- Collaborative whiteboard with real-time synchronization
+- Live session status updates
 
-### 👨‍🏫 As Teacher (Earn Credits)
-1. **Register** → Create account
-2. **Setup Profile** → Add bio, avatar, interests
-3. **List Skills** → Add skills you can teach
-4. **Receive Requests** → Get session requests from students
-5. **Approve & Teach** → Conduct sessions
-6. **Earn Credits** → Get Time Credits + ratings
-7. **Climb Leaderboard** → Earn badges & recognition
+### Community Features
+- Forum with categories and threaded discussions
+- Success story sharing with likes and comments
+- Skill endorsements from peers
+- User favorites list
+- Session templates for recurring sessions
 
-### 👨‍🎓 As Student (Spend Credits)
-1. **Register** → Create account
-2. **Browse Marketplace** → Explore available skills
-3. **Find Tutor** → View profiles, ratings, reviews
-4. **Request Session** → Book a session
-5. **Attend & Learn** → Participate in session
-6. **Rate & Review** → Give feedback to tutor
-7. **Spend Credits** → Use Time Credits to learn
+### Administrative Tools
+- User management dashboard
+- Session monitoring and resolution
+- Transaction oversight
+- Content moderation
+- Analytics and reporting
 
-## 📊 API Documentation
+## User Workflows
+
+### Teacher Workflow
+1. Register and complete profile setup
+2. Add teaching skills with experience level and availability
+3. Receive session requests from students
+4. Review and approve/reject requests
+5. Conduct teaching sessions
+6. Confirm session completion
+7. Receive time credits and ratings
+8. Earn badges and climb leaderboards
+
+### Student Workflow
+1. Register and complete profile setup
+2. Browse skill marketplace
+3. Review teacher profiles, ratings, and reviews
+4. Request session from preferred teacher
+5. Attend scheduled session
+6. Confirm session completion
+7. Rate and review teacher
+8. Spend earned credits on learning new skills
+
+## API Documentation
 
 ### Base URL
 ```
 http://localhost:8080/api/v1
 ```
 
-### Key Endpoints
+### Authentication Endpoints
+```
+POST   /auth/register              Register new user
+POST   /auth/login                 User login
+POST   /auth/logout                User logout
+POST   /auth/verify-email          Verify email address
+POST   /auth/forgot-password       Request password reset
+POST   /auth/reset-password        Reset password
+GET    /auth/profile               Get authenticated user profile
+```
 
-**Authentication**
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - Login user
-- `POST /auth/logout` - Logout user
+### User Management
+```
+GET    /user/profile               Get user profile
+PUT    /user/profile               Update user profile
+POST   /user/change-password       Change password
+POST   /user/avatar                Upload avatar
+GET    /user/stats                 Get user statistics
+```
 
-**Skills**
-- `GET /skills` - Browse all skills
-- `POST /user/skills` - Add teaching skill
-- `GET /user/skills` - Get my teaching skills
+### Skills
+```
+GET    /skills                     List all skills
+GET    /skills/:id                 Get skill details
+POST   /user/skills                Add teaching skill
+GET    /user/skills                Get user's teaching skills
+PUT    /user/skills/:id            Update teaching skill
+DELETE /user/skills/:id            Remove teaching skill
+POST   /user/learning-skills       Add learning skill
+GET    /user/learning-skills       Get learning wishlist
+DELETE /user/learning-skills/:id   Remove learning skill
+```
 
-**Sessions**
-- `POST /sessions` - Request session
-- `GET /sessions` - Get my sessions
-- `PUT /sessions/:id/approve` - Approve session
-- `PUT /sessions/:id/complete` - Complete session
+### Sessions
+```
+POST   /sessions                   Create session request
+GET    /sessions                   List user sessions
+GET    /sessions/:id               Get session details
+POST   /sessions/:id/approve       Approve session request
+POST   /sessions/:id/reject        Reject session request
+POST   /sessions/:id/checkin       Check in to session
+POST   /sessions/:id/start         Start session
+POST   /sessions/:id/complete      Confirm completion
+POST   /sessions/:id/cancel        Cancel session
+POST   /sessions/:id/dispute       Dispute session
+```
 
-**Badges & Leaderboard**
-- `GET /badges` - Get all badges
-- `GET /user/badges` - Get my badges
-- `GET /leaderboard/badges` - Badge leaderboard
-- `GET /leaderboard/rating` - Rating leaderboard
+### Transactions
+```
+GET    /user/transactions          Get transaction history
+GET    /user/transactions/:id      Get transaction details
+POST   /user/transfer              Transfer credits to another user
+```
 
-## 🤝 Contributing
+### Reviews
+```
+POST   /reviews                    Create review
+GET    /reviews/:id                Get review details
+PUT    /reviews/:id                Update review
+DELETE /reviews/:id                Delete review
+GET    /users/:id/reviews          Get user reviews
+GET    /users/:id/rating-summary   Get rating summary
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Badges and Leaderboards
+```
+GET    /badges                     List all badges
+GET    /user/badges                Get user badges
+POST   /user/badges/check          Check and award badges
+POST   /user/badges/:id/pin        Pin badge to profile
+GET    /leaderboard/badges         Badge leaderboard
+GET    /leaderboard/rarity         Rarity leaderboard
+GET    /leaderboard/sessions       Session leaderboard
+GET    /leaderboard/rating         Rating leaderboard
+GET    /leaderboard/credits        Credit leaderboard
+```
 
-## 👨‍💻 Creator
+### Notifications
+```
+GET    /notifications              Get notifications
+GET    /notifications/unread       Get unread notifications
+GET    /notifications/unread/count Get unread count
+PUT    /notifications/:id/read     Mark as read
+PUT    /notifications/read-all     Mark all as read
+DELETE /notifications/:id          Delete notification
+```
 
-**Zidane Abiansyah**
+### WebSocket Endpoints
+```
+WS     /ws/notifications           Real-time notifications
+WS     /ws/whiteboard/:sessionId   Collaborative whiteboard
+WS     /ws/video/:sessionId        WebRTC signaling
+```
 
----
+For complete API documentation, visit `/api/v1/swagger` when the server is running.
 
-## 📝 License
+## Database Schema
 
-MIT License - see LICENSE file for details
+The application uses PostgreSQL with 19 tables organized into the following domains:
 
----
+### Core Tables
+- **users**: User accounts and profiles
+- **admins**: Administrative accounts
+- **used_tokens**: JWT token blacklist
 
-<div align="center">
+### Skills and Learning
+- **skills**: Master skill catalog
+- **user_skills**: Skills users can teach
+- **learning_skills**: Skills users want to learn
+- **skill_progress**: Learning progress tracking
 
-**Made with ❤️ by Zidane Abiansyah**
+### Sessions and Transactions
+- **sessions**: Teaching/learning sessions
+- **transactions**: Credit transaction history
+- **video_sessions**: Video call metadata
 
-*Berbagi ilmu, tukar waktu, tumbuh bersama* 🚀
+### Social Features
+- **reviews**: Ratings and feedback
+- **favorites**: Favorite teachers
+- **notifications**: Real-time notifications
+- **endorsements**: Peer endorsements
 
-</div>
+### Community
+- **forum_threads**: Discussion threads
+- **forum_comments**: Thread comments
+- **stories**: Success stories
+- **story_comments**: Story comments
+
+### Gamification
+- **badges**: Achievement badges
+- **user_badges**: Badges earned by users
+
+### Content Management
+- **shared_files**: Session materials
+- **whiteboards**: Collaborative whiteboard data
+- **templates**: Session templates
+- **reports**: User reports
+- **availabilities**: Teacher availability schedules
+
+## Deployment
+
+### Production Stack
+- **Frontend**: Vercel (Free tier)
+- **Backend**: Render (Free tier)
+- **Database**: Supabase PostgreSQL (Free tier)
+
+### Environment Variables
+
+Backend (.env):
+```
+PORT=8080
+GIN_MODE=release
+DB_HOST=your-database-host
+DB_PORT=5432
+DB_USER=your-database-user
+DB_PASSWORD=your-database-password
+DB_NAME=your-database-name
+DB_SSLMODE=require
+JWT_SECRET=your-jwt-secret-min-32-chars
+JWT_EXPIRY=168h
+ALLOWED_ORIGINS=https://your-frontend-domain.com
+```
+
+Frontend (.env.local):
+```
+NEXT_PUBLIC_API_URL=https://your-backend-domain.com
+```
+
+For detailed deployment instructions, see DEPLOYMENT.md.
+
+## Testing
+
+### Backend Tests
+```bash
+cd backend
+go test ./...
+go test -cover ./...
+```
+
+### Frontend Tests
+```bash
+cd frontend
+npm run test
+npm run test:coverage
+```
+
+## Performance Optimizations
+
+### Backend
+- Connection pooling (10 idle, 100 max connections)
+- Materialized views for leaderboards (auto-refresh every 10 minutes)
+- Composite database indexes for common queries
+- GORM query optimization with preloading
+- Rate limiting (100 requests/minute per IP)
+- GZIP compression for responses
+
+### Frontend
+- Next.js App Router with Server Components
+- Image optimization with next/image
+- Code splitting with dynamic imports
+- Edge caching via Vercel CDN
+- Zustand for lightweight state management (3KB)
+- PWA support with service workers
+
+## Security Features
+
+- JWT authentication with token expiry and refresh
+- Bcrypt password hashing (cost factor: 10)
+- SQL injection prevention via parameterized queries
+- XSS protection with HTML sanitization (Bluemonday)
+- CSRF protection
+- Rate limiting per IP address
+- CORS whitelist configuration
+- Input validation and sanitization
+- HTTPS enforcement
+- Security headers middleware
+
+## Contributing
+
+Contributions are welcome. Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes with clear messages
+4. Write tests for new features
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License. See LICENSE file for details.
+
+## Author
+
+Zidane Abiansyah
+
+## Acknowledgments
+
+Built with modern web technologies and best practices in software architecture.
