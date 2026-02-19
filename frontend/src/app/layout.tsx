@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Sonner } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AuthProvider } from "@/components/auth";
 import { AdminProvider } from "@/components/auth/AdminProvider";
-import AchievementPopup from "@/components/gamification/AchievementPopup";
+import AchievementPopup from "@/components/features/gamification/AchievementPopup";
 import { PWAProvider } from "@/components/providers/pwa-provider";
-import { MobileOptimization } from "@/components/mobile-optimization";
+import { MobileOptimization } from "@/components/shared/mobile-optimization";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 

@@ -59,17 +59,17 @@ export const createLazyComponent = (
  * Improves initial page load time and reduces bundle size
  */
 export const LazyDashboard = dynamic(
-    () => import('@/app/dashboard/page'),
+    () => import('@/app/(app)/dashboard/page'),
     { loading: LoadingComponent, ssr: true }
 )
 
 export const LazyMarketplace = dynamic(
-    () => import('@/app/marketplace/page'),
+    () => import('@/app/(app)/marketplace/page'),
     { loading: LoadingComponent, ssr: true }
 )
 
 export const LazyProfile = dynamic(
-    () => import('@/app/profile/page'),
+    () => import('@/app/(app)/profile/page'),
     { loading: LoadingComponent, ssr: true }
 )
 
@@ -79,7 +79,7 @@ export const LazyProfile = dynamic(
  * Reduces initial bundle size and improves perceived performance
  */
 export const LazyUserStats = dynamic(
-    () => import('@/components/profile/UserStats'),
+    () => import('@/components/features/profile/UserStats'),
     { loading: LoadingComponent, ssr: true }
 )
 
@@ -89,11 +89,11 @@ export const LazyUserStats = dynamic(
  */
 
 export const LazySessionApprovalModal = dynamic(
-    () => import('@/components/session/SessionApprovalModal'),
+    () => import('@/components/features/session/SessionApprovalModal'),
     { loading: LoadingComponent, ssr: false }
 )
 
 export const LazyTransactionDetailModal = dynamic(
-    () => import('@/components/transaction/TransactionDetailModal'),
+    () => import('@/components/features/transaction/TransactionDetailModal'),
     { loading: LoadingComponent, ssr: false }
 )

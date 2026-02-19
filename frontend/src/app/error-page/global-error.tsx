@@ -1,6 +1,6 @@
 'use client';
 
-import FuzzyText from '@/components/FuzzyText';
+import FuzzyText from '@/components/effects/FuzzyText';
 
 export default function GlobalError({
     error,

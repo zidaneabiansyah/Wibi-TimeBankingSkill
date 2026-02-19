@@ -95,6 +95,9 @@ importers:
       postprocessing:
         specifier: ^6.38.2
         version: 6.38.2(three@0.167.1)
+      radix-ui:
+        specifier: ^1.4.3
+        version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0

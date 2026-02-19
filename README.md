@@ -43,49 +43,6 @@ The platform operates on a fundamental principle where time serves as the univer
 - **API Documentation**: Swagger/OpenAPI
 - **Security**: Bcrypt, Rate Limiting, CORS, Input Sanitization
 
-## Project Structure
-
-```
-wibi/
-├── backend/
-│   ├── cmd/server/              # Application entry point
-│   ├── internal/
-│   │   ├── config/              # Configuration management
-│   │   ├── database/            # Database connection and migrations
-│   │   ├── dto/                 # Data Transfer Objects
-│   │   ├── handler/             # HTTP request handlers
-│   │   ├── middleware/          # Authentication and middleware
-│   │   ├── models/              # Database models (19 tables)
-│   │   ├── repository/          # Data access layer
-│   │   ├── routes/              # API route definitions
-│   │   ├── service/             # Business logic layer
-│   │   ├── utils/               # Utility functions
-│   │   └── websocket/           # WebSocket handlers
-│   ├── migrations/              # SQL migration files
-│   ├── docs/                    # Swagger documentation
-│   └── tests/                   # Unit and integration tests
-│
-├── frontend/
-│   ├── src/
-│   │   ├── app/                 # Next.js pages and layouts
-│   │   ├── components/          # React components
-│   │   │   ├── auth/            # Authentication components
-│   │   │   ├── badge/           # Gamification components
-│   │   │   ├── session/         # Session management
-│   │   │   ├── skill/           # Skill marketplace
-│   │   │   ├── transaction/     # Credit transactions
-│   │   │   └── ui/              # shadcn/ui base components
-│   │   ├── lib/
-│   │   │   ├── api/             # API client configuration
-│   │   │   └── services/        # Service layer
-│   │   ├── stores/              # Zustand state stores
-│   │   ├── types/               # TypeScript type definitions
-│   │   └── hooks/               # Custom React hooks
-│   └── public/                  # Static assets
-│
-└── README.md
-```
-
 ## Installation and Setup
 
 ### Prerequisites

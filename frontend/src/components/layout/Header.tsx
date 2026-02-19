@@ -2,18 +2,19 @@
 
 import { useState } from 'react';
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth.store";
 import dynamic from 'next/dynamic';
 
 const NotificationBell = dynamic(
-    () => import('@/components/notification').then((mod) => mod.NotificationBell),
+    () => import('@/components/features/notification').then((mod) => mod.NotificationBell),
     { ssr: false }
 );
 
 const NotificationDropdown = dynamic(
-    () => import('@/components/notification').then((mod) => mod.NotificationDropdown),
+    () => import('@/components/features/notification').then((mod) => mod.NotificationDropdown),
     { ssr: false }
 );
 import { UserDropdownMenu } from "@/components/ui/user-dropdown-menu";
@@ -50,7 +51,14 @@ export function Header() {
                     <div className="flex-1 flex items-center">
                         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-                                <img src="/wibi.png" alt="Wibi Logo" className="h-7 w-7 rounded-md" />
+                                <Image 
+                                    src="/wibi.png" 
+                                    alt="Wibi Logo" 
+                                    width={28}
+                                    height={28}
+                                    className="rounded-md" 
+                                    priority
+                                />
                             </div>
                             <span className="text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent hidden sm:inline">Wibi</span>
                         </Link>

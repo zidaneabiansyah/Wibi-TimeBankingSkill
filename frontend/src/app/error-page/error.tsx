@@ -1,6 +1,6 @@
 'use client';
 
-import FuzzyText from '@/components/FuzzyText';
+import FuzzyText from '@/components/effects/FuzzyText';
 import { useEffect } from 'react';
 
 export default function Error({

@@ -1,10 +1,26 @@
 'use client';
 
-import ErrorContent from '@/app/error-page/error';
+import { ErrorDisplay } from '@/components/ui/error-display';
 
-export default function Error(props: {
+export default function GlobalError({
+    error,
+    reset,
+}: {
     error: Error & { digest?: string };
     reset: () => void;
 }) {
-    return <ErrorContent {...props} />;
+    return (
+        <html>
+            <body>
+                <div className="min-h-screen flex items-center justify-center bg-background">
+                    <ErrorDisplay
+                        error={error}
+                        reset={reset}
+                        title="Application Error"
+                        showHomeButton
+                    />
+                </div>
+            </body>
+        </html>
+    );
 }
