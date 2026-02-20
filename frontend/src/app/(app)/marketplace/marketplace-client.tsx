@@ -202,7 +202,7 @@ export function MarketplaceClient() {
     return (
         <div className="min-h-screen bg-black text-zinc-100 selection:bg-orange-500/30">
             {/* --- Bento Dashboard Hero --- */}
-            <div className="container mx-auto px-4 pt-10 pb-16 max-w-7xl">
+            <div className="container mx-auto px-4 pt-32 pb-16 max-w-7xl">
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-16 h-auto lg:min-h-[480px]">
                     {/* Block A: Core Platform Info */}
@@ -288,8 +288,8 @@ export function MarketplaceClient() {
                     </div>
                 </div>
 
-                {/* --- Sticky Navigation Bar --- */}
-                <div className="sticky top-6 z-50 mb-12">
+                {/* --- Navigation Bar --- */}
+                <div className="relative mb-12">
                     <div className="bg-black/95 backdrop-blur-2xl border border-zinc-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                         <div className="flex gap-1 overflow-x-auto scrollbar-hide flex-1 pl-1">
                             <button
