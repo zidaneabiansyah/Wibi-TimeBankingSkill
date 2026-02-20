@@ -27,26 +27,12 @@ const MobileMenuDrawer = dynamic(
     { ssr: false }
 );
 
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-
 export function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
     const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isHidden, setIsHidden] = useState(false);
-
-    const { scrollY } = useScroll();
-
-    useMotionValueEvent(scrollY, "change", (latest) => {
-        const previous = scrollY.getPrevious() ?? 0;
-        if (latest > previous && latest > 150) {
-            setIsHidden(true);
-        } else {
-            setIsHidden(false);
-        }
-    });
 
     // Scroll effect for navbar transparency
     useEffect(() => {
@@ -63,32 +49,24 @@ export function Header() {
     };
 
     const publicNavLinks = [
-        { href: '/marketplace', label: 'MARKETPLACE' },
-        { href: '/how-it-works', label: 'WORKFLOW' },
-        { href: '/about', label: 'STORY' },
-        { href: '/community', label: 'COMMUNITY' },
+        { href: '/marketplace', label: 'Marketplace' },
+        { href: '/how-it-works', label: 'How It Work' },
+        { href: '/about', label: 'About' },
+        { href: '/community', label: 'Community' },
     ];
 
     return (
-        <motion.header
-            variants={{
-                visible: { y: 0, opacity: 1 },
-                hidden: { y: -120, opacity: 0 }
-            }}
-            animate={isHidden ? "hidden" : "visible"}
-            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 py-6 pointer-events-none"
-        >
+        <header className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 py-6 pointer-events-none">
             <div
                 className={`
                     pointer-events-auto transition-all duration-500 ease-in-out
                     flex h-18 sm:h-20 items-center justify-between
-                    ${isScrolled ? 'max-w-6xl' : 'max-w-7xl'}
+                    ${isScrolled
+                        ? 'max-w-6xl bg-black/40 backdrop-blur-3xl border-orange-500/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
+                        : 'max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none'}
                     w-full px-6 sm:px-10
-                    bg-black/40 backdrop-blur-3xl 
-                    border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]
+                    border
                     rounded-[2rem] sm:rounded-[3rem]
-                    ${isScrolled ? 'border-orange-500/10' : 'border-white/10'}
                 `}
             >
                 {/* Logo Section */}
@@ -255,6 +233,6 @@ export function Header() {
                     )}
                 </div>
             </div>
-        </motion.header>
+        </header>
     );
 }
