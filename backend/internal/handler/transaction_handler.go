@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/service"
-	"github.com/timebankingskill/backend/internal/utils"
+	"github.com/timebankingskill/backend/pkg/errors"
+	"github.com/timebankingskill/backend/pkg/response"
 )
 
 // TransactionHandler handles transaction-related HTTP requests
@@ -23,16 +23,13 @@ func NewTransactionHandler(transactionService *service.TransactionService) *Tran
 }
 
 // GetUserTransactions retrieves transaction history for the authenticated user
-// GET /api/v1/user/transactions?limit=10&offset=0
 func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
-	// Get user ID from context (set by auth middleware)
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
-	// Get pagination parameters
 	limitStr := c.DefaultQuery("limit", "10")
 	offsetStr := c.DefaultQuery("offset", "0")
 
@@ -46,82 +43,70 @@ func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 		offset = 0
 	}
 
-	// Get transactions
 	transactions, total, err := h.transactionService.GetUserTransactionHistory(userID.(uint), limit, offset)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch transactions", err)
+		response.Error(c, err)
 		return
 	}
 
-	// Return response
-	response := gin.H{
+	res := gin.H{
 		"transactions": transactions,
 		"total":        total,
 		"limit":        limit,
 		"offset":       offset,
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Transactions retrieved successfully", response)
+	response.OK(c, "Transactions retrieved successfully", res)
 }
 
 // GetTransactionByID retrieves a specific transaction by ID
-// GET /api/v1/user/transactions/:id
 func (h *TransactionHandler) GetTransactionByID(c *gin.Context) {
-	// Get user ID from context
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
-	// Get transaction ID from URL
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid transaction ID", err)
+		response.ValidationError(c, "Invalid transaction ID")
 		return
 	}
 
-	// Get transaction
 	transaction, err := h.transactionService.GetTransaction(uint(id))
 	if err != nil {
-		utils.SendError(c, http.StatusNotFound, "Transaction not found", err)
+		response.Error(c, err)
 		return
 	}
 
-	// Verify transaction belongs to user
 	if transaction.UserID != userID.(uint) {
-		utils.SendError(c, http.StatusForbidden, "Access denied", nil)
+		response.Error(c, errors.ErrForbidden)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Transaction retrieved successfully", transaction)
+	response.OK(c, "Transaction retrieved successfully", transaction)
 }
 
 // TransferCredits handles peer-to-peer credit transfers
-// POST /api/v1/user/transfer
 func (h *TransactionHandler) TransferCredits(c *gin.Context) {
-	// Get sender ID from context (authenticated user)
 	senderID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
-	// Parse request body
 	var req dto.TransferCreditsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid request body", err)
+		response.ValidationError(c, "Invalid request body: "+err.Error())
 		return
 	}
 
-	// Validate amount
 	if req.Amount <= 0 {
-		utils.SendError(c, http.StatusBadRequest, "Transfer amount must be positive", nil)
+		response.ValidationError(c, "Transfer amount must be positive")
 		return
 	}
 
-	// Perform transfer
 	err := h.transactionService.DirectTransfer(
 		senderID.(uint),
 		req.RecipientID,
@@ -130,37 +115,28 @@ func (h *TransactionHandler) TransferCredits(c *gin.Context) {
 	)
 
 	if err != nil {
-		// Check for specific error types to return appropriate status codes
 		errMsg := err.Error()
 		
-		// Insufficient credits - return 400 with specific message for UI alert
 		if len(errMsg) >= 20 && errMsg[:20] == "insufficient credits" {
-			utils.SendError(c, http.StatusBadRequest, errMsg, nil)
+			response.Error(c, errors.ErrBadRequest.WithDetails(errMsg))
 			return
 		}
-		
-		// Recipient not found or inactive - return 404
 		if errMsg == "recipient not found" || errMsg == "recipient account is not active" {
-			utils.SendError(c, http.StatusNotFound, errMsg, nil)
+			response.Error(c, errors.ErrNotFound.WithDetails(errMsg))
 			return
 		}
-		
-		// Cannot transfer to self - return 400
 		if errMsg == "cannot transfer credits to yourself" {
-			utils.SendError(c, http.StatusBadRequest, errMsg, nil)
+			response.Error(c, errors.ErrBadRequest.WithDetails(errMsg))
 			return
 		}
 		
-		// Other errors - return 500
-		utils.SendError(c, http.StatusInternalServerError, "Failed to transfer credits", err)
+		response.Error(c, err)
 		return
 	}
 
-	// Get new balance after transfer
 	newBalance, _ := h.transactionService.GetUserBalance(senderID.(uint))
 
-	// Return success response
-	response := dto.TransferCreditsResponse{
+	res := dto.TransferCreditsResponse{
 		SenderID:    senderID.(uint),
 		RecipientID: req.RecipientID,
 		Amount:      req.Amount,
@@ -168,5 +144,5 @@ func (h *TransactionHandler) TransferCredits(c *gin.Context) {
 		Message:     "Credits transferred successfully",
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Credits transferred successfully", response)
+	response.OK(c, "Credits transferred successfully", res)
 }

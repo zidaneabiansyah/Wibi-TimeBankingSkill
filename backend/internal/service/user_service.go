@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
-	"time"
 
+	"github.com/timebankingskill/backend/internal/domain"
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/repository"
 	"github.com/timebankingskill/backend/internal/utils"
@@ -178,9 +178,9 @@ func (s *UserService) ChangePassword(userID uint, oldPassword, newPassword strin
 //   - userID: ID of user to get stats for
 //
 // Returns:
-//   - *UserStats: Comprehensive statistics object
+//   - *domain.UserStats: Comprehensive statistics object
 //   - error: If user not found or database error
-func (s *UserService) GetUserStats(userID uint) (*UserStats, error) {
+func (s *UserService) GetUserStats(userID uint) (*domain.UserStats, error) {
 	user, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func (s *UserService) GetUserStats(userID uint) (*UserStats, error) {
 	learningHours := s.calculateLearningHours(userID)
 
 	// Build stats response
-	stats := &UserStats{
+	stats := &domain.UserStats{
 		CreditBalance:          int(user.CreditBalance),
 		TotalCreditsEarned:     int(user.TotalEarned),
 		TotalCreditsSpent:      int(user.TotalSpent),
@@ -267,7 +267,7 @@ func (s *UserService) GetUserByUsername(username string) (*models.User, error) {
 
 // GetPublicProfile retrieves public user profile (limited fields)
 // Shows only non-sensitive information that can be displayed publicly
-func (s *UserService) GetPublicProfile(userID uint) (*PublicProfile, error) {
+func (s *UserService) GetPublicProfile(userID uint) (*domain.PublicProfile, error) {
 	user, err := s.userRepo.GetByID(userID)
 	if err != nil {
 		return nil, err
@@ -276,7 +276,7 @@ func (s *UserService) GetPublicProfile(userID uint) (*PublicProfile, error) {
 	// Calculate teaching hours from completed sessions
 	teachingHours := s.calculateTeachingHours(userID)
 
-	profile := &PublicProfile{
+	profile := &domain.PublicProfile{
 		ID:                     user.ID,
 		FullName:              user.FullName,
 		Username:              user.Username,
@@ -289,38 +289,9 @@ func (s *UserService) GetPublicProfile(userID uint) (*PublicProfile, error) {
 		TotalSessionsAsTeacher: user.TotalSessionsAsTeacher,
 		AverageRatingAsTeacher: user.AverageRatingAsTeacher,
 		TotalTeachingHours:    teachingHours,
-		CreatedAt:             user.CreatedAt,
 	}
 
 	return profile, nil
 }
 
-// Helper structs for user service responses
 
-type UserStats struct {
-	CreditBalance         int     `json:"credit_balance"`
-	TotalCreditsEarned   int     `json:"total_credits_earned"`
-	TotalCreditsSpent    int     `json:"total_credits_spent"`
-	TotalSessionsAsTeacher int     `json:"total_sessions_as_teacher"`
-	TotalSessionsAsStudent int     `json:"total_sessions_as_student"`
-	AverageRatingAsTeacher float64 `json:"average_rating_as_teacher"`
-	AverageRatingAsStudent float64 `json:"average_rating_as_student"`
-	TotalTeachingHours   float64 `json:"total_teaching_hours"`
-	TotalLearningHours   float64 `json:"total_learning_hours"`
-}
-
-type PublicProfile struct {
-	ID                    uint    `json:"id"`
-	FullName             string  `json:"full_name"`
-	Username             string  `json:"username"`
-	School               string  `json:"school"`
-	Grade                string  `json:"grade"`
-	Major                string  `json:"major"`
-	Bio                  string  `json:"bio"`
-	Avatar               string  `json:"avatar"`
-	Location             string  `json:"location"`
-	TotalSessionsAsTeacher int     `json:"total_sessions_as_teacher"`
-	AverageRatingAsTeacher float64 `json:"average_rating_as_teacher"`
-	TotalTeachingHours   float64 `json:"total_teaching_hours"`
-	CreatedAt            time.Time `json:"created_at"`
-}

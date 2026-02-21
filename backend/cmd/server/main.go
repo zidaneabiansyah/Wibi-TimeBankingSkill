@@ -92,8 +92,13 @@ func main() {
   router.Use(middleware.Recovery())
   router.Use(middleware.CORSWithConfig(cfg))
   router.Use(middleware.ErrorHandler())
+  
+  // Performance: compress responses
+  router.Use(middleware.GzipMiddleware())
+
   // Rate limiting: 100 requests per minute per IP
   router.Use(middleware.RateLimitMiddleware(100))
+  
   // Monitoring: track metrics and errors
   router.Use(middleware.MonitoringMiddleware())
 

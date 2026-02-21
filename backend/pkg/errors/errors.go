@@ -43,6 +43,7 @@ var (
 	ErrNotFound       = NewAppError("NOT_FOUND", http.StatusNotFound, "The requested resource was not found")
 	ErrConflict       = NewAppError("CONFLICT", http.StatusConflict, "The request could not be completed due to a conflict")
 	ErrBadRequest     = NewAppError("BAD_REQUEST", http.StatusBadRequest, "The request was invalid or cannot be served")
+	ErrTooManyRequests = NewAppError("TOO_MANY_REQUESTS", http.StatusTooManyRequests, "Rate limit exceeded")
 	ErrInternalServer = NewAppError("INTERNAL_SERVER_ERROR", http.StatusInternalServerError, "An unexpected error occurred")
 	ErrValidation     = NewAppError("VALIDATION_ERROR", http.StatusUnprocessableEntity, "The provided data is invalid")
 )
