@@ -36,7 +36,7 @@ func main() {
   // Load configuration
   cfg, err := config.Load()
   if err != nil {
-    log.Fatalf("❌ Failed to load config: %v", err)
+    log.Fatalf("Failed to load config: %v", err)
   }
 
   // Set Gin mode
@@ -44,23 +44,31 @@ func main() {
 
   // Connect to database
   if err := database.Connect(&cfg.Database); err != nil {
-    log.Fatalf("❌ Failed to connect to database: %v", err)
+    log.Fatalf("Failed to connect to database: %v", err)
   }
   defer database.Close()
 
-  // Run migrations
-  if err := database.AutoMigrate(); err != nil {
-    log.Fatalf("❌ Failed to run migrations: %v", err)
+  // Run migrations only if explicitly enabled
+  if cfg.Server.RunMigrations {
+    if err := database.AutoMigrate(); err != nil {
+      log.Fatalf("❌ Failed to run migrations: %v", err)
+    }
+    
+    // Create materialized views for query optimization
+    if err := database.CreateMaterializedViews(database.DB); err != nil {
+      log.Printf("⚠️  Warning: Failed to create materialized views: %v", err)
+    }
+  } else {
+    log.Println("⏭️ Skipping database migrations & materialized views (RUN_MIGRATIONS=false)")
   }
 
-  // Seed initial data (skills, badges)
-  if err := database.SeedInitialData(); err != nil {
-    log.Printf("⚠️  Warning: Failed to seed data: %v", err)
-  }
-
-  // Create materialized views for query optimization
-  if err := database.CreateMaterializedViews(database.DB); err != nil {
-    log.Printf("⚠️  Warning: Failed to create materialized views: %v", err)
+  // Seed initial data (skills, badges) only if enabled
+  if cfg.Server.SeedData {
+    if err := database.SeedInitialData(); err != nil {
+      log.Printf("⚠️  Warning: Failed to seed data: %v", err)
+    }
+  } else {
+    log.Println("⏭️ Skipping initial data seeding (SEED_DATA=false)")
   }
 
   // Start materialized view auto-refresher (every 10 minutes)
@@ -92,8 +100,13 @@ func main() {
   router.Use(middleware.Recovery())
   router.Use(middleware.CORSWithConfig(cfg))
   router.Use(middleware.ErrorHandler())
+  
+  // Performance: compress responses
+  router.Use(middleware.GzipMiddleware())
+
   // Rate limiting: 100 requests per minute per IP
   router.Use(middleware.RateLimitMiddleware(100))
+  
   // Monitoring: track metrics and errors
   router.Use(middleware.MonitoringMiddleware())
 
