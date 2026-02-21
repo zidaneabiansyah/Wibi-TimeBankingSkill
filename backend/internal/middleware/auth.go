@@ -1,15 +1,19 @@
 package middleware
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/timebankingskill/backend/internal/utils"
-	"github.com/timebankingskill/backend/pkg/errors"
-	"github.com/timebankingskill/backend/pkg/response"
 )
 
 // AuthMiddleware validates JWT token from cookie or Authorization header
+// Priority: Cookie first (more secure), then Authorization header (backward compatible)
+//
+// Security:
+//   - httpOnly cookie prevents XSS attacks
+//   - Supports both cookie and header for gradual migration
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var token string
@@ -17,11 +21,14 @@ func AuthMiddleware() gin.HandlerFunc {
 		// Try to get token from cookie first (more secure)
 		token = utils.GetAuthCookie(c)
 
-		// Fallback to Authorization header if no cookie
+		// Fallback to Authorization header if no cookie (backward compatibility)
 		if token == "" {
 			authHeader := c.GetHeader("Authorization")
 			if authHeader == "" {
-				response.Error(c, errors.ErrUnauthorized.WithDetails("Authentication required"))
+				c.JSON(http.StatusUnauthorized, ErrorResponse{
+					Success: false,
+					Message: "Authentication required",
+				})
 				c.Abort()
 				return
 			}
@@ -29,7 +36,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			// Check if it's a Bearer token
 			parts := strings.SplitN(authHeader, " ", 2)
 			if len(parts) != 2 || parts[0] != "Bearer" {
-				response.Error(c, errors.ErrUnauthorized.WithDetails("Invalid authorization header format"))
+				c.JSON(http.StatusUnauthorized, ErrorResponse{
+					Success: false,
+					Message: "Invalid authorization header format",
+				})
 				c.Abort()
 				return
 			}
@@ -40,7 +50,11 @@ func AuthMiddleware() gin.HandlerFunc {
 		// Validate token
 		claims, err := utils.ValidateToken(token)
 		if err != nil {
-			response.Error(c, errors.ErrUnauthorized.WithDetails("Invalid or expired token: "+err.Error()))
+			c.JSON(http.StatusUnauthorized, ErrorResponse{
+				Success: false,
+				Message: "Invalid or expired token",
+				Error:   err.Error(),
+			})
 			c.Abort()
 			return
 		}

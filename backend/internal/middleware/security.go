@@ -1,12 +1,11 @@
 package middleware
 
 import (
+	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/timebankingskill/backend/pkg/errors"
-	"github.com/timebankingskill/backend/pkg/response"
 )
 
 // SecurityHeadersMiddleware adds security-related headers to the response
@@ -39,7 +38,7 @@ func SecurityHeadersMiddleware() gin.HandlerFunc {
 	}
 }
 
-// LoginBruteForceTracker tracks failed login attempts
+// LoginBruteForceMiddleware tracks failed login attempts
 type LoginBruteForceTracker struct {
 	attempts map[string]*FailCount
 	mu       sync.Mutex
@@ -48,7 +47,7 @@ type LoginBruteForceTracker struct {
 }
 
 type FailCount struct {
-	Count        int
+	Count     int
 	BlockedUntil time.Time
 }
 
@@ -74,6 +73,9 @@ func (t *LoginBruteForceTracker) IsBlocked(ip string) bool {
 		return true
 	}
 
+	// Reset if window has passed and not blocked
+	// Simple cleanup: if not blocked and last access was long ago, we could delete,
+	// but for now just returning false is enough.
 	return false
 }
 
@@ -108,7 +110,10 @@ func BruteForceMiddleware(tracker *LoginBruteForceTracker) gin.HandlerFunc {
 		clientIP := c.ClientIP()
 
 		if tracker.IsBlocked(clientIP) {
-			response.Error(c, errors.ErrTooManyRequests.WithDetails("Account temporarily locked. Too many failed login attempts. Please try again later."))
+			c.JSON(http.StatusTooManyRequests, gin.H{
+				"error":   "Account temporarily locked",
+				"message": "Too many failed login attempts. Please try again later.",
+			})
 			c.Abort()
 			return
 		}

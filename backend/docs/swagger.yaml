@@ -1,360 +1,78 @@
 basePath: /api/v1
 definitions:
-  models.Badge:
+  dto.CreateSessionRequest:
     properties:
-      bonus_credits:
-        description: Reward
-        type: number
-      color:
-        description: Display
-        type: string
-      created_at:
-        type: string
       description:
-        type: string
-      display_order:
-        type: integer
-      icon:
-        description: Icon URL or emoji
-        type: string
-      id:
-        type: integer
-      is_active:
-        type: boolean
-      name:
-        description: Badge Info
-        type: string
-      rarity:
-        description: Rarity
-        type: integer
-      requirements:
-        description: Requirements (stored as JSON for flexibility)
-        type: string
-      total_awarded:
-        description: Stats
-        type: integer
-      total_earned:
-        description: Alias for total_awarded for frontend consistency
-        type: integer
-      type:
-        $ref: '#/definitions/models.BadgeType'
-      updated_at:
-        type: string
-    type: object
-  models.BadgeType:
-    enum:
-    - achievement
-    - milestone
-    - quality
-    - special
-    type: string
-    x-enum-comments:
-      BadgeTypeAchievement: General achievements
-      BadgeTypeMilestone: Session/credit milestones
-      BadgeTypeQuality: Quality-based (ratings)
-      BadgeTypeSpecial: Special events, early adopter
-    x-enum-descriptions:
-    - General achievements
-    - Session/credit milestones
-    - Quality-based (ratings)
-    - Special events, early adopter
-    x-enum-varnames:
-    - BadgeTypeAchievement
-    - BadgeTypeMilestone
-    - BadgeTypeQuality
-    - BadgeTypeSpecial
-  models.LearningSkill:
-    properties:
-      created_at:
-        type: string
-      desired_level:
-        $ref: '#/definitions/models.SkillLevel'
-      id:
-        type: integer
-      notes:
-        type: string
-      priority:
-        description: 1-5, higher = more urgent
-        type: integer
-      skill:
-        $ref: '#/definitions/models.Skill'
-      skill_id:
-        type: integer
-      updated_at:
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/models.User'
-        description: Relationships
-      user_id:
-        type: integer
-    type: object
-  models.SessionMode:
-    enum:
-    - online
-    - offline
-    - hybrid
-    type: string
-    x-enum-varnames:
-    - ModeOnline
-    - ModeOffline
-    - ModeHybrid
-  models.SessionTemplate:
-    properties:
-      created_at:
-        type: string
-      description:
+        maxLength: 1000
         type: string
       duration:
-        description: In hours
+        maximum: 4
+        minimum: 0.5
         type: number
-      id:
-        type: integer
       location:
         type: string
       meeting_link:
         type: string
       mode:
-        $ref: '#/definitions/models.SessionMode'
+        enum:
+        - online
+        - offline
+        - hybrid
+        type: string
+      scheduled_at:
+        type: string
       title:
+        maxLength: 200
+        minLength: 5
         type: string
-      updated_at:
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/models.User'
-        description: Relationships
-      user_id:
-        description: The teacher who owns the template
-        type: integer
-      user_skill:
-        $ref: '#/definitions/models.UserSkill'
       user_skill_id:
         type: integer
+    required:
+    - duration
+    - mode
+    - scheduled_at
+    - title
+    - user_skill_id
     type: object
-  models.Skill:
+  dto.LoginRequest:
     properties:
-      category:
-        $ref: '#/definitions/models.SkillCategory'
-      created_at:
-        type: string
-      description:
-        type: string
-      icon:
-        description: Icon URL or emoji
-        type: string
-      id:
-        type: integer
-      max_rate:
-        type: number
-      max_teacher_rating:
-        type: number
-      min_rate:
-        type: number
-      name:
-        description: e.g., "Calculus"
-        type: string
-      total_learners:
-        type: integer
-      total_sessions:
-        type: integer
-      total_teachers:
-        description: Stats
-        type: integer
-      updated_at:
-        type: string
-    type: object
-  models.SkillCategory:
-    enum:
-    - academic
-    - technical
-    - creative
-    - language
-    - sports
-    - other
-    type: string
-    x-enum-comments:
-      CategoryAcademic: Matematika, Fisika, etc
-      CategoryCreative: Music, Art, etc
-      CategoryLanguage: English, Japanese, etc
-      CategoryOther: Miscellaneous
-      CategorySports: Basketball, Swimming, etc
-      CategoryTechnical: Coding, Design, etc
-    x-enum-descriptions:
-    - Matematika, Fisika, etc
-    - Coding, Design, etc
-    - Music, Art, etc
-    - English, Japanese, etc
-    - Basketball, Swimming, etc
-    - Miscellaneous
-    x-enum-varnames:
-    - CategoryAcademic
-    - CategoryTechnical
-    - CategoryCreative
-    - CategoryLanguage
-    - CategorySports
-    - CategoryOther
-  models.SkillLevel:
-    enum:
-    - beginner
-    - intermediate
-    - advanced
-    - expert
-    type: string
-    x-enum-varnames:
-    - LevelBeginner
-    - LevelIntermediate
-    - LevelAdvanced
-    - LevelExpert
-  models.User:
-    properties:
-      avatar:
-        type: string
-      average_rating_as_student:
-        type: number
-      average_rating_as_teacher:
-        type: number
-      badges:
-        items:
-          $ref: '#/definitions/models.UserBadge'
-        type: array
-      bio:
-        type: string
-      created_at:
-        type: string
-      credit_balance:
-        description: Time Banking
-        type: number
-      credit_held:
-        type: number
       email:
-        description: Basic Info
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
         type: string
       full_name:
         type: string
       grade:
         type: string
-      id:
-        type: integer
-      is_active:
-        description: Account Status
-        type: boolean
-      is_verified:
-        type: boolean
-      learning_skills:
-        items:
-          $ref: '#/definitions/models.LearningSkill'
-        type: array
       location:
         type: string
       major:
         type: string
+      password:
+        minLength: 6
+        type: string
       phone_number:
         type: string
       school:
-        description: Profile Info
-        type: string
-      teaching_skills:
-        description: Relationships
-        items:
-          $ref: '#/definitions/models.UserSkill'
-        type: array
-      total_earned:
-        type: number
-      total_sessions_as_student:
-        type: integer
-      total_sessions_as_teacher:
-        description: Stats
-        type: integer
-      total_spent:
-        type: number
-      updated_at:
         type: string
       username:
+        minLength: 3
         type: string
-    type: object
-  models.UserBadge:
-    properties:
-      badge:
-        $ref: '#/definitions/models.Badge'
-      badge_id:
-        type: integer
-      created_at:
-        type: string
-      earned_at:
-        description: When earned
-        type: string
-      id:
-        type: integer
-      is_pinned:
-        description: Display
-        type: boolean
-      progress:
-        description: Progress tracking (for progressive badges)
-        type: integer
-      progress_goal:
-        description: Goal to achieve
-        type: integer
-      updated_at:
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/models.User'
-        description: Relationships
-      user_id:
-        type: integer
-    type: object
-  models.UserSkill:
-    properties:
-      average_rating:
-        type: number
-      created_at:
-        type: string
-      description:
-        description: What specifically can they teach
-        type: string
-      hourly_rate:
-        description: Usually 1:1, but can be adjusted
-        type: number
-      id:
-        type: integer
-      is_available:
-        description: Availability
-        type: boolean
-      level:
-        allOf:
-        - $ref: '#/definitions/models.SkillLevel'
-        description: Skill Details
-      offline_only:
-        type: boolean
-      online_only:
-        description: Teaching Preferences
-        type: boolean
-      proof_type:
-        description: '"certificate", "portfolio", "project"'
-        type: string
-      proof_url:
-        description: Proof/Portfolio
-        type: string
-      skill:
-        $ref: '#/definitions/models.Skill'
-      skill_id:
-        type: integer
-      total_reviews:
-        type: integer
-      total_sessions:
-        description: Stats
-        type: integer
-      updated_at:
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/models.User'
-        description: Relationships
-      user_id:
-        type: integer
-      years_of_experience:
-        type: integer
+    required:
+    - email
+    - full_name
+    - grade
+    - password
+    - school
+    - username
     type: object
   utils.ErrorResponse:
     properties:
@@ -387,9 +105,102 @@ info:
   title: Wibi Time Banking Skill API
   version: "1.0"
 paths:
-  /api/v1/favorites:
-    get:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
       parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Login user
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout user
+      tags:
+      - auth
+  /auth/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Registration request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /sessions:
+    get:
+      consumes:
+      - application/json
+      description: Get a filtered list of sessions for the authenticated user.
+      parameters:
+      - description: Role (teacher/student)
+        in: query
+        name: role
+        type: string
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
       - description: Limit
         in: query
         name: limit
@@ -398,141 +209,53 @@ paths:
         in: query
         name: offset
         type: integer
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get user's favorite teachers
+      summary: List user's sessions
       tags:
-      - favorites
+      - sessions
     post:
+      consumes:
+      - application/json
+      description: Book a new session as a student for a specific teacher's skill.
       parameters:
-      - description: Teacher ID
+      - description: Booking request
         in: body
-        name: teacher_id
+        name: request
         required: true
         schema:
-          type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
-      security:
-      - Bearer: []
-      summary: Add a teacher to favorites
-      tags:
-      - favorites
-  /api/v1/favorites/{id}:
-    delete:
-      parameters:
-      - description: Teacher ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
-      security:
-      - Bearer: []
-      summary: Remove a teacher from favorites
-      tags:
-      - favorites
-  /api/v1/favorites/check/{id}:
-    get:
-      parameters:
-      - description: Teacher ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
-      security:
-      - Bearer: []
-      summary: Check if a teacher is favorited
-      tags:
-      - favorites
-  /api/v1/templates:
-    get:
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.SuccessResponse'
-      security:
-      - Bearer: []
-      summary: Get all user's session templates
-      tags:
-      - templates
-    post:
-      parameters:
-      - description: Template
-        in: body
-        name: template
-        required: true
-        schema:
-          $ref: '#/definitions/models.SessionTemplate'
+          $ref: '#/definitions/dto.CreateSessionRequest'
+      produces:
+      - application/json
       responses:
         "201":
           description: Created
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
-      security:
-      - Bearer: []
-      summary: Create a session template
-      tags:
-      - templates
-  /api/v1/templates/{id}:
-    delete:
-      parameters:
-      - description: Template ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
+        "400":
+          description: Bad Request
           schema:
-            $ref: '#/definitions/utils.SuccessResponse'
-      security:
-      - Bearer: []
-      summary: Delete a session template
-      tags:
-      - templates
-    put:
-      parameters:
-      - description: Template ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Template
-        in: body
-        name: template
-        required: true
-        schema:
-          $ref: '#/definitions/models.SessionTemplate'
-      responses:
-        "200":
-          description: OK
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/utils.SuccessResponse'
+            $ref: '#/definitions/utils.ErrorResponse'
       security:
       - Bearer: []
-      summary: Update a session template
+      summary: Book a new session
       tags:
-      - templates
+      - sessions
   /skills:
     get:
       consumes:

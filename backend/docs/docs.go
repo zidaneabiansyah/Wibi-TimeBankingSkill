@@ -24,18 +24,169 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/favorites": {
+        "/auth/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Login request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logout user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get current user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "Registration request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "tags": [
-                    "favorites"
+                "description": "Get a filtered list of sessions for the authenticated user.",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Get user's favorite teachers",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "List user's sessions",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role (teacher/student)",
+                        "name": "role",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by status",
+                        "name": "status",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "Limit",
@@ -55,116 +206,11 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
                         }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "tags": [
-                    "favorites"
-                ],
-                "summary": "Add a teacher to favorites",
-                "parameters": [
-                    {
-                        "description": "Teacher ID",
-                        "name": "teacher_id",
-                        "in": "body",
-                        "required": true,
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/favorites/check/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "tags": [
-                    "favorites"
-                ],
-                "summary": "Check if a teacher is favorited",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Teacher ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/favorites/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "tags": [
-                    "favorites"
-                ],
-                "summary": "Remove a teacher from favorites",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Teacher ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/templates": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "tags": [
-                    "templates"
-                ],
-                "summary": "Get all user's session templates",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -175,18 +221,25 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "tags": [
-                    "templates"
+                "description": "Book a new session as a student for a specific teacher's skill.",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Create a session template",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Book a new session",
                 "parameters": [
                     {
-                        "description": "Template",
-                        "name": "template",
+                        "description": "Booking request",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.SessionTemplate"
+                            "$ref": "#/definitions/dto.CreateSessionRequest"
                         }
                     }
                 ],
@@ -196,72 +249,17 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
                         }
-                    }
-                }
-            }
-        },
-        "/api/v1/templates/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "tags": [
-                    "templates"
-                ],
-                "summary": "Update a session template",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Template ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     },
-                    {
-                        "description": "Template",
-                        "name": "template",
-                        "in": "body",
-                        "required": true,
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.SessionTemplate"
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "tags": [
-                    "templates"
-                ],
-                "summary": "Delete a session template",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Template ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessResponse"
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -386,160 +384,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Badge": {
+        "dto.CreateSessionRequest": {
             "type": "object",
+            "required": [
+                "duration",
+                "mode",
+                "scheduled_at",
+                "title",
+                "user_skill_id"
+            ],
             "properties": {
-                "bonus_credits": {
-                    "description": "Reward",
-                    "type": "number"
-                },
-                "color": {
-                    "description": "Display",
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
                 "description": {
-                    "type": "string"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "icon": {
-                    "description": "Icon URL or emoji",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "description": "Badge Info",
-                    "type": "string"
-                },
-                "rarity": {
-                    "description": "Rarity",
-                    "type": "integer"
-                },
-                "requirements": {
-                    "description": "Requirements (stored as JSON for flexibility)",
-                    "type": "string"
-                },
-                "total_awarded": {
-                    "description": "Stats",
-                    "type": "integer"
-                },
-                "total_earned": {
-                    "description": "Alias for total_awarded for frontend consistency",
-                    "type": "integer"
-                },
-                "type": {
-                    "$ref": "#/definitions/models.BadgeType"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.BadgeType": {
-            "type": "string",
-            "enum": [
-                "achievement",
-                "milestone",
-                "quality",
-                "special"
-            ],
-            "x-enum-comments": {
-                "BadgeTypeAchievement": "General achievements",
-                "BadgeTypeMilestone": "Session/credit milestones",
-                "BadgeTypeQuality": "Quality-based (ratings)",
-                "BadgeTypeSpecial": "Special events, early adopter"
-            },
-            "x-enum-descriptions": [
-                "General achievements",
-                "Session/credit milestones",
-                "Quality-based (ratings)",
-                "Special events, early adopter"
-            ],
-            "x-enum-varnames": [
-                "BadgeTypeAchievement",
-                "BadgeTypeMilestone",
-                "BadgeTypeQuality",
-                "BadgeTypeSpecial"
-            ]
-        },
-        "models.LearningSkill": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "desired_level": {
-                    "$ref": "#/definitions/models.SkillLevel"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "priority": {
-                    "description": "1-5, higher = more urgent",
-                    "type": "integer"
-                },
-                "skill": {
-                    "$ref": "#/definitions/models.Skill"
-                },
-                "skill_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "Relationships",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    ]
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.SessionMode": {
-            "type": "string",
-            "enum": [
-                "online",
-                "offline",
-                "hybrid"
-            ],
-            "x-enum-varnames": [
-                "ModeOnline",
-                "ModeOffline",
-                "ModeHybrid"
-            ]
-        },
-        "models.SessionTemplate": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000
                 },
                 "duration": {
-                    "description": "In hours",
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
+                    "type": "number",
+                    "maximum": 4,
+                    "minimum": 0.5
                 },
                 "location": {
                     "type": "string"
@@ -548,164 +410,53 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "mode": {
-                    "$ref": "#/definitions/models.SessionMode"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "Relationships",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.User"
-                        }
+                    "type": "string",
+                    "enum": [
+                        "online",
+                        "offline",
+                        "hybrid"
                     ]
                 },
-                "user_id": {
-                    "description": "The teacher who owns the template",
-                    "type": "integer"
+                "scheduled_at": {
+                    "type": "string"
                 },
-                "user_skill": {
-                    "$ref": "#/definitions/models.UserSkill"
+                "title": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 5
                 },
                 "user_skill_id": {
                     "type": "integer"
                 }
             }
         },
-        "models.Skill": {
+        "dto.LoginRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
-                "category": {
-                    "$ref": "#/definitions/models.SkillCategory"
-                },
-                "created_at": {
+                "email": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string"
-                },
-                "icon": {
-                    "description": "Icon URL or emoji",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "max_rate": {
-                    "type": "number"
-                },
-                "max_teacher_rating": {
-                    "type": "number"
-                },
-                "min_rate": {
-                    "type": "number"
-                },
-                "name": {
-                    "description": "e.g., \"Calculus\"",
-                    "type": "string"
-                },
-                "total_learners": {
-                    "type": "integer"
-                },
-                "total_sessions": {
-                    "type": "integer"
-                },
-                "total_teachers": {
-                    "description": "Stats",
-                    "type": "integer"
-                },
-                "updated_at": {
+                "password": {
                     "type": "string"
                 }
             }
         },
-        "models.SkillCategory": {
-            "type": "string",
-            "enum": [
-                "academic",
-                "technical",
-                "creative",
-                "language",
-                "sports",
-                "other"
-            ],
-            "x-enum-comments": {
-                "CategoryAcademic": "Matematika, Fisika, etc",
-                "CategoryCreative": "Music, Art, etc",
-                "CategoryLanguage": "English, Japanese, etc",
-                "CategoryOther": "Miscellaneous",
-                "CategorySports": "Basketball, Swimming, etc",
-                "CategoryTechnical": "Coding, Design, etc"
-            },
-            "x-enum-descriptions": [
-                "Matematika, Fisika, etc",
-                "Coding, Design, etc",
-                "Music, Art, etc",
-                "English, Japanese, etc",
-                "Basketball, Swimming, etc",
-                "Miscellaneous"
-            ],
-            "x-enum-varnames": [
-                "CategoryAcademic",
-                "CategoryTechnical",
-                "CategoryCreative",
-                "CategoryLanguage",
-                "CategorySports",
-                "CategoryOther"
-            ]
-        },
-        "models.SkillLevel": {
-            "type": "string",
-            "enum": [
-                "beginner",
-                "intermediate",
-                "advanced",
-                "expert"
-            ],
-            "x-enum-varnames": [
-                "LevelBeginner",
-                "LevelIntermediate",
-                "LevelAdvanced",
-                "LevelExpert"
-            ]
-        },
-        "models.User": {
+        "dto.RegisterRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "full_name",
+                "grade",
+                "password",
+                "school",
+                "username"
+            ],
             "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "average_rating_as_student": {
-                    "type": "number"
-                },
-                "average_rating_as_teacher": {
-                    "type": "number"
-                },
-                "badges": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.UserBadge"
-                    }
-                },
-                "bio": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "credit_balance": {
-                    "description": "Time Banking",
-                    "type": "number"
-                },
-                "credit_held": {
-                    "type": "number"
-                },
                 "email": {
-                    "description": "Basic Info",
                     "type": "string"
                 },
                 "full_name": {
@@ -714,186 +465,25 @@ const docTemplate = `{
                 "grade": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "description": "Account Status",
-                    "type": "boolean"
-                },
-                "is_verified": {
-                    "type": "boolean"
-                },
-                "learning_skills": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.LearningSkill"
-                    }
-                },
                 "location": {
                     "type": "string"
                 },
                 "major": {
                     "type": "string"
                 },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
                 "phone_number": {
                     "type": "string"
                 },
                 "school": {
-                    "description": "Profile Info",
-                    "type": "string"
-                },
-                "teaching_skills": {
-                    "description": "Relationships",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.UserSkill"
-                    }
-                },
-                "total_earned": {
-                    "type": "number"
-                },
-                "total_sessions_as_student": {
-                    "type": "integer"
-                },
-                "total_sessions_as_teacher": {
-                    "description": "Stats",
-                    "type": "integer"
-                },
-                "total_spent": {
-                    "type": "number"
-                },
-                "updated_at": {
                     "type": "string"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UserBadge": {
-            "type": "object",
-            "properties": {
-                "badge": {
-                    "$ref": "#/definitions/models.Badge"
-                },
-                "badge_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "earned_at": {
-                    "description": "When earned",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_pinned": {
-                    "description": "Display",
-                    "type": "boolean"
-                },
-                "progress": {
-                    "description": "Progress tracking (for progressive badges)",
-                    "type": "integer"
-                },
-                "progress_goal": {
-                    "description": "Goal to achieve",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "Relationships",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    ]
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.UserSkill": {
-            "type": "object",
-            "properties": {
-                "average_rating": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "description": "What specifically can they teach",
-                    "type": "string"
-                },
-                "hourly_rate": {
-                    "description": "Usually 1:1, but can be adjusted",
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_available": {
-                    "description": "Availability",
-                    "type": "boolean"
-                },
-                "level": {
-                    "description": "Skill Details",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.SkillLevel"
-                        }
-                    ]
-                },
-                "offline_only": {
-                    "type": "boolean"
-                },
-                "online_only": {
-                    "description": "Teaching Preferences",
-                    "type": "boolean"
-                },
-                "proof_type": {
-                    "description": "\"certificate\", \"portfolio\", \"project\"",
-                    "type": "string"
-                },
-                "proof_url": {
-                    "description": "Proof/Portfolio",
-                    "type": "string"
-                },
-                "skill": {
-                    "$ref": "#/definitions/models.Skill"
-                },
-                "skill_id": {
-                    "type": "integer"
-                },
-                "total_reviews": {
-                    "type": "integer"
-                },
-                "total_sessions": {
-                    "description": "Stats",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "Relationships",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    ]
-                },
-                "user_id": {
-                    "type": "integer"
-                },
-                "years_of_experience": {
-                    "type": "integer"
+                    "type": "string",
+                    "minLength": 3
                 }
             }
         },

@@ -23,8 +23,6 @@ type ServerConfig struct {
 	Port           string
 	GinMode        string
 	TrustedProxies string // Comma-separated list of trusted proxy IPs
-	RunMigrations  bool   // Whether to run DB migrations on startup
-	SeedData       bool   // Whether to run DB seeders on startup
 }
 
 // DatabaseConfig holds database connection configuration
@@ -71,8 +69,6 @@ func Load() (*Config, error) {
 			Port:           getEnv("PORT", ""),
 			GinMode:        getEnv("GIN_MODE", ""),
 			TrustedProxies: getEnv("TRUSTED_PROXIES", ""),
-			RunMigrations:  getEnvAsBool("RUN_MIGRATIONS", false),
-			SeedData:       getEnvAsBool("SEED_DATA", false),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", ""),
@@ -118,15 +114,6 @@ func getEnv(key, defaultValue string) string {
 		return defaultValue
 	}
 	return value
-}
-
-// getEnvAsBool gets environment variable as a boolean with fallback
-func getEnvAsBool(key string, defaultValue bool) bool {
-	val := os.Getenv(key)
-	if val == "" {
-		return defaultValue
-	}
-	return strings.ToLower(val) == "true" || val == "1"
 }
 
 // parseAllowedOrigins parses comma-separated origins from environment variable
