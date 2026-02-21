@@ -1,21 +1,21 @@
 package handler
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/timebankingskill/backend/internal/domain"
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
-	"github.com/timebankingskill/backend/internal/service"
-	"github.com/timebankingskill/backend/internal/utils"
+	"github.com/timebankingskill/backend/pkg/errors"
+	"github.com/timebankingskill/backend/pkg/response"
 )
 
 type UserHandler struct {
-	userService *service.UserService
+	userService domain.UserService // Intentionally using interface
 }
 
-func NewUserHandler(userService *service.UserService) *UserHandler {
+func NewUserHandler(userService domain.UserService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
 	}
@@ -23,39 +23,36 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 
 // GetProfile handles GET /api/v1/user/profile
 func (h *UserHandler) GetProfile(c *gin.Context) {
-	// Get user ID from JWT
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
 	user, err := h.userService.GetUserProfile(userID.(uint))
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	response := dto.ToUserProfileResponse(user)
-	utils.SendSuccess(c, http.StatusOK, "Profile retrieved successfully", response)
+	res := dto.ToUserProfileResponse(user)
+	response.OK(c, "Profile retrieved successfully", res)
 }
 
 // UpdateProfile handles PUT /api/v1/user/profile
 func (h *UserHandler) UpdateProfile(c *gin.Context) {
-	// Get user ID from JWT
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
 	var req dto.UpdateProfileRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
+		response.ValidationError(c, err.Error())
 		return
 	}
 
-	// Create updates model
 	updates := &models.User{
 		FullName:    req.FullName,
 		Username:    req.Username,
@@ -70,56 +67,53 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 
 	err := h.userService.UpdateUserProfile(userID.(uint), updates)
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	// Get updated user profile
 	updatedUser, _ := h.userService.GetUserProfile(userID.(uint))
-	response := dto.ToUserProfileResponse(updatedUser)
-	utils.SendSuccess(c, http.StatusOK, "Profile updated successfully", response)
+	res := dto.ToUserProfileResponse(updatedUser)
+	response.OK(c, "Profile updated successfully", res)
 }
 
 // ChangePassword handles POST /api/v1/user/change-password
 func (h *UserHandler) ChangePassword(c *gin.Context) {
-	// Get user ID from JWT
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
 	var req dto.ChangePasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
+		response.ValidationError(c, err.Error())
 		return
 	}
 
 	err := h.userService.ChangePassword(userID.(uint), req.CurrentPassword, req.NewPassword)
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Password changed successfully", nil)
+	response.OK(c, "Password changed successfully", nil)
 }
 
 // GetStats handles GET /api/v1/user/stats
 func (h *UserHandler) GetStats(c *gin.Context) {
-	// Get user ID from JWT
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
 	stats, err := h.userService.GetUserStats(userID.(uint))
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	response := dto.UserStatsResponse{
+	res := dto.UserStatsResponse{
 		CreditBalance:         stats.CreditBalance,
 		TotalCreditsEarned:   stats.TotalCreditsEarned,
 		TotalCreditsSpent:    stats.TotalCreditsSpent,
@@ -130,31 +124,30 @@ func (h *UserHandler) GetStats(c *gin.Context) {
 		TotalTeachingHours:   stats.TotalTeachingHours,
 		TotalLearningHours:   stats.TotalLearningHours,
 	}
-	utils.SendSuccess(c, http.StatusOK, "User stats retrieved successfully", response)
+	response.OK(c, "User stats retrieved successfully", res)
 }
 
 // UpdateAvatar handles POST /api/v1/user/avatar
 func (h *UserHandler) UpdateAvatar(c *gin.Context) {
-	// Get user ID from JWT
 	userID, exists := c.Get("user_id")
 	if !exists {
-		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		response.Error(c, errors.ErrUnauthorized)
 		return
 	}
 
 	var req dto.UpdateAvatarRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid request data", err)
+		response.ValidationError(c, err.Error())
 		return
 	}
 
 	err := h.userService.UpdateAvatar(userID.(uint), req.Avatar)
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Avatar updated successfully", gin.H{"avatar": req.Avatar})
+	response.OK(c, "Avatar updated successfully", gin.H{"avatar": req.Avatar})
 }
 
 // GetPublicProfile handles GET /api/v1/users/:id/profile
@@ -162,17 +155,17 @@ func (h *UserHandler) GetPublicProfile(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
+		response.ValidationError(c, "Invalid user ID")
 		return
 	}
 
 	profile, err := h.userService.GetPublicProfile(uint(id))
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	response := dto.PublicProfileResponse{
+	res := dto.PublicProfileResponse{
 		ID:                    profile.ID,
 		FullName:             profile.FullName,
 		Username:             profile.Username,
@@ -185,32 +178,36 @@ func (h *UserHandler) GetPublicProfile(c *gin.Context) {
 		TotalSessionsAsTeacher: profile.TotalSessionsAsTeacher,
 		AverageRatingAsTeacher: profile.AverageRatingAsTeacher,
 		TotalTeachingHours:   profile.TotalTeachingHours,
-		CreatedAt:            profile.CreatedAt,
 	}
-	utils.SendSuccess(c, http.StatusOK, "Public profile retrieved successfully", response)
+	response.OK(c, "Public profile retrieved successfully", res)
 }
 
 // GetPublicProfileByUsername handles GET /api/v1/users/@:username
 func (h *UserHandler) GetPublicProfileByUsername(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
-		utils.SendError(c, http.StatusBadRequest, "Username is required", nil)
+		response.ValidationError(c, "Username is required")
 		return
 	}
 
 	user, err := h.userService.GetUserByUsername(username)
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
+		return
+	}
+	
+	if user == nil {
+		response.Error(c, errors.ErrNotFound)
 		return
 	}
 
 	profile, err := h.userService.GetPublicProfile(user.ID)
 	if err != nil {
-		utils.SendError(c, utils.MapErrorToStatus(err), err.Error(), nil)
+		response.Error(c, err)
 		return
 	}
 
-	response := dto.PublicProfileResponse{
+	res := dto.PublicProfileResponse{
 		ID:                    profile.ID,
 		FullName:             profile.FullName,
 		Username:             profile.Username,
@@ -223,7 +220,6 @@ func (h *UserHandler) GetPublicProfileByUsername(c *gin.Context) {
 		TotalSessionsAsTeacher: profile.TotalSessionsAsTeacher,
 		AverageRatingAsTeacher: profile.AverageRatingAsTeacher,
 		TotalTeachingHours:   profile.TotalTeachingHours,
-		CreatedAt:            profile.CreatedAt,
 	}
-	utils.SendSuccess(c, http.StatusOK, "Public profile retrieved successfully", response)
+	response.OK(c, "Public profile retrieved successfully", res)
 }
