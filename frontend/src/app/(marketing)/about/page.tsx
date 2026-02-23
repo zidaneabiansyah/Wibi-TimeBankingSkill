@@ -166,7 +166,7 @@ export default function AboutPage() {
             className="relative z-10 text-center px-6 max-w-5xl mx-auto"
             style={{ transform: `scale(${heroScale})`, opacity: heroOpacity }}
           >
-            <h1 className="text-5xl md:text-8xl lg:text-9xl font-black text-white mb-6 leading-none tracking-tight">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-3 leading-none tracking-tight">
               Waktu{" "}
               <span
                 className="relative inline-block"
