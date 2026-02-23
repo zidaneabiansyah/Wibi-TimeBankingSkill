@@ -26,7 +26,7 @@ export function LeaderboardSection({ leaderboards, userBadges }: LeaderboardSect
         >
             {/* User Badges */}
             {userBadges && userBadges.length > 0 && (
-                <Card>
+                <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <Award className="h-5 w-5 text-secondary" />
@@ -41,7 +41,7 @@ export function LeaderboardSection({ leaderboards, userBadges }: LeaderboardSect
                                     variant="secondary"
                                     className="text-xs"
                                 >
-                                    {userBadge.badge?.icon} {userBadge.badge?.name}
+                                     {userBadge.badge?.name}
                                 </Badge>
                             ))}
                         </div>
@@ -51,7 +51,7 @@ export function LeaderboardSection({ leaderboards, userBadges }: LeaderboardSect
 
             {/* Top Rated Teachers */}
             {ratingLeaderboard.length > 0 && (
-                <Card>
+                <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-amber-500" />
@@ -87,7 +87,7 @@ export function LeaderboardSection({ leaderboards, userBadges }: LeaderboardSect
 
             {/* Most Active */}
             {sessionsLeaderboard.length > 0 && (
-                <Card>
+                <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-primary" />

@@ -101,7 +101,7 @@ export function RecentTransactions({ transactions, isLoading }: RecentTransactio
                     variant="card"
                 />
             ) : (
-                <Card>
+                <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm">
                     <CardContent className="p-6">
                         <div className="space-y-4">
                             {transactions.map((transaction: Transaction, index: number) => (
@@ -110,7 +110,7 @@ export function RecentTransactions({ transactions, isLoading }: RecentTransactio
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                                    className="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white/5 hover:border-white/10 transition-all duration-300"
                                 >
                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                         <div className={`flex h-10 w-10 items-center justify-center rounded-full ${transaction.type === 'earned' || transaction.type === 'initial' || transaction.type === 'bonus'

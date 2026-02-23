@@ -70,7 +70,8 @@ export function ProfileClient() {
                     {/* Left Column - Profile Info */}
                     <div className="space-y-6">
                         {/* Profile Card */}
-                        <Card>
+                        <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:border-primary/30 hover:shadow-md transition-all duration-300 group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
                             <CardContent className="pt-6">
                                 <div className="flex flex-col items-center text-center space-y-4">
                                     <Avatar className="h-24 w-24">
@@ -91,7 +92,7 @@ export function ProfileClient() {
                         </Card>
 
                         {/* Contact Info */}
-                        <Card>
+                        <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                             <CardHeader>
                                 <CardTitle className="text-lg">Contact Information</CardTitle>
                             </CardHeader>
@@ -117,7 +118,7 @@ export function ProfileClient() {
 
                         {/* Badges */}
                         {userBadges.length > 0 && (
-                            <Card>
+                            <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                                 <CardHeader>
                                     <CardTitle className="text-lg flex items-center gap-2">
                                         <Award className="h-5 w-5" />
@@ -128,7 +129,7 @@ export function ProfileClient() {
                                     <div className="flex flex-wrap gap-2">
                                         {userBadges.slice(0, 8).map((userBadge) => (
                                             <Badge key={userBadge.id} variant="secondary" className="text-xs">
-                                                {userBadge.badge?.icon} {userBadge.badge?.name}
+                                                 {userBadge.badge?.name}
                                             </Badge>
                                         ))}
                                     </div>
@@ -148,7 +149,8 @@ export function ProfileClient() {
                     <div className="lg:col-span-2 space-y-6">
                         {/* Stats Grid */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <Card>
+                            <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-[2rem] -mr-6 -mt-6 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
                                 <CardContent className="pt-6">
                                     <div className="text-center">
                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
@@ -160,7 +162,8 @@ export function ProfileClient() {
                                 </CardContent>
                             </Card>
 
-                            <Card>
+                            <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-full blur-[2rem] -mr-6 -mt-6 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
                                 <CardContent className="pt-6">
                                     <div className="text-center">
                                         <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-2">
@@ -172,7 +175,8 @@ export function ProfileClient() {
                                 </CardContent>
                             </Card>
 
-                            <Card>
+                            <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-[2rem] -mr-6 -mt-6 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
                                 <CardContent className="pt-6">
                                     <div className="text-center">
                                         <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-2">
@@ -184,7 +188,8 @@ export function ProfileClient() {
                                 </CardContent>
                             </Card>
 
-                            <Card>
+                            <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-[2rem] -mr-6 -mt-6 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
                                 <CardContent className="pt-6">
                                     <div className="text-center">
                                         <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-2">
@@ -200,7 +205,7 @@ export function ProfileClient() {
                         </div>
 
                         {/* My Skills */}
-                        <Card>
+                        <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle>My Skills</CardTitle>
@@ -248,7 +253,7 @@ export function ProfileClient() {
                         </Card>
 
                         {/* Quick Actions */}
-                        <Card>
+                        <Card className="border-border/40 bg-card/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300">
                             <CardHeader>
                                 <CardTitle>Quick Actions</CardTitle>
                             </CardHeader>
