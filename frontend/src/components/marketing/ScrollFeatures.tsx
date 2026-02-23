@@ -82,15 +82,20 @@ export default function ScrollFeatures() {
     // useScroll based on the entire length of the component
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start start", "end end"],
+        offset: ["start end", "start start"],
     });
 
-    // Animate expansion at the beginning of the pinning
+    // Animate expansion across the entrance scroll
     const clipPath = useTransform(
         scrollYProgress,
-        [0, 0.15],
+        [0, 0.9],
         ["inset(25% 0 0 0 round 48px)", "inset(0% 0 0 0 round 48px)"]
     );
+
+    // Text opacity: wait until image is fully expanded (0.9 -> 1)
+    const textOpacity = useTransform(scrollYProgress, [0.9, 1], [0, 1]);
+    // Text Y position: slide up from below (50px -> 0)
+    const textY = useTransform(scrollYProgress, [0.9, 1], [50, 0]);
 
     return (
         <div ref={containerRef} className="relative bg-transparent font-sans w-full">
@@ -98,7 +103,7 @@ export default function ScrollFeatures() {
             <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-20">
                     {/* Left Column: Scrolling Text - Flows normally through the scrollable area */}
-                    <div className="w-full lg:w-1/2 flex flex-col">
+                    <motion.div style={{ opacity: textOpacity, y: textY }} className="w-full lg:w-1/2 flex flex-col">
                         {steps.map((step, index) => (
                             <FeatureText
                                 key={step.id}
@@ -107,14 +112,14 @@ export default function ScrollFeatures() {
                                 setActiveCard={setActiveCard}
                             />
                         ))}
-                    </div>
+                    </motion.div>
 
                     {/* Right Column: Sticky Image - Remains pinned until the end of the section */}
                     <div className="hidden lg:block w-full lg:w-1/2 relative">
-                        <div className="sticky top-0 h-screen flex items-center justify-center">
+                        <div className="sticky top-24 h-[calc(100vh-6rem)] flex items-center justify-center">
                             <motion.div
                                 style={{ clipPath }}
-                                className="relative w-full max-w-2xl aspect-[10/12] bg-zinc-900 rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10"
+                                className="relative w-full max-w-2xl aspect-square bg-zinc-900 rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10"
                             >
                                 <AnimatePresence mode="wait">
                                     {steps.map((step, index) => index === activeCard && (
@@ -178,13 +183,6 @@ function FeatureText({ step, index, setActiveCard }: { step: any, index: number,
                 viewport={{ once: true, margin: "-20%" }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-                <div className="flex items-center gap-6 mb-10 group">
-                    <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-600 text-black font-black text-2xl shadow-[0_0_40px_rgba(249,115,22,0.4)] group-hover:scale-110 transition-transform duration-500">
-                        {index + 1}
-                    </div>
-                    <div className="h-[2px] w-12 bg-zinc-800 group-hover:w-20 transition-all duration-500" />
-                </div>
-
                 <h3 className="text-4xl md:text-6xl font-black text-white mb-8 bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent uppercase italic tracking-tighter leading-none">
                     {step.title.split(". ")[1]}
                 </h3>

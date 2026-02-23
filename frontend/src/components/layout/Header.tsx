@@ -56,54 +56,54 @@ export function Header() {
     ];
 
     return (
-        <header className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 py-6 pointer-events-none">
+        <header className={`fixed inset-x-0 z-50 flex justify-center px-4 pointer-events-none transition-all duration-500 ${isScrolled ? 'top-3' : 'top-6'}`}>
             <div
                 className={`
                     pointer-events-auto transition-all duration-500 ease-in-out
-                    flex h-18 sm:h-20 items-center justify-between
+                    flex items-center justify-between
                     ${isScrolled
-                        ? 'max-w-6xl bg-black/40 backdrop-blur-3xl border-orange-500/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
-                        : 'max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none'}
-                    w-full px-6 sm:px-10
-                    border
-                    rounded-[2rem] sm:rounded-[3rem]
+                        ? 'h-14 sm:h-16 max-w-5xl bg-black/60 backdrop-blur-3xl border border-orange-500/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full px-6 sm:px-8'
+                        : 'h-18 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-[2rem] sm:rounded-[3rem] px-6 sm:px-10'}
+                    w-full
                 `}
             >
                 {/* Logo Section */}
-                <div className="flex-1 flex items-center">
-                    <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all group">
+                <div className="flex-[0.5] sm:flex-1 flex items-center">
+                    <Link href="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-all group">
                         <Image
                             src="/wibi.png"
                             alt="Wibi Logo"
                             width={48}
                             height={48}
-                            className="rounded-md group-hover:shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all group-hover:scale-105"
+                            className={`rounded-md group-hover:shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-500 group-hover:scale-105 ${isScrolled ? 'w-8 h-8 sm:w-10 sm:h-10' : 'w-10 h-10 sm:w-12 sm:h-12'}`}
                             priority
                         />
-                        <span className="text-2xl font-black bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent hidden sm:inline tracking-tighter">Wibi</span>
+                        <span className={`font-black bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent hidden sm:inline tracking-tighter transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'}`}>Wibi</span>
                     </Link>
                 </div>
 
                 {/* Center Navigation */}
                 <nav className="hidden md:flex items-center gap-10">
                     {publicNavLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`
-                                text-[10px] sm:text-[11px] font-black tracking-[0.2em] transition-all duration-300
-                                hover:text-orange-500 flex flex-col items-center group
-                                ${pathname === link.href ? 'text-orange-500' : 'text-zinc-400'}
-                            `}
-                        >
-                            {link.label}
+                        <div key={link.href} className="relative flex flex-col items-center group">
+                            <Link
+                                href={link.href}
+                                className={`
+                                    text-[13px] font-bold transition-all duration-300
+                                    hover:text-white flex flex-col items-center
+                                    ${pathname === link.href ? 'text-white' : 'text-zinc-400'}
+                                `}
+                            >
+                                {link.label}
+                            </Link>
                             <span
                                 className={`
-                                    h-[2px] w-0 bg-orange-600 rounded-full transition-all duration-300 mt-0.5
-                                    ${pathname === link.href ? 'w-full' : 'group-hover:w-full'}
+                                    h-[2px] w-full bg-orange-600 rounded-full transition-all duration-300 mt-1 absolute -bottom-2
+                                    ${pathname === link.href ? 'opacity-100' : 'opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100'}
                                 `}
+                                style={{ transformOrigin: 'center' }}
                             />
-                        </Link>
+                        </div>
                     ))}
                 </nav>
 
