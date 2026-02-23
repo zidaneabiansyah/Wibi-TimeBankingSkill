@@ -39,7 +39,7 @@ export function LeaderboardSection({ leaderboards, userBadges }: LeaderboardSect
                                 <Badge
                                     key={userBadge.id}
                                     variant="secondary"
-                                    className="text-xs"
+                                    className="px-3 py-1.5 text-xs bg-orange-500 hover:bg-orange-600 border-transparent rounded-full transition-all text-black font-semibold"
                                 >
                                      {userBadge.badge?.name}
                                 </Badge>
