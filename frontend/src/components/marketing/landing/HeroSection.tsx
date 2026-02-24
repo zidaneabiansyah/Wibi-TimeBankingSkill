@@ -2,131 +2,176 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { m } from "framer-motion";
-import { Users, Zap, ArrowRight } from "lucide-react";
-import dynamic from 'next/dynamic';
+import { m, useScroll, useTransform, useMotionValue, useInView, animate } from "framer-motion";
+import { Search, ArrowRight, Zap, Users } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
+import { useRef, useEffect } from "react";
+import dynamic from 'next/dynamic';
 
 const DotLottieReact = dynamic(
     () => import('@lottiefiles/dotlottie-react').then((mod) => mod.DotLottieReact),
     {
         ssr: false,
-        loading: () => <div className="w-full h-full bg-muted/20 animate-pulse rounded-lg" />
+        loading: () => <div className="w-full h-full bg-[#121212] animate-pulse rounded-[3rem] border border-[#222]" />
     }
 );
 
-const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5, ease: "easeOut" }
+function AnimatedCounter({ value, duration = 2 }: { value: number; duration?: number }) {
+    const ref = useRef(null);
+    const inView = useInView(ref, { once: true, margin: "-50px" });
+    const count = useMotionValue(0);
+    const rounded = useTransform(count, (latest) => Math.round(latest).toLocaleString());
+
+    useEffect(() => {
+        if (inView) {
+            animate(count, value, {
+                duration: duration,
+                ease: "easeOut"
+            });
+        }
+    }, [inView, value, count, duration]);
+
+    return <m.span ref={ref}>{rounded}</m.span>;
+}
+
+const containerVariants = {
+    animate: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
 };
 
-const staggerContainer = {
-    animate: {
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2,
-        },
-    },
+const itemVariants = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } }
 };
 
 export function HeroSection() {
     const { isAuthenticated } = useAuthStore();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <section className="relative w-full py-16 md:py-24 lg:py-28 overflow-hidden">
-            <div className="absolute inset-0 bg-linear-to-br from-background via-background to-muted/20" />
-            <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top_right,var(--tw-linear-stops))] from-primary/10 via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-[radial-linear(ellipse_at_bottom_left,var(--tw-linear-stops))] from-secondary/5 via-transparent to-transparent opacity-40" />
+        <section ref={containerRef} className="relative w-full min-h-[85vh] md:min-h-[80vh] pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden bg-[#0B0B0B] flex items-center">
+
+            {/* Extremely subtle static dot grid background - no gradients */}
+            <div className="absolute inset-0 bg-[radial-gradient(#222_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
+
+            {/* Glowing Accent behind the visual */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF7020]/5 rounded-full blur-[120px] pointer-events-none opacity-50" />
 
             <m.div
-                className="relative mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16"
+                className="relative z-10 mx-auto w-full max-w-screen-xl px-4 sm:px-8 lg:px-12"
                 initial="initial"
                 animate="animate"
-                variants={staggerContainer}
+                variants={containerVariants}
             >
-                <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-                    <m.div className="space-y-8" variants={fadeInUp}>
-                        <div className="space-y-6">
-                            <m.div variants={fadeInUp}>
-                                <Badge variant="outline" className="px-3 py-1 text-xs font-medium border-primary/30 text-primary bg-primary/5 w-fit">
-                                    🎓 Welcome to Wibi
-                                </Badge>
-                            </m.div>
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-8 items-center">
 
+                    {/* Left Content Area (7 columns) */}
+                    <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6 md:space-y-8 w-full relative z-20">
+
+                        <div className="space-y-4 md:space-y-6">
                             <m.h1
-                                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight"
-                                variants={fadeInUp}
+                                className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white"
+                                variants={itemVariants}
                             >
-                                <span className="text-foreground">Your Time Is</span>
-                                <br />
-                                <span className="bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse-slow">
-                                    Valuable
-                                </span>
+                                Stop Paying. <br />
+                                Start <span className="text-transparent bg-clip-text bg-white border-b-4 border-[#FF7020] pb-1">Exchanging.</span>
                             </m.h1>
 
                             <m.p
-                                className="max-w-160 text-lg text-muted-foreground leading-relaxed"
-                                variants={fadeInUp}
+                                className="max-w-xl text-lg sm:text-lg md:text-xl text-gray-400 leading-relaxed font-medium"
+                                variants={itemVariants}
                             >
-                                Platform peer-to-peer skill exchange untuk pelajar. Belajar dan ajarkan skill tanpa uang, hanya dengan waktu. Bergabunglah dengan komunitas kami.
+                                Your time is the new currency. Teach what you know to earn temporal credits, and spend them to learn absolutely anything from experts.
                             </m.p>
                         </div>
 
+                        {/* Modernized Search/Action Bar */}
                         <m.div
-                            className="flex flex-col sm:flex-row gap-4 pt-4"
-                            variants={fadeInUp}
+                            variants={itemVariants}
+                            className="w-full max-w-lg relative group"
                         >
-                            <Link href={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto">
-                                <Button size="lg" className="w-full sm:w-auto px-8 font-semibold flex items-center gap-2">
-                                    {isAuthenticated ? "Go to Dashboard" : "Get Started"}
-                                    <ArrowRight className="h-4 w-4" />
-                                </Button>
-                            </Link>
-                            <Link href="/marketplace" className="w-full sm:w-auto">
-                                <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 font-semibold">
-                                    Explore Skills
-                                </Button>
-                            </Link>
-                        </m.div>
+                            <div className="flex flex-col sm:flex-row items-center p-2 bg-[#121212] border border-[#2A2A2A] rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-all duration-300 group-hover:border-[#555]">
 
-                        <m.div
-                            className="flex flex-col sm:flex-row gap-6 pt-4 text-sm text-muted-foreground"
-                            variants={fadeInUp}
-                        >
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                                    <Users className="h-4 w-4 text-primary" />
+                                <div className="flex-1 w-full flex items-center px-4 py-3 sm:py-0">
+                                    <Search className="w-5 h-5 text-gray-500 mr-3 shrink-0" />
+                                    <input
+                                        type="text"
+                                        placeholder="What do you want to master?"
+                                        className="bg-transparent border-none outline-none text-white text-base w-full placeholder:text-gray-500 font-medium"
+                                    />
                                 </div>
-                                <span>1,200+ Active Users</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10">
-                                    <Zap className="h-4 w-4 text-secondary" />
-                                </div>
-                                <span>15K+ Hours Exchanged</span>
+
+                                <Link href={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto mt-2 sm:mt-0 relative">
+                                    <Button size="lg" className="w-full sm:w-auto rounded-xl px-8 h-12 bg-white hover:bg-[#FF7020] text-black hover:text-white font-bold text-sm sm:text-base transition-colors duration-300 overflow-hidden group/btn">
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            {isAuthenticated ? "Dashboard" : "Get Started"}
+                                            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                        </span>
+                                    </Button>
+                                </Link>
                             </div>
                         </m.div>
-                    </m.div>
 
-                    <m.div
-                        className="flex items-center justify-center lg:justify-end"
-                        initial={{ opacity: 0, scale: 0.9, x: 20 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                    >
-                        <div className="relative w-full max-w-150 aspect-square">
-                            <DotLottieReact
-                                src="/Learning.json"
-                                loop
-                                autoplay
-                                className="w-full h-full"
-                            />
-                        </div>
-                    </m.div>
+                        {/* Hard-hitting Stats */}
+                        <m.div
+                            className="flex flex-wrap items-center gap-x-8 gap-y-4 pt-4 text-sm text-gray-400"
+                            variants={itemVariants}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#181818] border border-[#2A2A2A] flex items-center justify-center">
+                                    <Users className="h-4 w-4 text-white" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-white font-bold text-base">
+                                        <AnimatedCounter value={1200} />+
+                                    </span>
+                                    <span className="text-xs uppercase tracking-wider font-semibold">Active Peers</span>
+                                </div>
+                            </div>
+                            <div className="w-px h-10 bg-[#222] hidden sm:block" />
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#181818] border border-[#2A2A2A] flex items-center justify-center">
+                                    <Zap className="h-4 w-4 text-[#FF7020]" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-white font-bold text-base">
+                                        <AnimatedCounter value={15000} />+
+                                    </span>
+                                    <span className="text-xs uppercase tracking-wider font-semibold">Hours Exchanged</span>
+                                </div>
+                            </div>
+                        </m.div>
+                    </div>
+
+                    {/* Right Content Area: Learning Lottie Animation (5 columns) */}
+                    <div className="lg:col-span-5 relative w-full h-[350px] lg:h-[550px] flex items-center justify-center mt-8 lg:mt-0 z-10 hidden sm:flex">
+                        <m.div
+                            className="w-full h-full relative group flex items-center justify-center transform lg:-translate-x-12"
+                            variants={itemVariants}
+                        >
+                            <m.div
+                                className="relative w-[130%] h-[130%] lg:w-[150%] lg:h-[150%] max-w-[900px] flex items-center justify-center filter drop-shadow-[0_0_30px_rgba(255,112,32,0.15)]"
+                                animate={{
+                                    y: [0, -15, 0],
+                                }}
+                                transition={{
+                                    duration: 6,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                            >
+                                <DotLottieReact
+                                    src="/Learning.json"
+                                    loop
+                                    autoplay
+                                    className="w-full h-full object-contain scale-110 md:scale-125"
+                                />
+                            </m.div>
+                        </m.div>
+                    </div>
+
                 </div>
             </m.div>
+
         </section>
     );
 }
