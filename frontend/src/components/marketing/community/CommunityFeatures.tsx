@@ -66,20 +66,12 @@ export function CommunityFeatures() {
                         {headingText}
                         <span className="animate-pulse">|</span>
                     </h2>
-                    <button className="whitespace-nowrap border border-stone-700 rounded-full px-5 py-2 text-sm text-stone-300 hover:border-primary hover:text-primary transition-all">
-                        Lihat Semua Fitur
-                    </button>
                 </div>
 
                 {/* Part 2: Feature Cards Grid */}
                 <div className="border-t border-stone-800 mt-10 mb-0" />
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-800">
-                    {/* First column: label */}
-                    <div className="text-sm text-stone-500 font-medium pt-8 pr-6 hidden md:block">
-                        Fitur Komunitas
-                    </div>
-
+                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-800">
                     {/* Feature Cards */}
                     {features.map((feature, idx) => (
                         <Link href={feature.href} key={idx} className="relative overflow-hidden block pt-8 px-4 md:px-6 pb-10 flex-col group cursor-pointer hover:bg-stone-900/60 transition-colors duration-500">

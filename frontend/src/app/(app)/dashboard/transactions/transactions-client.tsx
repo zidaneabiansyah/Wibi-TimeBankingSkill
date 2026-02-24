@@ -8,10 +8,16 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUserStore } from '@/stores/user.store';
 import { useAuthStore } from '@/stores/auth.store';
-import { Receipt, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Receipt, ArrowUp, ArrowDown, TrendingUp, TrendingDown } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LoadingSkeleton } from '@/components/ui/loading';
 import type { Transaction } from '@/types';
+import { Plus_Jakarta_Sans } from 'next/font/google';
+
+const plusJakartaSans = Plus_Jakarta_Sans({ 
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700', '800']
+});
 
 type TabValue = 'all' | 'earned' | 'spent';
 
@@ -32,10 +38,10 @@ function getTransactionIcon(type: string) {
     case 'initial':
     case 'bonus':
     case 'refund':
-      return <ArrowUpRight className="h-5 w-5" />;
+      return <ArrowDown className="h-5 w-5" />;
     case 'spent':
     case 'hold':
-      return <ArrowDownRight className="h-5 w-5" />;
+      return <ArrowUp className="h-5 w-5" />;
     default:
       return <Receipt className="h-5 w-5" />;
   }
@@ -46,14 +52,14 @@ function getTransactionColor(type: string): string {
     case 'earned':
     case 'initial':
     case 'bonus':
-      return 'text-green-500 bg-green-500/10';
+      return 'text-emerald-400 bg-emerald-500/10';
     case 'spent':
     case 'hold':
-      return 'text-red-500 bg-red-500/10';
+      return 'text-rose-400 bg-rose-500/10';
     case 'refund':
-      return 'text-blue-500 bg-blue-500/10';
+      return 'text-sky-400 bg-sky-500/10';
     default:
-      return 'text-muted-foreground bg-muted';
+      return 'text-zinc-400 bg-zinc-800/10';
   }
 }
 
@@ -88,161 +94,190 @@ export function TransactionsClient() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex flex-col space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Transaction History</h1>
-            <p className="text-muted-foreground">Track your credit earnings and spending</p>
-          </div>
-          <Link href="/dashboard">
-            <Button>Back to Dashboard</Button>
+    <main className={`container mx-auto px-4 py-8 mb-20 max-w-7xl ${plusJakartaSans.className}`}>
+      
+      {/* Top Header Row aligned with controls */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Transaction History</h1>
+          <p className="text-muted-foreground font-medium text-sm">Track your credit earnings and spending</p>
+        </div>
+
+        {/* Filter Tabs & Navigation */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="w-full sm:w-auto">
+            <TabsList className="grid w-full sm:w-[350px] grid-cols-3 bg-white/5 border border-white/10 p-1.5 rounded-3xl h-auto shadow-sm">
+              <TabsTrigger value="all" className="rounded-2xl font-bold text-xs md:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all">All</TabsTrigger>
+              <TabsTrigger value="earned" className="rounded-2xl font-bold text-xs md:text-sm py-2 data-[state=active]:bg-emerald-500 data-[state=active]:text-black data-[state=active]:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all">Earned</TabsTrigger>
+              <TabsTrigger value="spent" className="rounded-2xl font-bold text-xs md:text-sm py-2 data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(244,63,94,0.3)] transition-all">Spent</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <Link href="/dashboard" className="w-full sm:w-auto shrink-0">
+            <Button variant="secondary" className="w-full sm:w-auto rounded-2xl font-bold backdrop-blur-md bg-card/10 hover:bg-card/30 border border-white/10 shadow-sm transition-all text-foreground h-[48px] px-6">
+              Back to Dashboard
+            </Button>
           </Link>
         </div>
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left Column: Sidebar Overview (col-span-4) */}
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 self-start animate-in fade-in slide-in-from-left-4 duration-700">
+
+          {/* Current Balance (Primary Focus) */}
+          <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl rounded-[2rem] shadow-none hover:shadow-xl hover:bg-card/40 transition-all group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
+            <CardContent className="p-6 relative z-10">
+              <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Current Balance</p>
-                  <p className="text-3xl font-bold text-primary">
+                  <p className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-500 mb-2">Available Credits</p>
+                  <p className="text-5xl font-black text-primary tracking-tighter tabular-nums mb-1">
                     {((user?.credit_balance || 0) - (user?.credit_held || 0)).toFixed(1)}
                   </p>
+                  <p className="text-xs text-muted-foreground font-medium">Currently on hand</p>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Receipt className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Earned</p>
-                  <p className="text-3xl font-bold text-green-500">
-                    +{totalEarned.toFixed(1)}
-                  </p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-green-500" />
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Receipt className="h-7 w-7 text-primary" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Spent</p>
-                  <p className="text-3xl font-bold text-red-500">
-                    -{totalSpent.toFixed(1)}
-                  </p>
+          {/* Mini Stats Grid (Earned & Spent) */}
+          <div className="grid grid-cols-2 gap-4">
+            <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl rounded-3xl shadow-none hover:shadow-md hover:bg-card/40 transition-all group">
+              <CardContent className="p-5 flex flex-col justify-between h-full relative z-10">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                    <TrendingUp className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <p className="text-xs uppercase tracking-widest font-bold text-zinc-500">Earned</p>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center">
-                  <TrendingDown className="h-6 w-6 text-red-500" />
+                <p className="text-2xl font-black text-emerald-400 tracking-tighter tabular-nums drop-shadow-sm truncate">
+                  +{totalEarned.toFixed(1)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl rounded-3xl shadow-none hover:shadow-md hover:bg-card/40 transition-all group">
+              <CardContent className="p-5 flex flex-col justify-between h-full relative z-10">
+                 <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0">
+                    <TrendingDown className="h-4 w-4 text-rose-400" />
+                  </div>
+                  <p className="text-xs uppercase tracking-widest font-bold text-zinc-500">Spent</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <p className="text-2xl font-black text-rose-400 tracking-tighter tabular-nums drop-shadow-sm truncate">
+                  -{totalSpent.toFixed(1)}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="earned">Earned</TabsTrigger>
-            <TabsTrigger value="spent">Spent</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* Right Column: Transactions Ledger (col-span-8) */}
+        <div className="lg:col-span-8 lg:pl-4">
 
-        {/* Transactions List */}
-        {isLoading ? (
-          <Card>
-            <CardContent className="p-6 space-y-4">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 flex-1">
-                    <LoadingSkeleton className="h-12 w-12 rounded-full" />
-                    <div className="space-y-2 flex-1">
-                      <LoadingSkeleton className="h-4 w-48" />
-                      <LoadingSkeleton className="h-3 w-32" />
+          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
+
+
+
+          {isLoading ? (
+            <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none rounded-[2rem]">
+              <CardContent className="p-6 space-y-4">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl animate-pulse delay-[{i*100}ms]">
+                    <div className="flex items-center gap-4 flex-1">
+                      <LoadingSkeleton className="h-12 w-12 rounded-2xl shrink-0" />
+                      <div className="space-y-2 flex-1">
+                        <LoadingSkeleton className="h-5 w-48" />
+                        <LoadingSkeleton className="h-4 w-32" />
+                      </div>
                     </div>
+                    <LoadingSkeleton className="h-8 w-24 rounded-full" />
                   </div>
-                  <LoadingSkeleton className="h-6 w-20" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ) : filteredTransactions.length === 0 ? (
-          <EmptyState
-            icon={Receipt}
-            title="No transactions yet"
-            description="Your transaction history will appear here"
-            variant="card"
-          />
-        ) : (
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                {filteredTransactions.map((transaction: Transaction) => (
+                ))}
+              </CardContent>
+            </Card>
+          ) : filteredTransactions.length === 0 ? (
+            <div className="border border-dashed border-border/30 bg-card/10 backdrop-blur-xl shadow-none rounded-[2rem] overflow-hidden">
+               <EmptyState
+                  icon={Receipt}
+                  title="No transactions yet"
+                  description="Your transaction history will appear here"
+                  variant="card"
+               />
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-3">
+              {filteredTransactions.map((transaction: Transaction, index: number) => {
+                const isEarned = ['earned', 'initial', 'bonus', 'refund'].includes(transaction.type);
+                
+                return (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between p-4 rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-center justify-between p-4 md:px-5 md:py-4 rounded-3xl bg-card/40 backdrop-blur-xl border border-white/5 hover:border-white/10 hover:bg-white/[0.08] transition-all shadow-sm group"
                   >
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-full ${getTransactionColor(transaction.type)}`}>
+                      {/* Icon */}
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/5 text-zinc-400 border border-white/5 group-hover:bg-white/10 transition-colors">
                         {getTransactionIcon(transaction.type)}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{transaction.description}</p>
-                        <p className="text-xs text-muted-foreground">
+                      
+                      {/* Details */}
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        <p className="text-sm md:text-[15px] font-bold text-zinc-100 truncate tracking-tight mb-0.5">
+                          {transaction.description.length > 30 ? transaction.description.substring(0, 30) + '...' : transaction.description}
+                        </p>
+                        <p className="text-[11px] md:text-xs font-medium text-zinc-500 tracking-tight">
                           {transaction.created_at ? formatDate(transaction.created_at) : 'N/A'}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className={`text-lg font-bold ${
-                        ['spent', 'hold'].includes(transaction.type) ? 'text-red-500' : 'text-green-500'
+
+                    {/* Amount Block */}
+                    <div className="flex flex-col items-end justify-center shrink-0 ml-4">
+                      <span className={`text-base md:text-lg font-black tabular-nums tracking-tight mb-0.5 ${
+                        isEarned ? 'text-emerald-500' : 'text-zinc-100'
                       }`}>
-                        {['spent', 'hold'].includes(transaction.type) ? '-' : '+'}
-                        {transaction.amount.toFixed(1)}
+                        {isEarned ? '+' : ''}{transaction.amount.toFixed(2)}
                       </span>
-                      <Badge variant="outline" className="text-xs capitalize">
-                        {transaction.type}
-                      </Badge>
+                      <span className="text-[10px] md:text-[11px] font-bold text-zinc-500">
+                        &approx;{Math.floor(transaction.amount)} crdt
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
 
               {/* Pagination */}
               {transactions.length >= limit && (
-                <div className="flex justify-center gap-2 mt-6 pt-6 border-t">
-                  <Button
-                    variant="outline"
-                    onClick={() => setPage(Math.max(0, page - 1))}
-                    disabled={page === 0}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setPage(page + 1)}
-                    disabled={transactions.length < limit}
-                  >
-                    Next
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                  <div className="flex justify-center gap-3 mt-8 pt-8 border-t border-border/10">
+                    <Button
+                      variant="secondary"
+                      className="rounded-xl font-bold hover:bg-white/10 border-transparent bg-white/5 text-zinc-300"
+                      onClick={() => setPage(Math.max(0, page - 1))}
+                      disabled={page === 0}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      className="rounded-xl font-bold hover:bg-white/10 border-transparent bg-white/5 text-zinc-300"
+                      onClick={() => setPage(page + 1)}
+                      disabled={transactions.length < limit}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+            </div>
+          )}
+          </div>
+        </div>
       </div>
     </main>
   );

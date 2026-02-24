@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AccordionTeam from "@/components/marketing/about/AccordionTeam";
 import ImpactStats from "@/components/marketing/about/ImpactStats";
 import CtaFaqSection from "@/components/marketing/about/CtaFaqSection";
+import { Sparkles, HeartHandshake, Globe } from "lucide-react";
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -16,19 +17,24 @@ const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const VALUES = [
   {
     title: "Semangat Berbagi",
-    desc: "Kami percaya ilmu tumbuh ketika disebarkan. Setiap mentor di Wibi hadir karena dorongan tulus untuk menginspirasi.",
+    desc: "Kami percaya ilmu tumbuh saat dibagikan. Setiap mentor di Wibi hadir untuk saling menginspirasi.",
+    icon: <HeartHandshake className="h-5 w-5" />,
+    gradient: "from-emerald-500/30 via-emerald-400/10 to-transparent",
+    pattern: "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]"
   },
   {
     title: "Tumbuh Bersama",
-    desc: "Belajar bukan kompetisi. Kami menciptakan ruang aman di mana setiap langkah kecil dihargai dan dirayakan.",
+    desc: "Belajar bukan soal kompetisi. Kami menciptakan ruang aman di mana setiap progres dihargai.",
+    icon: <Sparkles className="h-5 w-5" />,
+    gradient: "from-primary/30 via-orange-400/10 to-transparent",
+    pattern: "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))]"
   },
   {
-    title: "Relevan & Aplikatif",
-    desc: "Materi yang kami hadirkan bukan sekadar teori — dirancang langsung bisa diterapkan di kehidupan nyata.",
-  },
-  {
-    title: "Inklusif & Merata",
-    desc: "Dari Sabang sampai Merauke, Wibi hadir untuk semua — tanpa batas geografis maupun ekonomi.",
+    title: "Inklusif & Bermakna",
+    desc: "Wibi terbuka untuk semua—tanpa batas geografis atau ekonomi, dengan materi yang relevan untuk kehidupan nyata.",
+    icon: <Globe className="h-5 w-5" />,
+    gradient: "from-rose-500/30 via-pink-400/10 to-transparent",
+    pattern: "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]"
   },
 ];
 
@@ -50,24 +56,45 @@ function useScrollReveal(ref: React.RefObject<HTMLElement | null>) {
 
 // ── COMPONENTS ────────────────────────────────────────────────────────────────
 
-function ValueCard({ icon, title, desc, index }: { icon?: string, title: string, desc: string, index: number }) {
+function ValueCard({ icon, title, desc, gradient, pattern, index }: { icon?: React.ReactNode, title: string, desc: string, gradient: string, pattern: string, index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const visible = useScrollReveal(ref);
   return (
     <div
       ref={ref}
-      className={`group p-8 rounded-3xl border border-stone-800 bg-stone-900 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 cursor-default ${
+      className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#0a0a0a] hover:border-white/20 hover:bg-[#111] transition-all duration-500 cursor-default shadow-2xl ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
       style={{ transitionDelay: `${index * 80}ms` }}
     >
-      {icon && (
-        <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 inline-block">
-          {icon}
+      {/* Decorative Top Area */}
+      <div className={`h-40 w-full relative overflow-hidden ${pattern} ${gradient} opacity-80 group-hover:opacity-100 transition-opacity duration-700`}>
+        {/* Glass overlay layer for the wave aesthetic */}
+        <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-[2px]" />
+        
+        {/* Subtle mesh lines */}
+        <div 
+          className="absolute inset-0 opacity-20 mix-blend-overlay"
+          style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }}
+        />
+        
+        {/* Gradient fade into the dark background */}
+        <div className="absolute -bottom-2 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a0a] group-hover:from-[#111] to-transparent z-10 transition-colors duration-500" />
+      </div>
+
+      {/* Card Content Area */}
+      <div className="px-8 pb-8 flex flex-col relative z-20 flex-1">
+        {/* Icon */}
+        <div className="mb-6 -mt-8 flex justify-start">
+          <div className="h-14 w-14 rounded-2xl bg-stone-900 border border-white/10 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-500 group-hover:border-primary/50 group-hover:text-primary z-20">
+            {icon}
+          </div>
         </div>
-      )}
-      <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
-      <p className="text-stone-400 leading-relaxed text-sm">{desc}</p>
+        
+        {/* Texts */}
+        <h3 className="text-2xl font-bold text-white mb-3 tracking-tight leading-tight">{title}</h3>
+        <p className="text-stone-400 leading-relaxed text-[15px]">{desc}</p>
+      </div>
     </div>
   );
 }
@@ -246,28 +273,17 @@ export default function AboutPage() {
 
                 {/* Right: Text */}
                 <div>
-                  <span className="text-primary text-sm font-bold uppercase tracking-widest">Visi & Misi</span>
-                  <h2 className="text-5xl font-black text-white mt-3 mb-8 leading-tight">
-                    Kami Ada<br />
-                    <span className="text-primary">Untuk Apa?</span>
+                  <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight">
+                    Membuat Pendidikan Lebih Terjangkau untuk <span className="text-primary">Semua</span>
                   </h2>
 
-                  <div className="space-y-8">
-                    <div className="border-l-4 border-primary pl-6">
-                      <h3 className="text-lg font-bold text-white mb-2"> Visi</h3>
-                      <p className="text-stone-400 leading-relaxed">
-                        Menjadi platform edukasi terdepan yang memberdayakan setiap individu Indonesia
-                        untuk terus belajar, berbagi, dan berkembang tanpa batas waktu dan tempat.
-                      </p>
-                    </div>
-                    <div className="border-l-4 border-amber-600 pl-6">
-                      <h3 className="text-lg font-bold text-white mb-2"> Misi</h3>
-                      <ul className="text-stone-400 leading-relaxed space-y-2">
-                        <li className="flex gap-2"><span className="text-primary">→</span> Menghubungkan pelajar dengan mentor berkualitas di seluruh Indonesia</li>
-                        <li className="flex gap-2"><span className="text-primary">→</span> Menghadirkan konten belajar yang relevan, praktis, dan mudah diakses</li>
-                        <li className="flex gap-2"><span className="text-primary">→</span> Membangun komunitas belajar yang inklusif dan suportif</li>
-                      </ul>
-                    </div>
+                  <div className="space-y-6 text-stone-400 leading-relaxed text-lg">
+                    <p>
+                      Kami memulai Wibi dari satu ide sederhana: bagaimana kalau siswa bisa saling membantu belajar tanpa terhalang uang? Time Banking mewujudkannya dengan menghargai waktu setiap orang secara setara.
+                    </p>
+                    <p>
+                      Entah kamu jago matematika, bisa banyak bahasa, atau bisa ngajarin gitar—skill kamu tetap punya nilai. Dan selalu ada orang lain yang bisa ngajarin kamu hal baru sebagai gantinya.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -287,7 +303,7 @@ export default function AboutPage() {
                   <span className="text-primary">Junjung Tinggi</span>
                 </h2>
               </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {VALUES.map((v, i) => (
                   <ValueCard key={i} {...v} index={i} />
                 ))}

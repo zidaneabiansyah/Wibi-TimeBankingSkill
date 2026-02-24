@@ -109,7 +109,7 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                         </span>
                         
                         <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">
-                            Komunitas Belajar yang Saling Menguatkan
+                            Komunitas Belajar yang Saling <span className="text-primary">Menguatkan</span>
                         </h1>
                         
                         <p className="text-sm text-white/60 mt-3 max-w-xs leading-relaxed">
