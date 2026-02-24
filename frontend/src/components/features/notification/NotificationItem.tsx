@@ -1,6 +1,6 @@
 'use client';
 
-import { Trash2 } from 'lucide-react';
+import { Trash2, Bell, Wallet, Trophy, Star, Users, Circle } from 'lucide-react';
 import type { Notification } from '@/types';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -13,7 +13,7 @@ interface NotificationItemProps {
 
 /**
  * NotificationItem Component
- * Displays a single notification in the dropdown
+ * Displays a single notification with high premium aesthetics
  */
 export function NotificationItem({
     notification,
@@ -21,109 +21,121 @@ export function NotificationItem({
     onDelete,
 }: NotificationItemProps) {
     /**
-     * Get icon based on notification type
+     * Get icon and color based on notification type
      */
-    const getTypeIcon = () => {
+    const getTypeConfig = () => {
         switch (notification.type) {
             case 'session':
-                return '📅';
+                return {
+                    icon: Bell,
+                    color: "text-blue-400",
+                    bg: "bg-blue-500/10",
+                    border: "border-blue-500/20"
+                };
             case 'credit':
-                return '💰';
+                return {
+                    icon: Wallet,
+                    color: "text-orange-500",
+                    bg: "bg-orange-500/10",
+                    border: "border-orange-500/20"
+                };
             case 'achievement':
-                return '🏆';
+                return {
+                    icon: Trophy,
+                    color: "text-yellow-500",
+                    bg: "bg-yellow-500/10",
+                    border: "border-yellow-500/20"
+                };
             case 'review':
-                return '⭐';
+                return {
+                    icon: Star,
+                    color: "text-purple-400",
+                    bg: "bg-purple-500/10",
+                    border: "border-purple-500/20"
+                };
             case 'social':
-                return '👥';
+                return {
+                    icon: Users,
+                    color: "text-pink-400",
+                    bg: "bg-pink-500/10",
+                    border: "border-pink-500/20"
+                };
             default:
-                return '📢';
+                return {
+                    icon: Bell,
+                    color: "text-zinc-400",
+                    bg: "bg-zinc-500/10",
+                    border: "border-zinc-500/20"
+                };
         }
     };
 
-    /**
-     * Get color based on notification type
-     */
-    const getTypeColor = () => {
-        switch (notification.type) {
-            case 'session':
-                return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
-            case 'credit':
-                return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
-            case 'achievement':
-                return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
-            case 'review':
-                return 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800';
-            case 'social':
-                return 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800';
-            default:
-                return 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800';
-        }
-    };
+    const config = getTypeConfig();
+    const Icon = config.icon;
 
     return (
         <div
             className={cn(
-                'p-4 border-l-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors',
-                'cursor-pointer group',
-                notification.is_read
-                    ? 'border-gray-300 dark:border-gray-700 opacity-75'
-                    : 'border-blue-500 dark:border-blue-400 bg-blue-50/30 dark:bg-blue-900/10'
+                "relative p-5 transition-all duration-300 cursor-pointer group",
+                "hover:bg-white/5",
+                !notification.is_read ? "bg-orange-500/[0.03]" : "opacity-60 hover:opacity-100"
             )}
             onClick={onMarkAsRead}
         >
-            <div className="flex items-start gap-3">
-                {/* Icon */}
-                <span className="text-xl shrink-0 mt-1">{getTypeIcon()}</span>
+            <div className="flex items-start gap-4">
+                {/* Icon Wrapper with Glow */}
+                <div className={cn(
+                    "w-10 h-10 rounded-2xl flex items-center justify-center border shrink-0 transition-transform group-hover:scale-110 duration-500",
+                    config.bg, config.border
+                )}>
+                    <Icon className={cn("w-5 h-5", config.color)} />
+                </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
-                            <h4
-                                className={cn(
-                                    'font-semibold text-sm',
-                                    notification.is_read
-                                        ? 'text-gray-700 dark:text-gray-300'
-                                        : 'text-gray-900 dark:text-white'
-                                )}
-                            >
+                            <h4 className={cn(
+                                "text-[13px] font-bold tracking-tight mb-1 transition-colors",
+                                notification.is_read ? "text-zinc-400" : "text-white group-hover:text-orange-500"
+                            )}>
                                 {notification.title}
                             </h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
                                 {formatDistanceToNow(new Date(notification.created_at), {
                                     addSuffix: true,
                                 })}
-                            </p>
+                            </span>
                         </div>
 
-                        {/* Delete button */}
+                        {/* Delete Button - Premium modern style */}
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onDelete();
                             }}
                             className={cn(
-                                'p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity',
-                                'hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400'
+                                "p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all",
+                                "bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white"
                             )}
-                            aria-label="Delete notification"
+                            aria-label="Delete"
                         >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                         </button>
                     </div>
 
                     {/* Message */}
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
+                    <p className={cn(
+                        "text-xs leading-relaxed mt-2 line-clamp-2",
+                        notification.is_read ? "text-zinc-500" : "text-zinc-400 group-hover:text-zinc-300"
+                    )}>
                         {notification.message}
                     </p>
 
-                    {/* Unread indicator */}
+                    {/* Unread Indicator Dot */}
                     {!notification.is_read && (
-                        <div className="mt-2 flex items-center gap-2">
-                            <span className="inline-block w-2 h-2 bg-blue-500 rounded-full" />
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                                Unread
-                            </span>
+                        <div className="absolute top-5 right-5">
+                            <Circle className="w-2 h-2 fill-orange-600 text-orange-600 animate-pulse" />
                         </div>
                     )}
                 </div>

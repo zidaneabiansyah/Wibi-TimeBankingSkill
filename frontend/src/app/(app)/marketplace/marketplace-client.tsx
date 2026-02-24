@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 import {
     Select,
     SelectContent,
@@ -23,6 +23,19 @@ import {
     SlidersHorizontal,
     Globe,
     Home,
+    ArrowRight,
+    Sparkles,
+    Zap,
+    TrendingUp,
+    LayoutGrid,
+    MoreHorizontal,
+    Heart,
+    Activity,
+    Clock,
+    ShieldCheck,
+    MessageCircle,
+    MapPin,
+    GraduationCap,
 } from 'lucide-react';
 import { useSkillStore } from '@/stores';
 import type { SkillCategory, Skill } from '@/types';
@@ -36,11 +49,44 @@ const categories: { value: SkillCategory; label: string; icon: string }[] = [
     { value: 'other', label: 'Other', icon: '📋' },
 ];
 
+/** 
+ * Map categories to realistic Unsplash imagery for a "Premium Travel" look 
+ */
+const categoryImages: Record<string, string> = {
+    academic: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop',
+    technical: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop',
+    creative: 'https://images.unsplash.com/photo-1460666819451-76472002715a?q=80&w=800&auto=format&fit=crop',
+    language: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=800&auto=format&fit=crop',
+    sports: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800&auto=format&fit=crop',
+    other: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop',
+};
+
+/**
+ * Granular mapping for specific skill names to ensure high accuracy
+ */
+const getSkillImage = (skill: Skill) => {
+    const name = skill.name.toLowerCase();
+    const category = skill.category.toLowerCase();
+
+    // Specific mapping for requested skills
+    if (name.includes('photo')) return 'https://images.unsplash.com/photo-1452784444945-3f422708fe5e?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('guitar') || name.includes('music')) return 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('draw') || name.includes('painting') || name.includes('art')) return 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('swim')) return 'https://images.unsplash.com/photo-1530549387074-6b21c8827004?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('basket')) return 'https://images.unsplash.com/photo-1519861155730-0b5fbf0dd889?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('japan')) return 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('english')) return 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('video') || name.includes('edit')) return 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=800&auto=format&fit=crop';
+    if (name.includes('design') || name.includes('canva')) return 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=800&auto=format&fit=crop';
+
+    return categoryImages[category] || categoryImages.other;
+};
+
 export function MarketplaceClient() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<SkillCategory | 'all'>('all');
     const [showFilters, setShowFilters] = useState(false);
-    
+
     const {
         skills,
         isLoading,
@@ -68,319 +114,301 @@ export function MarketplaceClient() {
 
     const handlePageChange = (offset: number) => {
         fetchSkills({ offset });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 600, behavior: 'smooth' });
     };
 
     const limit = 10;
     const totalPages = Math.ceil(skillsTotal / limit);
     const currentPage = Math.floor((skills.length / limit)) + 1;
 
-    const SkillCard = ({ skill }: { skill: Skill }) => (
-        <Link href={`/marketplace/${skill.id}`}>
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer group h-full">
-                <CardHeader className="pb-3">
-                    <div className="flex items-start gap-3">
-                        <div className="text-3xl">{skill.icon}</div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+    // --- "Lifestyle / Realistic" Card Component (Iteration 10) ---
+    const SkillCard = ({ skill }: { skill: Skill }) => {
+        const bgImage = getSkillImage(skill);
+
+        return (
+            <Link href={`/marketplace/${skill.id}`} className="group h-full block">
+                <div className="relative h-[520px] w-full bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-zinc-800 transition-all duration-500 hover:border-orange-500/40 group-hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)]">
+
+                    {/* 1. Large Realistic Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src={bgImage}
+                            alt={skill.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
+                    </div>
+
+                    {/* 2. Glassmorphic Content Overlay at Bottom */}
+                    <div className="absolute bottom-0 inset-x-0 z-10 px-6 pb-6 pt-24 bg-gradient-to-t from-black via-black/95 to-transparent">
+
+                        {/* Floating Icon Box */}
+                        <div className="absolute -top-6 left-6 w-12 h-12 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl flex items-center justify-center text-2xl shadow-xl group-hover:scale-110 transition-transform">
+                            {skill.icon}
+                        </div>
+
+                        {/* Title & Info */}
+                        <div className="mb-4">
+                            <h3 className="text-3xl font-black text-white mb-2 leading-tight tracking-tight group-hover:text-orange-500 transition-colors drop-shadow-xl">
                                 {skill.name}
                             </h3>
-                            <Badge variant="secondary" className="text-xs mt-1">
-                                {categories.find(c => c.value === skill.category)?.icon} {skill.category}
-                            </Badge>
-                        </div>
-                    </div>
-                </CardHeader>
-                
-                <CardContent>
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                        {skill.description || "Skill description coming soon..."}
-                    </p>
-                    
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                            <Users className="w-4 h-4" />
-                            <span>{skill.total_teachers} teachers</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                            <Star className="w-4 h-4" />
-                            <span>{skill.total_learners} learners</span>
-                        </div>
-                    </div>
-                    
-                    <Button className="w-full mt-4" variant="outline">
-                        Explore Teachers
-                    </Button>
-                </CardContent>
-            </Card>
-        </Link>
-    );
+                            <p className="text-xs font-medium text-zinc-400 line-clamp-2 drop-shadow-md mb-4">
+                                {skill.description || `The fastest way to master ${skill.name} through community exchange.`}
+                            </p>
 
-    return (
-        <div className="container mx-auto px-4 py-8">
-            {/* Header */}
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-2">Skill Marketplace</h1>
-                <p className="text-xl text-muted-foreground">
-                    Discover amazing skills and connect with passionate teachers
-                </p>
-            </div>
-
-            {/* Search & Filter Bar */}
-            <Card className="mb-8">
-                <CardContent className="pt-6">
-                    <div className="flex flex-col md:flex-row gap-4">
-                        {/* Search Input */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                            <Input
-                                placeholder="Search skills, topics, or keywords..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
-
-                        {/* Category Filter */}
-                        <Select 
-                            value={selectedCategory} 
-                            onValueChange={(value) => setSelectedCategory(value as SkillCategory | 'all')}
-                        >
-                            <SelectTrigger className="w-full md:w-48">
-                                <SelectValue placeholder="All Categories" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Categories</SelectItem>
-                                {categories.map((category) => (
-                                    <SelectItem key={category.value} value={category.value}>
-                                        <div className="flex items-center gap-2">
-                                            <span>{category.icon}</span>
-                                            <span>{category.label}</span>
-                                        </div>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
-                        {/* Toggle Filters Button */}
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="gap-2"
-                        >
-                            <SlidersHorizontal className="w-4 h-4" />
-                            Filters
-                        </Button>
-                    </div>
-
-                    {/* Advanced Filters (Collapsible) */}
-                    {showFilters && (
-                        <div className="border-t mt-4 pt-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="text-sm font-medium mb-2 block">
-                                        Skill Level
-                                    </label>
-                                    <Select defaultValue="all">
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">All Levels</SelectItem>
-                                            <SelectItem value="beginner">🌱 Beginner</SelectItem>
-                                            <SelectItem value="intermediate">📈 Intermediate</SelectItem>
-                                            <SelectItem value="advanced">🚀 Advanced</SelectItem>
-                                            <SelectItem value="expert">👑 Expert</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                            {/* Social Stats Block (Requested) */}
+                            <div className="flex gap-5 mb-4 opacity-100">
+                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
+                                    <Users className="w-3.5 h-3.5 text-orange-500" />
+                                    <span>{skill.total_teachers} teachers</span>
                                 </div>
-                                
-                                <div>
-                                    <label className="text-sm font-medium mb-2 block">
-                                        Teaching Mode
-                                    </label>
-                                    <Select defaultValue="all">
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">All Modes</SelectItem>
-                                            <SelectItem value="online">
-                                                <div className="flex items-center gap-2">
-                                                    <Globe className="w-4 h-4" />
-                                                    Online Only
-                                                </div>
-                                            </SelectItem>
-                                            <SelectItem value="offline">
-                                                <div className="flex items-center gap-2">
-                                                    <Home className="w-4 h-4" />
-                                                    Offline Only
-                                                </div>
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                
-                                <div>
-                                    <label className="text-sm font-medium mb-2 block">
-                                        Sort By
-                                    </label>
-                                    <Select defaultValue="popular">
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="popular">Most Popular</SelectItem>
-                                            <SelectItem value="newest">Newest</SelectItem>
-                                            <SelectItem value="rating">Highest Rated</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
+                                    <Star className="w-3.5 h-3.5 text-orange-500" />
+                                    <span>0 learners</span>
                                 </div>
                             </div>
                         </div>
-                    )}
-                </CardContent>
-            </Card>
 
-            {/* Category Tabs */}
-            <div className="mb-8">
-                <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as SkillCategory | 'all')}>
-                    <TabsList className="grid w-full grid-cols-3 md:grid-cols-7">
-                        <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-                        {categories.map((category) => (
-                            <TabsTrigger key={category.value} value={category.value} className="text-xs">
-                                <span className="hidden md:inline">{category.icon}</span>
-                                <span className="md:ml-1">{category.label}</span>
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
-            </div>
+                        {/* Teacher/Expert Row */}
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1 px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10">
+                                    <Zap className="w-3 h-3 text-orange-500" />
+                                    <span className="text-[10px] font-black text-white uppercase tracking-tighter">Community Fav</span>
+                                </div>
+                            </div>
+                            <Badge className="bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full px-4 h-6 border-0 shadow-lg">
+                                {skill.category}
+                            </Badge>
+                        </div>
 
-            {/* Results Summary */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="text-muted-foreground">
-                    {isLoading ? (
-                        "Loading skills..."
-                    ) : (
-                        `Showing ${skills.length} of ${skillsTotal} skills`
-                    )}
+                        {/* 3. "Explore Teachers" Button (Requested Style) */}
+                        <div className="w-full">
+                            <Button variant="outline" className="w-full h-13 bg-transparent border-zinc-700/80 text-white font-black text-xs uppercase tracking-[0.1em] rounded-2xl transition-all hover:bg-white hover:text-black hover:border-white shadow-xl">
+                                Explore Teachers
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Like Action */}
+                    <button className="absolute top-6 right-6 z-20 w-11 h-11 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/80 backdrop-blur-xl border border-white/10 text-white transition-all group/fav">
+                        <Heart className="w-5 h-5 group-hover/fav:fill-white transition-colors" />
+                    </button>
                 </div>
-                
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>Page {currentPage} of {totalPages}</span>
-                </div>
-            </div>
+            </Link>
+        );
+    };
 
-            {/* Skills Grid */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {Array.from({ length: 8 }).map((_, index) => (
-                        <Card key={index} className="animate-pulse">
-                            <CardHeader>
-                                <div className="flex items-start gap-3">
-                                    <div className="w-12 h-12 bg-muted rounded-lg"></div>
-                                    <div className="flex-1">
-                                        <div className="h-5 bg-muted rounded mb-2"></div>
-                                        <div className="h-4 bg-muted rounded w-20"></div>
+    return (
+        <div className="min-h-screen bg-black text-zinc-100 selection:bg-orange-500/30">
+            {/* --- Bento Dashboard Hero --- */}
+            <div className="container mx-auto px-4 pt-32 pb-16 max-w-7xl">
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-16 h-auto lg:min-h-[480px]">
+                    {/* Block A: Core Platform Info */}
+                    <div className="lg:col-span-8 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] p-8 md:p-14 flex flex-col justify-center relative overflow-hidden text-left">
+                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/5 via-transparent to-transparent opacity-40 pointer-events-none" />
+
+                        <div className="z-10 relative">
+                            <div className="flex items-center gap-2 mb-8">
+                                <div className="px-3 py-1 rounded-full bg-orange-600/10 border border-orange-600/20 text-orange-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                    Time Banking V2.0
+                                </div>
+                                <div className="h-[1px] w-12 bg-zinc-800" />
+                                <span className="text-zinc-400 text-[10px] uppercase font-mono tracking-widest text-zinc-300">Network Enabled</span>
+                            </div>
+
+                            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 text-white leading-[0.95]">
+                                EXCHANGE TIME.<br />
+                                <span className="text-orange-500">MASTER SKILLS.</span>
+                            </h1>
+
+                            <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-xl mb-12 leading-relaxed">
+                                Join the decentralized marketplace where <span className="text-white">knowledge thrives.</span> Teach what you love to earn credits, then spend them to learn from others.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl">
+                                <div className="relative flex-1 group/search">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within/search:text-orange-500 transition-colors" />
+                                    <Input
+                                        placeholder="Find an expert or a skill..."
+                                        className="h-15 bg-black/60 border-zinc-700 hover:border-zinc-600 focus-visible:ring-1 focus-visible:ring-orange-600/50 text-lg pl-12 rounded-2xl transition-all font-medium text-white placeholder:text-zinc-500 shadow-inner"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                                <Button size="lg" className="h-15 px-10 bg-orange-600 hover:bg-orange-500 text-black font-black text-base uppercase rounded-2xl shadow-xl shadow-orange-600/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                                    Explore
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Block B: Real-time Stats */}
+                    <div className="lg:col-span-4 flex flex-col gap-5">
+                        <div className="flex-1 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-zinc-700 transition-colors cursor-default">
+                            <div className="flex justify-between items-start mb-10">
+                                <div className="flex flex-col">
+                                    <span className="text-zinc-500 text-[10px] uppercase font-mono tracking-widest mb-1 font-bold">Global Ledger</span>
+                                    <span className="text-3xl font-black text-white">{skillsTotal} Skills</span>
+                                </div>
+                                <Activity className="w-5 h-5 text-orange-500 animate-pulse" />
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-end border-b border-zinc-800 pb-4">
+                                    <div className="flex flex-col">
+                                        <span className="text-zinc-500 text-[10px] font-mono uppercase tracking-tighter font-bold">Total Members</span>
+                                        <span className="text-xl font-bold text-white">8,294</span>
+                                    </div>
+                                    <div className="flex flex-col text-right">
+                                        <span className="text-zinc-500 text-[10px] font-mono uppercase tracking-tighter font-bold">Avg Rating</span>
+                                        <span className="text-xl font-bold text-orange-500">4.9/5</span>
                                     </div>
                                 </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-muted rounded"></div>
-                                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                                <Button variant="ghost" className="w-full justify-between text-zinc-500 hover:text-white px-0 font-mono text-[10px] uppercase tracking-widest group font-bold">
+                                    View Full Analytics <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="h-44 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] p-10 flex flex-col justify-center relative overflow-hidden group cursor-pointer hover:bg-zinc-900 transition-colors">
+                            <div className="absolute top-0 right-0 p-6 opacity-5">
+                                <TrendingUp className="w-24 h-24 text-white" />
+                            </div>
+                            <h3 className="font-mono text-zinc-500 text-[10px] uppercase tracking-widest mb-4 font-bold">Trending Now</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {['Python', 'Design', 'Yoga'].map(tag => (
+                                    <span key={tag} className="px-4 py-1.5 rounded-xl bg-orange-600/5 border border-orange-600/10 text-orange-500 text-xs font-bold hover:bg-orange-600 hover:text-black transition-colors" onClick={() => setSearchQuery(tag)}>
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            ) : error ? (
-                <Card>
-                    <CardContent className="text-center py-8">
-                        <p className="text-muted-foreground mb-4">{error}</p>
-                        <Button onClick={() => fetchSkills()}>Try Again</Button>
-                    </CardContent>
-                </Card>
-            ) : skills.length === 0 ? (
-                <Card>
-                    <CardContent className="text-center py-12">
-                        <div className="text-6xl mb-4">🔍</div>
-                        <h3 className="text-xl font-semibold mb-2">No Skills Found</h3>
-                        <p className="text-muted-foreground mb-4">
-                            Try adjusting your search terms or filters
-                        </p>
-                        <Button 
-                            variant="outline" 
-                            onClick={() => {
-                                setSearchQuery('');
-                                setSelectedCategory('all');
-                            }}
-                        >
-                            Clear Filters
-                        </Button>
-                    </CardContent>
-                </Card>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                {/* --- Navigation Bar --- */}
+                <div className="relative mb-12">
+                    <div className="bg-black/95 backdrop-blur-2xl border border-zinc-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                        <div className="flex gap-1 overflow-x-auto scrollbar-hide flex-1 pl-1">
+                            <button
+                                onClick={() => setSelectedCategory('all')}
+                                className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.1em] transition-all ${selectedCategory === 'all' ? 'bg-orange-600 text-black shadow-lg shadow-orange-600/20' : 'text-zinc-500 hover:text-white hover:bg-zinc-800/50 font-bold'}`}
+                            >
+                                All Systems
+                            </button>
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.value}
+                                    onClick={() => setSelectedCategory(cat.value)}
+                                    className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${selectedCategory === cat.value ? 'bg-zinc-800 text-orange-500 border border-zinc-700' : 'text-zinc-500 hover:text-white hover:bg-zinc-800/50'}`}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="pl-4 border-l border-zinc-800 ml-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="text-zinc-400 hover:text-orange-500 hover:bg-zinc-800/50 flex gap-3 px-5 py-5 rounded-xl transition-all"
+                            >
+                                <SlidersHorizontal className="w-4 h-4" />
+                                <span className="hidden sm:inline text-xs font-black uppercase tracking-widest">Filters</span>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Filter Portal */}
+                    {showFilters && (
+                        <div className="mt-4 bg-zinc-900 border border-zinc-800 rounded-3xl p-8 grid grid-cols-1 md:grid-cols-3 gap-10 animate-in slide-in-from-top-4 duration-500">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-black">Expertise Level</label>
+                                <Select defaultValue="all">
+                                    <SelectTrigger className="bg-black border-zinc-800 rounded-2xl h-12 text-xs font-bold font-mono text-zinc-300"><SelectValue /></SelectTrigger>
+                                    <SelectContent className="bg-zinc-900 border-zinc-800">
+                                        <SelectItem value="all">ALL LEVELS</SelectItem>
+                                        <SelectItem value="beginner">BEGINNER</SelectItem>
+                                        <SelectItem value="expert">EXPERT</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-black">Sort Protocol</label>
+                                <Select defaultValue="popular">
+                                    <SelectTrigger className="bg-black border-zinc-800 rounded-2xl h-12 text-xs font-bold font-mono text-zinc-300"><SelectValue /></SelectTrigger>
+                                    <SelectContent className="bg-zinc-900 border-zinc-800">
+                                        <SelectItem value="popular">MOST POPULAR</SelectItem>
+                                        <SelectItem value="newest">LATEST ARRIVALS</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* --- Listing Grid --- */}
+                {isLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {Array.from({ length: 8 }).map((_, index) => (
+                            <div key={index} className="h-[520px] bg-zinc-900/40 border border-zinc-800 rounded-[2.5rem] animate-pulse" />
+                        ))}
+                    </div>
+                ) : skills.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pb-32">
                         {skills.map((skill) => (
                             <SkillCard key={skill.id} skill={skill} />
                         ))}
                     </div>
+                ) : (
+                    <div className="py-32 flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/10">
+                        <Activity className="w-12 h-12 text-zinc-700 mb-6" />
+                        <h3 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">No Nodes Detected</h3>
+                        <p className="text-zinc-500 text-sm font-mono tracking-wide max-w-sm text-center mb-10 font-bold">Searching the grid... No matches for your current parameters.</p>
+                        <Button
+                            variant="outline"
+                            className="h-14 px-12 border-orange-600/50 text-orange-500 hover:bg-orange-600 hover:text-black font-black uppercase text-xs tracking-widest rounded-2xl transition-all"
+                            onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+                        >
+                            Reset Grid
+                        </Button>
+                    </div>
+                )}
 
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 mt-8">
+                {/* --- Pagination --- */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center mt-6">
+                        <div className="inline-flex items-center gap-2 p-2.5 bg-zinc-900/60 backdrop-blur rounded-2xl border border-zinc-800 shadow-2xl">
                             <Button
-                                variant="outline"
-                                size="sm"
+                                variant="ghost"
+                                size="icon"
+                                className="h-12 w-12 rounded-xl text-zinc-500 hover:text-orange-500 hover:bg-zinc-800 transition-all shadow-none"
                                 disabled={currentPage <= 1}
                                 onClick={() => handlePageChange((currentPage - 2) * limit)}
                             >
-                                <ChevronLeft className="w-4 h-4" />
-                                Previous
+                                <ChevronLeft className="w-6 h-6" />
                             </Button>
-                            
-                            <div className="flex gap-1">
-                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                    let pageNumber;
-                                    if (totalPages <= 5) {
-                                        pageNumber = i + 1;
-                                    } else if (currentPage <= 3) {
-                                        pageNumber = i + 1;
-                                    } else if (currentPage >= totalPages - 2) {
-                                        pageNumber = totalPages - 4 + i;
-                                    } else {
-                                        pageNumber = currentPage - 2 + i;
-                                    }
 
-                                    return (
-                                        <Button
-                                            key={pageNumber}
-                                            variant={currentPage === pageNumber ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => handlePageChange((pageNumber - 1) * limit)}
-                                        >
-                                            {pageNumber}
-                                        </Button>
-                                    );
-                                })}
+                            <div className="px-8 font-black tabular-nums text-white text-lg tracking-tighter">
+                                {currentPage} <span className="text-zinc-600 text-sm font-normal mx-1">/</span> {totalPages}
                             </div>
 
                             <Button
-                                variant="outline"
-                                size="sm"
+                                variant="ghost"
+                                size="icon"
+                                className="h-12 w-12 rounded-xl text-zinc-500 hover:text-orange-500 hover:bg-zinc-800 transition-all shadow-none"
                                 disabled={currentPage >= totalPages}
                                 onClick={() => handlePageChange(currentPage * limit)}
                             >
-                                Next
-                                <ChevronRight className="w-4 h-4" />
+                                <ChevronRight className="w-6 h-6" />
                             </Button>
                         </div>
-                    )}
-                </>
-            )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

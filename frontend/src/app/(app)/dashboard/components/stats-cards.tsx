@@ -39,9 +39,10 @@ export function StatsCards({ user, stats, isLoading }: StatsCardsProps) {
         >
             {/* Credit Balance Card */}
             <m.div variants={cardVariants}>
-                <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
+                    <CardHeader className="pb-3 relative z-10">
+                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                             <Zap className="h-4 w-4 text-secondary" />
                             Credit Balance
                         </CardTitle>
@@ -71,9 +72,10 @@ export function StatsCards({ user, stats, isLoading }: StatsCardsProps) {
 
             {/* Sessions as Teacher */}
             <m.div variants={cardVariants}>
-                <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
+                    <CardHeader className="pb-3 relative z-10">
+                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                             <Users className="h-4 w-4 text-secondary" />
                             Teaching
                         </CardTitle>
@@ -97,9 +99,10 @@ export function StatsCards({ user, stats, isLoading }: StatsCardsProps) {
 
             {/* Sessions as Student */}
             <m.div variants={cardVariants}>
-                <Card className="border-border/40 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
+                    <CardHeader className="pb-3 relative z-10">
+                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                             <TrendingUp className="h-4 w-4 text-secondary" />
                             Learning
                         </CardTitle>
@@ -123,9 +126,10 @@ export function StatsCards({ user, stats, isLoading }: StatsCardsProps) {
 
             {/* Average Rating */}
             <m.div variants={cardVariants}>
-                <Card className="border-border/40 hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Card className="relative overflow-hidden border-border/40 bg-card/30 backdrop-blur-md hover:border-secondary/30 hover:shadow-xl hover:shadow-secondary/5 transition-all duration-500 group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
+                    <CardHeader className="pb-3 relative z-10">
+                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                             <Star className="h-4 w-4 text-secondary fill-secondary" />
                             Your Rating
                         </CardTitle>

@@ -1,263 +1,221 @@
-import type { Metadata } from 'next';
-import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CTAButtons } from "@/components/marketing/CTAButtons";
-import {
-  IconClock,
-  IconHeart,
-  IconArrowsLeftRight,
-  IconCurrencyDollarOff,
-  IconEye,
-  IconUsers,
-} from "@tabler/icons-react";
+'use client';
 
-export const metadata: Metadata = {
-  title: 'How Time Banking Works - Learn the System | Wibi',
-  description: 'Understand how time banking works. 1 hour = 1 credit. Exchange skills without money. Learn the core principles and step-by-step guide to get started.',
-  keywords: ['time banking', 'how it works', 'skill exchange guide', 'time credits', 'peer learning system'],
-  openGraph: {
-    title: 'How Time Banking Works - Wibi',
-    description: 'Learn how to exchange skills using time as currency. Simple, fair, and free.',
-    images: ['/wibi.png'],
-  },
-};
-
-const features = [
-  {
-    title: "Everyone's Time is Equal",
-    description: "One hour of service is worth one time credit, regardless of the service performed. Teaching calculus = teaching guitar = helping with English.",
-    icon: IconClock,
-  },
-  {
-    title: "Everyone Has Value",
-    description: "Everyone has something to offer. Time Banking recognizes that everyone, regardless of age or background, has valuable skills to share.",
-    icon: IconHeart,
-  },
-  {
-    title: "Reciprocity",
-    description: "Helping others is rewarded with credits that can be used to receive help in return. This creates a sustainable cycle of giving and receiving.",
-    icon: IconArrowsLeftRight,
-  },
-  {
-    title: "No Money Involved",
-    description: "Time Banking operates completely outside the monetary system. No cash changes hands, making skills accessible to everyone.",
-    icon: IconCurrencyDollarOff,
-  },
-  {
-    title: "Transparency",
-    description: "All exchanges are tracked and visible. The platform provides a clear record of credits earned and spent, ensuring fairness and accountability.",
-    icon: IconEye,
-  },
-  {
-    title: "Community Building",
-    description: "Time Banking strengthens communities by creating networks of mutual support. It connects people who might not otherwise meet and builds social capital.",
-    icon: IconUsers,
-  },
-];
-
-const steps = [
-  {
-    number: 1,
-    title: "Create Your Profile",
-    description: "Sign up and create your profile. Add your personal information, school details, and a short bio. This helps others in the community get to know you.",
-    image: "/wibi.png",
-    imageAlt: "Create Profile",
-  },
-  {
-    number: 2,
-    title: "List Your Skills",
-    description: "Add the skills you can teach others. Include your experience level, a description of what you can teach, and your availability. Be specific about what you can offer.",
-    image: "/wibi.png",
-    imageAlt: "List Skills",
-  },
-  {
-    number: 3,
-    title: "Browse the Marketplace",
-    description: "Explore skills offered by other students. Filter by category, level, or search for specific topics. Find tutors who can help you learn the skills you're interested in.",
-    image: "/wibi.png",
-    imageAlt: "Browse Marketplace",
-  },
-  {
-    number: 4,
-    title: "Book Sessions",
-    description: "Request a session with a tutor. Specify the date, time, duration, and whether you prefer online or in-person. The tutor will approve your request, and the session will be scheduled.",
-    image: "/wibi.png",
-    imageAlt: "Book Sessions",
-  },
-  {
-    number: 5,
-    title: "Exchange Time Credits",
-    description: "When you teach, you earn time credits. When you learn, you spend credits. The system automatically tracks your balance. New users start with 3 free credits to get started.",
-    image: "/wibi.png",
-    imageAlt: "Exchange Credits",
-  },
-  {
-    number: 6,
-    title: "Rate and Review",
-    description: "After each session, both the tutor and student rate and review each other. This builds trust in the community and helps others make informed decisions.",
-    image: "/wibi.png",
-    imageAlt: "Rate and Review",
-  },
-];
-
-const faqs = [
-  {
-    question: "How do I earn my first credits?",
-    answer: "New users start with 3 free credits to help you get started. After that, you earn credits by teaching or helping other students with your skills.",
-  },
-  {
-    question: "What if I don't have any skills to teach?",
-    answer: "Everyone has something valuable to offer! Whether it's academic subjects, hobbies, languages, or even basic computer skills, you likely have knowledge that others would appreciate.",
-  },
-  {
-    question: "Can I save up credits for later?",
-    answer: "Yes! Credits don't expire, so you can save them for when you need them. Some users teach multiple sessions first, then use their accumulated credits for learning later.",
-  },
-  {
-    question: "Are online sessions available?",
-    answer: "Absolutely! You can choose between online or in-person sessions. Online sessions can be conducted through video calls, making it convenient for everyone.",
-  },
-  {
-    question: "What if a session doesn't go well?",
-    answer: "If you have issues with a session, you can report it through our platform. Our community guidelines ensure a respectful and productive environment for everyone.",
-  },
-  {
-    question: "Can I teach or learn multiple skills?",
-    answer: "Yes! You can list as many skills as you want to teach, and learn as many as you're interested in. This versatility is what makes Time Banking so powerful.",
-  },
-];
+import React from "react";
+import { motion } from "framer-motion";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ScrollFeatures from "@/components/marketing/ScrollFeatures";
 
 export default function HowItWorksPage() {
   return (
-    <>
-      {/* Hero Section */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-linear-to-b from-background to-muted/30">
-        <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
-          <div className="flex flex-col items-center text-center space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              How Time Banking Works
-            </h1>
-            <p className="max-w-175 text-muted-foreground text-lg md:text-xl">
-              Time Banking is a reciprocity-based work trading system where time is the principal currency.
-              1 hour of service = 1 time credit, regardless of the service performed.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 font-sans overflow-x-clip">
+      {/* Very Subtle Mesh Gradient Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#ff5500]/5 rounded-full blur-[120px]" />
+      </div>
 
-      {/* Core Principles */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-background">
-        <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
-          <div className="flex flex-col items-center text-center space-y-4 mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Core Principles</h2>
-            <p className="max-w-175 text-muted-foreground text-lg">
-              Time Banking is built on five core values that make it a unique and powerful system.
-            </p>
+      <div className="relative z-10">
+        {/* --- Modern Elegant Hero Section --- */}
+        <section className="pt-24 pb-16 md:pt-32 md:pb-24 px-6 sm:px-12 flex flex-col items-center justify-center min-h-[65vh] relative overflow-hidden">
+          {/* Cinematic Background Image */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <img 
+               src="https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=2564&auto=format&fit=crop" 
+               alt="Dark Modern Abstract Pattern" 
+               className="w-full h-full object-cover opacity-30 mix-blend-screen"
+            />
+            {/* Seamless fading gradients */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={feature.title} className="group hover:border-primary/30 transition-all duration-300">
-                  <CardHeader className="pb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
-                      <Icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-lg">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
-      {/* How It Works Steps */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/30 border-t border-border/40">
-        <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
-          <div className="flex flex-col items-center text-center space-y-4 mb-16">
-            <h2 className="text-3xl font-bold tracking-tight">Step-by-Step Guide</h2>
-            <p className="max-w-175 text-muted-foreground text-lg">
-              Getting started with Time Banking is easy. Follow these simple steps to begin exchanging skills.
-            </p>
+          <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center mt-10 md:mt-6">
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.98, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] font-bold tracking-tighter leading-[0.85] mb-8 text-white drop-shadow-2xl"
+            >
+              Master the<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-[#ff5500] to-orange-600">Exchange.</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="max-w-2xl mx-auto text-zinc-300 text-lg md:text-xl font-medium leading-relaxed mb-12 drop-shadow-md"
+            >
+              Transform your time into a global ledger of wisdom. No money, no barriers—just decentralized learning in its purest form.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto"
+            >
+              <Button size="lg" className="h-14 px-8 bg-white hover:bg-zinc-200 text-black font-bold text-sm rounded-full transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-y-1">
+                Initialize Profile
+              </Button>
+              <Button variant="outline" className="h-14 px-8 border-white/20 bg-black/50 backdrop-blur-md text-white font-bold text-sm rounded-full hover:bg-white/10 transition-all hover:-translate-y-1">
+                View Network Stats
+              </Button>
+            </motion.div>
           </div>
-          <div className="space-y-12">
-            {steps.map((step, index) => (
-              <div key={step.number} className={`flex flex-col md:flex-row gap-8 items-center ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
-                <div className="w-full md:w-1/2">
-                  <div className="space-y-4">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-                      {step.number}
-                    </div>
-                    <h3 className="text-2xl font-bold">{step.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
+        </section>
+
+        {/* --- Core OS Principles (Restored Asymmetrical Bento Grid) --- */}
+        <section className="py-24 md:py-32 relative border-t border-zinc-900">
+          <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
+            <div className="mb-20">
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white uppercase italic leading-[0.9] mb-6">
+                Core OS<br />
+                <span className="text-zinc-600">Principles</span>
+              </h2>
+              <div className="w-12 h-1 bg-[#ff5500] mb-6" />
+              <p className="text-zinc-400 text-lg max-w-xl font-medium leading-relaxed">
+                The foundational architecture that powers the Wibi ecosystem. A departure from generic fiat-based systems.
+              </p>
+            </div>
+
+            {/* Asymmetrical Bento Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              {/* Item 1: Large Span */}
+              <div className="md:col-span-12 lg:col-span-8 group relative p-10 md:p-16 rounded-[40px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-2xl">
+                <div className="absolute top-0 right-0 p-8 text-[12rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none italic -mr-8 -mt-12">
+                  01
                 </div>
-                <div className="w-full md:w-1/2">
-                  <div className="rounded-lg overflow-hidden border bg-background">
-                    <Image 
-                      src={step.image} 
-                      alt={step.imageAlt} 
-                      width={600} 
-                      height={400}
-                      className="w-full h-auto"
-                    />
+                <div className="relative z-10 w-full h-full flex flex-col justify-end">
+                  <div className="mb-auto">
+                     <span className="inline-block px-4 py-1.5 rounded-full border border-[#ff5500]/20 bg-[#ff5500]/10 text-[#ff5500] text-xs font-bold tracking-widest uppercase mb-12">
+                       Axiom I
+                     </span>
+                  </div>
+                  <div>
+                    <h3 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight uppercase italic">Equality in Time</h3>
+                    <p className="text-zinc-400 text-lg leading-relaxed max-w-md font-medium">
+                      Every hour is valued equally, regardless of the skillset. A truly democratic exchange of human capital designed for modern resilience.
+                    </p>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* FAQs */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-background border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center text-center space-y-4 mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
-            <p className="max-w-175 text-muted-foreground text-lg">
-              Got questions about Time Banking? Here are answers to some common questions.
-            </p>
+              {/* Item 2: Vertical Stack */}
+              <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <div className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl">
+                  <div className="absolute top-0 right-0 p-6 text-[8rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none italic -mr-4 -mt-6">
+                    02
+                  </div>
+                  <div className="relative z-10 h-full flex flex-col justify-between">
+                    <span className="inline-block px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-400 text-[10px] font-bold tracking-widest uppercase self-start mb-8">
+                      Axiom II
+                    </span>
+                    <div>
+                      <h3 className="text-2xl font-black text-white mb-3 uppercase italic">Inherent Value</h3>
+                      <p className="text-zinc-500 text-sm leading-relaxed font-medium">
+                        Every member brings unique wisdom. We celebrate diversity and the richness of human knowledge.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl">
+                  <div className="absolute top-0 right-0 p-6 text-[8rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none italic -mr-4 -mt-6">
+                    03
+                  </div>
+                  <div className="relative z-10 h-full flex flex-col justify-between">
+                    <span className="inline-block px-3 py-1 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-[10px] font-bold tracking-widest uppercase self-start mb-8">
+                       Axiom III
+                    </span>
+                    <div>
+                      <h3 className="text-2xl font-black text-white mb-3 uppercase italic">Pure Reciprocity</h3>
+                      <p className="text-zinc-500 text-sm leading-relaxed font-medium">
+                        Helping others directly fuels your own growth. A perfect, closed-loop cycle of perpetual giving.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {faqs.map((faq) => (
-              <Card key={faq.question} className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">{faq.question}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section className="relative w-full py-16 md:py-24 lg:py-32 overflow-hidden border-t border-border/40">
-        <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-accent/5" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center space-y-6 text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Ready to Start <span className="text-primary">Time Banking</span>?
+        {/* --- Interactive Scroll Workflow Section (Retained untouched as requested) --- */}
+        <section className="relative z-10 py-32 bg-zinc-950/50">
+          <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-8">
+            <div className="text-center mb-32">
+              <h2 className="text-6xl md:text-7xl font-black tracking-tighter mb-8 text-white italic underline decoration-orange-500/50 underline-offset-[12px] uppercase">The Workflow.</h2>
+              <p className="text-zinc-500 font-mono text-[11px] uppercase tracking-[0.4em]">Sequential Protocol Implementation</p>
+            </div>
+          </div>
+
+          <ScrollFeatures />
+        </section>
+
+        {/* --- Minimalist Flat FAQ --- */}
+        <section className="py-24 md:py-32 px-6 sm:px-12 relative border-t border-zinc-900 bg-[#060606]">
+          <div className="max-w-4xl mx-auto relative z-10 w-full">
+            <div className="text-center mb-16 md:mb-24">
+              <h2 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-white uppercase italic mb-6">
+                SYSTEM <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-500">QUERY.</span>
+              </h2>
+              <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+                 Critical operations and knowledge-base regarding the Wibi decentralized time-banking architecture.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4">
+               {[
+                { q: "How do I earn initial credits?", a: "New accounts are pre-loaded with 3 Genesis Credits. After depletion, services must be rendered to earn more." },
+                { q: "What if I have no skills?", a: "Value is subjective. From language practice to project feedback, everyone possesses tradable wisdom." },
+                { q: "Do credits expire?", a: "No. Credits are stored perpetually in your secure ledger until utilized for learning." },
+                { q: "Is the system virtual?", a: "Exchanges can be physical (in-person) or digital (video-link), defined during the booking protocol." },
+                { q: "Are ratings verified?", a: "Yes. All ratings are tied to completed sessions, ensuring a 100% authentic reputation index." }
+              ].map((item, i) => (
+                <div key={i} className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-[#0d0d0d] border border-white/[0.03] hover:border-white/10 transition-all duration-300">
+                  <span className="text-zinc-600 font-bold text-xl md:text-2xl font-mono pt-1 shrink-0 group-hover:text-orange-500 transition-colors">
+                    0{i+1}.
+                  </span>
+                  <div>
+                    <h3 className="text-white font-bold text-xl md:text-2xl mb-4 leading-tight group-hover:text-zinc-200">{item.q}</h3>
+                    <p className="text-zinc-400 text-lg leading-relaxed">{item.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* --- Modern Cinematic CTA --- */}
+        <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-black overflow-hidden flex items-center justify-center min-h-[60vh]">
+          {/* Background Image for CTA */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+             <img 
+               src="https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=2564&auto=format&fit=crop" 
+               alt="Dark Tech Abstract Background" 
+               className="w-full h-full object-cover opacity-15 mix-blend-screen"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
+             <div className="absolute inset-0 bg-gradient-to-b from-black via-black/40 to-transparent" />
+          </div>
+
+          <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
+            <h2 className="text-5xl md:text-[6rem] font-black tracking-tighter text-white mb-8 drop-shadow-2xl uppercase italic">
+              Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#ff5500]">Deviate?</span>
             </h2>
-            <p className="mx-auto max-w-150 text-muted-foreground text-lg">
-              Join our community today and start exchanging skills with other students.
+            <p className="text-zinc-300 text-lg md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+              Step away from the traditional legacy market and start exchanging pure wisdom today. The decentralized future awaits.
             </p>
-            <CTAButtons />
+            <Button size="lg" className="group h-16 w-full sm:w-auto px-12 bg-white hover:bg-zinc-200 text-black font-black text-[15px] uppercase tracking-widest rounded-full transition-all flex items-center justify-center gap-3 mx-auto shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.3)] hover:-translate-y-1">
+              Initialize Sequence 
+              <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center group-hover:bg-[#ff5500] transition-colors">
+                <ArrowUpRight className="w-4 h-4 group-hover:rotate-45 transition-transform" />
+              </span>
+            </Button>
           </div>
-        </div>
-      </section>
-    </>
+        </section>
+      </div>
+    </div>
   );
 }

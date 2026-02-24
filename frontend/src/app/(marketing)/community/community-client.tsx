@@ -7,13 +7,18 @@ import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import { m } from 'framer-motion';
 import gsap from 'gsap';
+import Image from 'next/image';
+import { Plus_Jakarta_Sans } from "next/font/google";
 
-const LeaderboardTabs = dynamic(
-    () => import('@/components/shared/badge/LeaderboardTabs').then((mod) => mod.LeaderboardTabs),
-    { ssr: false, loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-3xl" /> }
+const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+
+const CustomLeaderboard = dynamic(
+    () => import('@/components/marketing/community/CustomLeaderboard').then((mod) => mod.CustomLeaderboard),
+    { ssr: false, loading: () => <div className="h-96 w-full animate-pulse bg-stone-900 rounded-3xl" /> }
 );
 
-import { MessageSquare, BookOpen, Award } from 'lucide-react';
+import { MessageSquare, BookOpen, Award, ArrowUpRight, ArrowRight, Bookmark } from 'lucide-react';
+import { CommunityFeatures } from '@/components/marketing/community/CommunityFeatures';
 
 const iconMap = {
     MessageSquare,
@@ -78,98 +83,51 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
     }, []);
 
     return (
-        <main ref={containerRef} className="flex-1 relative overflow-hidden">
-            {/* Animated Background Orbs */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {/* Orb 1 - Blue */}
-                <div
-                    ref={(el) => {
-                        if (el) orbs.current[0] = el;
-                    }}
-                    className="absolute w-96 h-96 bg-primary/10 rounded-full blur-3xl -top-32 -left-32"
+        <main ref={containerRef} className={`dark flex-1 relative overflow-x-hidden ${plusJakartaSans.className}`}>
+            {/* ── Section 1: Hero with Frosted Overlay ────────────────── */}
+            <section className="relative w-full h-dvh min-h-[600px] overflow-hidden">
+                {/* Background Image */}
+                <Image 
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000&auto=format&fit=crop"
+                    alt="Community Wibi"
+                    fill
+                    className="object-cover z-0"
+                    priority
                 />
 
-                {/* Orb 2 - Purple */}
-                <div
-                    ref={(el) => {
-                        if (el) orbs.current[1] = el;
+                {/* Left Side Overlay with Fade to Transparent */}
+                <div 
+                    className="absolute top-0 left-0 h-full w-[55%] bg-stone-950 z-10"
+                    style={{
+                        maskImage: 'linear-gradient(to right, black 55%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to right, black 55%, transparent 100%)',
                     }}
-                    className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl top-1/3 -right-32"
-                />
-
-                {/* Orb 3 - Amber */}
-                <div
-                    ref={(el) => {
-                        if (el) orbs.current[2] = el;
-                    }}
-                    className="absolute w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -bottom-32 left-1/3"
-                />
-            </div>
-
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16 py-16 space-y-24 relative z-10">
-                {/* Header Section */}
-                <div className="flex flex-col items-center justify-center gap-4 text-center">
-                    <h1 className="text-5xl font-bold tracking-tight">
-                        Community <span className="text-primary">Hub</span>
-                    </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl">
-                        Connect, learn, and grow together with our vibrant community of learners and mentors.
-                    </p>
-                </div>
-
-                {/* Community Sections Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {sections.map((section) => {
-                        const Icon = iconMap[section.icon as keyof typeof iconMap];
-                        return (
-                            <div
-                                key={section.title}
-                                className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm transition-all hover:shadow-xl hover:border-primary/50"
-                            >
-                                {/* Background gradient */}
-                                <div
-                                    className={`absolute inset-0 bg-linear-to-br ${section.color} opacity-0 group-hover:opacity-5 transition-opacity`}
-                                />
-
-                                {/* Content */}
-                                <div className="relative z-10 p-8 flex flex-col h-full">
-                                    <div className="mb-6">
-                                        <div className={`inline-flex p-3 rounded-xl bg-linear-to-br ${section.color} text-white shadow-lg shadow-primary/10`}>
-                                            <Icon className="h-6 w-6" />
-                                        </div>
-                                    </div>
-
-                                    <h2 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
-                                        {section.title}
-                                    </h2>
-                                    <p className="text-muted-foreground mb-6 grow leading-relaxed">
-                                        {section.description}
-                                    </p>
-
-                                    <Button
-                                        onClick={() => router.push(section.href)}
-                                        className="w-full h-12 rounded-xl font-semibold"
-                                    >
-                                        Explore
-                                    </Button>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Stats Section */}
-                <div className="bg-card/50 border border-border/50 backdrop-blur-sm rounded-3xl p-8 md:p-12">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-                        {stats.map((stat) => (
-                            <div key={stat.label} className="space-y-1">
-                                <p className="text-5xl font-bold text-primary">{stat.value}</p>
-                                <p className="text-muted-foreground font-medium">{stat.label}</p>
-                            </div>
-                        ))}
+                >
+                    <div className="p-10 md:p-16 flex flex-col justify-center h-full max-w-xl">
+                        <span className="text-xs text-orange-300 uppercase tracking-widest font-semibold mb-4 inline-block">
+                            Komunitas Wibi
+                        </span>
+                        
+                        <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">
+                            Komunitas Belajar yang Saling <span className="text-primary">Menguatkan</span>
+                        </h1>
+                        
+                        <p className="text-sm text-white/60 mt-3 max-w-xs leading-relaxed">
+                            Bergabunglah dengan ribuan pelajar dan mentor yang saling mendukung dalam perjalanan belajar mereka.
+                        </p>
+                        
+                        <div className="mt-6">
+                            <button className="bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:bg-stone-100 transition-all inline-block">
+                                Gabung Sekarang
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </section>
 
+            <CommunityFeatures />
+
+            <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16 py-16 space-y-24 relative z-10 bg-black text-stone-200">
                 {/* Leaderboard Section */}
                 <m.section
                     id="leaderboard"
@@ -180,17 +138,19 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                     className="space-y-12"
                 >
                     <div className="text-center space-y-4 max-w-2xl mx-auto">
-                        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-2">
-                            <Trophy className="h-8 w-8" />
-                        </div>
-                        <h2 className="text-4xl font-bold tracking-tight italic">Community Rankings</h2>
-                        <p className="text-lg text-muted-foreground">
+                        <h2 className="text-4xl font-bold tracking-tight italic text-white">Community Rankings</h2>
+                        <p className="text-lg text-stone-400">
                             Lihat siapa yang memimpin hari ini. Teruslah berkontribusi untuk mendaki tangga peringkat!
                         </p>
                     </div>
 
-                    <div className="bg-card/50 backdrop-blur-md rounded-3xl border border-border/50 p-6 sm:p-12 shadow-2xl shadow-primary/5">
-                        <LeaderboardTabs limit={15} />
+                    <div className="relative pt-8 mt-12">
+                        {/* Translucent background box with border */}
+                        <div className="absolute inset-0 bg-stone-900/30 backdrop-blur-xl border border-white/10 rounded-[3rem] -z-10 shadow-2xl shadow-black/40 ring-1 ring-inset ring-white/5" />
+                        
+                        <div className="py-12 px-4 sm:px-8">
+                            <CustomLeaderboard />
+                        </div>
                     </div>
                 </m.section>
             </div>

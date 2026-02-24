@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Sonner } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AuthProvider } from "@/components/auth";
@@ -10,8 +10,8 @@ import { MobileOptimization } from "@/components/shared/mobile-optimization";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-geist-sans", // Overriding the geist-sans variable to avoid touching tailwind config
   subsets: ["latin"],
 });
 
@@ -93,7 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${plusJakartaSans.variable} ${geistMono.variable} antialiased`}
       >
         <MobileOptimization />
         <ThemeProvider
@@ -107,7 +107,7 @@ export default function RootLayout({
               <AdminProvider>
                 <AuthProvider>
                   {children}
-                <Analytics />
+                  <Analytics />
                 </AuthProvider>
               </AdminProvider>
               <AchievementPopup />

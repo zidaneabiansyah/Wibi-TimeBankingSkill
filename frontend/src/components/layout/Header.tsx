@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth.store";
 import dynamic from 'next/dynamic';
+import { Menu, Clock, Wallet } from 'lucide-react';
 
 const NotificationBell = dynamic(
     () => import('@/components/features/notification').then((mod) => mod.NotificationBell),
@@ -17,19 +18,30 @@ const NotificationDropdown = dynamic(
     () => import('@/components/features/notification').then((mod) => mod.NotificationDropdown),
     { ssr: false }
 );
+
 import { UserDropdownMenu } from "@/components/ui/user-dropdown-menu";
 import { MobileMenuItem } from "@/components/ui/mobile-menu-drawer";
+
 const MobileMenuDrawer = dynamic(
     () => import('@/components/ui/mobile-menu-drawer').then((mod) => mod.MobileMenuDrawer),
     { ssr: false }
 );
-import { Menu } from 'lucide-react';
 
 export function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
     const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    // Scroll effect for navbar transparency
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -38,191 +50,187 @@ export function Header() {
 
     const publicNavLinks = [
         { href: '/marketplace', label: 'Marketplace' },
-        { href: '/how-it-works', label: 'How It Works' },
+        { href: '/how-it-works', label: 'How It Work' },
         { href: '/about', label: 'About' },
         { href: '/community', label: 'Community' },
     ];
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
-                <div className="flex h-16 items-center justify-between">
-                    {/* Logo Section */}
-                    <div className="flex-1 flex items-center">
-                        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-                                <Image 
-                                    src="/wibi.png" 
-                                    alt="Wibi Logo" 
-                                    width={28}
-                                    height={28}
-                                    className="rounded-md" 
-                                    priority
-                                />
-                            </div>
-                            <span className="text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent hidden sm:inline">Wibi</span>
-                        </Link>
-                    </div>
+        <header className={`fixed inset-x-0 z-50 flex justify-center px-4 pointer-events-none transition-all duration-500 ${isScrolled ? 'top-3' : 'top-6'}`}>
+            <div
+                className={`
+                    pointer-events-auto transition-all duration-500 ease-in-out
+                    flex items-center justify-between
+                    ${isScrolled
+                        ? 'h-14 sm:h-16 max-w-5xl bg-black/60 backdrop-blur-3xl border border-orange-500/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full px-6 sm:px-8'
+                        : 'h-18 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-[2rem] sm:rounded-[3rem] px-6 sm:px-10'}
+                    w-full
+                `}
+            >
+                {/* Logo Section */}
+                <div className="flex-[0.5] sm:flex-1 flex items-center">
+                    <Link href="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-all group">
+                        <Image
+                            src="/wibi.png"
+                            alt="Wibi Logo"
+                            width={48}
+                            height={48}
+                            className={`rounded-md group-hover:shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-500 group-hover:scale-105 ${isScrolled ? 'w-8 h-8 sm:w-10 sm:h-10' : 'w-10 h-10 sm:w-12 sm:h-12'}`}
+                            priority
+                        />
+                        <span className={`font-black bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent hidden sm:inline tracking-tighter transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'}`}>Wibi</span>
+                    </Link>
+                </div>
 
-                    {/* Center Navigation */}
-                    <nav className="hidden md:flex items-center gap-8">
-                        {publicNavLinks.map((link) => (
+                {/* Center Navigation */}
+                <nav className="hidden md:flex items-center gap-10">
+                    {publicNavLinks.map((link) => (
+                        <div key={link.href} className="relative flex flex-col items-center group">
                             <Link
-                                key={link.href}
                                 href={link.href}
-                                className={`text-sm font-medium transition-colors hover:text-primary ${
-                                    pathname === link.href ? 'text-primary' : 'text-muted-foreground'
-                                }`}
+                                className={`
+                                    text-[13px] font-bold transition-all duration-300
+                                    hover:text-white flex flex-col items-center
+                                    ${pathname === link.href ? 'text-white' : 'text-zinc-400'}
+                                `}
                             >
                                 {link.label}
                             </Link>
-                        ))}
-                    </nav>
+                            <span
+                                className={`
+                                    h-[2px] w-full bg-orange-600 rounded-full transition-all duration-300 mt-1 absolute -bottom-2
+                                    ${pathname === link.href ? 'opacity-100' : 'opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100'}
+                                `}
+                                style={{ transformOrigin: 'center' }}
+                            />
+                        </div>
+                    ))}
+                </nav>
 
-                    {/* Right Action Section */}
-                    <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3">
-                        {isAuthenticated && user ? (
-                            <>
-                                {/* Notification Bell */}
-                                <div className="relative hidden sm:block">
-                                    <div onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}>
-                                        <NotificationBell />
-                                    </div>
-                                    <NotificationDropdown
-                                        isOpen={isNotificationDropdownOpen}
-                                        onClose={() => setIsNotificationDropdownOpen(false)}
-                                    />
-                                </div>
-
-                                {/* Credits Badge */}
+                {/* Right Action Section */}
+                <div className="flex-1 flex items-center justify-end gap-3 sm:gap-6">
+                    {isAuthenticated && user ? (
+                        <>
+                            {/* Notification Bell */}
+                            <div className="relative hidden sm:block">
                                 <div
-                                    className="hidden sm:flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-2.5 py-1.5 text-xs sm:text-sm font-semibold"
-                                    title={`Available Credits: ${user.credit_balance?.toFixed(1) || '0.0'}`}
+                                    onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
+                                    className="transition-all cursor-pointer group"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <circle cx="12" cy="12" r="10" />
-                                        <polyline points="12 6 12 12 16 14" />
-                                    </svg>
-                                    <span>{user.credit_balance?.toFixed(1) || '0.0'}</span>
+                                    <NotificationBell />
                                 </div>
+                                <NotificationDropdown
+                                    isOpen={isNotificationDropdownOpen}
+                                    onClose={() => setIsNotificationDropdownOpen(false)}
+                                />
+                            </div>
 
-                                {/* User Dropdown Menu */}
+                            {/* Credits Badge */}
+                            <div
+                                className="hidden sm:flex items-center gap-2 text-orange-500 font-black cursor-default group/credit"
+                                title={`Credits: ${user.credit_balance?.toFixed(1) || '0.0'}`}
+                            >
+                                <Clock className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                                <span className="tabular-nums text-sm">{user.credit_balance?.toFixed(1) || '0.0'}</span>
+                            </div>
+
+                            {/* User Dropdown Menu */}
+                            <div className="flex items-center justify-center transition-all duration-300">
                                 <UserDropdownMenu />
+                            </div>
 
-                                {/* Mobile Menu for Auth */}
-                                <MobileMenuDrawer
-                                    side="right"
-                                    className="md:hidden"
-                                    trigger={
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="md:hidden"
-                                            aria-label="Open menu"
-                                        >
-                                            <Menu className="h-5 w-5" />
-                                        </Button>
-                                    }
-                                >
-                                    <div className="space-y-1">
-                                        <h3 className="text-xs font-semibold text-muted-foreground px-4 py-2 uppercase tracking-wider">
-                                            Navigation
-                                        </h3>
-                                        <MobileMenuItem label="Dashboard" href="/dashboard" />
-                                        <MobileMenuItem label="Marketplace" href="/marketplace" />
-                                        <MobileMenuItem label="My Sessions" href="/dashboard/sessions" />
-                                        <MobileMenuItem label="Community" href="/community" />
+                            {/* Mobile Menu for Auth */}
+                            <MobileMenuDrawer
+                                side="right"
+                                className="md:hidden"
+                                trigger={
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="md:hidden bg-zinc-900/50 border border-zinc-800 rounded-2xl h-11 w-11"
+                                        aria-label="Open menu"
+                                    >
+                                        <Menu className="h-5 w-5 text-zinc-400" />
+                                    </Button>
+                                }
+                            >
+                                <div className="space-y-1 p-4">
+                                    <h3 className="text-[10px] font-black text-zinc-600 px-4 py-2 uppercase tracking-[0.2em] mb-2">Navigation</h3>
+                                    <MobileMenuItem label="DASHBOARD" href="/dashboard" />
+                                    <MobileMenuItem label="MARKETPLACE" href="/marketplace" />
+                                    <MobileMenuItem label="MY SESSIONS" href="/dashboard/sessions" />
+                                    <MobileMenuItem label="COMMUNITY" href="/community" />
 
-                                        <div className="h-px bg-border/40 my-2" />
+                                    <div className="h-px bg-zinc-800/50 my-4" />
 
-                                        <h3 className="text-xs font-semibold text-muted-foreground px-4 py-2 uppercase tracking-wider">
-                                            Account
-                                        </h3>
-                                        <MobileMenuItem label="My Profile" href="/profile" />
-                                        <MobileMenuItem label="My Skills" href="/profile/skills" />
-                                        <MobileMenuItem label="Settings" href="/profile/settings" />
+                                    <h3 className="text-[10px] font-black text-zinc-600 px-4 py-2 uppercase tracking-[0.2em] mb-2">Account</h3>
+                                    <MobileMenuItem label="MY PROFILE" href="/profile" />
+                                    <MobileMenuItem label="MY SKILLS" href="/profile/skills" />
+                                    <MobileMenuItem label="SETTINGS" href="/profile/settings" />
 
-                                        <div className="h-px bg-border/40 my-2" />
+                                    <div className="h-px bg-zinc-800/50 my-4" />
 
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/5 rounded-lg transition-colors"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                            >
-                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                                <polyline points="16 17 21 12 16 7" />
-                                                <line x1="21" y1="12" x2="9" y2="12" />
-                                            </svg>
-                                            <span>Logout</span>
-                                        </button>
-                                    </div>
-                                </MobileMenuDrawer>
-                            </>
-                        ) : (
-                            <>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-xs font-black text-red-500 hover:bg-red-500/5 rounded-2xl transition-all uppercase tracking-widest"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            </MobileMenuDrawer>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 bg-black/40 rounded-full border border-white/5">
                                 <Link href="/login">
-                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                                    <Button variant="ghost" size="sm" className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-transparent">
                                         Login
                                     </Button>
                                 </Link>
                                 <Link href="/register">
-                                    <Button size="sm" className="bg-primary hover:bg-primary/90">
+                                    <Button size="sm" className="h-10 px-6 bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full shadow-lg shadow-orange-600/20 transition-all hover:scale-[1.05] active:scale-[0.95]">
                                         Sign Up
                                     </Button>
                                 </Link>
+                            </div>
 
-                                {/* Mobile Menu for Unauthenticated */}
-                                <MobileMenuDrawer
-                                    side="right"
-                                    className="md:hidden"
-                                    trigger={
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="md:hidden"
-                                            aria-label="Open menu"
-                                        >
-                                            <Menu className="h-5 w-5" />
-                                        </Button>
-                                    }
-                                >
-                                    <div className="space-y-1">
-                                        <h3 className="text-xs font-semibold text-muted-foreground px-4 py-2 uppercase tracking-wider">
-                                            Navigation
-                                        </h3>
-                                        {publicNavLinks.map((link) => (
-                                            <MobileMenuItem
-                                                key={link.href}
-                                                label={link.label}
-                                                href={link.href}
-                                            />
-                                        ))}
-                                        <div className="h-px bg-border/40 my-2" />
-                                        <MobileMenuItem label="Login" href="/login" />
-                                        <MobileMenuItem label="Sign Up" href="/register" />
+                            {/* Mobile Menu for Unauthenticated */}
+                            <MobileMenuDrawer
+                                side="right"
+                                className="md:hidden"
+                                trigger={
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="md:hidden bg-zinc-900/50 border border-zinc-800 rounded-2xl h-11 w-11"
+                                        aria-label="Open menu"
+                                    >
+                                        <Menu className="h-5 w-5 text-zinc-400" />
+                                    </Button>
+                                }
+                            >
+                                <div className="space-y-1 p-4">
+                                    <h3 className="text-[10px] font-black text-zinc-600 px-4 py-2 uppercase tracking-[0.2em] mb-4">Navigation</h3>
+                                    {publicNavLinks.map((link) => (
+                                        <MobileMenuItem
+                                            key={link.href}
+                                            label={link.label}
+                                            href={link.href}
+                                        />
+                                    ))}
+                                    <div className="h-px bg-zinc-800/50 my-6" />
+                                    <div className="flex flex-col gap-3">
+                                        <Link href="/login" className="w-full">
+                                            <Button variant="outline" className="w-full h-12 bg-transparent border-zinc-800 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl">Login</Button>
+                                        </Link>
+                                        <Link href="/register" className="w-full">
+                                            <Button className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-2xl">Sign Up</Button>
+                                        </Link>
                                     </div>
-                                </MobileMenuDrawer>
-                            </>
-                        )}
-                    </div>
+                                </div>
+                            </MobileMenuDrawer>
+                        </>
+                    )}
                 </div>
             </div>
         </header>

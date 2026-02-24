@@ -8,9 +8,11 @@ export default function AppLayout({
 }) {
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-background pt-[80px] pb-12 flex flex-col">
                 <Header />
-                {children}
+                <div className="flex-1">
+                    {children}
+                </div>
             </div>
         </ProtectedRoute>
     );

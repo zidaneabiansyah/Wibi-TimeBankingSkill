@@ -10,24 +10,19 @@ import { cn } from '@/lib/utils';
 /**
  * NotificationBell Component
  * Displays notification bell icon with unread count badge
- * Connects to WebSocket for real-time updates
+ * Redesigned to be "Mini Obsidian" style (more proportional)
  */
 export function NotificationBell() {
     const [isLoading, setIsLoading] = useState(true);
     const { unreadCount, setUnreadCount } = useNotificationStore();
     const { isConnected } = useNotificationWebSocket();
 
-    /**
-     * Fetch initial unread count on mount
-     */
     useEffect(() => {
         const fetchUnreadCount = async () => {
             try {
                 const count = await notificationService.getUnreadCount();
                 setUnreadCount(count);
             } catch (error) {
-                // Silently fail if backend is not available
-                // This prevents error spam when backend is offline
                 setUnreadCount(0);
             } finally {
                 setIsLoading(false);
@@ -41,37 +36,25 @@ export function NotificationBell() {
         <div className="relative">
             <button
                 className={cn(
-                    'relative p-2 text-gray-600 hover:text-gray-900 transition-colors',
-                    'dark:text-gray-400 dark:hover:text-gray-200'
+                    "relative flex items-center justify-center transition-all duration-300 group",
+                    "hover:bg-white/10 p-2 rounded-xl active:scale-90 cursor-pointer"
                 )}
                 aria-label="Notifications"
-                title={isConnected ? 'Connected' : 'Connecting...'}
             >
-                <Bell className="w-6 h-6" />
+                <Bell className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" />
 
-                {/* Unread count badge */}
+                {/* Unread count badge - Smaller and more precise */}
                 {unreadCount > 0 && (
                     <span
                         className={cn(
-                            'absolute top-0 right-0 inline-flex items-center justify-center',
-                            'px-2 py-1 text-xs font-bold leading-none text-white',
-                            'transform translate-x-1/2 -translate-y-1/2',
-                            'bg-red-600 rounded-full min-w-[20px]'
+                            "absolute top-0 right-0 inline-flex items-center justify-center",
+                            "h-4 min-w-[16px] px-1 text-[9px] font-black leading-none text-white",
+                            "bg-orange-600 rounded-full border-2 border-black shadow-lg shadow-orange-600/20 tabular-nums animate-in zoom-in-50 duration-300"
                         )}
                     >
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                 )}
-
-                {/* Connection indicator */}
-                <span
-                    className={cn(
-                        'absolute bottom-0 right-0 w-2 h-2 rounded-full',
-                        'transform translate-x-1/4 translate-y-1/4',
-                        isConnected ? 'bg-green-500' : 'bg-yellow-500'
-                    )}
-                    title={isConnected ? 'Connected' : 'Connecting...'}
-                />
             </button>
         </div>
     );

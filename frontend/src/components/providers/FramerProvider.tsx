@@ -7,7 +7,7 @@ const loadFeatures = () => import("@/lib/framer-features").then((res) => res.def
 
 export function FramerProvider({ children }: { children: React.ReactNode }) {
     return (
-        <LazyMotion features={loadFeatures} strict>
+        <LazyMotion features={loadFeatures}>
             {children}
         </LazyMotion>
     );

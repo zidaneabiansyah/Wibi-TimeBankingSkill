@@ -82,11 +82,12 @@ export function UpcomingSessions({ sessions, isLoading }: UpcomingSessionsProps)
                             }}
                         >
                             <Link href={session.status === 'in_progress' ? `/dashboard/sessions/${session.id}/room` : `/dashboard/sessions`}>
-                                <Card className={`h-full border-border/30 hover:shadow-lg transition-all duration-300 cursor-pointer group ${session.status === 'in_progress'
-                                        ? 'border-primary/50 shadow-md shadow-primary/5 bg-primary/5'
-                                        : 'hover:border-primary/40 hover:shadow-primary/10'
+                                <Card className={`relative overflow-hidden h-full border-border/40 hover:shadow-xl transition-all duration-500 cursor-pointer group ${session.status === 'in_progress'
+                                        ? 'border-primary/50 shadow-lg shadow-primary/10 bg-primary/10 backdrop-blur-md'
+                                        : 'bg-card/30 backdrop-blur-md hover:border-primary/30 hover:shadow-primary/5'
                                     }`}>
-                                    <CardHeader className="pb-4">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
+                                    <CardHeader className="pb-4 relative z-10">
                                         <div className="flex justify-between items-start gap-2">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1">
@@ -113,7 +114,7 @@ export function UpcomingSessions({ sessions, isLoading }: UpcomingSessionsProps)
                                             </Badge>
                                         </div>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="relative z-10">
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-2 text-sm">
                                                 <span className="text-muted-foreground">With:</span>
