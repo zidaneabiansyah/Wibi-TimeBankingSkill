@@ -19,7 +19,6 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <HeroSection />
-      <PrinciplesSection />
       <HowItWorksSection />
       <FeaturedSkillsSection />
       <CTASection />

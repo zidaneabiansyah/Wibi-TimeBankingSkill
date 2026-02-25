@@ -228,7 +228,7 @@ export function MarketplaceClient() {
                                 <span className="text-zinc-400 text-[10px] uppercase font-mono tracking-widest text-zinc-300">Network Enabled</span>
                             </div>
 
-                            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 text-white leading-[0.95]">
+                            <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 text-white leading-[0.95]">
                                 EXCHANGE TIME.<br />
                                 <span className="text-orange-500">MASTER SKILLS.</span>
                             </h1>

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ScrollFeatures from "@/components/marketing/ScrollFeatures";
+import { PrinciplesSection } from "@/components/marketing/landing";
 
 export default function HowItWorksPage() {
   return (
@@ -16,7 +17,7 @@ export default function HowItWorksPage() {
 
       <div className="relative z-10">
         {/* --- Professional Premium Hero Section --- */}
-        <section className="pt-24 pb-16 md:pt-32 md:pb-24 px-6 sm:px-12 flex flex-col items-center justify-center min-h-[65vh] relative overflow-hidden">
+        <section className="pt-24 pb-16 md:pt-32 md:pb-24 px-6 sm:px-12 flex flex-col items-center justify-center min-h-screen relative overflow-hidden">
           {/* Professional Premium Background Layer */}
           <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
             {/* 1. Subtle Architectural Image */}
@@ -57,7 +58,7 @@ export default function HowItWorksPage() {
               initial={{ opacity: 0, scale: 0.98, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] font-bold tracking-tighter leading-[0.85] mb-8 text-white drop-shadow-2xl"
+              className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tighter leading-[0.85] mb-8 text-white drop-shadow-2xl"
             >
               How It <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-[#ff5500] to-orange-600">Works.</span>
             </motion.h1>
@@ -94,105 +95,7 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        {/* --- Core OS Principles (Restored Asymmetrical Bento Grid) --- */}
-        <section className="py-24 md:py-32 relative border-t border-zinc-900">
-          <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
-            <div className="mb-20">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white leading-[0.9] mb-6">
-                Core OS<br />
-                <span className="text-zinc-600">Principles</span>
-              </h2>
-              <div className="w-12 h-1 bg-[#ff5500] mb-6" />
-              <p className="text-zinc-400 text-lg max-w-xl font-medium leading-relaxed">
-                The foundational architecture that powers the Wibi ecosystem. A departure from generic fiat-based systems.
-              </p>
-            </div>
-
-            {/* Asymmetrical Bento Grid */}
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-12 gap-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ staggerChildren: 0.15 }}
-            >
-              {/* Item 1: Large Span */}
-              <motion.div
-                className="md:col-span-12 lg:col-span-8 group relative p-10 md:p-16 rounded-[40px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-2xl"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              >
-                <div className="absolute top-0 right-0 p-8 text-[12rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none -mr-8 -mt-12">
-                  01
-                </div>
-                <div className="relative z-10 w-full h-full flex flex-col justify-end">
-                  <div className="mb-auto">
-                    <span className="inline-block px-4 py-1.5 rounded-full border border-[#ff5500]/20 bg-[#ff5500]/10 text-[#ff5500] text-xs font-bold tracking-widest mb-12">
-                      Axiom I
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">Waktu Setiap Orang Setara</h3>
-                    <p className="text-zinc-400 text-lg leading-relaxed max-w-md font-medium">
-                      Satu jam layanan bernilai satu kredit waktu, apa pun layanan yang diberikan. Mengajar kalkulus = mengajar gitar = membantu bahasa Inggris.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Item 2: Vertical Stack */}
-              <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
-                <motion.div
-                  className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl"
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                  <div className="absolute top-0 right-0 p-6 text-[8rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none -mr-4 -mt-6">
-                    02
-                  </div>
-                  <div className="relative z-10 h-full flex flex-col justify-between">
-                    <span className="inline-block px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-400 text-[10px] font-bold tracking-widest self-start mb-8">
-                      Axiom II
-                    </span>
-                    <div>
-                      <h3 className="text-2xl font-black text-white mb-3">Semua Orang Berharga</h3>
-                      <p className="text-zinc-500 text-sm leading-relaxed font-medium">
-                        Setiap orang memiliki sesuatu untuk ditawarkan. Time Banking mengakui bahwa setiap orang, tanpa memandang usia atau latar belakang, memiliki keterampilan berharga untuk dibagikan.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl"
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                  <div className="absolute top-0 right-0 p-6 text-[8rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none -mr-4 -mt-6">
-                    03
-                  </div>
-                  <div className="relative z-10 h-full flex flex-col justify-between">
-                    <span className="inline-block px-3 py-1 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-[10px] font-bold tracking-widest self-start mb-8">
-                      Axiom III
-                    </span>
-                    <div>
-                      <h3 className="text-2xl font-black text-white mb-3">Tanpa Melibatkan Uang</h3>
-                      <p className="text-zinc-500 text-sm leading-relaxed font-medium">
-                        Time Banking beroperasi sepenuhnya di luar sistem moneter. Tidak ada uang tunai yang berpindah tangan, membuat keterampilan dapat diakses oleh semua orang.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+        <PrinciplesSection />
 
         {/* --- Interactive Scroll Workflow Section (Retained untouched as requested) --- */}
         <section id="workflow" className="relative z-10 py-32 bg-zinc-950/50">
@@ -203,7 +106,7 @@ export default function HowItWorksPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-6xl md:text-7xl font-black tracking-tighter mb-8 text-white">Step-by-Step Guide</h2>
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 text-white">Step-by-Step <span className="text-[#FF7020]">Guide</span></h2>
               <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Getting started with Time Banking is easy. Follow these simple steps to begin exchanging skills.</p>
             </motion.div>
           </div>
@@ -220,7 +123,7 @@ export default function HowItWorksPage() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-white mb-6">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white mb-6">
                 Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#ff5500]">Questions.</span>
               </h2>
               <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">
@@ -263,7 +166,7 @@ export default function HowItWorksPage() {
 
 
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8 drop-shadow-2xl">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-8 drop-shadow-2xl">
               Ready to Start<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#ff5500]">Time Banking?</span>
             </h2>
