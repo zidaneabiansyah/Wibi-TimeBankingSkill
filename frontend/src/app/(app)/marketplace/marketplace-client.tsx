@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { m, AnimatePresence, Variants } from 'framer-motion';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import {
     Select,
     SelectContent,
@@ -21,65 +20,59 @@ import {
     ChevronLeft,
     ChevronRight,
     SlidersHorizontal,
-    Globe,
-    Home,
     ArrowRight,
-    Sparkles,
     Zap,
     TrendingUp,
-    LayoutGrid,
-    MoreHorizontal,
     Heart,
     Activity,
-    Clock,
-    ShieldCheck,
-    MessageCircle,
-    MapPin,
-    GraduationCap,
 } from 'lucide-react';
-import { useSkillStore } from '@/stores';
-import type { SkillCategory, Skill } from '@/types';
+import { useSkillStore } from '@/stores/skill.store';
+import { SkillCategory, Skill } from '@/types';
 
-const categories: { value: SkillCategory; label: string; icon: string }[] = [
-    { value: 'academic', label: 'Academic', icon: '📚' },
-    { value: 'technical', label: 'Technical', icon: '💻' },
-    { value: 'creative', label: 'Creative', icon: '🎨' },
-    { value: 'language', label: 'Language', icon: '🌍' },
-    { value: 'sports', label: 'Sports', icon: '⚽' },
-    { value: 'other', label: 'Other', icon: '📋' },
+const categories: { label: string; value: SkillCategory }[] = [
+    { label: 'Academic', value: 'academic' },
+    { label: 'Technical', value: 'technical' },
+    { label: 'Creative', value: 'creative' },
+    { label: 'Language', value: 'language' },
+    { label: 'Sports', value: 'sports' },
+    { label: 'Other', value: 'other' },
 ];
 
-/** 
- * Map categories to realistic Unsplash imagery for a "Premium Travel" look 
- */
-const categoryImages: Record<string, string> = {
-    academic: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop',
-    technical: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop',
-    creative: 'https://images.unsplash.com/photo-1460666819451-76472002715a?q=80&w=800&auto=format&fit=crop',
-    language: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=800&auto=format&fit=crop',
-    sports: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800&auto=format&fit=crop',
-    other: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop',
+const getSkillImage = (skill: Skill) => {
+    const images: Record<string, string> = {
+        academic: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2670&auto=format&fit=crop",
+        technical: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670&auto=format&fit=crop",
+        creative: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2670&auto=format&fit=crop",
+        language: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2573&auto=format&fit=crop",
+        sports: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2670&auto=format&fit=crop",
+        other: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2670&auto=format&fit=crop",
+    };
+    return images[skill.category] || images.other;
 };
 
-/**
- * Granular mapping for specific skill names to ensure high accuracy
- */
-const getSkillImage = (skill: Skill) => {
-    const name = skill.name.toLowerCase();
-    const category = skill.category.toLowerCase();
+const containerVariants: Variants = {
+    initial: { opacity: 0 },
+    animate: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.2
+        }
+    }
+};
 
-    // Specific mapping for requested skills
-    if (name.includes('photo')) return 'https://images.unsplash.com/photo-1452784444945-3f422708fe5e?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('guitar') || name.includes('music')) return 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('draw') || name.includes('painting') || name.includes('art')) return 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('swim')) return 'https://images.unsplash.com/photo-1530549387074-6b21c8827004?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('basket')) return 'https://images.unsplash.com/photo-1519861155730-0b5fbf0dd889?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('japan')) return 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('english')) return 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('video') || name.includes('edit')) return 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=800&auto=format&fit=crop';
-    if (name.includes('design') || name.includes('canva')) return 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=800&auto=format&fit=crop';
-
-    return categoryImages[category] || categoryImages.other;
+const itemVariants: Variants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }
+    },
+    exit: {
+        opacity: 0,
+        scale: 0.95,
+        transition: { duration: 0.2 }
+    }
 };
 
 export function MarketplaceClient() {
@@ -126,87 +119,104 @@ export function MarketplaceClient() {
         const bgImage = getSkillImage(skill);
 
         return (
-            <Link href={`/marketplace/${skill.id}`} className="group h-full block">
-                <div className="relative h-[520px] w-full bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-zinc-800 transition-all duration-500 hover:border-orange-500/40 group-hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)]">
+            <m.div
+                layout
+                variants={itemVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="group h-full"
+            >
+                <Link href={`/marketplace/${skill.id}`} className="block h-full">
+                    <div className="relative h-[520px] w-full bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-zinc-800 transition-all duration-500 hover:border-orange-500/40 group-hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)]">
 
-                    {/* 1. Large Realistic Background Image */}
-                    <div className="absolute inset-0 z-0">
-                        <img
-                            src={bgImage}
-                            alt={skill.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
-                    </div>
-
-                    {/* 2. Glassmorphic Content Overlay at Bottom */}
-                    <div className="absolute bottom-0 inset-x-0 z-10 px-6 pb-6 pt-24 bg-gradient-to-t from-black via-black/95 to-transparent">
-
-                        {/* Floating Icon Box */}
-                        <div className="absolute -top-6 left-6 w-12 h-12 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl flex items-center justify-center text-2xl shadow-xl group-hover:scale-110 transition-transform">
-                            {skill.icon}
+                        {/* 1. Large Realistic Background Image */}
+                        <div className="absolute inset-0 z-0">
+                            <m.img
+                                src={bgImage}
+                                alt={skill.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
                         </div>
 
-                        {/* Title & Info */}
-                        <div className="mb-4">
-                            <h3 className="text-3xl font-black text-white mb-2 leading-tight tracking-tight group-hover:text-orange-500 transition-colors drop-shadow-xl">
-                                {skill.name}
-                            </h3>
-                            <p className="text-xs font-medium text-zinc-400 line-clamp-2 drop-shadow-md mb-4">
-                                {skill.description || `The fastest way to master ${skill.name} through community exchange.`}
-                            </p>
+                        {/* 2. Glassmorphic Content Overlay at Bottom */}
+                        <div className="absolute bottom-0 inset-x-0 z-10 px-6 pb-6 pt-24 bg-gradient-to-t from-black via-black/95 to-transparent">
 
-                            {/* Social Stats Block (Requested) */}
-                            <div className="flex gap-5 mb-4 opacity-100">
-                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
-                                    <Users className="w-3.5 h-3.5 text-orange-500" />
-                                    <span>{skill.total_teachers} teachers</span>
+                            {/* Floating Icon Box */}
+                            <div className="absolute -top-6 left-6 w-12 h-12 bg-black/60 backdrop-blur-xl border border-white/20 rounded-xl flex items-center justify-center text-2xl shadow-xl group-hover:scale-110 transition-transform">
+                                {skill.icon}
+                            </div>
+
+                            {/* Title & Info */}
+                            <div className="mb-4">
+                                <h3 className="text-3xl font-black text-white mb-2 leading-tight tracking-tight group-hover:text-orange-500 transition-colors drop-shadow-xl">
+                                    {skill.name}
+                                </h3>
+                                <p className="text-xs font-medium text-zinc-400 line-clamp-2 drop-shadow-md mb-4">
+                                    {skill.description || `The fastest way to master ${skill.name} through community exchange.`}
+                                </p>
+
+                                {/* Social Stats Block (Requested) */}
+                                <div className="flex gap-5 mb-4 opacity-100">
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
+                                        <Users className="w-3.5 h-3.5 text-orange-500" />
+                                        <span>{skill.total_teachers} teachers</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
+                                        <Star className="w-3.5 h-3.5 text-orange-500" />
+                                        <span>0 learners</span>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
-                                    <Star className="w-3.5 h-3.5 text-orange-500" />
-                                    <span>0 learners</span>
+                            </div>
+
+                            {/* Teacher/Expert Row */}
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10">
+                                        <Zap className="w-3 h-3 text-orange-500" />
+                                        <span className="text-[10px] font-black text-white uppercase tracking-tighter">Community Fav</span>
+                                    </div>
                                 </div>
+                                <Badge className="bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full px-4 h-6 border-0 shadow-lg">
+                                    {skill.category}
+                                </Badge>
+                            </div>
+
+                            {/* 3. "Explore Teachers" Button (Requested Style) */}
+                            <div className="w-full">
+                                <Button variant="outline" className="w-full h-13 bg-transparent border-zinc-700/80 text-white font-black text-xs uppercase tracking-[0.1em] rounded-2xl transition-all hover:bg-white hover:text-black hover:border-white shadow-xl">
+                                    Explore Teachers
+                                </Button>
                             </div>
                         </div>
 
-                        {/* Teacher/Expert Row */}
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-1 px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10">
-                                    <Zap className="w-3 h-3 text-orange-500" />
-                                    <span className="text-[10px] font-black text-white uppercase tracking-tighter">Community Fav</span>
-                                </div>
-                            </div>
-                            <Badge className="bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full px-4 h-6 border-0 shadow-lg">
-                                {skill.category}
-                            </Badge>
-                        </div>
-
-                        {/* 3. "Explore Teachers" Button (Requested Style) */}
-                        <div className="w-full">
-                            <Button variant="outline" className="w-full h-13 bg-transparent border-zinc-700/80 text-white font-black text-xs uppercase tracking-[0.1em] rounded-2xl transition-all hover:bg-white hover:text-black hover:border-white shadow-xl">
-                                Explore Teachers
-                            </Button>
-                        </div>
+                        {/* Like Action */}
+                        <button className="absolute top-6 right-6 z-20 w-11 h-11 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/80 backdrop-blur-xl border border-white/10 text-white transition-all group/fav">
+                            <Heart className="w-5 h-5 group-hover/fav:fill-white transition-colors" />
+                        </button>
                     </div>
-
-                    {/* Like Action */}
-                    <button className="absolute top-6 right-6 z-20 w-11 h-11 rounded-full flex items-center justify-center bg-black/40 hover:bg-black/80 backdrop-blur-xl border border-white/10 text-white transition-all group/fav">
-                        <Heart className="w-5 h-5 group-hover/fav:fill-white transition-colors" />
-                    </button>
-                </div>
-            </Link>
+                </Link>
+            </m.div>
         );
     };
 
     return (
         <div className="min-h-screen bg-black text-zinc-100 selection:bg-orange-500/30">
             {/* --- Bento Dashboard Hero --- */}
-            <div className="container mx-auto px-4 pt-32 pb-16 max-w-7xl">
+            <m.div
+                className="container mx-auto px-4 pt-32 pb-16 max-w-7xl"
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+            >
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-16 h-auto lg:min-h-[480px]">
                     {/* Block A: Core Platform Info */}
-                    <div className="lg:col-span-8 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] p-8 md:p-14 flex flex-col justify-center relative overflow-hidden text-left">
+                    <m.div
+                        variants={itemVariants}
+                        className="lg:col-span-8 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] p-8 md:p-14 flex flex-col justify-center relative overflow-hidden text-left"
+                    >
                         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/5 via-transparent to-transparent opacity-40 pointer-events-none" />
 
                         <div className="z-10 relative">
@@ -242,10 +252,10 @@ export function MarketplaceClient() {
                                 </Button>
                             </div>
                         </div>
-                    </div>
+                    </m.div>
 
                     {/* Block B: Real-time Stats */}
-                    <div className="lg:col-span-4 flex flex-col gap-5">
+                    <m.div variants={itemVariants} className="lg:col-span-4 flex flex-col gap-5">
                         <div className="flex-1 bg-zinc-900/40 border border-zinc-800/80 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-zinc-700 transition-colors cursor-default">
                             <div className="flex justify-between items-start mb-10">
                                 <div className="flex flex-col">
@@ -285,11 +295,11 @@ export function MarketplaceClient() {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </m.div>
                 </div>
 
                 {/* --- Navigation Bar --- */}
-                <div className="relative mb-12">
+                <m.div variants={itemVariants} className="relative mb-12">
                     <div className="bg-black/95 backdrop-blur-2xl border border-zinc-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                         <div className="flex gap-1 overflow-x-auto scrollbar-hide flex-1 pl-1">
                             <button
@@ -323,32 +333,39 @@ export function MarketplaceClient() {
                     </div>
 
                     {/* Filter Portal */}
-                    {showFilters && (
-                        <div className="mt-4 bg-zinc-900 border border-zinc-800 rounded-3xl p-8 grid grid-cols-1 md:grid-cols-3 gap-10 animate-in slide-in-from-top-4 duration-500">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-black">Expertise Level</label>
-                                <Select defaultValue="all">
-                                    <SelectTrigger className="bg-black border-zinc-800 rounded-2xl h-12 text-xs font-bold font-mono text-zinc-300"><SelectValue /></SelectTrigger>
-                                    <SelectContent className="bg-zinc-900 border-zinc-800">
-                                        <SelectItem value="all">ALL LEVELS</SelectItem>
-                                        <SelectItem value="beginner">BEGINNER</SelectItem>
-                                        <SelectItem value="expert">EXPERT</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-black">Sort Protocol</label>
-                                <Select defaultValue="popular">
-                                    <SelectTrigger className="bg-black border-zinc-800 rounded-2xl h-12 text-xs font-bold font-mono text-zinc-300"><SelectValue /></SelectTrigger>
-                                    <SelectContent className="bg-zinc-900 border-zinc-800">
-                                        <SelectItem value="popular">MOST POPULAR</SelectItem>
-                                        <SelectItem value="newest">LATEST ARRIVALS</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                    <AnimatePresence>
+                        {showFilters && (
+                            <m.div
+                                initial={{ opacity: 0, height: 0, y: -20 }}
+                                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                                exit={{ opacity: 0, height: 0, y: -20 }}
+                                className="mt-4 bg-zinc-900 border border-zinc-800 rounded-3xl p-8 grid grid-cols-1 md:grid-cols-3 gap-10 overflow-hidden"
+                            >
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-black">Expertise Level</label>
+                                    <Select defaultValue="all">
+                                        <SelectTrigger className="bg-black border-zinc-800 rounded-2xl h-12 text-xs font-bold font-mono text-zinc-300"><SelectValue /></SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-zinc-800">
+                                            <SelectItem value="all">ALL LEVELS</SelectItem>
+                                            <SelectItem value="beginner">BEGINNER</SelectItem>
+                                            <SelectItem value="expert">EXPERT</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-black">Sort Protocol</label>
+                                    <Select defaultValue="popular">
+                                        <SelectTrigger className="bg-black border-zinc-800 rounded-2xl h-12 text-xs font-bold font-mono text-zinc-300"><SelectValue /></SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-zinc-800">
+                                            <SelectItem value="popular">MOST POPULAR</SelectItem>
+                                            <SelectItem value="newest">LATEST ARRIVALS</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </m.div>
+                        )}
+                    </AnimatePresence>
+                </m.div>
 
                 {/* --- Listing Grid --- */}
                 {isLoading ? (
@@ -358,13 +375,19 @@ export function MarketplaceClient() {
                         ))}
                     </div>
                 ) : skills.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pb-32">
-                        {skills.map((skill) => (
-                            <SkillCard key={skill.id} skill={skill} />
-                        ))}
-                    </div>
+                    <m.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pb-32">
+                        <AnimatePresence mode="popLayout">
+                            {skills.map((skill) => (
+                                <SkillCard key={skill.id} skill={skill} />
+                            ))}
+                        </AnimatePresence>
+                    </m.div>
                 ) : (
-                    <div className="py-32 flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/10">
+                    <m.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="py-32 flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/10"
+                    >
                         <Activity className="w-12 h-12 text-zinc-700 mb-6" />
                         <h3 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter italic">No Nodes Detected</h3>
                         <p className="text-zinc-500 text-sm font-mono tracking-wide max-w-sm text-center mb-10 font-bold">Searching the grid... No matches for your current parameters.</p>
@@ -375,12 +398,12 @@ export function MarketplaceClient() {
                         >
                             Reset Grid
                         </Button>
-                    </div>
+                    </m.div>
                 )}
 
                 {/* --- Pagination --- */}
                 {totalPages > 1 && (
-                    <div className="flex justify-center mt-6">
+                    <m.div variants={itemVariants} className="flex justify-center mt-6">
                         <div className="inline-flex items-center gap-2 p-2.5 bg-zinc-900/60 backdrop-blur rounded-2xl border border-zinc-800 shadow-2xl">
                             <Button
                                 variant="ghost"
@@ -406,9 +429,9 @@ export function MarketplaceClient() {
                                 <ChevronRight className="w-6 h-6" />
                             </Button>
                         </div>
-                    </div>
+                    </m.div>
                 )}
-            </div>
+            </m.div>
         </div>
     );
 }

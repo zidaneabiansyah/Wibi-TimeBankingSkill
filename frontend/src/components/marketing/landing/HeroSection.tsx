@@ -69,46 +69,44 @@ export function HeroSection() {
 
                         <div className="space-y-4 md:space-y-6">
                             <m.h1
-                                className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white"
+                                className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-black tracking-tighter leading-[1.02] text-white"
                                 variants={itemVariants}
                             >
                                 Stop Paying. <br />
-                                Start <span className="text-transparent bg-clip-text bg-white border-b-4 border-[#FF7020] pb-1">Exchanging.</span>
+                                Start <span className="text-[#FF7020]">Exchanging.</span>
                             </m.h1>
 
                             <m.p
-                                className="max-w-xl text-lg sm:text-lg md:text-xl text-gray-400 leading-relaxed font-medium"
+                                className="max-w-xl text-lg sm:text-xl text-gray-400 leading-relaxed font-medium"
                                 variants={itemVariants}
                             >
                                 Your time is the new currency. Teach what you know to earn temporal credits, and spend them to learn absolutely anything from experts.
                             </m.p>
                         </div>
 
-                        {/* Modernized Search/Action Bar */}
+                        {/* Premium Modern CTA Button */}
                         <m.div
                             variants={itemVariants}
-                            className="w-full max-w-lg relative group"
+                            className="w-full max-w-xl group/cta"
                         >
-                            <div className="flex flex-col sm:flex-row items-center p-2 bg-[#121212] border border-[#2A2A2A] rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] transition-all duration-300 group-hover:border-[#555]">
-
-                                <div className="flex-1 w-full flex items-center px-4 py-3 sm:py-0">
-                                    <Search className="w-5 h-5 text-gray-500 mr-3 shrink-0" />
-                                    <input
-                                        type="text"
-                                        placeholder="What do you want to master?"
-                                        className="bg-transparent border-none outline-none text-white text-base w-full placeholder:text-gray-500 font-medium"
-                                    />
-                                </div>
-
-                                <Link href={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto mt-2 sm:mt-0 relative">
-                                    <Button size="lg" className="w-full sm:w-auto rounded-xl px-8 h-12 bg-white hover:bg-[#FF7020] text-black hover:text-white font-bold text-sm sm:text-base transition-colors duration-300 overflow-hidden group/btn">
-                                        <span className="relative z-10 flex items-center gap-2">
-                                            {isAuthenticated ? "Dashboard" : "Get Started"}
-                                            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                        </span>
+                            <Link href={isAuthenticated ? "/dashboard" : "/login"} className="inline-block relative">
+                                <m.div
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="relative z-10"
+                                >
+                                    <Button className="h-16 px-12 rounded-[1.25rem] bg-white hover:bg-[#FF7020] text-black hover:text-white font-black text-xs sm:text-sm uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-4 border-none shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(255,112,32,0.4)]">
+                                        <span className="relative z-10">{isAuthenticated ? "Go to Dashboard" : "Start Journey"}</span>
+                                        <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center group-hover/cta:bg-white/20 transition-colors duration-500">
+                                            <ArrowRight className="w-4 h-4" strokeWidth={3} />
+                                        </div>
                                     </Button>
-                                </Link>
-                            </div>
+                                </m.div>
+
+                                {/* Refined Outer Accent Ring */}
+                                <div className="absolute -inset-3 border border-white/5 rounded-[1.75rem] transition-all duration-700 group-hover/cta:border-[#FF7020]/30 group-hover/cta:-inset-4 opacity-50 pointer-events-none" />
+                                <div className="absolute -inset-0.5 bg-[#FF7020] rounded-[1.25rem] blur-2xl opacity-0 group-hover/cta:opacity-20 transition-opacity duration-700 pointer-events-none" />
+                            </Link>
                         </m.div>
 
                         {/* Hard-hitting Stats */}

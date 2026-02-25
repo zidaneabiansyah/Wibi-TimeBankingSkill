@@ -109,9 +109,21 @@ export default function HowItWorksPage() {
             </div>
 
             {/* Asymmetrical Bento Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-12 gap-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ staggerChildren: 0.15 }}
+            >
               {/* Item 1: Large Span */}
-              <div className="md:col-span-12 lg:col-span-8 group relative p-10 md:p-16 rounded-[40px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-2xl">
+              <motion.div
+                className="md:col-span-12 lg:col-span-8 group relative p-10 md:p-16 rounded-[40px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-2xl"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
                 <div className="absolute top-0 right-0 p-8 text-[12rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none -mr-8 -mt-12">
                   01
                 </div>
@@ -128,11 +140,17 @@ export default function HowItWorksPage() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Item 2: Vertical Stack */}
               <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
-                <div className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl">
+                <motion.div
+                  className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl"
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
                   <div className="absolute top-0 right-0 p-6 text-[8rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none -mr-4 -mt-6">
                     02
                   </div>
@@ -147,9 +165,15 @@ export default function HowItWorksPage() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl">
+                <motion.div
+                  className="flex-1 group relative p-10 rounded-[32px] bg-zinc-950/50 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-700 hover:bg-zinc-900 shadow-xl"
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
                   <div className="absolute top-0 right-0 p-6 text-[8rem] font-black leading-none text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-700 pointer-events-none select-none -mr-4 -mt-6">
                     03
                   </div>
@@ -164,19 +188,24 @@ export default function HowItWorksPage() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* --- Interactive Scroll Workflow Section (Retained untouched as requested) --- */}
         <section id="workflow" className="relative z-10 py-32 bg-zinc-950/50">
           <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-8">
-            <div className="text-center mb-32">
+            <motion.div
+              className="text-center mb-32"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
               <h2 className="text-6xl md:text-7xl font-black tracking-tighter mb-8 text-white">Step-by-Step Guide</h2>
               <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Getting started with Time Banking is easy. Follow these simple steps to begin exchanging skills.</p>
-            </div>
+            </motion.div>
           </div>
 
           <ScrollFeatures />
@@ -185,14 +214,19 @@ export default function HowItWorksPage() {
         {/* --- Minimalist Flat FAQ --- */}
         <section id="faq" className="py-24 md:py-32 px-6 sm:px-12 relative border-t border-zinc-900 bg-[#060606]">
           <div className="max-w-4xl mx-auto relative z-10 w-full">
-            <div className="text-center mb-16 md:mb-24">
+            <motion.div
+              className="text-center mb-16 md:mb-24"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
               <h2 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-white mb-6">
                 Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#ff5500]">Questions.</span>
               </h2>
               <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">
                 Punya pertanyaan tentang Time Banking? Berikut beberapa jawabannya.
               </p>
-            </div>
+            </motion.div>
 
             <div className="flex flex-col gap-4">
               {[
@@ -202,7 +236,14 @@ export default function HowItWorksPage() {
                 { q: "Is the system virtual?", a: "Exchanges can be physical (in-person) or digital (video-link), defined during the booking protocol." },
                 { q: "Are ratings verified?", a: "Yes. All ratings are tied to completed sessions, ensuring a 100% authentic reputation index." }
               ].map((item, i) => (
-                <div key={i} className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-[#0d0d0d] border border-white/[0.03] hover:border-white/10 transition-all duration-300">
+                <motion.div
+                  key={i}
+                  className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-[#0d0d0d] border border-white/[0.03] hover:border-white/10 transition-all duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
                   <span className="text-zinc-600 font-bold text-xl md:text-2xl font-mono pt-1 shrink-0 group-hover:text-orange-500 transition-colors">
                     0{i + 1}.
                   </span>
@@ -210,7 +251,7 @@ export default function HowItWorksPage() {
                     <h3 className="text-white font-bold text-xl md:text-2xl mb-4 leading-tight group-hover:text-zinc-200">{item.q}</h3>
                     <p className="text-zinc-400 text-lg leading-relaxed">{item.a}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>

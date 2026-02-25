@@ -64,7 +64,7 @@ export function FeaturedSkillsSection() {
                             Popular Skills
                         </div>
 
-                        <h2 className="text-4xl md:text-5xl lg:text-5xl font-extrabold text-white tracking-tight">
+                        <h2 className="text-4xl md:text-[2.75rem] font-extrabold text-white tracking-tight">
                             Explore What's Popular
                         </h2>
                     </m.div>
