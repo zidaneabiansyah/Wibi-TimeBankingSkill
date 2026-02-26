@@ -54,7 +54,12 @@ export const skillService = {
     }): Promise<SkillsResponse> => {
         const queryParams = new URLSearchParams();
         if (params?.limit) queryParams.append('limit', params.limit.toString());
-        if (params?.offset) queryParams.append('offset', params.offset.toString());
+        if (params?.offset !== undefined) {
+            queryParams.append('offset', params.offset.toString());
+            // Also send page for backend compatibility
+            const page = Math.floor(params.offset / (params.limit || 10)) + 1;
+            queryParams.append('page', page.toString());
+        }
         if (params?.category) queryParams.append('category', params.category);
         if (params?.search) queryParams.append('search', params.search);
         if (params?.day !== undefined) queryParams.append('day', params.day.toString());

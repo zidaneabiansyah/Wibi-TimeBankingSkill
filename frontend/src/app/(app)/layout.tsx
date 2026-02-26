@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "@/components/auth";
-import { Header } from "@/components/layout";
+import { Header, Footer } from "@/components/layout";
 
 export default function AppLayout({
     children,
@@ -8,11 +8,12 @@ export default function AppLayout({
 }) {
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-background pt-[80px] pb-12 flex flex-col">
+            <div className="min-h-screen bg-[#0B0B0B] pt-[80px] flex flex-col">
                 <Header />
                 <div className="flex-1">
                     {children}
                 </div>
+                <Footer />
             </div>
         </ProtectedRoute>
     );

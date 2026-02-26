@@ -65,7 +65,7 @@ export function FavoriteButton({ teacherId, className, size = 'icon' }: Favorite
             size={size}
             className={cn(
                 "rounded-full transition-all duration-300",
-                isFavorited ? "text-red-500 hover:text-red-600 bg-red-50" : "text-muted-foreground hover:text-red-500 hover:bg-red-50",
+                isFavorited ? "text-red-500 hover:text-red-600 bg-red-500/10" : "text-zinc-500 hover:text-red-500 hover:bg-red-500/15",
                 className
             )}
             onClick={toggleFavorite}
