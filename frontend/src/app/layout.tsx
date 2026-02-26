@@ -98,8 +98,8 @@ export default function RootLayout({
         <MobileOptimization />
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <FramerProvider>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import type { SuccessStory } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -17,10 +18,12 @@ export function StoryCard({ story, onLike, isLiked = false }: StoryCardProps) {
             {/* Image */}
             {story.images && story.images.length > 0 && (
                 <div className="relative h-48 w-full overflow-hidden bg-muted">
-                    <img
+                    <Image
                         src={story.images[0]}
                         alt={story.title}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 </div>
             )}

@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useWebRTC } from '@/lib/hooks/useWebRTC';
 import { useAuthStore } from '@/stores/auth.store';
-import { 
-    Video, VideoOff, Mic, MicOff, PhoneOff, 
+import {
+    Video, VideoOff, Mic, MicOff, PhoneOff,
     PenTool, Users, MessageSquare, Settings,
     Maximize2, Minimize2, X
 } from 'lucide-react';
@@ -27,7 +27,7 @@ type ViewMode = 'video' | 'whiteboard';
 
 export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
     const { user } = useAuthStore();
-    
+
     const [viewMode, setViewMode] = useState<ViewMode>('video');
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -78,7 +78,7 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
     };
 
     return (
-        <div 
+        <div
             ref={containerRef}
             className="relative flex flex-col h-[calc(100vh-80px)] bg-zinc-950 rounded-2xl overflow-hidden shadow-2xl"
         >
@@ -269,12 +269,12 @@ function WhiteboardModeLayout({
                             <span className="text-[10px]">No video</span>
                         </div>
                     )}
-                    
+
                     {/* Name badge */}
                     <div className="absolute bottom-1.5 left-1.5 bg-black/70 px-2 py-0.5 rounded text-white text-[10px] font-medium flex items-center gap-1">
                         {remoteStream ? 'Partner' : userName.split(' ')[0]}
                     </div>
-                    
+
                     {/* More options hint - like Discord */}
                     <div className="absolute top-1.5 right-1.5 bg-black/50 rounded p-1 opacity-0 hover:opacity-100 transition-opacity">
                         <Users className="w-3 h-3 text-white" />
@@ -303,10 +303,10 @@ function ControlButton({
     variant?: 'default' | 'feature';
 }) {
     const baseClasses = "h-12 w-12 rounded-full flex items-center justify-center transition-all";
-    
+
     const variantClasses = {
-        default: isActive 
-            ? "bg-zinc-700 hover:bg-zinc-600 text-white" 
+        default: isActive
+            ? "bg-zinc-700 hover:bg-zinc-600 text-white"
             : "bg-red-500/20 hover:bg-red-500/30 text-red-400",
         feature: isActive
             ? "bg-primary hover:bg-primary/80 text-white"
@@ -325,12 +325,12 @@ function ControlButton({
 }
 
 // Video Renderer Component - Memoized to prevent re-renders
-const VideoRenderer = React.memo(function VideoRenderer({ 
-    stream, 
+const VideoRenderer = React.memo(function VideoRenderer({
+    stream,
     muted,
     mirrored = false
-}: { 
-    stream: MediaStream; 
+}: {
+    stream: MediaStream;
     muted: boolean;
     mirrored?: boolean;
 }) {
@@ -344,7 +344,7 @@ const VideoRenderer = React.memo(function VideoRenderer({
                 video.srcObject = stream;
             }
         }
-        
+
         return () => {
             // Cleanup on unmount
             if (video) {

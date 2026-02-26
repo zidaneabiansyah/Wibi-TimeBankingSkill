@@ -12,7 +12,7 @@ const DotLottieReact = dynamic(
     () => import('@lottiefiles/dotlottie-react').then((mod) => mod.DotLottieReact),
     {
         ssr: false,
-        loading: () => <div className="w-full h-full bg-[#121212] animate-pulse rounded-[3rem] border border-[#222]" />
+        loading: () => <div className="w-full h-full bg-muted animate-pulse rounded-[3rem] border border-border" />
     }
 );
 
@@ -48,10 +48,10 @@ export function HeroSection() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <section ref={containerRef} className="relative w-full min-h-[85vh] md:min-h-[80vh] pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden bg-[#0B0B0B] flex items-center">
+        <section ref={containerRef} className="relative w-full min-h-[85vh] md:min-h-[80vh] pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden bg-background flex items-center">
 
-            {/* Extremely subtle static dot grid background - no gradients */}
-            <div className="absolute inset-0 bg-[radial-gradient(#222_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
+            {/* Subtle dynamic dot grid background */}
+            <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
 
             {/* Glowing Accent behind the visual */}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF7020]/5 rounded-full blur-[120px] pointer-events-none opacity-50" />
@@ -69,7 +69,7 @@ export function HeroSection() {
 
                         <div className="space-y-4 md:space-y-6">
                             <m.h1
-                                className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-black tracking-tighter leading-[1.02] text-white"
+                                className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-black tracking-tighter leading-[1.02] text-foreground"
                                 variants={itemVariants}
                             >
                                 Stop Paying. <br />
@@ -77,7 +77,7 @@ export function HeroSection() {
                             </m.h1>
 
                             <m.p
-                                className="max-w-xl text-lg sm:text-xl text-gray-400 leading-relaxed font-medium"
+                                className="max-w-xl text-lg sm:text-xl text-muted-foreground leading-relaxed font-medium"
                                 variants={itemVariants}
                             >
                                 Your time is the new currency. Teach what you know to earn temporal credits, and spend them to learn absolutely anything from experts.
@@ -95,9 +95,9 @@ export function HeroSection() {
                                     whileTap={{ scale: 0.98 }}
                                     className="relative z-10"
                                 >
-                                    <Button className="h-16 px-12 rounded-[1.25rem] bg-white hover:bg-[#FF7020] text-black hover:text-white font-black text-xs sm:text-sm uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-4 border-none shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(255,112,32,0.4)]">
+                                    <Button className="h-16 px-12 rounded-[1.25rem] bg-foreground hover:bg-orange-600 text-background hover:text-white font-black text-xs sm:text-sm uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-4 border-none shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(255,112,32,0.4)]">
                                         <span className="relative z-10">{isAuthenticated ? "Go to Dashboard" : "Start Journey"}</span>
-                                        <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center group-hover/cta:bg-white/20 transition-colors duration-500">
+                                        <div className="w-8 h-8 rounded-full bg-background/10 flex items-center justify-center group-hover/cta:bg-white/20 transition-colors duration-500">
                                             <ArrowRight className="w-4 h-4" strokeWidth={3} />
                                         </div>
                                     </Button>
@@ -111,30 +111,30 @@ export function HeroSection() {
 
                         {/* Hard-hitting Stats */}
                         <m.div
-                            className="flex flex-wrap items-center gap-x-8 gap-y-4 pt-4 text-sm text-gray-400"
+                            className="flex flex-wrap items-center gap-x-8 gap-y-4 pt-4 text-sm text-muted-foreground"
                             variants={itemVariants}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#181818] border border-[#2A2A2A] flex items-center justify-center">
-                                    <Users className="h-4 w-4 text-white" />
+                                <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+                                    <Users className="h-4 w-4 text-foreground" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-white font-bold text-base">
+                                    <span className="text-foreground font-bold text-base">
                                         <AnimatedCounter value={1200} />+
                                     </span>
-                                    <span className="text-xs uppercase tracking-wider font-semibold">Active Peers</span>
+                                    <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Active Peers</span>
                                 </div>
                             </div>
-                            <div className="w-px h-10 bg-[#222] hidden sm:block" />
+                            <div className="w-px h-10 bg-border hidden sm:block" />
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#181818] border border-[#2A2A2A] flex items-center justify-center">
-                                    <Zap className="h-4 w-4 text-[#FF7020]" />
+                                <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+                                    <Zap className="h-4 w-4 text-orange-500" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-white font-bold text-base">
+                                    <span className="text-foreground font-bold text-base">
                                         <AnimatedCounter value={15000} />+
                                     </span>
-                                    <span className="text-xs uppercase tracking-wider font-semibold">Hours Exchanged</span>
+                                    <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Hours Exchanged</span>
                                 </div>
                             </div>
                         </m.div>

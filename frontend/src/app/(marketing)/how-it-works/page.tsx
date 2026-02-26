@@ -50,7 +50,7 @@ export default function HowItWorksPage() {
 
             {/* 5. Seamless Fading Gradients */}
             <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent pointer-events-none z-10" />
           </div>
 
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center mt-10 md:mt-6">
@@ -106,7 +106,7 @@ export default function HowItWorksPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 text-white">Step-by-Step <span className="text-[#FF7020]">Guide</span></h2>
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 text-foreground">Step-by-Step <span className="text-orange-500">Guide</span></h2>
               <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Getting started with Time Banking is easy. Follow these simple steps to begin exchanging skills.</p>
             </motion.div>
           </div>
@@ -115,7 +115,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* --- Minimalist Flat FAQ --- */}
-        <section id="faq" className="py-24 md:py-32 px-6 sm:px-12 relative border-t border-zinc-900 bg-[#060606]">
+        <section id="faq" className="py-24 md:py-32 px-6 sm:px-12 relative border-t border-zinc-900 bg-zinc-950">
           <div className="max-w-4xl mx-auto relative z-10 w-full">
             <motion.div
               className="text-center mb-16 md:mb-24"
@@ -123,10 +123,10 @@ export default function HowItWorksPage() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white mb-6">
-                Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#ff5500]">Questions.</span>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-foreground mb-6">
+                Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Questions.</span>
               </h2>
-              <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+              <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
                 Punya pertanyaan tentang Time Banking? Berikut beberapa jawabannya.
               </p>
             </motion.div>
@@ -141,7 +141,7 @@ export default function HowItWorksPage() {
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-[#0d0d0d] border border-white/[0.03] hover:border-white/10 transition-all duration-300"
+                  className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-zinc-900 border border-white/[0.03] hover:border-white/10 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -151,8 +151,8 @@ export default function HowItWorksPage() {
                     0{i + 1}.
                   </span>
                   <div>
-                    <h3 className="text-white font-bold text-xl md:text-2xl mb-4 leading-tight group-hover:text-zinc-200">{item.q}</h3>
-                    <p className="text-zinc-400 text-lg leading-relaxed">{item.a}</p>
+                    <h3 className="text-foreground font-bold text-xl md:text-2xl mb-4 leading-tight group-hover:text-orange-500">{item.q}</h3>
+                    <p className="text-zinc-500 text-lg leading-relaxed">{item.a}</p>
                   </div>
                 </motion.div>
               ))}
@@ -161,21 +161,18 @@ export default function HowItWorksPage() {
         </section>
 
         {/* --- Modern Cinematic CTA --- */}
-        <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-black overflow-hidden flex items-center justify-center min-h-[60vh]">
-          {/* Background Image for CTA */}
-
-
+        <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-background overflow-hidden flex items-center justify-center min-h-[60vh]">
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-8 drop-shadow-2xl">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-8 drop-shadow-2xl">
               Ready to Start<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#ff5500]">Time Banking?</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Time Banking?</span>
             </h2>
-            <p className="text-zinc-300 text-lg md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+            <p className="text-zinc-500 text-lg md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
               Bergabunglah dengan komunitas kami hari ini dan mulailah bertukar keterampilan dengan orang lain.
             </p>
-            <Button size="lg" className="group h-16 w-full sm:w-auto px-12 bg-white hover:bg-zinc-200 text-black font-black text-[15px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3 mx-auto shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.3)] hover:-translate-y-1">
+            <Button size="lg" className="group h-16 w-full sm:w-auto px-12 bg-foreground hover:bg-orange-600 text-background hover:text-white font-black text-[15px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3 mx-auto shadow-[0_0_40px_rgba(0,0,0,0.15)] hover:shadow-[0_0_60px_rgba(255,112,32,0.3)] hover:-translate-y-1">
               Sign Up Now!
-              <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center group-hover:bg-[#ff5500] transition-colors">
+              <span className="w-8 h-8 rounded-full bg-background text-foreground flex items-center justify-center group-hover:bg-white transition-colors">
                 <ArrowUpRight className="w-4 h-4 group-hover:rotate-45 transition-transform" />
               </span>
             </Button>

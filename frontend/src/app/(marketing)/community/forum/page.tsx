@@ -41,7 +41,7 @@ export default function ForumPage() {
                 <div className="py-12 md:py-16 space-y-8">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-blue-500/10">
+                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-blue-500/15 border border-blue-500/20">
                                 <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
@@ -52,13 +52,13 @@ export default function ForumPage() {
                             Join discussions, share knowledge, and connect with other learners and teachers in our vibrant community.
                         </p>
                     </div>
-                    
+
                     {/* CTA Button - Only show once */}
                     {isAuthenticated && (
                         <div>
-                            <Button 
+                            <Button
                                 onClick={() => router.push('/community/forum/new')}
-                                className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg hover:shadow-primary/20"
                             >
                                 <Plus className="h-4 w-4" />
                                 Start New Discussion
@@ -69,7 +69,7 @@ export default function ForumPage() {
 
                 {/* Search Bar */}
                 <div className="mb-12 max-w-2xl">
-                    <form 
+                    <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             const query = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value;
@@ -83,11 +83,11 @@ export default function ForumPage() {
                             name="q"
                             type="text"
                             placeholder="Search discussions..."
-                            className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                            className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm"
                         />
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                             {/* Use Search icon if imported, else fallback */}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            {/* Use Search icon if imported, else fallback */}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                         </div>
                         <Button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 h-8">
                             Search

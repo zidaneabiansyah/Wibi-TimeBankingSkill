@@ -72,8 +72,8 @@ export default function EndorsementsPage() {
                 <div className="py-12 md:py-16 space-y-8">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-amber-500/10">
-                                <Award className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary/15 border border-primary/20">
+                                <Award className="h-5 w-5 text-primary" />
                             </div>
                             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                                 Skill Endorsements
@@ -117,9 +117,9 @@ export default function EndorsementsPage() {
                         <p className="text-muted-foreground text-center max-w-md mb-6">
                             Sign in to see your endorsements and get recognized for your skills by the community.
                         </p>
-                        <Button 
+                        <Button
                             onClick={() => router.push('/login')}
-                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-primary/20"
                         >
                             <LogIn className="mr-2 h-4 w-4" />
                             Login Now

@@ -6,8 +6,9 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth.store";
+import { useTheme } from "next-themes";
 import dynamic from 'next/dynamic';
-import { Menu, Clock, Wallet } from 'lucide-react';
+import { Menu, Sun, Moon } from 'lucide-react';
 
 const NotificationBell = dynamic(
     () => import('@/components/features/notification').then((mod) => mod.NotificationBell),
@@ -31,6 +32,7 @@ export function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
+    const { resolvedTheme, setTheme } = useTheme();
     const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -62,7 +64,7 @@ export function Header() {
                     pointer-events-auto transition-all duration-500 ease-in-out
                     flex items-center justify-between
                     ${isScrolled
-                        ? 'h-14 sm:h-16 max-w-5xl bg-black/60 backdrop-blur-3xl border border-orange-500/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full px-6 sm:px-8'
+                        ? 'h-14 sm:h-16 max-w-5xl bg-background/80 backdrop-blur-3xl border border-border shadow-xl rounded-full px-6 sm:px-8'
                         : 'h-18 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-[2rem] sm:rounded-[3rem] px-6 sm:px-10'}
                     w-full
                 `}
@@ -78,7 +80,7 @@ export function Header() {
                             className={`rounded-md group-hover:shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-500 group-hover:scale-105 ${isScrolled ? 'w-8 h-8 sm:w-10 sm:h-10' : 'w-10 h-10 sm:w-12 sm:h-12'}`}
                             priority
                         />
-                        <span className={`font-black bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent hidden sm:inline tracking-tighter transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'}`}>Wibi</span>
+                        <span className={`font-black bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent hidden sm:inline tracking-tighter transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'}`}>Wibi</span>
                     </Link>
                 </div>
 
@@ -90,8 +92,8 @@ export function Header() {
                                 href={link.href}
                                 className={`
                                     text-[13px] font-bold transition-all duration-300
-                                    hover:text-white flex flex-col items-center
-                                    ${pathname === link.href ? 'text-white' : 'text-zinc-400'}
+                                    hover:text-foreground flex flex-col items-center
+                                    ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'}
                                 `}
                             >
                                 {link.label}
@@ -125,14 +127,14 @@ export function Header() {
                                 />
                             </div>
 
-                            {/* Credits Badge */}
-                            <div
-                                className="hidden sm:flex items-center gap-2 text-orange-500 font-black cursor-default group/credit"
-                                title={`Credits: ${user.credit_balance?.toFixed(1) || '0.0'}`}
+                            {/* Dark/Light Mode Toggle */}
+                            <button
+                                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                                className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all duration-200"
+                                aria-label="Toggle theme"
                             >
-                                <Clock className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                                <span className="tabular-nums text-sm">{user.credit_balance?.toFixed(1) || '0.0'}</span>
-                            </div>
+                                {resolvedTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                            </button>
 
                             {/* User Dropdown Menu */}
                             <div className="flex items-center justify-center transition-all duration-300">
@@ -147,32 +149,32 @@ export function Header() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="md:hidden bg-zinc-900/50 border border-zinc-800 rounded-2xl h-11 w-11"
+                                        className="md:hidden bg-muted/50 border border-border rounded-2xl h-11 w-11"
                                         aria-label="Open menu"
                                     >
-                                        <Menu className="h-5 w-5 text-zinc-400" />
+                                        <Menu className="h-5 w-5 text-muted-foreground" />
                                     </Button>
                                 }
                             >
                                 <div className="space-y-1 p-4">
-                                    <h3 className="text-[10px] font-black text-zinc-600 px-4 py-2 uppercase tracking-[0.2em] mb-2">Navigation</h3>
+                                    <h3 className="text-[10px] font-black text-muted-foreground px-4 py-2 uppercase tracking-[0.2em] mb-2">Navigation</h3>
                                     <MobileMenuItem label="DASHBOARD" href="/dashboard" />
                                     <MobileMenuItem label="MARKETPLACE" href="/marketplace" />
                                     <MobileMenuItem label="MY SESSIONS" href="/dashboard/sessions" />
                                     <MobileMenuItem label="COMMUNITY" href="/community" />
 
-                                    <div className="h-px bg-zinc-800/50 my-4" />
+                                    <div className="h-px bg-border/50 my-4" />
 
-                                    <h3 className="text-[10px] font-black text-zinc-600 px-4 py-2 uppercase tracking-[0.2em] mb-2">Account</h3>
+                                    <h3 className="text-[10px] font-black text-muted-foreground px-4 py-2 uppercase tracking-[0.2em] mb-2">Account</h3>
                                     <MobileMenuItem label="MY PROFILE" href="/profile" />
                                     <MobileMenuItem label="MY SKILLS" href="/profile/skills" />
                                     <MobileMenuItem label="SETTINGS" href="/profile/settings" />
 
-                                    <div className="h-px bg-zinc-800/50 my-4" />
+                                    <div className="h-px bg-border/50 my-4" />
 
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-xs font-black text-red-500 hover:bg-red-500/5 rounded-2xl transition-all uppercase tracking-widest"
+                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-xs font-black text-red-500 hover:bg-red-500/1 rounded-2xl transition-all uppercase tracking-widest"
                                     >
                                         Logout
                                     </button>
@@ -181,17 +183,25 @@ export function Header() {
                         </>
                     ) : (
                         <>
-                            <div className="flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 bg-black/40 rounded-full border border-white/5">
+                            <div className="flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 bg-background/50 backdrop-blur rounded-full border border-border">
                                 <Link href="/login">
-                                    <Button variant="ghost" size="sm" className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-transparent">
+                                    <Button variant="ghost" size="sm" className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-foreground hover:bg-transparent">
                                         Login
                                     </Button>
                                 </Link>
                                 <Link href="/register">
-                                    <Button size="sm" className="h-10 px-6 bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full shadow-lg shadow-orange-600/20 transition-all hover:scale-[1.05] active:scale-[0.95]">
+                                    <Button size="sm" className="h-10 px-6 bg-orange-600 hover:bg-orange-500 text-white font-black text-[10px] uppercase tracking-widest rounded-full shadow-lg shadow-orange-600/20 transition-all hover:scale-[1.05] active:scale-[0.95]">
                                         Sign Up
                                     </Button>
                                 </Link>
+                                {/* Dark/Light Mode Toggle (Unauthenticated) */}
+                                <button
+                                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all duration-200"
+                                    aria-label="Toggle theme"
+                                >
+                                    {resolvedTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                                </button>
                             </div>
 
                             {/* Mobile Menu for Unauthenticated */}
@@ -202,15 +212,15 @@ export function Header() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="md:hidden bg-zinc-900/50 border border-zinc-800 rounded-2xl h-11 w-11"
+                                        className="md:hidden bg-muted/50 border border-border rounded-2xl h-11 w-11"
                                         aria-label="Open menu"
                                     >
-                                        <Menu className="h-5 w-5 text-zinc-400" />
+                                        <Menu className="h-5 w-5 text-muted-foreground" />
                                     </Button>
                                 }
                             >
                                 <div className="space-y-1 p-4">
-                                    <h3 className="text-[10px] font-black text-zinc-600 px-4 py-2 uppercase tracking-[0.2em] mb-4">Navigation</h3>
+                                    <h3 className="text-[10px] font-black text-muted-foreground px-4 py-2 uppercase tracking-[0.2em] mb-4">Navigation</h3>
                                     {publicNavLinks.map((link) => (
                                         <MobileMenuItem
                                             key={link.href}
@@ -218,13 +228,13 @@ export function Header() {
                                             href={link.href}
                                         />
                                     ))}
-                                    <div className="h-px bg-zinc-800/50 my-6" />
+                                    <div className="h-px bg-border/50 my-6" />
                                     <div className="flex flex-col gap-3">
                                         <Link href="/login" className="w-full">
-                                            <Button variant="outline" className="w-full h-12 bg-transparent border-zinc-800 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl">Login</Button>
+                                            <Button variant="outline" className="w-full h-12 bg-transparent border-border text-foreground font-black text-[10px] uppercase tracking-widest rounded-2xl">Login</Button>
                                         </Link>
                                         <Link href="/register" className="w-full">
-                                            <Button className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-black font-black text-[10px] uppercase tracking-widest rounded-2xl">Sign Up</Button>
+                                            <Button className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl">Sign Up</Button>
                                         </Link>
                                     </div>
                                 </div>

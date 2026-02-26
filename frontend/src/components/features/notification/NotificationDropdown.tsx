@@ -71,41 +71,41 @@ export function NotificationDropdown({
         <div
             className={cn(
                 "absolute right-0 top-14 w-80 sm:w-96 max-h-[500px] flex flex-col overflow-hidden",
-                "bg-zinc-950/90 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)]",
+                "bg-card/90 backdrop-blur-3xl border border-border rounded-[2rem] shadow-xl",
                 "animate-in fade-in slide-in-from-top-4 duration-300 z-[100]"
             )}
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/5">
+            <div className="flex items-center justify-between p-6 border-b border-border/40">
                 <div className="flex items-center gap-2">
                     <Bell className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-sm font-black text-white uppercase tracking-[0.15em]">
+                    <h3 className="text-sm font-black text-foreground uppercase tracking-[0.15em]">
                         NOTIFIKASI
                     </h3>
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-2 hover:bg-white/5 rounded-full transition-colors group"
+                    className="p-2 hover:bg-muted rounded-full transition-colors group"
                     aria-label="Close"
                 >
-                    <X className="w-4 h-4 text-zinc-500 group-hover:text-white" />
+                    <X className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
                 </button>
             </div>
 
             {/* List Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-white/5">
+            <div className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-border/40">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-16 gap-3">
                         <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Memuat Grid...</span>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Memuat Grid...</span>
                     </div>
                 ) : notifications.length === 0 ? (
                     <div className="py-20 text-center flex flex-col items-center px-8">
-                        <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center mb-4 border border-white/5">
-                            <CheckCircle2 className="w-6 h-6 text-zinc-700" />
+                        <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center mb-4 border border-border/40">
+                            <CheckCircle2 className="w-6 h-6 text-muted-foreground" />
                         </div>
-                        <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Belum ada sinyal masuk</p>
-                        <p className="text-[10px] text-zinc-600 mt-2 font-medium">Grid Anda bersih dan terpantau aman.</p>
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Belum ada sinyal masuk</p>
+                        <p className="text-[10px] text-muted-foreground/60 mt-2 font-medium">Grid Anda bersih dan terpantau aman.</p>
                     </div>
                 ) : (
                     <div className="py-2">
@@ -123,18 +123,18 @@ export function NotificationDropdown({
 
             {/* Footer */}
             {notifications.length > 0 && (
-                <div className="p-4 bg-zinc-900/30 border-t border-white/5">
+                <div className="p-4 bg-muted/30 border-t border-border/40">
                     <button
                         onClick={() => {
                             onClose();
                             window.location.href = '/notifications';
                         }}
-                        className="w-full h-11 flex items-center justify-center gap-2 group hover:bg-white/5 rounded-xl transition-all"
+                        className="w-full h-11 flex items-center justify-center gap-2 group hover:bg-muted rounded-xl transition-all"
                     >
-                        <span className="text-[10px] font-black text-zinc-400 group-hover:text-white uppercase tracking-[0.2em] transition-colors">
+                        <span className="text-[10px] font-black text-muted-foreground group-hover:text-foreground uppercase tracking-[0.2em] transition-colors">
                             Lihat Semua Protokol
                         </span>
-                        <ChevronRight className="w-3 h-3 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                        <ChevronRight className="w-3 h-3 text-muted-foreground/60 group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
                     </button>
                 </div>
             )}

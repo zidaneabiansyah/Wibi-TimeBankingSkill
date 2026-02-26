@@ -1,6 +1,6 @@
 export default function MarketplaceLoading() {
     return (
-        <div className="min-h-screen bg-[#0B0B0B] text-zinc-100 selection:bg-orange-500/30">
+        <div className="min-h-screen bg-background text-zinc-100 selection:bg-orange-500/30">
             <div className="container mx-auto px-4 pt-6 pb-16 max-w-7xl animate-pulse">
                 {/* 1. Bento Grid Skeleton */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-16 h-auto lg:min-h-[480px]">

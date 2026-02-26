@@ -42,7 +42,7 @@ export function CTASection() {
                 viewport={{ once: true, margin: "-100px" }}
             >
                 <m.div
-                    className="flex flex-col items-center space-y-8 text-center bg-card/30 backdrop-blur-sm border border-border/50 rounded-[3rem] p-10 md:p-16 lg:p-20 shadow-xl transition-all duration-500 hover:border-primary/20 hover:bg-card/40 group"
+                    className="flex flex-col items-center space-y-8 text-center bg-card backdrop-blur-sm border border-border rounded-[3rem] p-10 md:p-16 lg:p-20 shadow-xl transition-all duration-500 hover:border-primary/20 hover:bg-card/80 group"
                     variants={itemVariants}
                 >
                     <m.div

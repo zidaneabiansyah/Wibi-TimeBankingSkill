@@ -37,11 +37,11 @@ export function NotificationBell() {
             <button
                 className={cn(
                     "relative flex items-center justify-center transition-all duration-300 group",
-                    "hover:bg-white/10 p-2 rounded-xl active:scale-90 cursor-pointer"
+                    "hover:bg-card p-2 rounded-xl active:scale-90 cursor-pointer"
                 )}
                 aria-label="Notifications"
             >
-                <Bell className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" />
+                <Bell className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" />
 
                 {/* Unread count badge - Smaller and more precise */}
                 {unreadCount > 0 && (
@@ -49,7 +49,7 @@ export function NotificationBell() {
                         className={cn(
                             "absolute top-0 right-0 inline-flex items-center justify-center",
                             "h-4 min-w-[16px] px-1 text-[9px] font-black leading-none text-white",
-                            "bg-orange-600 rounded-full border-2 border-black shadow-lg shadow-orange-600/20 tabular-nums animate-in zoom-in-50 duration-300"
+                            "bg-orange-600 rounded-full border-2 border-background shadow-lg shadow-orange-600/20 tabular-nums animate-in zoom-in-50 duration-300"
                         )}
                     >
                         {unreadCount > 99 ? '99+' : unreadCount}

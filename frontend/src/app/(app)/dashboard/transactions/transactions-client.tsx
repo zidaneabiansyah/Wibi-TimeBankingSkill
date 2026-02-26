@@ -14,9 +14,9 @@ import { LoadingSkeleton } from '@/components/ui/loading';
 import type { Transaction } from '@/types';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
-const plusJakartaSans = Plus_Jakarta_Sans({ 
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700', '800']
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800']
 });
 
 type TabValue = 'all' | 'earned' | 'spent';
@@ -95,7 +95,7 @@ export function TransactionsClient() {
 
   return (
     <main className={`container mx-auto px-4 py-8 mb-20 max-w-7xl ${plusJakartaSans.className}`}>
-      
+
       {/* Top Header Row aligned with controls */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex flex-col gap-2">
@@ -112,7 +112,7 @@ export function TransactionsClient() {
               <TabsTrigger value="spent" className="rounded-2xl font-bold text-xs md:text-sm py-2 data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(244,63,94,0.3)] transition-all">Spent</TabsTrigger>
             </TabsList>
           </Tabs>
-          
+
           <Link href="/dashboard" className="w-full sm:w-auto shrink-0">
             <Button variant="secondary" className="w-full sm:w-auto rounded-2xl font-bold backdrop-blur-md bg-card/10 hover:bg-card/30 border border-white/10 shadow-sm transition-all text-foreground h-[48px] px-6">
               Back to Dashboard
@@ -122,7 +122,7 @@ export function TransactionsClient() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* Left Column: Sidebar Overview (col-span-4) */}
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 self-start animate-in fade-in slide-in-from-left-4 duration-700">
 
@@ -163,7 +163,7 @@ export function TransactionsClient() {
 
             <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl rounded-3xl shadow-none hover:shadow-md hover:bg-card/40 transition-all group">
               <CardContent className="p-5 flex flex-col justify-between h-full relative z-10">
-                 <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="h-8 w-8 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0">
                     <TrendingDown className="h-4 w-4 text-rose-400" />
                   </div>
@@ -185,76 +185,75 @@ export function TransactionsClient() {
 
 
 
-          {isLoading ? (
-            <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none rounded-[2rem]">
-              <CardContent className="p-6 space-y-4">
-                {[...Array(10)].map((_, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl animate-pulse delay-[{i*100}ms]">
-                    <div className="flex items-center gap-4 flex-1">
-                      <LoadingSkeleton className="h-12 w-12 rounded-2xl shrink-0" />
-                      <div className="space-y-2 flex-1">
-                        <LoadingSkeleton className="h-5 w-48" />
-                        <LoadingSkeleton className="h-4 w-32" />
+            {isLoading ? (
+              <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none rounded-[2rem]">
+                <CardContent className="p-6 space-y-4">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl animate-pulse delay-[{i*100}ms]">
+                      <div className="flex items-center gap-4 flex-1">
+                        <LoadingSkeleton className="h-12 w-12 rounded-2xl shrink-0" />
+                        <div className="space-y-2 flex-1">
+                          <LoadingSkeleton className="h-5 w-48" />
+                          <LoadingSkeleton className="h-4 w-32" />
+                        </div>
                       </div>
+                      <LoadingSkeleton className="h-8 w-24 rounded-full" />
                     </div>
-                    <LoadingSkeleton className="h-8 w-24 rounded-full" />
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : filteredTransactions.length === 0 ? (
-            <div className="border border-dashed border-border/30 bg-card/10 backdrop-blur-xl shadow-none rounded-[2rem] overflow-hidden">
-               <EmptyState
+                  ))}
+                </CardContent>
+              </Card>
+            ) : filteredTransactions.length === 0 ? (
+              <div className="border border-dashed border-border/30 bg-card/10 backdrop-blur-xl shadow-none rounded-[2rem] overflow-hidden">
+                <EmptyState
                   icon={Receipt}
                   title="No transactions yet"
                   description="Your transaction history will appear here"
                   variant="card"
-               />
-            </div>
-          ) : (
-            <div className="flex flex-col space-y-3">
-              {filteredTransactions.map((transaction: Transaction, index: number) => {
-                const isEarned = ['earned', 'initial', 'bonus', 'refund'].includes(transaction.type);
-                
-                return (
-                  <div
-                    key={transaction.id}
-                    className="flex items-center justify-between p-4 md:px-5 md:py-4 rounded-3xl bg-card/40 backdrop-blur-xl border border-white/5 hover:border-white/10 hover:bg-white/[0.08] transition-all shadow-sm group"
-                  >
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      {/* Icon */}
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/5 text-zinc-400 border border-white/5 group-hover:bg-white/10 transition-colors">
-                        {getTransactionIcon(transaction.type)}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-3">
+                {filteredTransactions.map((transaction: Transaction, index: number) => {
+                  const isEarned = ['earned', 'initial', 'bonus', 'refund'].includes(transaction.type);
+
+                  return (
+                    <div
+                      key={transaction.id}
+                      className="flex items-center justify-between p-4 md:px-5 md:py-4 rounded-3xl bg-card/40 backdrop-blur-xl border border-white/5 hover:border-white/10 hover:bg-white/[0.08] transition-all shadow-sm group"
+                    >
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        {/* Icon */}
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/5 text-zinc-400 border border-white/5 group-hover:bg-white/10 transition-colors">
+                          {getTransactionIcon(transaction.type)}
+                        </div>
+
+                        {/* Details */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                          <p className="text-sm md:text-[15px] font-bold text-zinc-100 truncate tracking-tight mb-0.5">
+                            {transaction.description.length > 30 ? transaction.description.substring(0, 30) + '...' : transaction.description}
+                          </p>
+                          <p className="text-[11px] md:text-xs font-medium text-zinc-500 tracking-tight">
+                            {transaction.created_at ? formatDate(transaction.created_at) : 'N/A'}
+                          </p>
+                        </div>
                       </div>
-                      
-                      {/* Details */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-center">
-                        <p className="text-sm md:text-[15px] font-bold text-zinc-100 truncate tracking-tight mb-0.5">
-                          {transaction.description.length > 30 ? transaction.description.substring(0, 30) + '...' : transaction.description}
-                        </p>
-                        <p className="text-[11px] md:text-xs font-medium text-zinc-500 tracking-tight">
-                          {transaction.created_at ? formatDate(transaction.created_at) : 'N/A'}
-                        </p>
+
+                      {/* Amount Block */}
+                      <div className="flex flex-col items-end justify-center shrink-0 ml-4">
+                        <span className={`text-base md:text-lg font-black tabular-nums tracking-tight mb-0.5 ${isEarned ? 'text-emerald-500' : 'text-zinc-100'
+                          }`}>
+                          {isEarned ? '+' : ''}{transaction.amount.toFixed(2)}
+                        </span>
+                        <span className="text-[10px] md:text-[11px] font-bold text-zinc-500">
+                          &approx;{Math.floor(transaction.amount)} crdt
+                        </span>
                       </div>
                     </div>
+                  );
+                })}
 
-                    {/* Amount Block */}
-                    <div className="flex flex-col items-end justify-center shrink-0 ml-4">
-                      <span className={`text-base md:text-lg font-black tabular-nums tracking-tight mb-0.5 ${
-                        isEarned ? 'text-emerald-500' : 'text-zinc-100'
-                      }`}>
-                        {isEarned ? '+' : ''}{transaction.amount.toFixed(2)}
-                      </span>
-                      <span className="text-[10px] md:text-[11px] font-bold text-zinc-500">
-                        &approx;{Math.floor(transaction.amount)} crdt
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* Pagination */}
-              {transactions.length >= limit && (
+                {/* Pagination */}
+                {transactions.length >= limit && (
                   <div className="flex justify-center gap-3 mt-8 pt-8 border-t border-border/10">
                     <Button
                       variant="secondary"
@@ -274,8 +273,8 @@ export function TransactionsClient() {
                     </Button>
                   </div>
                 )}
-            </div>
-          )}
+              </div>
+            )}
           </div>
         </div>
       </div>

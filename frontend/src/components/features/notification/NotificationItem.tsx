@@ -60,12 +60,11 @@ export function NotificationItem({
                     bg: "bg-pink-500/10",
                     border: "border-pink-500/20"
                 };
-            default:
                 return {
                     icon: Bell,
-                    color: "text-zinc-400",
-                    bg: "bg-zinc-500/10",
-                    border: "border-zinc-500/20"
+                    color: "text-muted-foreground",
+                    bg: "bg-muted",
+                    border: "border-border"
                 };
         }
     };
@@ -77,7 +76,7 @@ export function NotificationItem({
         <div
             className={cn(
                 "relative p-5 transition-all duration-300 cursor-pointer group",
-                "hover:bg-white/5",
+                "hover:bg-muted",
                 !notification.is_read ? "bg-orange-500/[0.03]" : "opacity-60 hover:opacity-100"
             )}
             onClick={onMarkAsRead}
@@ -97,11 +96,11 @@ export function NotificationItem({
                         <div className="flex-1">
                             <h4 className={cn(
                                 "text-[13px] font-bold tracking-tight mb-1 transition-colors",
-                                notification.is_read ? "text-zinc-400" : "text-white group-hover:text-orange-500"
+                                notification.is_read ? "text-muted-foreground" : "text-foreground group-hover:text-orange-500"
                             )}>
                                 {notification.title}
                             </h4>
-                            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                 {formatDistanceToNow(new Date(notification.created_at), {
                                     addSuffix: true,
                                 })}
@@ -127,7 +126,7 @@ export function NotificationItem({
                     {/* Message */}
                     <p className={cn(
                         "text-xs leading-relaxed mt-2 line-clamp-2",
-                        notification.is_read ? "text-zinc-500" : "text-zinc-400 group-hover:text-zinc-300"
+                        notification.is_read ? "text-muted-foreground" : "text-muted-foreground group-hover:text-foreground"
                     )}>
                         {notification.message}
                     </p>

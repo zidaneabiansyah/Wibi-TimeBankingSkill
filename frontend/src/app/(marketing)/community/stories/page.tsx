@@ -78,13 +78,13 @@ export default function StoriesPage() {
                             Discover inspiring stories from our community members. Learn how others have grown and succeeded through time banking.
                         </p>
                     </div>
-                    
+
                     {/* CTA Button - Only show once */}
                     {isAuthenticated && (
                         <div>
-                            <Button 
+                            <Button
                                 onClick={() => router.push('/community/stories/new')}
-                                className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg hover:shadow-primary/20"
                             >
                                 <Plus className="h-4 w-4" />
                                 Share Your Story
@@ -106,7 +106,7 @@ export default function StoriesPage() {
                         </div>
                         <h3 className="text-xl font-semibold text-foreground mb-2">No Stories Yet</h3>
                         <p className="text-muted-foreground text-center max-w-md">
-                            {isAuthenticated 
+                            {isAuthenticated
                                 ? "Be the first to share your success story! Your journey can inspire others in our community."
                                 : "Login to share your success story and inspire others in our community."}
                         </p>

@@ -62,38 +62,37 @@ function ValueCard({ icon, title, desc, gradient, pattern, index }: { icon?: Rea
   return (
     <div
       ref={ref}
-      className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#0a0a0a] hover:border-white/20 hover:bg-[#111] transition-all duration-500 cursor-default shadow-2xl ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+      className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-border bg-card/20 hover:border-border/80 hover:bg-card/40 transition-all duration-500 cursor-default shadow-2xl ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
       style={{ transitionDelay: `${index * 80}ms` }}
     >
       {/* Decorative Top Area */}
       <div className={`h-40 w-full relative overflow-hidden ${pattern} ${gradient} opacity-80 group-hover:opacity-100 transition-opacity duration-700`}>
         {/* Glass overlay layer for the wave aesthetic */}
         <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-[2px]" />
-        
+
         {/* Subtle mesh lines */}
-        <div 
+        <div
           className="absolute inset-0 opacity-20 mix-blend-overlay"
-          style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }}
+          style={{ backgroundImage: 'repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }}
         />
-        
-        {/* Gradient fade into the dark background */}
-        <div className="absolute -bottom-2 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a0a] group-hover:from-[#111] to-transparent z-10 transition-colors duration-500" />
+
+        {/* Gradient fade into the background */}
+        <div className="absolute -bottom-2 left-0 right-0 h-24 bg-gradient-to-t from-background group-hover:from-card/40 to-transparent z-10 transition-colors duration-500" />
       </div>
 
       {/* Card Content Area */}
       <div className="px-8 pb-8 flex flex-col relative z-20 flex-1">
         {/* Icon */}
         <div className="mb-6 -mt-8 flex justify-start">
-          <div className="h-14 w-14 rounded-2xl bg-stone-900 border border-white/10 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-500 group-hover:border-primary/50 group-hover:text-primary z-20">
+          <div className="h-14 w-14 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground shadow-xl group-hover:scale-110 transition-transform duration-500 group-hover:border-primary group-hover:text-primary z-20">
             {icon}
           </div>
         </div>
-        
+
         {/* Texts */}
-        <h3 className="text-2xl font-bold text-white mb-3 tracking-tight leading-tight">{title}</h3>
-        <p className="text-stone-400 leading-relaxed text-[15px]">{desc}</p>
+        <h3 className="text-2xl font-bold text-foreground mb-3 tracking-tight leading-tight">{title}</h3>
+        <p className="text-muted-foreground leading-relaxed text-[15px]">{desc}</p>
       </div>
     </div>
   );
@@ -109,20 +108,20 @@ export default function AboutPage() {
   useEffect(() => {
     // Smooth scroll setup for lenis or similar (optional, here we rely on CSS smooth)
     document.documentElement.style.scrollBehavior = 'smooth';
-    
+
     const handleScroll = () => {
-        requestAnimationFrame(() => {
-            setScrollY(window.scrollY);
-        });
+      requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+      });
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Hero parallax scale + opacity as next section covers it
   // More aggressive zoom out: Start at 1, scale down to 0.6 faster
-  const heroScale = Math.max(0.6, 1 - scrollY * 0.0008); 
+  const heroScale = Math.max(0.6, 1 - scrollY * 0.0008);
   const heroOpacity = Math.max(0, 1 - scrollY * 0.002);
 
   const statsRef = useRef<HTMLDivElement>(null);
@@ -159,14 +158,14 @@ export default function AboutPage() {
         }
       `}</style>
 
-      <main className={`bg-black overflow-x-hidden text-stone-200 ${plusJakartaSans.className}`}>
+      <main className={`bg-background overflow-x-hidden text-foreground ${plusJakartaSans.className}`}>
 
         {/* ── HERO (sticky) ────────────────────────────────────────────── */}
         <section
           ref={heroRef}
           className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden noise pt-24"
           style={{
-            background: "linear-gradient(135deg, #0c0a09 0%, #1c1917 50%, #292524 100%)",
+            background: "linear-gradient(135deg, var(--background) 0%, var(--card) 50%, var(--background) 100%)",
             zIndex: 0,
           }}
         >
@@ -177,7 +176,7 @@ export default function AboutPage() {
           />
           <div
             className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full opacity-15 animate-float-slow"
-            style={{ background: "radial-gradient(circle, #fbbf24, transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, var(--color-orange-400, oklch(0.7 0.2 45)), transparent 70%)" }}
           />
           {/* Grid lines */}
           <div
@@ -193,7 +192,7 @@ export default function AboutPage() {
             className="relative z-10 text-center px-6 max-w-5xl mx-auto"
             style={{ transform: `scale(${heroScale})`, opacity: heroOpacity }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-3 leading-none tracking-tight">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-foreground mb-3 leading-none tracking-tight">
               Waktu{" "}
               <span
                 className="relative inline-block"
@@ -205,24 +204,24 @@ export default function AboutPage() {
               <span className="text-primary">Berbagi</span> Ilmu
             </h1>
 
-            <p className="text-stone-400 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-light">
+            <p className="text-muted-foreground text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-light">
               Kami hadir untuk menghubungkan para pelajar dengan mentor terbaik di seluruh Indonesia —
               satu ilmu, satu langkah, satu waktu.
             </p>
 
             {/* Scroll indicator */}
-            <div className="mt-6 flex flex-col items-center gap-2 text-stone-500">
+            <div className="mt-6 flex flex-col items-center gap-2 text-muted-foreground">
               <span className="text-xs uppercase tracking-widest">Scroll</span>
-              <div className="w-px h-12 bg-gradient-to-b from-stone-500 to-transparent animate-pulse" />
+              <div className="w-px h-12 bg-gradient-to-b from-primary to-transparent animate-pulse" />
             </div>
           </div>
         </section>
 
         {/* ── CONTENT WRAPPER (covers hero on scroll) ──────────────────── */}
-        <div className="relative z-10 bg-black">
+        <div className="relative z-10 bg-background">
 
           {/* ── MARQUEE DIVIDER ──────────────────────────────────────────── */}
-          <div className="bg-primary py-4 overflow-hidden border-y-4 border-orange-900/50">
+          <div className="bg-primary py-4 overflow-hidden border-y-4 border-orange-500/30">
             <div className="flex animate-marquee whitespace-nowrap">
               {[...Array(8)].map((_, i) => (
                 <span key={i} className="text-black font-black text-lg mx-8 uppercase tracking-widest">
@@ -233,27 +232,26 @@ export default function AboutPage() {
           </div>
 
           {/* ── VISI & MISI ────────────────────────────────────────────── */}
-          <section className="bg-black py-32 px-6">
+          <section className="bg-background py-32 px-6">
             <div
               ref={visiRef}
-              className={`max-w-6xl mx-auto transition-all duration-700 ${
-                visiVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              }`}
+              className={`max-w-6xl mx-auto transition-all duration-700 ${visiVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                }`}
             >
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 {/* Left: Visual */}
                 <div className="relative">
-                  <div className="aspect-square rounded-3xl overflow-hidden relative border border-stone-800">
+                  <div className="aspect-square rounded-3xl overflow-hidden relative border border-border">
                     {/* Background Image */}
-                    <div 
+                    <div
                       className="absolute inset-0 bg-cover bg-center"
                       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop')" }}
                     />
                     {/* Blur Overlay */}
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[6px]" />
-                    
+                    <div className="absolute inset-0 bg-background/40 backdrop-blur-[6px]" />
+
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center text-white p-12">
+                      <div className="text-center text-foreground p-12">
                         <div className="text-8xl font-black opacity-20 absolute top-8 left-8 mix-blend-overlay">W</div>
                         <div className="text-8xl font-black opacity-20 absolute bottom-8 right-8 mix-blend-overlay">I</div>
                         <div className="relative z-10">
@@ -265,19 +263,19 @@ export default function AboutPage() {
                     </div>
                   </div>
                   {/* Floating badge */}
-                  <div className="absolute -bottom-6 -right-6 bg-stone-900 border border-stone-800 text-white rounded-2xl px-6 py-4 shadow-2xl">
+                  <div className="absolute -bottom-6 -right-6 bg-card border border-border text-foreground rounded-2xl px-6 py-4 shadow-2xl">
                     <div className="text-3xl font-black text-primary">Tukar Ilmu</div>
-                    <div className="text-xs text-stone-400 uppercase tracking-widest">Dengan Ilmu</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-widest">Dengan Ilmu</div>
                   </div>
                 </div>
 
                 {/* Right: Text */}
                 <div>
-                  <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight">
+                  <h2 className="text-4xl md:text-5xl font-black text-foreground mb-8 leading-tight">
                     Membuat Pendidikan Lebih Terjangkau untuk <span className="text-primary">Semua</span>
                   </h2>
 
-                  <div className="space-y-6 text-stone-400 leading-relaxed text-lg">
+                  <div className="space-y-6 text-muted-foreground leading-relaxed text-lg">
                     <p>
                       Kami memulai Wibi dari satu ide sederhana: bagaimana kalau siswa bisa saling membantu belajar tanpa terhalang uang? Time Banking mewujudkannya dengan menghargai waktu setiap orang secara setara.
                     </p>
@@ -294,11 +292,11 @@ export default function AboutPage() {
           <ImpactStats />
 
           {/* ── VALUES ────────────────────────────────────────────────── */}
-          <section className="bg-black py-32 px-6">
+          <section className="bg-background py-32 px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-16">
                 <span className="text-primary text-sm font-bold uppercase tracking-widest">Core Values</span>
-                <h2 className="text-5xl font-black text-white mt-3">
+                <h2 className="text-5xl font-black text-foreground mt-3">
                   Nilai yang Kami<br />
                   <span className="text-primary">Junjung Tinggi</span>
                 </h2>
