@@ -29,7 +29,7 @@ interface ForumThread {
     id: number;
     title: string;
     author: any;
-    category: string;
+    category: any;
     replies_count: number;
     views_count: number;
     is_pinned: boolean;
@@ -234,7 +234,7 @@ export default function CommunityPage() {
                                             <TableCell className="font-medium">{thread.title}</TableCell>
                                             <TableCell>{thread.author?.full_name || thread.author?.username || 'Unknown User'}</TableCell>
                                             <TableCell>
-                                                <Badge variant="outline">{thread.category}</Badge>
+                                                <Badge variant="outline">{thread.category?.name || 'Unknown'}</Badge>
                                             </TableCell>
                                             <TableCell>{thread.replies_count}</TableCell>
                                             <TableCell>{thread.views_count}</TableCell>
