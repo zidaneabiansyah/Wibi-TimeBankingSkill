@@ -22,6 +22,7 @@ const NotificationDropdown = dynamic(
 
 import { UserDropdownMenu } from "@/components/ui/user-dropdown-menu";
 import { MobileMenuItem } from "@/components/ui/mobile-menu-drawer";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const MobileMenuDrawer = dynamic(
     () => import('@/components/ui/mobile-menu-drawer').then((mod) => mod.MobileMenuDrawer),
@@ -128,13 +129,7 @@ export function Header() {
                             </div>
 
                             {/* Dark/Light Mode Toggle */}
-                            <button
-                                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                                className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all duration-200"
-                                aria-label="Toggle theme"
-                            >
-                                {resolvedTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                            </button>
+                            <ThemeToggle />
 
                             {/* User Dropdown Menu */}
                             <div className="flex items-center justify-center transition-all duration-300">
@@ -195,13 +190,7 @@ export function Header() {
                                     </Button>
                                 </Link>
                                 {/* Dark/Light Mode Toggle (Unauthenticated) */}
-                                <button
-                                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all duration-200"
-                                    aria-label="Toggle theme"
-                                >
-                                    {resolvedTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                                </button>
+                                <ThemeToggle />
                             </div>
 
                             {/* Mobile Menu for Unauthenticated */}

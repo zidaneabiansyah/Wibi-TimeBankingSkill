@@ -12,7 +12,7 @@ const DotLottieReact = dynamic(
     () => import('@lottiefiles/dotlottie-react').then((mod) => mod.DotLottieReact),
     {
         ssr: false,
-        loading: () => <div className="w-full h-full bg-muted animate-pulse rounded-[3rem] border border-border" />
+        loading: () => <div className="w-full h-full bg-transparent" />
     }
 );
 

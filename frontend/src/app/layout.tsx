@@ -8,6 +8,9 @@ import AchievementPopup from "@/components/features/gamification/AchievementPopu
 import { PWAProvider } from "@/components/providers/pwa-provider";
 import { MobileOptimization } from "@/components/shared/mobile-optimization";
 import { Analytics } from "@vercel/analytics/react";
+import { TopLoader } from "@/components/ui/top-loader";
+import { ThemeTransition } from "@/components/providers/theme-transition";
+import { Suspense } from "react";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -102,10 +105,14 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          <ThemeTransition />
           <FramerProvider>
             <PWAProvider>
               <AdminProvider>
                 <AuthProvider>
+                  <Suspense fallback={null}>
+                    <TopLoader />
+                  </Suspense>
                   {children}
                   <Analytics />
                 </AuthProvider>

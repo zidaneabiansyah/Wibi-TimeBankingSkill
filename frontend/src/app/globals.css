@@ -243,3 +243,26 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- View Transitions --- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2147483647;
+}
+
+.light::view-transition-old(root) {
+  z-index: 2147483647;
+}
+
+.light::view-transition-new(root) {
+  z-index: 1;
+}

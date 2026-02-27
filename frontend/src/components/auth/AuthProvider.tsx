@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
+import { PageLoader } from '@/components/ui/page-loader';
 
 interface AuthProviderProps {
     children: React.ReactNode;
@@ -16,13 +17,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         loadUser();
     }, [loadUser]);
 
-    // Show loading spinner while hydrating auth state from localStorage
+    // Show premium splash screen while hydrating auth state from localStorage
     if (!isHydrated) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <PageLoader message="Menyiapkan Wibi..." fullScreen />;
     }
 
     return <>{children}</>;
