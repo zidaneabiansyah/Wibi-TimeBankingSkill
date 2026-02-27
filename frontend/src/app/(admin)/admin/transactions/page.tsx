@@ -27,7 +27,10 @@ import { adminService } from '@/lib/services/admin.service';
 
 interface Transaction {
     id: number;
-    user_name: string;
+    user?: {
+        full_name: string;
+        username: string;
+    };
     type: 'earned' | 'spent' | 'hold' | 'refund' | 'bonus' | 'penalty';
     amount: number;
     description: string;
@@ -67,9 +70,11 @@ export default function TransactionsPage() {
     };
 
     const filteredTransactions = transactions.filter((transaction) => {
+        const userName = transaction.user?.full_name || transaction.user?.username || 'Unknown';
+        const description = transaction.description || '';
         const matchesSearch =
-            transaction.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transaction.description.toLowerCase().includes(searchQuery.toLowerCase());
+            userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            description.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesFilter = filterType === 'all' || transaction.type === filterType;
 
@@ -232,7 +237,7 @@ export default function TransactionsPage() {
                                 filteredTransactions.map((transaction) => (
                                     <TableRow key={transaction.id}>
                                         <TableCell className="font-medium">#{transaction.id}</TableCell>
-                                        <TableCell>{transaction.user_name}</TableCell>
+                                        <TableCell>{transaction.user?.full_name || transaction.user?.username || 'Unknown User'}</TableCell>
                                         <TableCell>{getTypeBadge(transaction.type)}</TableCell>
                                         <TableCell>
                                             <span
