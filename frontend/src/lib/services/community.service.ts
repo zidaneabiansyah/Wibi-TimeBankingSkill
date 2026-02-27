@@ -60,8 +60,12 @@ export const communityService = {
      */
     async getThread(threadId: number): Promise<ForumThread> {
         try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
             const response = await axios.get<ApiResponse<ForumThread>>(
-                `${API_BASE}/forum/threads/${threadId}`
+                `${API_BASE}/forum/threads/${threadId}`,
+                { headers }
             );
             return response.data.data!;
         } catch (error) {
@@ -79,10 +83,14 @@ export const communityService = {
         offset: number = 0
     ): Promise<{ threads: ForumThread[]; total: number }> {
         try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
             const response = await axios.get<
                 ApiResponse<{ threads: ForumThread[]; total: number }>
             >(`${API_BASE}/forum/categories/${categoryId}/threads`, {
                 params: { limit, offset },
+                headers,
             });
             return response.data.data || { threads: [], total: 0 };
         } catch (error) {
@@ -134,10 +142,14 @@ export const communityService = {
         offset: number = 0
     ): Promise<{ replies: ForumReply[]; total: number }> {
         try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
             const response = await axios.get<
                 ApiResponse<{ replies: ForumReply[]; total: number }>
             >(`${API_BASE}/forum/threads/${threadId}/replies`, {
                 params: { limit, offset },
+                headers,
             });
             return response.data.data || { replies: [], total: 0 };
         } catch (error) {
@@ -201,10 +213,14 @@ export const communityService = {
         offset: number = 0
     ): Promise<{ threads: ForumThread[]; total: number }> {
         try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
             const response = await axios.get<
                 ApiResponse<{ threads: ForumThread[]; total: number }>
             >(`${API_BASE}/forum/search`, {
                 params: { q: query, limit, offset },
+                headers,
             });
             return response.data.data || { threads: [], total: 0 };
         } catch (error) {
@@ -244,8 +260,12 @@ export const communityService = {
      */
     async getStory(storyId: number): Promise<SuccessStory> {
         try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            
             const response = await axios.get<ApiResponse<SuccessStory>>(
-                `${API_BASE}/stories/${storyId}`
+                `${API_BASE}/stories/${storyId}`,
+                { headers }
             );
             return response.data.data!;
         } catch (error) {
@@ -365,10 +385,14 @@ export const communityService = {
         offset: number = 0
     ): Promise<{ comments: StoryComment[]; total: number }> {
         try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
             const response = await axios.get<
                 ApiResponse<{ comments: StoryComment[]; total: number }>
             >(`${API_BASE}/stories/${storyId}/comments`, {
                 params: { limit, offset },
+                headers,
             });
             return response.data.data || { comments: [], total: 0 };
         } catch (error) {

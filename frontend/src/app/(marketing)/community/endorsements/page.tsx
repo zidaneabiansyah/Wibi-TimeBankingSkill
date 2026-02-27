@@ -92,7 +92,7 @@ export default function EndorsementsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             {topSkills.map((skill, index) => (
                                 <div
-                                    key={skill.id}
+                                    key={skill.id || `skill-idx-${index}`}
                                     className="bg-card rounded-lg border border-border p-4 text-center hover:shadow-lg transition-shadow"
                                 >
                                     <div className="text-2xl font-bold text-primary mb-2">#{index + 1}</div>

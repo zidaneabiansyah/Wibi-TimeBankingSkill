@@ -239,6 +239,25 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			endorsements.GET("/user/:user_id/reputation", endorsementHandler.GetUserReputation) // GET /api/v1/endorsements/user/:user_id/reputation
 		}
 
+		// Public Forum
+		publicForum := v1.Group("/forum")
+		{
+			publicForum.GET("/categories", forumHandler.GetCategories)                          // GET /api/v1/forum/categories
+			publicForum.GET("/threads/:id", forumHandler.GetThread)                             // GET /api/v1/forum/threads/:id
+			publicForum.GET("/categories/:category_id/threads", forumHandler.GetThreadsByCategory)       // GET /api/v1/forum/categories/:category_id/threads
+			publicForum.GET("/threads/:id/replies", forumHandler.GetReplies)                    // GET /api/v1/forum/threads/:id/replies
+			publicForum.GET("/search", forumHandler.SearchThreads)                              // GET /api/v1/forum/search
+		}
+
+		// Public Stories
+		publicStories := v1.Group("/stories")
+		{
+			publicStories.GET("/published", storyHandler.GetPublishedStories)                   // GET /api/v1/stories/published (specific routes first)
+			publicStories.GET("/user/:user_id", storyHandler.GetUserStories)                    // GET /api/v1/stories/user/:user_id
+			publicStories.GET("/:id", storyHandler.GetStory)                                    // GET /api/v1/stories/:id (generic routes last)
+			publicStories.GET("/:id/comments", storyHandler.GetComments)                        // GET /api/v1/stories/:id/comments
+		}
+
 		// Public Leaderboards
 		leaderboards := v1.Group("/leaderboard")
 		{
@@ -473,29 +492,20 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			// Forum routes
 			forum := protected.Group("/forum")
 			{
-				forum.GET("/categories", forumHandler.GetCategories)                          // GET /api/v1/forum/categories
 				forum.POST("/threads", forumHandler.CreateThread)                             // POST /api/v1/forum/threads
-				forum.GET("/threads/:id", forumHandler.GetThread)                             // GET /api/v1/forum/threads/:id
-				forum.GET("/categories/:id/threads", forumHandler.GetThreadsByCategory)       // GET /api/v1/forum/categories/:id/threads
 				forum.PUT("/threads/:id", forumHandler.UpdateThread)                          // PUT /api/v1/forum/threads/:id
 				forum.POST("/replies", forumHandler.CreateReply)                              // POST /api/v1/forum/replies
-				forum.GET("/threads/:id/replies", forumHandler.GetReplies)                    // GET /api/v1/forum/threads/:id/replies
 				forum.DELETE("/replies/:id", forumHandler.DeleteReply)                        // DELETE /api/v1/forum/replies/:id
 				forum.POST("/threads/:id/pin", forumHandler.PinThread)                        // POST /api/v1/forum/threads/:id/pin
 				forum.POST("/threads/:id/lock", forumHandler.LockThread)                      // POST /api/v1/forum/threads/:id/lock
-				forum.GET("/search", forumHandler.SearchThreads)                              // GET /api/v1/forum/search
 			}
 
 			// Stories routes
 			stories := protected.Group("/stories")
 			{
 				stories.POST("", storyHandler.CreateStory)                                    // POST /api/v1/stories
-				stories.GET("/published", storyHandler.GetPublishedStories)                   // GET /api/v1/stories/published (specific routes first)
-				stories.GET("/user/:user_id", storyHandler.GetUserStories)                    // GET /api/v1/stories/user/:user_id
 				stories.POST("/comments", storyHandler.CreateComment)                         // POST /api/v1/stories/comments
 				stories.DELETE("/comments/:id", storyHandler.DeleteComment)                   // DELETE /api/v1/stories/comments/:id
-				stories.GET("/:id", storyHandler.GetStory)                                    // GET /api/v1/stories/:id (generic routes last)
-				stories.GET("/:id/comments", storyHandler.GetComments)                        // GET /api/v1/stories/:id/comments
 				stories.PUT("/:id", storyHandler.UpdateStory)                                 // PUT /api/v1/stories/:id
 				stories.DELETE("/:id", storyHandler.DeleteStory)                              // DELETE /api/v1/stories/:id
 				stories.POST("/:id/like", storyHandler.LikeStory)                             // POST /api/v1/stories/:id/like

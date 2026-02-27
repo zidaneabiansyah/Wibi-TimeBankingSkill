@@ -278,7 +278,7 @@ func (h *ForumHandler) CreateReply(c *gin.Context) {
 
 // GetReplies gets replies for a thread
 func (h *ForumHandler) GetReplies(c *gin.Context) {
-	threadID, err := strconv.ParseUint(c.Param("thread_id"), 10, 32)
+	threadID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid thread ID", err)
 		return

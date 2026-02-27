@@ -230,7 +230,7 @@ func (h *StoryHandler) CreateComment(c *gin.Context) {
 
 // GetComments gets comments for a story
 func (h *StoryHandler) GetComments(c *gin.Context) {
-	storyID, err := strconv.ParseUint(c.Param("story_id"), 10, 32)
+	storyID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid story ID", err)
 		return
