@@ -75,7 +75,7 @@ export default function SkillDetailPage() {
         return (
             <div className="min-h-screen pt-24 pb-20">
                 <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="text-center py-32 bg-muted border border-border rounded-[2rem] max-w-2xl mx-auto shadow-sm">
+                    <div className="text-center py-32 bg-muted border border-border rounded-4xl max-w-2xl mx-auto shadow-sm">
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted-foreground/10 mx-auto mb-6">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                                 <circle cx="12" cy="12" r="10" />
@@ -367,12 +367,12 @@ export default function SkillDetailPage() {
                                         .slice(0, 4)
                                         .map((rec) => (
                                             <Link key={rec.id} href={`/marketplace/${rec.id}`} className="group flex items-center gap-5 p-2 rounded-xl transition-all">
-                                                <div className="h-12 w-12 shrink-0 rounded-[1rem] bg-muted border border-border flex items-center justify-center text-xl grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:border-border/80">
+                                                <div className="h-12 w-12 shrink-0 rounded-2xl bg-muted border border-border flex items-center justify-center text-xl grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:border-border/80">
                                                     {rec.icon || '🎓'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-black text-foreground uppercase tracking-tighter truncate group-hover:text-orange-500 transition-colors">{rec.name}</p>
-                                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.1em]">{rec.category}</p>
+                                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{rec.category}</p>
                                                 </div>
                                                 <div className="flex items-center overflow-hidden w-4 group-hover:w-6 transition-all duration-300">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground group-hover:text-orange-500 -translate-x-full group-hover:translate-x-0 transition-transform duration-300">

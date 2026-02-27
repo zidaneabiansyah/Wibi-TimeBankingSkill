@@ -66,6 +66,7 @@ type UserPublicProfile struct {
 	ID       uint   `json:"id"`
 	FullName string `json:"full_name"`
 	Username string `json:"username"`
+	Email    string `json:"email"`
 	Avatar   string `json:"avatar"`
 	School   string `json:"school"`
 	Grade    string `json:"grade"`

@@ -70,11 +70,12 @@ type UpdateUserSkillRequest struct {
 }
 
 type UserSkillResponse struct {
-	ID                uint          `json:"id"`
-	UserID            uint          `json:"user_id"`
-	SkillID           uint          `json:"skill_id"`
-	Skill             SkillResponse `json:"skill"`
-	Level             string        `json:"level"`
+	ID                uint               `json:"id"`
+	UserID            uint               `json:"user_id"`
+	SkillID           uint               `json:"skill_id"`
+	Skill             SkillResponse      `json:"skill"`
+	User              *UserPublicProfile `json:"user,omitempty"`
+	Level             string             `json:"level"`
 	Description       string        `json:"description"`
 	YearsOfExperience int           `json:"years_of_experience"`
 	ProofURL          string        `json:"proof_url"`
@@ -151,6 +152,19 @@ func ToUserSkillResponse(userSkill *models.UserSkill) UserSkillResponse {
 	
 	// Handle skill relationship
 	response.Skill = ToSkillResponse(&userSkill.Skill)
+
+	// Handle user relationship
+	if userSkill.User.ID != 0 {
+		response.User = &UserPublicProfile{
+			ID:       userSkill.User.ID,
+			FullName: userSkill.User.FullName,
+			Username: userSkill.User.Username,
+			Email:    userSkill.User.Email,
+			Avatar:   userSkill.User.Avatar,
+			School:   userSkill.User.School,
+			Grade:    userSkill.User.Grade,
+		}
+	}
 	
 	return response
 }
