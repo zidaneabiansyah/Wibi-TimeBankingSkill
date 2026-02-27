@@ -2,7 +2,8 @@ package service
 
 import (
 	"strconv"
-
+	"sync"
+	
 	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/repository"
@@ -108,47 +109,42 @@ func (s *AnalyticsService) GetUserAnalytics(userID uint) (*dto.UserAnalyticsResp
 
 // GetPlatformAnalytics gets platform-wide analytics
 func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsResponse, error) {
-	// 1. Get user stats
-	totalUsers, err := s.userRepo.CountTotal()
-	if err != nil {
-		return nil, err
-	}
-	activeUsers, err := s.userRepo.CountActive()
-	if err != nil {
-		activeUsers = 0 // validation optional
-	}
+	var (
+		totalUsers        int64
+		activeUsers       int64
+		totalSessions     int64
+		completedSessions int64
+		totalCredits      float64
+		avgRating         float64
+		avgDuration       float64
+		totalSkills       int64
+		
+		topSkills      []dto.SkillStatistic
+		userGrowth     []dto.DateStatistic
+		sessionTrend   []dto.DateStatistic
+		creditFlow     []dto.DateStatistic
+		recentActivity []dto.ActivityItem
 
-	// 2. Get session stats
-	totalSessions, err := s.sessionRepo.CountTotal()
-	if err != nil {
-		return nil, err
-	}
-	completedSessions, err := s.sessionRepo.CountCompleted()
-	if err != nil {
-		completedSessions = 0
-	}
+		wg sync.WaitGroup
+	)
 
-	// 3. Get credit stats
-	totalCredits, err := s.transactionRepo.GetTotalVolume()
-	if err != nil {
-		totalCredits = 0
-	}
+	wg.Add(13)
 
-	// 4. Get rating and duration stats
-	avgRating, err := s.reviewRepo.GetAveragePlatformRating()
-	if err != nil {
-		avgRating = 0
-	}
-	avgDuration, err := s.sessionRepo.GetAverageDuration()
-	if err != nil {
-		avgDuration = 0
-	}
+	go func() { defer wg.Done(); totalUsers, _ = s.userRepo.CountTotal() }()
+	go func() { defer wg.Done(); activeUsers, _ = s.userRepo.CountActive() }()
+	go func() { defer wg.Done(); totalSessions, _ = s.sessionRepo.CountTotal() }()
+	go func() { defer wg.Done(); completedSessions, _ = s.sessionRepo.CountCompleted() }()
+	go func() { defer wg.Done(); totalCredits, _ = s.transactionRepo.GetTotalVolume() }()
+	go func() { defer wg.Done(); avgRating, _ = s.reviewRepo.GetAveragePlatformRating() }()
+	go func() { defer wg.Done(); avgDuration, _ = s.sessionRepo.GetAverageDuration() }()
+	go func() { defer wg.Done(); totalSkills, _ = s.skillRepo.CountTotal() }()
+	go func() { defer wg.Done(); topSkills = s.getTopSkills() }()
+	go func() { defer wg.Done(); userGrowth = s.generateUserGrowthTrend() }()
+	go func() { defer wg.Done(); sessionTrend = s.generateSessionTrend() }()
+	go func() { defer wg.Done(); creditFlow = s.generateCreditFlowTrend() }()
+	go func() { defer wg.Done(); recentActivity = s.fetchRecentActivity() }()
 
-	// 5. Get skill stats
-	totalSkills, err := s.skillRepo.CountTotal()
-	if err != nil {
-		totalSkills = 0
-	}
+	wg.Wait()
 
 	return &dto.PlatformAnalyticsResponse{
 		TotalUsers:             int(totalUsers),
@@ -159,11 +155,11 @@ func (s *AnalyticsService) GetPlatformAnalytics() (*dto.PlatformAnalyticsRespons
 		AverageSessionRating:   avgRating,
 		AverageSessionDuration: avgDuration,
 		TotalSkills:            int(totalSkills),
-		TopSkills:              s.getTopSkills(),
-		UserGrowth:             s.generateUserGrowthTrend(),
-		SessionTrend:           s.generateSessionTrend(),
-		CreditFlow:             s.generateCreditFlowTrend(),
-		RecentActivity:         s.fetchRecentActivity(),
+		TopSkills:              topSkills,
+		UserGrowth:             userGrowth,
+		SessionTrend:           sessionTrend,
+		CreditFlow:             creditFlow,
+		RecentActivity:         recentActivity,
 	}, nil
 }
 
