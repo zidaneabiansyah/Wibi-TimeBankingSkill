@@ -77,7 +77,7 @@ export function NotificationItem({
             className={cn(
                 "relative p-5 transition-all duration-300 cursor-pointer group",
                 "hover:bg-muted",
-                !notification.is_read ? "bg-orange-500/[0.03]" : "opacity-60 hover:opacity-100"
+                !notification.is_read ? "bg-orange-500/3" : "opacity-60 hover:opacity-100"
             )}
             onClick={onMarkAsRead}
         >

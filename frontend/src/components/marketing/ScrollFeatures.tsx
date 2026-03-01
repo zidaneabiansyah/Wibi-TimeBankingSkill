@@ -131,7 +131,7 @@ export default function ScrollFeatures() {
                                             transition={{ duration: 0.4, ease: "easeOut" }}
                                             className="absolute inset-0 w-full h-full bg-zinc-950"
                                         >
-                                            <div className={`absolute inset-0 bg-gradient-to-br ${step.color} opacity-40 mix-blend-overlay`} />
+                                            <div className={`absolute inset-0 bg-linear-to-br ${step.color} opacity-40 mix-blend-overlay`} />
                                             <Image
                                                 src={step.image}
                                                 alt={step.title}
@@ -139,10 +139,10 @@ export default function ScrollFeatures() {
                                                 className="object-cover opacity-90 transition-opacity duration-300"
                                             />
                                             {/* Glow Overlay */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                                            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
 
                                             {/* Large Icon Overlay */}
-                                            <div className="absolute bottom-12 right-12 w-24 h-24 bg-orange-600/30 backdrop-blur-3xl border border-orange-500/40 rounded-[2rem] flex items-center justify-center shadow-3xl">
+                                            <div className="absolute bottom-12 right-12 w-24 h-24 bg-orange-600/30 backdrop-blur-3xl border border-orange-500/40 rounded-4xl flex items-center justify-center shadow-3xl">
                                                 <step.icon className="w-12 h-12 text-orange-500" />
                                             </div>
 
@@ -182,7 +182,7 @@ function FeatureText({ step, index, setActiveCard }: { step: any, index: number,
                 viewport={{ once: false, margin: "-30%" }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-                <h3 className="text-4xl md:text-6xl font-black text-white mb-8 bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent tracking-tighter leading-none">
+                <h3 className="text-4xl md:text-6xl font-black text-white mb-8 bg-linear-to-r from-white to-zinc-500 bg-clip-text tracking-tighter leading-none">
                     {step.title.split(". ")[1]}
                 </h3>
 
@@ -200,15 +200,15 @@ function FeatureText({ step, index, setActiveCard }: { step: any, index: number,
 
                 {/* Mobile Image: Only visible on smaller screens */}
                 <div className="block lg:hidden w-full relative aspect-square rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${step.color} opacity-40 mix-blend-overlay z-10`} />
+                    <div className={`absolute inset-0 bg-linear-to-br ${step.color} opacity-40 mix-blend-overlay z-10`} />
                     <Image
                         src={step.image}
                         alt={step.title}
                         fill
                         className="object-cover opacity-80"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
-                    <div className="absolute bottom-10 right-10 w-16 h-16 bg-orange-600/30 backdrop-blur-3xl border border-orange-500/40 rounded-[1.5rem] flex items-center justify-center z-20 shadow-2xl">
+                    <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent z-10" />
+                    <div className="absolute bottom-10 right-10 w-16 h-16 bg-orange-600/30 backdrop-blur-3xl border border-orange-500/40 rounded-3xl flex items-center justify-center z-20 shadow-2xl">
                         <step.icon className="w-8 h-8 text-orange-500" />
                     </div>
                 </div>

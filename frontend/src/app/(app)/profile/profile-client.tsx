@@ -57,7 +57,7 @@ export function ProfileClient() {
 
                 {/* Hero / Cover Section */}
                 <div className="relative mb-8 md:mb-12">
-                    <div className="rounded-[2rem] overflow-hidden bg-gradient-to-r from-orange-500/20 via-primary/10 to-blue-500/20 border border-border/40 shadow-sm h-48 md:h-64 relative">
+                    <div className="rounded-4xl overflow-hidden bg-linear-to-r from-orange-500/20 via-primary/10 to-blue-500/20 border border-border/40 shadow-sm h-48 md:h-64 relative">
                         <div className="absolute inset-0 backdrop-blur-3xl bg-background/10"></div>
                     </div>
 
@@ -100,7 +100,7 @@ export function ProfileClient() {
                     <div className="lg:col-span-4 space-y-6">
 
                         {/* Contact Info */}
-                        <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none hover:bg-card/40 transition-all rounded-[2rem]">
+                        <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none hover:bg-card/40 transition-all rounded-4xl">
                             <CardHeader className="pb-4">
                                 <CardTitle className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Contact</CardTitle>
                             </CardHeader>
@@ -132,7 +132,7 @@ export function ProfileClient() {
 
                         {/* Badges Layout */}
                         {userBadges.length > 0 && (
-                            <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none hover:bg-card/40 transition-all rounded-[2rem]">
+                            <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none hover:bg-card/40 transition-all rounded-4xl">
                                 <CardHeader className="pb-4 flex flex-row items-center justify-between space-y-0">
                                     <CardTitle className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
                                         Badges
@@ -159,7 +159,7 @@ export function ProfileClient() {
                         )}
 
                         {/* Quick Links */}
-                        <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none hover:bg-card/40 transition-all rounded-[2rem]">
+                        <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none hover:bg-card/40 transition-all rounded-4xl">
                             <CardHeader className="pb-4">
                                 <CardTitle className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Shortcuts</CardTitle>
                             </CardHeader>
@@ -190,12 +190,12 @@ export function ProfileClient() {
                     <div className="lg:col-span-8 flex flex-col gap-8 md:gap-10">
 
                         {/* Unified Stats Overview Panel */}
-                        <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-2xl shadow-none hover:shadow-xl rounded-[2rem] p-1 transition-all flex justify-center items-center">
+                        <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-2xl shadow-none hover:shadow-xl rounded-4xl p-1 transition-all flex justify-center items-center">
                             {/* Subtle internal grid styling */}
                             <div className="grid grid-cols-2 lg:grid-cols-4 relative z-10 w-full divide-x divide-y lg:divide-y-0 divide-border/10">
 
                                 {/* Skills Stat */}
-                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-tl-[1.5rem] lg:rounded-l-[1.5rem] lg:rounded-tr-none border-t border-transparent hover:border-primary/20">
+                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-tl-3xl lg:rounded-l-3xl lg:rounded-tr-none border-t border-transparent hover:border-primary/20">
                                     <div className="flex flex-col items-center gap-2 text-4xl font-bold mb-3 group-hover:scale-110 group-hover:text-primary transition-all tabular-nums tracking-tighter text-foreground">
                                         <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-primary/70 mb-1 md:mb-2" />
                                         <span>{userSkills.length}</span>
@@ -206,7 +206,7 @@ export function ProfileClient() {
                                 </div>
 
                                 {/* Teaching Stat */}
-                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-tr-[1.5rem] lg:rounded-none border-t border-transparent hover:border-green-500/20">
+                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-tr-3xl lg:rounded-none border-t border-transparent hover:border-green-500/20">
                                     <div className="flex flex-col items-center gap-2 text-4xl font-bold mb-3 group-hover:scale-110 group-hover:text-green-500 transition-all tabular-nums tracking-tighter text-foreground">
                                         <Users className="h-6 w-6 md:h-8 md:w-8 text-green-500/70 mb-1 md:mb-2" />
                                         <span>{stats?.total_sessions_as_teacher || 0}</span>
@@ -217,7 +217,7 @@ export function ProfileClient() {
                                 </div>
 
                                 {/* Learning Stat */}
-                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-bl-[1.5rem] lg:rounded-none border-t border-transparent hover:border-blue-500/20">
+                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-bl-3xl lg:rounded-none border-t border-transparent hover:border-blue-500/20">
                                     <div className="flex flex-col items-center gap-2 text-4xl font-bold mb-3 group-hover:scale-110 group-hover:text-blue-500 transition-all tabular-nums tracking-tighter text-foreground">
                                         <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-blue-500/70 mb-1 md:mb-2" />
                                         <span>{stats?.total_sessions_as_student || 0}</span>
@@ -228,7 +228,7 @@ export function ProfileClient() {
                                 </div>
 
                                 {/* Rating Stat */}
-                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-br-[1.5rem] lg:rounded-r-[1.5rem] lg:rounded-bl-none border-t border-transparent hover:border-amber-500/20">
+                                <div className="p-6 md:p-8 flex flex-col items-center justify-center text-center group hover:bg-muted/50 transition-colors rounded-br-3xl lg:rounded-r-3xl lg:rounded-bl-none border-t border-transparent hover:border-amber-500/20">
                                     <div className="flex flex-col items-center justify-center gap-2 text-4xl font-bold mb-3 group-hover:scale-110 transition-all text-amber-500 tabular-nums tracking-tighter">
                                         <Star className="h-6 w-6 md:h-8 md:w-8 fill-amber-500/50 mb-1 md:mb-2" />
                                         <span>{stats?.average_rating_as_teacher?.toFixed(1) || '0.0'}</span>
@@ -253,7 +253,7 @@ export function ProfileClient() {
                             </div>
 
                             {userSkills.length === 0 ? (
-                                <Card className="border-border/10 border-dashed bg-card/20 backdrop-blur-sm rounded-[2rem]">
+                                <Card className="border-border/10 border-dashed bg-card/20 backdrop-blur-sm rounded-4xl">
                                     <CardContent className="flex flex-col items-center justify-center py-16 text-muted-foreground text-center">
                                         <h4 className="font-bold text-lg text-muted-foreground mb-2">No skills established</h4>
                                         <p className="text-sm mb-8 max-w-sm text-muted-foreground">You haven't added any skills to your profile yet. Start sharing your knowledge.</p>
@@ -267,7 +267,7 @@ export function ProfileClient() {
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {userSkills.slice(0, 4).map((userSkill: any) => (
-                                        <Card key={userSkill.id} className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl hover:bg-card/40 hover:border-border/40 transition-all duration-300 group rounded-[2rem] shadow-none hover:shadow-xl">
+                                        <Card key={userSkill.id} className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl hover:bg-card/40 hover:border-border/40 transition-all duration-300 group rounded-4xl shadow-none hover:shadow-xl">
                                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
                                             <CardContent className="p-6 flex flex-col h-full z-10 relative">
                                                 <div className="flex items-start justify-between gap-3 mb-6">

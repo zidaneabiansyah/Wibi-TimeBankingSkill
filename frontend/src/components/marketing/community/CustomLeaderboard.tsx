@@ -261,10 +261,10 @@ export function CustomLeaderboard() {
                         return (
                             <div key={user.user_id + "_" + user.rank} className="relative group cursor-pointer w-[95%] md:w-full mx-auto max-w-[95vw]">
                                 {/* Slanted Container Background */}
-                                <div className="absolute inset-x-0 inset-y-0 bg-card border border-border rounded-lg md:rounded-xl md:-skew-x-[15deg] group-hover:border-primary/50 group-hover:bg-primary/5 transition-all duration-200" />
+                                <div className="absolute inset-x-0 inset-y-0 bg-card border border-border rounded-lg md:rounded-xl md:-skew-x-15 group-hover:border-primary/50 group-hover:bg-primary/5 transition-all duration-200" />
 
                                 {/* Un-skewed Content Area */}
-                                <div className="relative flex flex-col md:flex-row items-center py-4 px-6 md:px-10 min-h-[5rem]">
+                                <div className="relative flex flex-col md:flex-row items-center py-4 px-6 md:px-10 min-h-20">
 
                                     {/* Rank & Profile */}
                                     <div className="flex items-center gap-4 w-full md:w-64">

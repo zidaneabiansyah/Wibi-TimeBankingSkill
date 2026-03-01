@@ -66,7 +66,7 @@ export function Header() {
                     flex items-center justify-between
                     ${isScrolled
                         ? 'h-14 sm:h-16 max-w-5xl bg-background/80 backdrop-blur-3xl border border-border shadow-xl rounded-full px-6 sm:px-8'
-                        : 'h-18 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-[2rem] sm:rounded-[3rem] px-6 sm:px-10'}
+                        : 'h-18 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-4xl sm:rounded-[3rem] px-6 sm:px-10'}
                     w-full
                 `}
             >
@@ -81,7 +81,7 @@ export function Header() {
                             className={`rounded-md group-hover:shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-500 group-hover:scale-105 ${isScrolled ? 'w-8 h-8 sm:w-10 sm:h-10' : 'w-10 h-10 sm:w-12 sm:h-12'}`}
                             priority
                         />
-                        <span className={`font-black bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent hidden sm:inline tracking-tighter transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'}`}>Wibi</span>
+                        <span className={`font-black bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent hidden sm:inline tracking-tighter transition-all duration-500 ${isScrolled ? 'text-xl' : 'text-2xl'}`}>Wibi</span>
                     </Link>
                 </div>
 
