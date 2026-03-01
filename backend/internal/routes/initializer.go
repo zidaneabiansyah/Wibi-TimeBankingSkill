@@ -231,3 +231,13 @@ func InitializeTemplateHandler(db *gorm.DB) *handler.TemplateHandler {
 	templateService := service.NewTemplateService(templateRepo)
 	return handler.NewTemplateHandler(templateService)
 }
+
+// InitializeVoteHandler initializes vote handler with dependencies
+// handles forum thread upvotes and success story likes
+func InitializeVoteHandler(db *gorm.DB) *handler.VoteHandler {
+	voteRepo := repository.NewVoteRepository(db)
+	forumRepo := repository.NewForumRepository(db)
+	storyRepo := repository.NewStoryRepository(db)
+	voteService := service.NewVoteService(voteRepo, forumRepo, storyRepo)
+	return handler.NewVoteHandler(voteService)
+}

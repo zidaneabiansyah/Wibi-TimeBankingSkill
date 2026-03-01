@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, MessageSquare, ArrowLeft, Pin, Lock, Unlock, Reply, Trash2, MoreVertical } from 'lucide-react';
+import { Loader2, MessageSquare, ArrowLeft, Pin, Lock, Unlock, Reply, Trash2, MoreVertical, Link as LinkIcon, Flag, Image as ImageIcon, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -129,52 +130,91 @@ export default function ForumThreadPage() {
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
-            <div className="w-full max-w-4xl mx-auto">
-                {/* Back button */}
-                <Button variant="ghost" onClick={() => router.back()} className="mb-6">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
-                </Button>
+        <div className="min-h-screen bg-background pt-20 md:pt-28 pb-20" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-10 lg:px-14">
+                
+                {/* Breadcrumb / Back button */}
+                <div className="mb-8 flex items-center">
+                    <Button variant="link" onClick={() => router.back()} className="text-sm font-medium tracking-wide text-primary hover:text-primary/80 uppercase p-0 h-auto">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Community
+                    </Button>
+                </div>
 
-                {/* Thread */}
-                <div className="bg-card rounded-lg border border-border p-6 mb-8 relative">
-                    <div className="flex justify-between items-start mb-4">
-                         <div className="flex items-center gap-2">
-                            {selectedThread.is_pinned && <Pin className="h-5 w-5 text-primary rotate-45" />}
-                            {selectedThread.is_closed && <Lock className="h-5 w-5 text-destructive" />}
-                            <h1 className="text-3xl font-bold">{selectedThread.title}</h1>
-                         </div>
-                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={handlePin}>
-                                    {selectedThread.is_pinned ? 'Unpin Thread' : 'Pin Thread'}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleLock}>
-                                    {selectedThread.is_closed ? 'Unlock Thread' : 'Lock Thread'}
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                         </DropdownMenu>
+                {/* 2-Column Layout Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    {/* ===== LEFT WORKSPACE (span 8) ===== */}
+                    <main className="col-span-1 lg:col-span-8 flex flex-col min-w-0 space-y-6">
+
+                        {/* Thread */}
+                        <div className="bg-card rounded-4xl border border-white/5 p-8 relative shadow-sm">
+                    {/* Author & Meta */}
+                    <div className="flex items-start justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full overflow-hidden bg-white/5 border border-white/10 shrink-0">
+                                <img 
+                                    src={`https://ui-avatars.com/api/?name=${selectedThread.author?.full_name || 'Anonymous'}&background=random`} 
+                                    alt={selectedThread.author?.full_name || 'Anonymous'}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div>
+                                <h1 className="text-[24px] font-bold text-white mb-1 leading-tight tracking-tight">
+                                    {selectedThread.title}
+                                </h1>
+                                <div className="flex items-center gap-3 text-[13px] text-stone-400 font-medium">
+                                    <span className="text-stone-300 font-semibold">{selectedThread.author?.full_name || 'Anonymous'}</span>
+                                    <span>•</span>
+                                    <span>{new Date(selectedThread.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric'})}</span>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                                        <MessageSquare className="w-3.5 h-3.5" />
+                                        {selectedThread.reply_count} Replies
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Top Right Actions */}
+                        <div className="flex items-center gap-2">
+                            {selectedThread.is_pinned && (
+                                <div className="p-2 bg-primary/10 rounded-xl" title="Pinned">
+                                    <Pin className="h-5 w-5 text-primary rotate-45" />
+                                </div>
+                            )}
+                            {selectedThread.is_closed && (
+                                <div className="p-2 bg-destructive/10 rounded-xl" title="Locked">
+                                    <Lock className="h-5 w-5 text-destructive" />
+                                </div>
+                            )}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="hover:bg-white/5 text-stone-400 hover:text-white rounded-xl">
+                                        <MoreVertical className="h-5 w-5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-card border border-white/10 rounded-xl shadow-xl w-40">
+                                    <DropdownMenuItem onClick={() => {
+                                        navigator.clipboard.writeText(window.location.href);
+                                        toast.success('Link copied to clipboard');
+                                    }} className="focus:bg-white/5 rounded-lg cursor-pointer flex items-center gap-2">
+                                        <LinkIcon className="h-4 w-4 text-stone-400" />
+                                        <span>Copy Link</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => toast.success('Content reported')} className="focus:bg-white/5 rounded-lg cursor-pointer flex items-center gap-2 text-destructive focus:text-destructive">
+                                        <Flag className="h-4 w-4" />
+                                        <span>Report</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
-                        <span>By {selectedThread.author?.full_name || 'Anonymous'}</span>
-                        <span>•</span>
-                        <span>{new Date(selectedThread.created_at).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                            <MessageSquare className="h-4 w-4" />
-                            {selectedThread.reply_count} replies
-                        </span>
-                    </div>
-
+                    {/* Content */}
                     <div 
-                        className="prose dark:prose-invert max-w-none mb-6"
+                        className="prose dark:prose-invert max-w-none mb-8 text-[14px] leading-relaxed text-stone-300
+                            prose-headings:text-white prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:text-white"
                         dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedThread.content) }}
                     />
 
@@ -190,77 +230,216 @@ export default function ForumThreadPage() {
                 </div>
 
                 {/* Reply form */}
-                <div className="bg-card rounded-lg border border-border p-6 mb-8">
-                    <h2 className="text-xl font-semibold mb-4">Post a Reply</h2>
+                <div className="bg-card rounded-3xl border border-white/5 p-4 mb-8 relative shadow-sm">
                     {selectedThread.is_closed ? (
-                        <div className="bg-muted p-4 rounded-md text-center text-muted-foreground">
-                            <Lock className="h-5 w-5 mx-auto mb-2" />
-                            This thread is locked. Replies are disabled.
+                        <div className="bg-white/5 p-4 rounded-2xl border border-white/10 text-center text-stone-400">
+                            <Lock className="h-5 w-5 mx-auto mb-2 text-stone-500" />
+                            <p className="font-medium text-[14px]">This thread is locked. Replies are disabled.</p>
                         </div>
                     ) : (
-                        <>
-                            {replyingTo && (
-                                <div className="flex items-center justify-between bg-muted/50 p-2 rounded mb-2 text-sm">
-                                    <span>Replying to a comment...</span>
-                                    <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="h-auto p-1">Cancel</Button>
+                        <div className="flex gap-4">
+                            <div className="w-9 h-9 rounded-full overflow-hidden bg-white/5 border border-white/10 shrink-0 mt-2">
+                                <img 
+                                    src={`https://ui-avatars.com/api/?name=You&background=random`} 
+                                    alt="You"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                {replyingTo && (
+                                    <div className="flex items-center justify-between bg-primary/10 border border-primary/20 p-2 rounded-xl mb-2 text-sm">
+                                        <span className="text-primary font-medium flex items-center gap-1.5"><Reply className="w-3.5 h-3.5"/> Replying to a comment...</span>
+                                        <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="h-auto p-1 text-primary hover:text-primary hover:bg-white/10 rounded-lg text-xs">Cancel</Button>
+                                    </div>
+                                )}
+                                <textarea
+                                    value={replyContent}
+                                    onChange={(e) => setReplyContent(e.target.value)}
+                                    placeholder="Type your reply here..."
+                                    className="w-full p-3 border border-white/10 rounded-2xl mb-2 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-background text-white placeholder-stone-500 text-[14px] resize-none overflow-hidden min-h-[80px] transition-all"
+                                />
+                                <div className="flex justify-between items-center">
+                                    {/* Left Actions */}
+                                    <div className="flex items-center gap-1 ml-1">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-stone-500 hover:text-stone-300 hover:bg-white/5 rounded-lg" title="Add Image">
+                                            <ImageIcon className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-stone-500 hover:text-stone-300 hover:bg-white/5 rounded-lg" title="Attach File">
+                                            <Paperclip className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+
+                                    {/* Right Action */}
+                                    <Button onClick={handleReply} disabled={submitting} size="sm" className="rounded-xl px-5 h-9 bg-primary hover:bg-primary/90 text-white font-semibold text-[13px]">
+                                        {submitting ? 'Posting...' : 'Post Reply'}
+                                    </Button>
                                 </div>
-                            )}
-                            <textarea
-                                value={replyContent}
-                                onChange={(e) => setReplyContent(e.target.value)}
-                                placeholder="Write your reply here..."
-                                className="w-full p-3 border border-border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                                rows={4}
-                            />
-                            <Button onClick={handleReply} disabled={submitting}>
-                                {submitting ? 'Posting...' : 'Post Reply'}
-                            </Button>
-                        </>
+                            </div>
+                        </div>
                     )}
                 </div>
 
                 {/* Replies */}
-                <div className="space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Replies ({replies.length})</h2>
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-white px-2">{replies.length} {replies.length === 1 ? 'Comment' : 'Comments'}</h2>
+                    
                     {replies.length === 0 ? (
-                        <p className="text-muted-foreground text-center py-8">No replies yet. Be the first to reply!</p>
+                        <div className="text-center py-12 px-4 rounded-3xl border border-white/5 border-dashed bg-white/2">
+                            <MessageSquare className="w-10 h-10 text-stone-600 mx-auto mb-3" />
+                            <p className="text-stone-400 font-medium text-[15px]">No replies yet. Be the first to share your thoughts!</p>
+                        </div>
                     ) : (
-                        replies.map((reply) => (
-                            <div key={reply.id} className="bg-card rounded-lg border border-border p-4">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-semibold">{reply.author?.full_name || 'Anonymous'}</p>
-                                        <span className="text-xs text-muted-foreground">
-                                            {new Date(reply.created_at).toLocaleDateString()}
-                                        </span>
+                        <div className="space-y-4">
+                            {replies.map((reply) => (
+                                <div key={reply.id} className="bg-card rounded-3xl border border-white/5 p-6 shadow-sm hover:border-white/10 transition-colors">
+                                    <div className="flex items-start gap-4">
+                                        {/* Avatar */}
+                                        <div className="w-10 h-10 rounded-full overflow-hidden bg-white/5 border border-white/10 shrink-0 mt-0.5">
+                                            <img 
+                                                src={`https://ui-avatars.com/api/?name=${reply.author?.full_name || 'Anonymous'}&background=random`} 
+                                                alt={reply.author?.full_name || 'Anonymous'}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        {/* Content Area */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div>
+                                                    <p className="font-bold text-[14px] text-white tracking-tight">{reply.author?.full_name || 'Anonymous'}</p>
+                                                    <p className="text-[11px] font-medium text-stone-500">
+                                                        {new Date(reply.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' })}
+                                                    </p>
+                                                </div>
+                                                
+                                                {/* Actions */}
+                                                <div className="flex items-center gap-1 -mt-1 -mr-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                             setReplyingTo(reply.id);
+                                                             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                                        }}
+                                                        className="h-8 px-2.5 text-stone-400 hover:text-white hover:bg-white/5 rounded-lg text-xs font-semibold"
+                                                    >
+                                                        <Reply className="h-3.5 w-3.5 mr-1.5" /> Reply
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteReply(reply.id)}
+                                                        className="h-8 px-2.5 text-stone-500 hover:text-destructive hover:bg-destructive/10 rounded-lg text-xs font-semibold"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div 
+                                                className="prose prose-sm dark:prose-invert max-w-none text-[13.5px] leading-relaxed text-stone-300
+                                                    prose-p:my-1.5 prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:text-white wrap-break-word"
+                                                dangerouslySetInnerHTML={{ __html: sanitizeHTML(reply.content) }}
+                                            />
+                                        </div>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                             setReplyingTo(reply.id);
-                                             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                                        }}
-                                        className="text-muted-foreground hover:text-foreground"
-                                    >
-                                        <Reply className="h-4 w-4 mr-1" /> Reply
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleDeleteReply(reply.id)}
-                                        className="text-destructive hover:text-destructive"
-                                    >
-                                        <Trash2 className="h-4 w-4 mr-1" /> Delete
-                                    </Button>
                                 </div>
-                                <div 
-                                    className="text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(reply.content) }}
-                                />
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     )}
+                </div>
+                    </main>
+
+                    {/* ===== RIGHT SIDEBAR (span 4) ===== */}
+                    <aside className="hidden lg:block lg:col-span-4 shrink-0">
+                        <div className="sticky top-28 flex flex-col space-y-8 pb-10">
+                            
+                            {/* Category, Tags, Top Contributors Combo Card */}
+                            <div className="bg-card/40 border border-white/5 rounded-4xl p-6">
+                                <h3 className="font-semibold text-[17px] text-white mb-4">Thread Details</h3>
+                                
+                                <div className="space-y-6">
+                                    {/* Category */}
+                                    {selectedThread.category && (
+                                        <div>
+                                            <p className="text-xs text-stone-500 font-semibold uppercase tracking-wider mb-2">Category</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedThread.category.color || '#f97316' }} />
+                                                <span className="text-sm font-medium text-stone-300">{selectedThread.category.name}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Tags */}
+                                    {selectedThread.tags && selectedThread.tags.length > 0 && (
+                                        <div>
+                                            <p className="text-xs text-stone-500 font-semibold uppercase tracking-wider mb-2">Tags</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedThread.tags.map((tag) => (
+                                                    <span key={tag} className="px-3 py-1 bg-card border border-white/5 rounded-xl text-[12px] font-medium text-stone-300 hover:text-white transition-colors cursor-pointer">
+                                                        #{tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Top Contributors Mock */}
+                                    <div>
+                                        <p className="text-xs text-stone-500 font-semibold uppercase tracking-wider mb-3">Top Contributors</p>
+                                        <ul className="space-y-3">
+                                            {[
+                                                { name: 'John Doe', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', replies: 120 },
+                                                { name: 'Jane Smith', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d', replies: 84 },
+                                                { name: 'Alex Johnson', avatar: 'https://i.pravatar.cc/150?u=a048581f4e29026701d', replies: 79 },
+                                                { name: 'Sarah Williams', avatar: 'https://i.pravatar.cc/150?u=a04258a2462d826712d', replies: 56 },
+                                                { name: 'Michael Brown', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704e', replies: 32 }
+                                            ].map((user, i) => (
+                                                <li key={i} className="flex items-center justify-between group cursor-pointer p-1 -ml-1 rounded-lg hover:bg-white/5 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover border border-white/10" />
+                                                        <span className="text-[13px] font-medium text-stone-300 group-hover:text-white">{user.name}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 text-[12px] text-stone-500 font-medium">
+                                                        <MessageSquare className="w-3.5 h-3.5" />
+                                                        <span>{user.replies}</span>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Unanswered Talks Mock */}
+                            <div>
+                                <h3 className="font-semibold text-[17px] text-white mb-2">Unanswered Talks</h3>
+                                <p className="text-xs text-stone-500 font-medium mb-4">Discussions with no comments. Be the first to reply!</p>
+                                <div className="space-y-4">
+                                    {[
+                                        { title: 'Any recommended books for learning Golang?', author: 'Alice', time: '2 hours ago' },
+                                        { title: 'Tips for passing technical interviews?', author: 'Bob', time: '5 hours ago' }
+                                    ].map((talk, i) => (
+                                        <div key={i} className="group cursor-pointer">
+                                            <div className="flex items-center gap-2 mb-1.5">
+                                                <div className="w-5 h-5 rounded-full bg-stone-800 flex items-center justify-center overflow-hidden shrink-0">
+                                                     <img src={`https://i.pravatar.cc/150?u={talk.author}`} alt={talk.author} className="w-full h-full object-cover opacity-70" />
+                                                </div>
+                                                <p className="text-[12px] text-stone-400 font-medium">{talk.author} <span className="text-stone-600 font-normal">posted</span></p>
+                                            </div>
+                                            <h4 className="text-[14px] font-medium text-stone-200 group-hover:text-primary transition-colors leading-snug mb-2">
+                                                {talk.title}
+                                            </h4>
+                                            <div className="flex items-center gap-1.5 text-[11px] text-stone-500">
+                                                <MessageSquare className="w-3 h-3" />
+                                                <span>0 comments</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>

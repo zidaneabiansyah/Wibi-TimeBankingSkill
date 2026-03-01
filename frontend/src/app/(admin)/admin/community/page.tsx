@@ -28,8 +28,8 @@ import { adminService } from '@/lib/services/admin.service';
 interface ForumThread {
     id: number;
     title: string;
-    author: string;
-    category: string;
+    author: any;
+    category: any;
     replies_count: number;
     views_count: number;
     is_pinned: boolean;
@@ -136,7 +136,7 @@ export default function CommunityPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {threads.reduce((sum, t) => sum + t.views_count, 0)}
+                            {threads.reduce((sum, t) => sum + (t.views_count || 0), 0)}
                         </div>
                     </CardContent>
                 </Card>
@@ -232,9 +232,9 @@ export default function CommunityPage() {
                                     threads.map((thread) => (
                                         <TableRow key={thread.id}>
                                             <TableCell className="font-medium">{thread.title}</TableCell>
-                                            <TableCell>{thread.author}</TableCell>
+                                            <TableCell>{thread.author?.full_name || thread.author?.username || 'Unknown User'}</TableCell>
                                             <TableCell>
-                                                <Badge variant="outline">{thread.category}</Badge>
+                                                <Badge variant="outline">{thread.category?.name || 'Unknown'}</Badge>
                                             </TableCell>
                                             <TableCell>{thread.replies_count}</TableCell>
                                             <TableCell>{thread.views_count}</TableCell>

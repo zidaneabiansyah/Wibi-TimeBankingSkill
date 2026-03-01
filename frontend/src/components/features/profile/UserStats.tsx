@@ -54,14 +54,14 @@ export default function UserStats() {
         )
     }
 
-    const StatCard = ({ 
-        title, 
-        value, 
-        subtitle, 
-        icon: Icon, 
-        trend, 
+    const StatCard = ({
+        title,
+        value,
+        subtitle,
+        icon: Icon,
+        trend,
         color = "default",
-        progress 
+        progress
     }: {
         title: string
         value: string | number
@@ -71,51 +71,49 @@ export default function UserStats() {
         color?: "default" | "success" | "warning" | "danger"
         progress?: number
     }) => {
-        const iconColorClass = 
+        const iconColorClass =
             color === 'success' ? 'text-green-600' :
-            color === 'warning' ? 'text-yellow-600' :
-            color === 'danger' ? 'text-red-600' :
-            'text-muted-foreground'
+                color === 'warning' ? 'text-yellow-600' :
+                    color === 'danger' ? 'text-red-600' :
+                        'text-muted-foreground'
 
         return (
-        <Card className={`${color === 'success' ? 'border-green-200' : 
-                        color === 'warning' ? 'border-yellow-200' : 
-                        color === 'danger' ? 'border-red-200' : ''}`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {title}
-                </CardTitle>
-                <Icon className={`h-4 w-4 ${iconColorClass}`} />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
-                {subtitle && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                        {subtitle}
-                    </p>
-                )}
-                {trend && (
-                    <div className={`flex items-center text-xs mt-2 ${
-                        trend.isPositive ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                        <TrendingUp className={`h-3 w-3 mr-1 ${
-                            !trend.isPositive ? 'rotate-180' : ''
-                        }`} />
-                        {Math.abs(trend.value)}% from last month
-                    </div>
-                )}
-                {typeof progress === 'number' && (
-                    <div className="mt-2">
-                        <div className="w-full bg-muted rounded-full h-1">
-                            <div 
-                                className="bg-primary h-1 rounded-full transition-all" 
-                                style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-                            />
+            <Card className={`${color === 'success' ? 'border-green-200' :
+                color === 'warning' ? 'border-yellow-200' :
+                    color === 'danger' ? 'border-red-200' : ''}`}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
+                        {title}
+                    </CardTitle>
+                    <Icon className={`h-4 w-4 ${iconColorClass}`} />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{value}</div>
+                    {subtitle && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {subtitle}
+                        </p>
+                    )}
+                    {trend && (
+                        <div className={`flex items-center text-xs mt-2 ${trend.isPositive ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                            <TrendingUp className={`h-3 w-3 mr-1 ${!trend.isPositive ? 'rotate-180' : ''
+                                }`} />
+                            {Math.abs(trend.value)}% from last month
                         </div>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                    )}
+                    {typeof progress === 'number' && (
+                        <div className="mt-2">
+                            <div className="w-full bg-muted rounded-full h-1">
+                                <div
+                                    className="bg-primary h-1 rounded-full transition-all"
+                                    style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         )
     }
 
@@ -123,7 +121,7 @@ export default function UserStats() {
     const totalSessions = stats.total_sessions_as_teacher + stats.total_sessions_as_student
     const totalHours = stats.total_teaching_hours + stats.total_learning_hours
     const netCredits = stats.total_credits_earned - stats.total_credits_spent
-    const teachingRatio = totalSessions > 0 ? 
+    const teachingRatio = totalSessions > 0 ?
         (stats.total_sessions_as_teacher / totalSessions) * 100 : 0
 
     return (
@@ -202,25 +200,25 @@ export default function UserStats() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <StatCard
                     title="Teaching Rating"
-                    value={stats.average_rating_as_teacher > 0 ? 
+                    value={stats.average_rating_as_teacher > 0 ?
                         `${stats.average_rating_as_teacher.toFixed(1)}/5.0` : 'N/A'}
-                    subtitle={stats.total_sessions_as_teacher > 0 ? 
+                    subtitle={stats.total_sessions_as_teacher > 0 ?
                         `Based on ${stats.total_sessions_as_teacher} sessions` : 'No sessions yet'}
                     icon={Star}
-                    color={stats.average_rating_as_teacher >= 4.5 ? 'success' : 
-                           stats.average_rating_as_teacher >= 3.5 ? 'warning' : 'danger'}
+                    color={stats.average_rating_as_teacher >= 4.5 ? 'success' :
+                        stats.average_rating_as_teacher >= 3.5 ? 'warning' : 'danger'}
                     progress={stats.average_rating_as_teacher * 20}
                 />
 
                 <StatCard
                     title="Learning Rating"
-                    value={stats.average_rating_as_student > 0 ? 
+                    value={stats.average_rating_as_student > 0 ?
                         `${stats.average_rating_as_student.toFixed(1)}/5.0` : 'N/A'}
-                    subtitle={stats.total_sessions_as_student > 0 ? 
+                    subtitle={stats.total_sessions_as_student > 0 ?
                         `Based on ${stats.total_sessions_as_student} sessions` : 'No sessions yet'}
                     icon={Award}
-                    color={stats.average_rating_as_student >= 4.5 ? 'success' : 
-                           stats.average_rating_as_student >= 3.5 ? 'warning' : 'danger'}
+                    color={stats.average_rating_as_student >= 4.5 ? 'success' :
+                        stats.average_rating_as_student >= 3.5 ? 'warning' : 'danger'}
                     progress={stats.average_rating_as_student * 20}
                 />
 
@@ -243,12 +241,12 @@ export default function UserStats() {
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* First Session */}
-                        <div className="flex items-center gap-3 p-3 border rounded-lg">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                <BookOpen className="h-5 w-5 text-green-600" />
+                        <div className="flex items-center gap-3 p-3 border border-border/40 rounded-lg bg-card/20 backdrop-blur-sm">
+                            <div className="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center">
+                                <BookOpen className="h-5 w-5 text-green-500" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">First Session</p>
+                                <p className="font-medium text-sm text-foreground">First Session</p>
                                 <p className="text-xs text-muted-foreground">
                                     {totalSessions > 0 ? 'Completed ✓' : 'Pending...'}
                                 </p>
@@ -256,12 +254,12 @@ export default function UserStats() {
                         </div>
 
                         {/* 10 Sessions */}
-                        <div className="flex items-center gap-3 p-3 border rounded-lg">
-                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                <Users className="h-5 w-5 text-blue-600" />
+                        <div className="flex items-center gap-3 p-3 border border-border/40 rounded-lg bg-card/20 backdrop-blur-sm">
+                            <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center">
+                                <Users className="h-5 w-5 text-blue-500" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">Session Veteran</p>
+                                <p className="font-medium text-sm text-foreground">Session Veteran</p>
                                 <p className="text-xs text-muted-foreground">
                                     {totalSessions >= 10 ? 'Completed ✓' : `${totalSessions}/10 sessions`}
                                 </p>
@@ -269,40 +267,40 @@ export default function UserStats() {
                         </div>
 
                         {/* High Rating */}
-                        <div className="flex items-center gap-3 p-3 border rounded-lg">
-                            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                                <Star className="h-5 w-5 text-yellow-600" />
+                        <div className="flex items-center gap-3 p-3 border border-border/40 rounded-lg bg-card/20 backdrop-blur-sm">
+                            <div className="w-10 h-10 bg-yellow-500/10 rounded-full flex items-center justify-center">
+                                <Star className="h-5 w-5 text-yellow-500" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">Top Rated</p>
+                                <p className="font-medium text-sm text-foreground">Top Rated</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {Math.max(stats.average_rating_as_teacher, stats.average_rating_as_student) >= 4.5 
+                                    {Math.max(stats.average_rating_as_teacher, stats.average_rating_as_student) >= 4.5
                                         ? 'Completed ✓' : 'Get 4.5+ rating'}
                                 </p>
                             </div>
                         </div>
 
                         {/* Credit Milestone */}
-                        <div className="flex items-center gap-3 p-3 border rounded-lg">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                <Coins className="h-5 w-5 text-green-600" />
+                        <div className="flex items-center gap-3 p-3 border border-border/40 rounded-lg bg-card/20 backdrop-blur-sm">
+                            <div className="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center">
+                                <Coins className="h-5 w-5 text-green-500" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">Credit Collector</p>
+                                <p className="font-medium text-sm text-foreground">Credit Collector</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {stats.total_credits_earned >= 50 ? 'Completed ✓' : 
+                                    {stats.total_credits_earned >= 50 ? 'Completed ✓' :
                                         `${stats.total_credits_earned}/50 credits`}
                                 </p>
                             </div>
                         </div>
 
                         {/* Teaching Hours */}
-                        <div className="flex items-center gap-3 p-3 border rounded-lg">
-                            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                <Clock className="h-5 w-5 text-purple-600" />
+                        <div className="flex items-center gap-3 p-3 border border-border/40 rounded-lg bg-card/20 backdrop-blur-sm">
+                            <div className="w-10 h-10 bg-purple-500/10 rounded-full flex items-center justify-center">
+                                <Clock className="h-5 w-5 text-purple-500" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">Time Master</p>
+                                <p className="font-medium text-sm text-foreground">Time Master</p>
                                 <p className="text-xs text-muted-foreground">
                                     {totalHours >= 100 ? 'Completed ✓' : `${totalHours}/100 hours`}
                                 </p>
@@ -310,14 +308,14 @@ export default function UserStats() {
                         </div>
 
                         {/* Balanced Learner */}
-                        <div className="flex items-center gap-3 p-3 border rounded-lg">
-                            <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                                <Target className="h-5 w-5 text-orange-600" />
+                        <div className="flex items-center gap-3 p-3 border border-border/40 rounded-lg bg-card/20 backdrop-blur-sm">
+                            <div className="w-10 h-10 bg-orange-500/10 rounded-full flex items-center justify-center">
+                                <Target className="h-5 w-5 text-orange-500" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">Balanced Learner</p>
+                                <p className="font-medium text-sm text-foreground">Balanced Learner</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {stats.total_sessions_as_teacher > 0 && stats.total_sessions_as_student > 0 
+                                    {stats.total_sessions_as_teacher > 0 && stats.total_sessions_as_student > 0
                                         ? 'Completed ✓' : 'Teach & learn skills'}
                                 </p>
                             </div>

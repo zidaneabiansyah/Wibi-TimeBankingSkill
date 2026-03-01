@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
@@ -83,11 +84,11 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
     }, []);
 
     return (
-        <main ref={containerRef} className={`dark flex-1 relative overflow-x-hidden ${plusJakartaSans.className}`}>
+        <main ref={containerRef} className={`dark flex-1 relative overflow-x-clip ${plusJakartaSans.className}`}>
             {/* ── Section 1: Hero with Frosted Overlay ────────────────── */}
             <section className="relative w-full h-dvh min-h-[600px] overflow-hidden">
                 {/* Background Image */}
-                <Image 
+                <Image
                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000&auto=format&fit=crop"
                     alt="Community Wibi"
                     fill
@@ -96,8 +97,8 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                 />
 
                 {/* Left Side Overlay with Fade to Transparent */}
-                <div 
-                    className="absolute top-0 left-0 h-full w-[55%] bg-stone-950 z-10"
+                <div
+                    className="absolute top-0 left-0 h-full w-[55%] bg-background z-10"
                     style={{
                         maskImage: 'linear-gradient(to right, black 55%, transparent 100%)',
                         WebkitMaskImage: 'linear-gradient(to right, black 55%, transparent 100%)',
@@ -107,19 +108,19 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                         <span className="text-xs text-orange-300 uppercase tracking-widest font-semibold mb-4 inline-block">
                             Komunitas Wibi
                         </span>
-                        
-                        <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">
+
+                        <h1 className="text-4xl md:text-5xl font-black text-foreground leading-tight">
                             Komunitas Belajar yang Saling <span className="text-primary">Menguatkan</span>
                         </h1>
-                        
-                        <p className="text-sm text-white/60 mt-3 max-w-xs leading-relaxed">
+
+                        <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
                             Bergabunglah dengan ribuan pelajar dan mentor yang saling mendukung dalam perjalanan belajar mereka.
                         </p>
-                        
+
                         <div className="mt-6">
-                            <button className="bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:bg-stone-100 transition-all inline-block">
+                            <Link href="/community/forum" className="bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:bg-stone-100 transition-all inline-block">
                                 Gabung Sekarang
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -127,7 +128,7 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
 
             <CommunityFeatures />
 
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16 py-16 space-y-24 relative z-10 bg-black text-stone-200">
+            <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16 py-16 space-y-24 relative z-10 bg-background text-foreground">
                 {/* Leaderboard Section */}
                 <m.section
                     id="leaderboard"
@@ -138,16 +139,16 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                     className="space-y-12"
                 >
                     <div className="text-center space-y-4 max-w-2xl mx-auto">
-                        <h2 className="text-4xl font-bold tracking-tight italic text-white">Community Rankings</h2>
-                        <p className="text-lg text-stone-400">
+                        <h2 className="text-4xl font-bold tracking-tight text-foreground italic">Community Rankings</h2>
+                        <p className="text-lg text-muted-foreground">
                             Lihat siapa yang memimpin hari ini. Teruslah berkontribusi untuk mendaki tangga peringkat!
                         </p>
                     </div>
 
                     <div className="relative pt-8 mt-12">
                         {/* Translucent background box with border */}
-                        <div className="absolute inset-0 bg-stone-900/30 backdrop-blur-xl border border-white/10 rounded-[3rem] -z-10 shadow-2xl shadow-black/40 ring-1 ring-inset ring-white/5" />
-                        
+                        <div className="absolute inset-0 bg-card/30 backdrop-blur-xl border border-border rounded-[3rem] -z-10 shadow-2xl ring-1 ring-inset ring-border/5" />
+
                         <div className="py-12 px-4 sm:px-8">
                             <CustomLeaderboard />
                         </div>

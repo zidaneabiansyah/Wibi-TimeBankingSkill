@@ -35,11 +35,12 @@ func (h *AnalyticsHandler) ExportAnalytics(c *gin.Context) {
 	c.Header("Content-Transfer-Encoding", "binary")
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	c.Header("Content-Type", "application/octet-stream")
-	if req.Format == "pdf" {
+	switch req.Format {
+	case "pdf":
 		c.Header("Content-Type", "application/pdf")
-	} else if req.Format == "csv" {
+	case "csv":
 		c.Header("Content-Type", "text/csv")
 	}
-	
+
 	c.Data(http.StatusOK, c.Writer.Header().Get("Content-Type"), content)
 }

@@ -24,46 +24,53 @@ export function CommentItem({
     
     return (
         <div 
-            className={`border-l-2 ${depth > 0 ? 'border-muted ml-4 pl-4' : 'border-transparent'}`}
+            className={`flex flex-col ${depth > 0 ? 'ml-12 mt-2 relative before:absolute before:-left-6 before:top-0 before:bottom-0 before:w-px before:bg-white/10' : 'mb-6'}`}
         >
-            <div className="bg-card rounded-lg border border-border p-4 mb-2">
-                <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                        {/* Avatar */}
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-medium text-primary">
-                                {comment.author?.full_name?.charAt(0) || 'A'}
-                            </span>
-                        </div>
-                        <div>
-                            <p className="font-semibold text-sm">{comment.author?.full_name || 'Anonymous'}</p>
-                            <span className="text-xs text-muted-foreground">
-                                {new Date(comment.created_at).toLocaleDateString()}
-                            </span>
-                        </div>
+            <div className="flex gap-4 group">
+                {/* Avatar */}
+                <div className="w-10 h-10 bg-[#5B21B6] rounded-full flex items-center justify-center shrink-0">
+                    <span className="text-[13px] font-bold text-white tracking-wider">
+                        {comment.author?.full_name ? comment.author.full_name.charAt(0).toUpperCase() : 'A'}
+                    </span>
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                        <p className="font-bold text-[14px] text-white">
+                            @{comment.author?.full_name?.replace(/\s+/g, '') || 'Anonymous'}
+                        </p>
+                        <span className="text-[12px] font-medium text-stone-500">
+                            {new Date(comment.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    
+                    <p className="text-white text-[15px] leading-relaxed mb-2 font-medium">
+                        {comment.content}
+                    </p>
+                    
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 -ml-2">
                         {depth < maxDepth && (
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => onReply(comment.id)}
-                                className="text-muted-foreground hover:text-foreground h-8 px-2"
+                                className="text-stone-400 hover:text-white hover:bg-white/10 h-8 px-3 rounded-full text-[13px] font-semibold"
                             >
-                                <Reply className="h-3 w-3 mr-1" /> Reply
+                                <Reply className="h-4 w-4 mr-2" /> Reply
                             </Button>
                         )}
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => onDelete(comment.id)}
-                            className="text-destructive hover:text-destructive h-8 px-2"
+                            className="text-stone-500 hover:text-rose-400 hover:bg-rose-500/10 h-8 w-8 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
-                <p className="text-muted-foreground text-sm">{comment.content}</p>
             </div>
             
             {/* Nested Replies */}

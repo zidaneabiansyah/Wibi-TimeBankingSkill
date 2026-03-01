@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Footer, Header } from "@/components/layout";
-import { HeroSection, HowItWorksSection, FeaturedSkillsSection, CTASection } from "@/components/marketing/landing";
+import { HeroSection, HowItWorksSection, FeaturedSkillsSection, CTASection, PrinciplesSection } from "@/components/marketing/landing";
 
 export const metadata: Metadata = {
   title: 'Wibi - Waktu Indonesia Berbagi Ilmu | Time Banking Skill Exchange',

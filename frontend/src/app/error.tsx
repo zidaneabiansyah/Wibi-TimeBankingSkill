@@ -2,7 +2,7 @@
 
 import { ErrorDisplay } from '@/components/ui/error-display';
 
-export default function GlobalError({
+export default function Error({
     error,
     reset,
 }: {
@@ -10,17 +10,13 @@ export default function GlobalError({
     reset: () => void;
 }) {
     return (
-        <html>
-            <body>
-                <div className="min-h-screen flex items-center justify-center bg-background">
-                    <ErrorDisplay
-                        error={error}
-                        reset={reset}
-                        title="Application Error"
-                        showHomeButton
-                    />
-                </div>
-            </body>
-        </html>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+            <ErrorDisplay
+                error={error}
+                reset={reset}
+                title="Application Error"
+                showHomeButton
+            />
+        </div>
     );
 }

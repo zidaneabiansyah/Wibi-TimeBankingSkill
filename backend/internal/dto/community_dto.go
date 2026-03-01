@@ -136,25 +136,23 @@ type CommentResponse struct {
 	UpdatedAt string               `json:"updated_at"`
 }
 
-// ===== ENDORSEMENT DTOs =====
+// ===== ENDORSEMENT / DONATION DTOs =====
 
-// CreateEndorsementRequest is the request to create an endorsement
+// CreateEndorsementRequest is the request to create a donation
 type CreateEndorsementRequest struct {
-	UserID  uint   `json:"user_id" binding:"required"`
-	SkillID uint   `json:"skill_id" binding:"required"`
-	Message string `json:"message" binding:"omitempty,max=500"`
+	Amount      float64 `json:"amount" binding:"required,gt=0"`
+	Message     string  `json:"message" binding:"omitempty,max=500"`
+	IsAnonymous bool    `json:"is_anonymous"`
 }
 
-// EndorsementResponse is the response for an endorsement
+// EndorsementResponse is the response for a donation
 type EndorsementResponse struct {
-	ID         uint                 `json:"id"`
-	UserID     uint                 `json:"user_id"`
-	User       *UserProfileResponse `json:"user,omitempty"`
-	SkillID    uint                 `json:"skill_id"`
-	Skill      interface{}          `json:"skill,omitempty"`
-	EndorserID uint                 `json:"endorser_id"`
-	Endorser   *UserProfileResponse `json:"endorser,omitempty"`
-	Message    string               `json:"message"`
-	CreatedAt  string               `json:"created_at"`
-	UpdatedAt  string               `json:"updated_at"`
+	ID          uint                 `json:"id"`
+	DonorID     *uint                `json:"donor_id"`
+	Donor       *UserProfileResponse `json:"donor,omitempty"`
+	Amount      float64              `json:"amount"`
+	Message     string               `json:"message"`
+	IsAnonymous bool                 `json:"is_anonymous"`
+	CreatedAt   string               `json:"created_at"`
+	UpdatedAt   string               `json:"updated_at"`
 }

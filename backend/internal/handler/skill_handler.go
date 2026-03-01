@@ -70,12 +70,24 @@ func (h *SkillHandler) GetSkills(c *gin.Context) {
 		limit = 10
 	}
 
+	var offset int
+	offsetStr := c.Query("offset")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page <= 0 {
 		page = 1
 	}
 
-	offset := (page - 1) * limit
+	if offsetStr != "" {
+		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
+			offset = o
+			// Back-calculate page for response context and cache
+			page = (offset / limit) + 1
+		} else {
+			offset = (page - 1) * limit
+		}
+	} else {
+		offset = (page - 1) * limit
+	}
 
 	// Try to get from cache if no search/filter
 	cache := utils.GetCache()

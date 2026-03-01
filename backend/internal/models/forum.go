@@ -21,20 +21,21 @@ type ForumCategory struct {
 
 // ForumThread represents a forum discussion thread
 type ForumThread struct {
-	ID          uint      `gorm:"primaryKey" json:"id"`
-	CategoryID  uint      `gorm:"index" json:"category_id"`
+	ID          uint           `gorm:"primaryKey" json:"id"`
+	CategoryID  uint           `gorm:"index" json:"category_id"`
 	Category    *ForumCategory `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
-	AuthorID    uint      `gorm:"index" json:"author_id"`
-	Author      *User     `gorm:"foreignKey:AuthorID" json:"author,omitempty"`
-	Title       string    `gorm:"index" json:"title"`
-	Content     string    `gorm:"type:text" json:"content"`
-	Tags        JSONArray `gorm:"type:jsonb" json:"tags"`
-	ViewCount   int       `json:"view_count"`
-	ReplyCount  int       `json:"reply_count"`
-	IsPinned    bool      `json:"is_pinned"`
-	IsClosed    bool      `json:"is_closed"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	AuthorID    uint           `gorm:"index" json:"author_id"`
+	Author      *User          `gorm:"foreignKey:AuthorID" json:"author,omitempty"`
+	Title       string         `gorm:"index" json:"title"`
+	Content     string         `gorm:"type:text" json:"content"`
+	Tags        JSONArray      `gorm:"type:jsonb" json:"tags"`
+	ViewCount   int            `json:"view_count"`
+	ReplyCount  int            `json:"reply_count"`
+	UpvoteCount int            `gorm:"default:0" json:"upvote_count"`
+	IsPinned    bool           `json:"is_pinned"`
+	IsClosed    bool           `json:"is_closed"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
 // ForumReply represents a reply to a forum thread
@@ -85,18 +86,42 @@ type StoryComment struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Endorsement represents a peer endorsement for a skill
-type Endorsement struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
-	UserID    uint      `gorm:"index" json:"user_id"`
-	User      *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	SkillID   uint      `gorm:"index" json:"skill_id"`
-	Skill     *Skill    `gorm:"foreignKey:SkillID" json:"skill,omitempty"`
-	EndorserID uint     `gorm:"index" json:"endorser_id"`
-	Endorser  *User     `gorm:"foreignKey:EndorserID" json:"endorser,omitempty"`
-	Message   string    `json:"message"`
+// ThreadUpvote tracks which users have upvoted which forum threads
+type ThreadUpvote struct {
+	ID       uint      `gorm:"primaryKey" json:"id"`
+	UserID   uint      `gorm:"uniqueIndex:idx_thread_upvote_user_thread;index" json:"user_id"`
+	User     *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	ThreadID uint      `gorm:"uniqueIndex:idx_thread_upvote_user_thread;index" json:"thread_id"`
+	Thread   *ForumThread `gorm:"foreignKey:ThreadID" json:"thread,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// TableName overrides the table name
+func (ThreadUpvote) TableName() string { return "thread_upvotes" }
+
+// StoryLike tracks which users have liked which success stories
+type StoryLike struct {
+	ID        uint         `gorm:"primaryKey" json:"id"`
+	UserID    uint         `gorm:"uniqueIndex:idx_story_like_user_story;index" json:"user_id"`
+	User      *User        `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	StoryID   uint         `gorm:"uniqueIndex:idx_story_like_user_story;index" json:"story_id"`
+	Story     *SuccessStory `gorm:"foreignKey:StoryID" json:"story,omitempty"`
+	CreatedAt time.Time    `json:"created_at"`
+}
+
+// TableName overrides the table name
+func (StoryLike) TableName() string { return "story_likes" }
+
+// Endorsement represents a donation to support the Wibi platform
+type Endorsement struct {
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	DonorID     *uint     `gorm:"index" json:"donor_id"`
+	Donor       *User     `gorm:"foreignKey:DonorID" json:"donor,omitempty"`
+	Amount      float64   `gorm:"default:0" json:"amount"`
+	Message     string    `json:"message"`
+	IsAnonymous bool      `gorm:"default:false" json:"is_anonymous"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // JSONArray is a custom type for JSONB arrays

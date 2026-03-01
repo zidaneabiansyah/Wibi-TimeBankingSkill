@@ -29,17 +29,17 @@ interface SkillState {
     pageSize: number;
 
     // Actions - Master Skills
-    fetchSkills: (params?: { 
-        limit?: number; 
-        offset?: number; 
-        category?: string; 
-        search?: string; 
+    fetchSkills: (params?: {
+        limit?: number;
+        offset?: number;
+        category?: string;
+        search?: string;
         day?: number;
         rating?: number;
         location?: string;
         sort?: string;
     }) => Promise<void>;
-    
+
     fetchRecommendations: (limit?: number) => Promise<void>;
 
     // Actions - User Teaching Skills
