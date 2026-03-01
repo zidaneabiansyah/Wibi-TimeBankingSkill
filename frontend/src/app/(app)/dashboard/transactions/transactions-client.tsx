@@ -127,7 +127,7 @@ export function TransactionsClient() {
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 self-start animate-in fade-in slide-in-from-left-4 duration-700">
 
           {/* Current Balance (Primary Focus) */}
-          <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl rounded-[2rem] shadow-none hover:shadow-xl hover:bg-card/40 transition-all group">
+          <Card className="relative overflow-hidden border-border/20 bg-card/20 backdrop-blur-xl rounded-4xl shadow-none hover:shadow-xl hover:bg-card/40 transition-all group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[3rem] -mr-10 -mt-10 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100" />
             <CardContent className="p-6 relative z-10">
               <div className="flex items-start justify-between">
@@ -186,7 +186,7 @@ export function TransactionsClient() {
 
 
             {isLoading ? (
-              <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none rounded-[2rem]">
+              <Card className="border-border/20 bg-card/20 backdrop-blur-xl shadow-none rounded-4xl">
                 <CardContent className="p-6 space-y-4">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl animate-pulse delay-[{i*100}ms]">
@@ -203,7 +203,7 @@ export function TransactionsClient() {
                 </CardContent>
               </Card>
             ) : filteredTransactions.length === 0 ? (
-              <div className="border border-dashed border-border/30 bg-card/10 backdrop-blur-xl shadow-none rounded-[2rem] overflow-hidden">
+              <div className="border border-dashed border-border/30 bg-card/10 backdrop-blur-xl shadow-none rounded-4xl overflow-hidden">
                 <EmptyState
                   icon={Receipt}
                   title="No transactions yet"
@@ -219,7 +219,7 @@ export function TransactionsClient() {
                   return (
                     <div
                       key={transaction.id}
-                      className="flex items-center justify-between p-4 md:px-5 md:py-4 rounded-3xl bg-card/40 backdrop-blur-xl border border-white/5 hover:border-white/10 hover:bg-white/[0.08] transition-all shadow-sm group"
+                      className="flex items-center justify-between p-4 md:px-5 md:py-4 rounded-3xl bg-card/40 backdrop-blur-xl border border-white/5 hover:border-white/10 hover:bg-white/8 transition-all shadow-sm group"
                     >
                       <div className="flex items-center gap-4 flex-1 min-w-0">
                         {/* Icon */}

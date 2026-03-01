@@ -69,7 +69,7 @@ function ValueCard({ icon, title, desc, gradient, pattern, index }: { icon?: Rea
       {/* Decorative Top Area */}
       <div className={`h-40 w-full relative overflow-hidden ${pattern} ${gradient} opacity-80 group-hover:opacity-100 transition-opacity duration-700`}>
         {/* Glass overlay layer for the wave aesthetic */}
-        <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-white/2 backdrop-blur-[2px]" />
 
         {/* Subtle mesh lines */}
         <div
@@ -78,7 +78,7 @@ function ValueCard({ icon, title, desc, gradient, pattern, index }: { icon?: Rea
         />
 
         {/* Gradient fade into the background */}
-        <div className="absolute -bottom-2 left-0 right-0 h-24 bg-gradient-to-t from-background group-hover:from-card/40 to-transparent z-10 transition-colors duration-500" />
+        <div className="absolute -bottom-2 left-0 right-0 h-24 bg-linear-to-t from-background group-hover:from-card/40 to-transparent z-10 transition-colors duration-500" />
       </div>
 
       {/* Card Content Area */}
@@ -212,7 +212,7 @@ export default function AboutPage() {
             {/* Scroll indicator */}
             <div className="mt-6 flex flex-col items-center gap-2 text-muted-foreground">
               <span className="text-xs uppercase tracking-widest">Scroll</span>
-              <div className="w-px h-12 bg-gradient-to-b from-primary to-transparent animate-pulse" />
+              <div className="w-px h-12 bg-linear-to-b from-primary to-transparent animate-pulse" />
             </div>
           </div>
         </section>

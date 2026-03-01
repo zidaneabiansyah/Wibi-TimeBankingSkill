@@ -71,8 +71,8 @@ export function NotificationDropdown({
         <div
             className={cn(
                 "absolute right-0 top-14 w-80 sm:w-96 max-h-[500px] flex flex-col overflow-hidden",
-                "bg-card/90 backdrop-blur-3xl border border-border rounded-[2rem] shadow-xl",
-                "animate-in fade-in slide-in-from-top-4 duration-300 z-[100]"
+                "bg-card/90 backdrop-blur-3xl border border-border rounded-4xl shadow-xl",
+                "animate-in fade-in slide-in-from-top-4 duration-300 z-100"
             )}
         >
             {/* Header */}

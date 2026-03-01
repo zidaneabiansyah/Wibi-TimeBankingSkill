@@ -224,7 +224,7 @@ export function MarketplaceClient() {
             <Link href={`/marketplace/${skill.id}`} className="block group">
                 <div className="relative h-[420px] rounded-3xl overflow-hidden bg-card border border-border/60 flex flex-col transition-all duration-500 hover:border-orange-500/30 hover:shadow-2xl hover:-translate-y-1">
 
-                    <div className="relative h-[220px] overflow-hidden flex-shrink-0 bg-muted">
+                    <div className="relative h-[220px] overflow-hidden shrink-0 bg-muted">
                         <Image
                             src={bgImage}
                             alt={skill.name}
@@ -232,8 +232,8 @@ export function MarketplaceClient() {
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
-                        {/* Subtle gradient fade into content area */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50" />
+                        {/* Subtle linear fade into content area */}
+                        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background/50" />
 
                         {/* Category badge — top left */}
                         <div className="absolute top-4 left-4">
@@ -299,7 +299,7 @@ export function MarketplaceClient() {
             <div className="container mx-auto px-4 pt-6 pb-16 max-w-7xl">
 
                 {error && (
-                    <div className="mb-8 p-6 bg-destructive/10 border border-destructive/20 rounded-[2rem] text-center">
+                    <div className="mb-8 p-6 bg-destructive/10 border border-destructive/20 rounded-4xl text-center">
                         <Activity className="w-10 h-10 text-destructive mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-foreground mb-2 uppercase">Sync Error</h3>
                         <p className="text-muted-foreground mb-6">{error}</p>
@@ -325,11 +325,11 @@ export function MarketplaceClient() {
                                 variants={itemVariants}
                                 className="lg:col-span-8 bg-card border border-border/80 rounded-[2.5rem] p-8 md:p-14 flex flex-col justify-center relative overflow-hidden text-left"
                             >
-                                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/5 via-transparent to-transparent opacity-40 pointer-events-none" />
+                                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-linear(circle_at_center,var(--tw-linear-stops))] from-orange-500/5 via-transparent to-transparent opacity-40 pointer-events-none" />
 
                                 <div className="z-10 relative">
                                     <div className="flex items-center gap-2 mb-8">
-                                        <div className="h-[1px] w-12 bg-border" />
+                                        <div className="h-px w-12 bg-border" />
                                     </div>
 
                                     <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 text-foreground leading-[0.95]">
@@ -413,7 +413,7 @@ export function MarketplaceClient() {
                                 <div className="flex gap-1 overflow-x-auto scrollbar-hide flex-1 pl-1">
                                     <button
                                         onClick={() => setSelectedCategory('all')}
-                                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.1em] transition-all ${selectedCategory === 'all' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted font-bold'}`}
+                                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${selectedCategory === 'all' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted font-bold'}`}
                                     >
                                         All Systems
                                     </button>
@@ -486,7 +486,7 @@ export function MarketplaceClient() {
                                         animate={{ opacity: 1, scaleX: 1 }}
                                         exit={{ opacity: 0 }}
                                         transition={{ duration: 0.3 }}
-                                        className="absolute -top-10 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent z-40 origin-center"
+                                        className="absolute -top-10 left-0 right-0 h-[2px] bg-linear-to-r from-transparent via-orange-500 to-transparent z-40 origin-center"
                                     />
                                 )}
                             </AnimatePresence>

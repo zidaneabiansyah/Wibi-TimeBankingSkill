@@ -10,7 +10,7 @@ import { PrinciplesSection } from "@/components/marketing/landing";
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 font-sans overflow-x-clip">
-      {/* Very Subtle Mesh Gradient Background */}
+      {/* Very Subtle Mesh linear Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#ff5500]/5 rounded-full blur-[120px]" />
       </div>
@@ -31,9 +31,9 @@ export default function HowItWorksPage() {
             <div
               className="absolute inset-0 opacity-[0.2]"
               style={{
-                backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px)`,
+                backgroundImage: `radial-linear(rgba(255, 255, 255, 0.2) 1px, transparent 1px)`,
                 backgroundSize: '40px 40px',
-                maskImage: 'radial-gradient(ellipse at center, black, transparent 80%)'
+                maskImage: 'radial-linear(ellipse at center, black, transparent 80%)'
               }}
             />
 
@@ -46,11 +46,11 @@ export default function HowItWorksPage() {
             />
 
             {/* 4. Soft Radial Focus Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-[1200px] aspect-square bg-[#ff5500]/[0.03] rounded-full blur-[160px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-[1200px] aspect-square bg-[#ff5500]/3 rounded-full blur-[160px]" />
 
-            {/* 5. Seamless Fading Gradients */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent pointer-events-none z-10" />
+            {/* 5. Seamless Fading linears */}
+            <div className="absolute inset-0 bg-linear-to-b from-black via-transparent to-black" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-transparent pointer-events-none z-10" />
           </div>
 
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center mt-10 md:mt-6">
@@ -60,7 +60,7 @@ export default function HowItWorksPage() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tighter leading-[0.85] mb-8 text-white drop-shadow-2xl"
             >
-              How It <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-[#ff5500] to-orange-600">Works.</span>
+              How It <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 via-[#ff5500] to-orange-600">Works.</span>
             </motion.h1>
 
             <motion.p
@@ -124,7 +124,7 @@ export default function HowItWorksPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-foreground mb-6">
-                Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Questions.</span>
+                Frequently Asked <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Questions.</span>
               </h2>
               <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
                 Punya pertanyaan tentang Time Banking? Berikut beberapa jawabannya.
@@ -141,7 +141,7 @@ export default function HowItWorksPage() {
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-zinc-900 border border-white/[0.03] hover:border-white/10 transition-all duration-300"
+                  className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-zinc-900 border border-white/3 hover:border-white/10 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -165,7 +165,7 @@ export default function HowItWorksPage() {
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
             <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-8 drop-shadow-2xl">
               Ready to Start<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Time Banking?</span>
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Time Banking?</span>
             </h2>
             <p className="text-zinc-500 text-lg md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
               Bergabunglah dengan komunitas kami hari ini dan mulailah bertukar keterampilan dengan orang lain.
