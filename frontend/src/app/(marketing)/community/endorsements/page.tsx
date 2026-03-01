@@ -69,32 +69,32 @@ export default function EndorsementsPage() {
                 {/* Hero Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                     {/* Total Donasi */}
-                    <div className="bg-[#0A0A0A] rounded-[24px] p-8 md:p-10 border border-white/5 shadow-sm relative overflow-hidden transition-all hover:border-white/10 group">
+                    <div className="bg-card rounded-[24px] p-8 md:p-10 border border-border shadow-sm relative overflow-hidden transition-all hover:border-primary/20 group">
                         <div className="relative z-10">
-                            <h2 className="text-[40px] md:text-[52px] font-bold text-white leading-none mb-4 font-['Plus_Jakarta_Sans'] tracking-tight flex flex-col">
-                                <span className="text-[24px] text-stone-400 mb-1 font-semibold">Total Donasi Terkumpul</span>
+                            <h2 className="text-[40px] md:text-[52px] font-bold text-foreground leading-none mb-4 font-['Plus_Jakarta_Sans'] tracking-tight flex flex-col">
+                                <span className="text-[24px] text-muted-foreground mb-1 font-semibold">Total Donasi Terkumpul</span>
                                 {loading ? (
                                     <span className="text-stone-500 text-[32px]">Menghitung...</span>
                                 ) : (
                                     formatRupiah(totalAmount)
                                 )}
                             </h2>
-                            <p className="text-stone-400 font-medium text-[15px] md:text-[16px] leading-relaxed max-w-[85%] font-['Plus_Jakarta_Sans'] mt-4">
+                            <p className="text-muted-foreground font-medium text-[15px] md:text-[16px] leading-relaxed max-w-[85%] font-['Plus_Jakarta_Sans'] mt-4">
                                 Setiap donasi adalah bukti nyata dukungan dari anggota komunitas Wibi.
                                 Terima kasih telah membantu kami terus berkembang! 🙏
                             </p>
                         </div>
-                        <Award className="absolute -right-8 -bottom-8 w-48 h-48 sm:w-64 sm:h-64 text-white/5 -rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-500" strokeWidth={1} />
+                        <Award className="absolute -right-8 -bottom-8 w-48 h-48 sm:w-64 sm:h-64 text-foreground/5 -rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-500" strokeWidth={1} />
                     </div>
 
                     {/* CTA Donasi */}
                     <div className="bg-primary/5 rounded-[24px] p-8 md:p-10 border border-primary/20 relative overflow-hidden flex flex-col justify-between transition-all hover:bg-primary/10 group">
                         <div className="relative z-10 flex flex-col h-full">
                             <div>
-                                <h2 className="text-[32px] md:text-[40px] font-bold text-white leading-tight mb-3 font-['Plus_Jakarta_Sans'] tracking-tight">
+                                <h2 className="text-[32px] md:text-[40px] font-bold text-foreground leading-tight mb-3 font-['Plus_Jakarta_Sans'] tracking-tight">
                                     Beri Donasi 💖
                                 </h2>
-                                <p className="text-stone-300 font-medium text-[15px] md:text-[16px] leading-relaxed max-w-[85%] font-['Plus_Jakarta_Sans'] mb-8">
+                                <p className="text-muted-foreground font-medium text-[15px] md:text-[16px] leading-relaxed max-w-[85%] font-['Plus_Jakarta_Sans'] mb-8">
                                     Apresiasi Wibi dengan donasi dari kamu. Setiap kontribusi sangat membantu kami
                                     dalam mengembangkan platform untuk semua pelajar Indonesia.
                                 </p>
@@ -123,25 +123,25 @@ export default function EndorsementsPage() {
                 {/* Top 3 Donatur */}
                 {top3.length > 0 && (
                     <div className="mb-14">
-                        <h2 className="text-[24px] font-bold text-white mb-6 font-['Plus_Jakarta_Sans'] tracking-tight">
+                        <h2 className="text-[24px] font-bold text-foreground mb-6 font-['Plus_Jakarta_Sans'] tracking-tight">
                             🏆 Top Donatur
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                             {top3.map((donation, index) => (
                                 <div
                                     key={`top-${donation.id}`}
-                                    className="bg-[#0A0A0A] rounded-[20px] border border-white/5 p-6 transition-all hover:bg-white/5 hover:border-white/10 flex flex-col justify-between"
+                                    className="bg-card rounded-[20px] border border-border p-6 transition-all hover:bg-muted/50 hover:border-primary/20 flex flex-col justify-between shadow-sm"
                                 >
                                     <div className="mb-4 flex flex-col gap-4">
                                         <div className="flex justify-between items-start">
-                                            <div className="inline-block px-3 py-1 bg-white/5 text-stone-300 rounded-full text-[12px] font-bold uppercase tracking-widest">
+                                            <div className="inline-block px-3 py-1 bg-muted text-muted-foreground rounded-full text-[12px] font-bold uppercase tracking-widest">
                                                 #{index + 1}
                                             </div>
                                             {!donation.is_anonymous && donation.donor?.avatar ? (
                                                 <img
                                                     src={donation.donor.avatar}
                                                     alt={donation.donor.full_name}
-                                                    className="w-10 h-10 rounded-full object-cover border border-white/10"
+                                                    className="w-10 h-10 rounded-full object-cover border border-border"
                                                 />
                                             ) : (
                                                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-[14px] border border-primary/20">
@@ -149,12 +149,11 @@ export default function EndorsementsPage() {
                                                 </div>
                                             )}
                                         </div>
-                                        <p className="font-bold text-[20px] text-white font-['Plus_Jakarta_Sans'] leading-tight truncate">
+                                        <p className="font-bold text-[20px] text-foreground font-['Plus_Jakarta_Sans'] leading-tight truncate">
                                             {donation.is_anonymous ? 'Donatur Anonim' : (donation.donor?.full_name || 'Unknown')}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-2 text-primary pt-4 border-t border-white/5">
-                                        <Heart className="w-4 h-4" strokeWidth={2} />
+                                    <div className="flex items-center gap-2 text-primary pt-4 border-t border-border">
                                         <span className="text-[18px] font-bold leading-none font-['Plus_Jakarta_Sans']">
                                             {formatRupiah(donation.amount)}
                                         </span>
@@ -166,7 +165,7 @@ export default function EndorsementsPage() {
                 )}
 
                 {/* Riwayat Donasi */}
-                <h2 className="text-[26px] font-bold mb-6 text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+                <h2 className="text-[26px] font-bold mb-6 text-foreground font-['Plus_Jakarta_Sans'] tracking-tight">
                     Riwayat Donasi ({total})
                 </h2>
 
@@ -191,14 +190,14 @@ export default function EndorsementsPage() {
                             {donations.map((donation) => (
                                 <div
                                     key={donation.id}
-                                    className="bg-[#0A0A0A] rounded-[20px] border border-white/5 p-6 hover:border-white/10 hover:bg-white/2 transition-all"
+                                    className="bg-card rounded-[20px] border border-border p-6 hover:border-primary/20 hover:bg-muted/50 transition-all shadow-sm"
                                 >
                                     <div className="flex items-center gap-3 mb-4">
                                         {!donation.is_anonymous && donation.donor?.avatar ? (
                                             <img
                                                 src={donation.donor.avatar}
                                                 alt={donation.donor.full_name}
-                                                className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0"
+                                                className="w-10 h-10 rounded-full object-cover border border-border shrink-0"
                                             />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-[14px] border border-primary/20 shrink-0">
@@ -206,10 +205,10 @@ export default function EndorsementsPage() {
                                             </div>
                                         )}
                                         <div className="min-w-0">
-                                            <p className="font-semibold text-white text-[15px] truncate">
+                                            <p className="font-semibold text-foreground text-[15px] truncate">
                                                 {donation.is_anonymous ? 'Donatur Anonim' : (donation.donor?.full_name || 'Unknown')}
                                             </p>
-                                            <p className="text-stone-500 text-[12px]">
+                                            <p className="text-muted-foreground text-[12px]">
                                                 {new Date(donation.created_at).toLocaleDateString('id-ID', {
                                                     day: 'numeric',
                                                     month: 'long',
@@ -220,14 +219,13 @@ export default function EndorsementsPage() {
                                     </div>
 
                                     <div className="flex items-center gap-2 text-primary mb-3">
-                                        <Heart className="w-4 h-4 shrink-0" strokeWidth={2} />
                                         <span className="text-[20px] font-bold font-['Plus_Jakarta_Sans']">
                                             {formatRupiah(donation.amount)}
                                         </span>
                                     </div>
 
                                     {donation.message && (
-                                        <p className="text-stone-400 text-[13px] leading-relaxed italic border-t border-white/5 pt-3">
+                                        <p className="text-muted-foreground text-[13px] leading-relaxed italic border-t border-border pt-3">
                                             "{donation.message}"
                                         </p>
                                     )}
@@ -240,7 +238,7 @@ export default function EndorsementsPage() {
                                 <button
                                     onClick={() => setOffset(offset + limit)}
                                     disabled={loading}
-                                    className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/10 text-stone-300 hover:text-white text-[14px] font-semibold transition-colors border border-white/5 disabled:opacity-50"
+                                    className="px-8 py-3 rounded-full bg-card hover:bg-muted text-foreground text-[14px] font-semibold transition-colors border border-border disabled:opacity-50 shadow-sm"
                                 >
                                     {loading ? 'Memuat...' : 'Lihat Lebih Banyak'}
                                 </button>

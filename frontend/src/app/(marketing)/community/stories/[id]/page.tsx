@@ -23,7 +23,11 @@ export default function StoryDetailPage() {
 
     const [commentContent, setCommentContent] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    
+    // Like state
     const [isLiked, setIsLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
+    const [loadingLike, setLoadingLike] = useState(false);
     const [replyingTo, setReplyingTo] = useState<number | null>(null);
     const [recommendedStories, setRecommendedStories] = useState<SuccessStory[]>([]);
     const [loadingRecommended, setLoadingRecommended] = useState(true);
@@ -33,6 +37,24 @@ export default function StoryDetailPage() {
         fetchComments();
         fetchRecommendedStories();
     }, [storyId]);
+
+    useEffect(() => {
+        if (selectedStory) {
+            setLikeCount((selectedStory as any).like_count || 0);
+            checkLikeStatus();
+        }
+    }, [selectedStory?.id]);
+
+    const checkLikeStatus = async () => {
+        if (!selectedStory) return;
+        try {
+            const data = await communityService.checkStoryLike(selectedStory.id);
+            setIsLiked(data.liked);
+            setLikeCount(data.count);
+        } catch (err) {
+            console.error('Failed to check like status:', err);
+        }
+    };
 
     const fetchStory = async () => {
         try {
@@ -90,22 +112,26 @@ export default function StoryDetailPage() {
     };
 
     const handleLike = async () => {
+        if (!selectedStory) return;
+        
+        // Optimistic update
+        const prevLiked = isLiked;
+        const prevCount = likeCount;
+        setIsLiked(!prevLiked);
+        setLikeCount(prevLiked ? prevCount - 1 : prevCount + 1);
+
         try {
-            if (isLiked) {
-                await communityService.unlikeStory(storyId);
-                setIsLiked(false);
-            } else {
-                await communityService.likeStory(storyId);
-                setIsLiked(true);
-            }
-            if (selectedStory) {
-                setSelectedStory({
-                    ...selectedStory,
-                    like_count: isLiked ? selectedStory.like_count - 1 : selectedStory.like_count + 1,
-                });
-            }
+            setLoadingLike(true);
+            const data = await communityService.toggleStoryLike(selectedStory.id);
+            setIsLiked(data.liked);
+            setLikeCount(data.count);
         } catch (err) {
-            toast.error('Failed to like story');
+            // Revert on error
+            setIsLiked(prevLiked);
+            setLikeCount(prevCount);
+            toast.error('Failed to update like status');
+        } finally {
+            setLoadingLike(false);
         }
     };
 
@@ -160,17 +186,17 @@ export default function StoryDetailPage() {
                 
                 {/* Breadcrumb / Status area */}
                 <div className="mb-4 flex items-center justify-between">
-                    <div className="flex items-center text-sm font-medium tracking-wide text-stone-400 uppercase">
+                    <div className="flex items-center text-sm font-medium tracking-wide text-muted-foreground uppercase">
                         <Link href="/community" className="hover:text-primary transition-colors">Success Stories</Link>
-                        <span className="mx-2 text-stone-600">/</span>
-                        <span className="text-white">Detail</span>
+                        <span className="mx-2 text-border">/</span>
+                        <span className="text-foreground">Detail</span>
                     </div>
                 </div>
 
                 <Button 
                     variant="ghost" 
                     onClick={() => router.back()} 
-                    className="mb-8 text-stone-400 hover:text-white hover:bg-white/5 pl-0 group"
+                    className="mb-8 text-muted-foreground hover:text-foreground hover:bg-muted pl-0 group"
                 >
                     <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                     Back to stories
@@ -184,26 +210,26 @@ export default function StoryDetailPage() {
                         
                         {/* Title and Top Meta */}
                         <div className="mb-8">
-                            <h1 className="text-[32px] md:text-[40px] font-bold text-white mb-6 leading-tight tracking-tight">
+                            <h1 className="text-[32px] md:text-[40px] font-bold text-foreground mb-6 leading-tight tracking-tight">
                                 {selectedStory.title}
                             </h1>
                             
                             <div className="flex flex-wrap items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-[#5B21B6] border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                    <div className="w-12 h-12 rounded-full bg-primary/20 border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                                         {selectedStory.user?.full_name ? (
-                                            <span className="text-white text-base font-bold tracking-wider">
+                                            <span className="text-primary text-base font-bold tracking-wider">
                                                 {selectedStory.user.full_name.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase()}
                                             </span>
                                         ) : (
-                                            <span className="text-white text-base font-bold tracking-wider">AN</span>
+                                            <span className="text-primary text-base font-bold tracking-wider">AN</span>
                                         )}
                                     </div>
                                     <div className="flex flex-col">
-                                        <p className="text-[16px] font-bold text-white leading-tight mb-1">
+                                        <p className="text-[16px] font-bold text-foreground leading-tight mb-1">
                                             {selectedStory.user?.full_name || 'Anonymous'}
                                         </p>
-                                        <p className="text-[13px] font-medium text-stone-400 flex items-center gap-2">
+                                        <p className="text-[13px] font-medium text-muted-foreground flex items-center gap-2">
                                             {new Date(selectedStory.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                                         </p>
                                     </div>
@@ -211,11 +237,11 @@ export default function StoryDetailPage() {
 
                                 {/* Action Menu */}
                                 <div className="flex items-center gap-3">
-                                    <Button onClick={copyLink} variant="ghost" size="sm" className="text-stone-400 hover:text-white hover:bg-white/5">
+                                    <Button onClick={copyLink} variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-muted">
                                         <LinkIcon className="h-4 w-4 mr-2" />
                                         Copy Link
                                     </Button>
-                                    <Button variant="ghost" size="sm" className="text-stone-400 hover:text-rose-400 hover:bg-rose-400/10">
+                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-rose-400 hover:bg-rose-400/10">
                                         <Flag className="h-4 w-4 mr-2" />
                                         Report
                                     </Button>
@@ -225,7 +251,7 @@ export default function StoryDetailPage() {
 
                         {/* Feature Image */}
                         {(selectedStory.featured_image_url || (selectedStory.images && selectedStory.images.length > 0)) && (
-                            <div className="relative h-[300px] sm:h-[450px] w-full rounded-[24px] overflow-hidden mb-8 border border-white/5 shadow-sm bg-[#0A0A0A]">
+                            <div className="relative h-[300px] sm:h-[450px] w-full rounded-[24px] overflow-hidden mb-8 border border-border shadow-sm bg-muted">
                                 <OptimizedImage
                                     src={selectedStory.featured_image_url || selectedStory.images[0]}
                                     alt={selectedStory.title}
@@ -240,7 +266,7 @@ export default function StoryDetailPage() {
                         {selectedStory.tags && selectedStory.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2.5 mb-8">
                                 {selectedStory.tags.map((tag) => (
-                                    <span key={tag} className="px-4 py-1.5 bg-white/5 border border-white/5 rounded-full text-[13px] font-semibold text-white">
+                                    <span key={tag} className="px-4 py-1.5 bg-muted border border-border rounded-full text-[13px] font-semibold text-foreground">
                                         #{tag}
                                     </span>
                                 ))}
@@ -249,22 +275,23 @@ export default function StoryDetailPage() {
 
                         {/* Story Content */}
                         <div 
-                            className="prose prose-invert max-w-none mb-10 prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-stone-300 prose-headings:text-white prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:text-white"
+                            className="prose prose-stone dark:prose-invert max-w-none mb-10 prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-muted-foreground prose-headings:text-foreground prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:text-foreground"
                             dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedStory.description) }}
                         />
 
                         {/* Interaction Bar */}
-                        <div className="flex items-center justify-between py-6 border-y border-white/10 mb-10">
+                        <div className="flex items-center justify-between py-6 border-y border-border mb-10">
                             <div className="flex items-center gap-8">
                                 <button 
                                     onClick={handleLike}
-                                    className="flex items-center gap-2.5 group"
+                                    disabled={loadingLike}
+                                    className="flex items-center gap-2.5 group disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <div className={`p-2 rounded-full transition-colors ${isLiked ? 'bg-rose-500/20 text-rose-500' : 'bg-white/5 text-stone-400 group-hover:bg-white/10 group-hover:text-rose-400'}`}>
-                                        <Heart className={`h-5 w-5 stroke-[2.5] ${isLiked ? 'fill-current' : ''}`} />
+                                    <div className={`p-2 rounded-full transition-all duration-300 ${isLiked ? 'bg-rose-500/20 text-rose-500' : 'bg-muted text-muted-foreground group-hover:bg-rose-500/10 group-hover:text-rose-400'}`}>
+                                        <Heart className={`h-5 w-5 stroke-[2.5] transition-transform duration-300 ${isLiked ? 'fill-current scale-110' : ''}`} />
                                     </div>
-                                    <span className={`font-bold text-[15px] ${isLiked ? 'text-rose-500' : 'text-stone-300 group-hover:text-rose-400'}`}>
-                                        {selectedStory.like_count} Likes
+                                    <span className={`font-bold text-[15px] ${isLiked ? 'text-rose-500' : 'text-foreground group-hover:text-rose-400'}`}>
+                                        {likeCount} Likes
                                     </span>
                                 </button>
                                 
@@ -272,10 +299,10 @@ export default function StoryDetailPage() {
                                     onClick={() => document.getElementById('comment-form')?.scrollIntoView({ behavior: 'smooth' })}
                                     className="flex items-center gap-2.5 group"
                                 >
-                                    <div className="p-2 rounded-full bg-white/5 text-stone-400 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                                    <div className="p-2 rounded-full bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                                         <MessageCircle className="h-5 w-5 stroke-[2.5]" />
                                     </div>
-                                    <span className="font-bold text-[15px] text-stone-300 group-hover:text-white">
+                                    <span className="font-bold text-[15px] text-foreground group-hover:text-primary">
                                         {selectedStory.comment_count} Comments
                                     </span>
                                 </button>
@@ -284,21 +311,21 @@ export default function StoryDetailPage() {
 
                         {/* Comments Section (Merged form and list like YouTube) */}
                         <div className="space-y-6 mb-10">
-                            <h2 className="text-[20px] font-bold text-white mb-6">Comments ({storyComments.length})</h2>
+                            <h2 className="text-[20px] font-bold text-foreground mb-6">Comments ({storyComments.length})</h2>
                             
                             {/* Comment Input Form */}
                             <div id="comment-form" className="flex gap-4 mb-8">
-                                <div className="w-10 h-10 rounded-full bg-[#5B21B6] flex items-center justify-center shrink-0">
-                                    <span className="text-[13px] font-bold text-white tracking-wider">M</span> {/* Hardcoded M for ME as placeholder or fetch user */}
+                                <div className="w-10 h-10 rounded-full bg-primary/20 border border-border flex items-center justify-center shrink-0">
+                                    <span className="text-[13px] font-bold text-primary tracking-wider">M</span> {/* Hardcoded M for ME as placeholder or fetch user */}
                                 </div>
                                 <div className="flex-1">
                                     {replyingToComment && (
                                         <div className="flex items-center gap-2 mb-2 text-sm">
-                                            <span className="text-stone-400">Replying to</span>
-                                            <span className="font-bold text-white">@{replyingToComment.author?.full_name?.replace(' ', '') || 'Anonymous'}</span>
+                                            <span className="text-muted-foreground">Replying to</span>
+                                            <span className="font-bold text-foreground">@{replyingToComment.author?.full_name?.replace(' ', '') || 'Anonymous'}</span>
                                             <button 
                                                 onClick={() => setReplyingTo(null)}
-                                                className="text-stone-500 hover:text-rose-400 ml-2 text-xs font-semibold px-2 py-0.5 rounded bg-white/5"
+                                                className="text-muted-foreground hover:text-rose-400 ml-2 text-xs font-semibold px-2 py-0.5 rounded bg-muted"
                                             >
                                                 Cancel
                                             </button>
@@ -308,7 +335,7 @@ export default function StoryDetailPage() {
                                         value={commentContent}
                                         onChange={(e) => setCommentContent(e.target.value)}
                                         placeholder="Add a comment..."
-                                        className="w-full bg-transparent border-0 border-b border-white/20 pb-2 focus:ring-0 focus:border-white text-white placeholder:text-stone-500 text-[15px] resize-none overflow-hidden min-h-[30px]"
+                                        className="w-full bg-transparent border-0 border-b border-border pb-2 focus:ring-0 focus:border-primary text-foreground placeholder:text-muted-foreground/50 text-[15px] resize-none overflow-hidden min-h-[30px]"
                                         rows={1}
                                         onInput={(e) => {
                                             const target = e.target as HTMLTextAreaElement;
@@ -324,7 +351,7 @@ export default function StoryDetailPage() {
                                                     setCommentContent('');
                                                     setReplyingTo(null);
                                                 }}
-                                                className="px-4 py-2 rounded-full text-[14px] font-semibold text-white hover:bg-white/10 transition-colors"
+                                                className="px-4 py-2 rounded-full text-[14px] font-semibold text-muted-foreground hover:bg-muted transition-colors"
                                             >
                                                 Cancel
                                             </button>
@@ -333,8 +360,8 @@ export default function StoryDetailPage() {
                                                 disabled={submitting || !commentContent.trim()}
                                                 className={`px-4 py-2 rounded-full text-[14px] font-semibold transition-colors flex items-center ${
                                                     commentContent.trim() 
-                                                        ? 'bg-blue-600 hover:bg-blue-500 text-white' 
-                                                        : 'bg-white/10 text-stone-500 cursor-not-allowed'
+                                                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20' 
+                                                        : 'bg-muted text-muted-foreground cursor-not-allowed'
                                                 }`}
                                             >
                                                 {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
@@ -354,8 +381,8 @@ export default function StoryDetailPage() {
                                         onDelete={handleDeleteComment}
                                     />
                                 ) : (
-                                    <div className="text-center py-12 rounded-2xl">
-                                        <p className="text-stone-400 font-medium">No comments yet. Be the first to share your thoughts!</p>
+                                    <div className="text-center py-12 rounded-2xl bg-muted/30 border border-dashed border-border">
+                                        <p className="text-muted-foreground font-medium">No comments yet. Be the first to share your thoughts!</p>
                                     </div>
                                 )}
                             </div>
@@ -365,8 +392,8 @@ export default function StoryDetailPage() {
                     {/* ===== RIGHT COLUMN: Recommended Sidebar (span 4) ===== */}
                     <aside className="hidden lg:block lg:col-span-4 shrink-0">
                         <div className="sticky top-28 flex flex-col space-y-6 pb-4">
-                            <div className="bg-[#0A0A0A] border border-white/5 rounded-[24px] p-6 shadow-sm">
-                                <h3 className="font-bold text-[18px] text-white mb-6 flex items-center gap-2">
+                            <div className="bg-card border border-border rounded-[24px] p-6 shadow-sm">
+                                <h3 className="font-bold text-[18px] text-foreground mb-6 flex items-center gap-2">
                                     <Heart className="w-5 h-5 text-primary fill-primary/20" />
                                     More Inspiring Stories
                                 </h3>
@@ -381,19 +408,19 @@ export default function StoryDetailPage() {
                                             <Link 
                                                 key={story.id} 
                                                 href={`/community/stories/${story.id}`}
-                                                className="group flex flex-col gap-3 p-3 -mx-3 rounded-xl hover:bg-white/5 transition-colors"
+                                                className="group flex flex-col gap-3 p-3 -mx-3 rounded-xl hover:bg-muted transition-colors"
                                             >
-                                                <h4 className="font-bold text-[15px] text-white leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                                                <h4 className="font-bold text-[15px] text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
                                                     {story.title}
                                                 </h4>
                                                 
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-6 h-6 rounded-full bg-[#5B21B6] flex items-center justify-center shrink-0">
-                                                        <span className="text-white text-[10px] font-bold">
+                                                    <div className="w-6 h-6 rounded-full bg-primary/20 border border-border flex items-center justify-center shrink-0">
+                                                        <span className="text-primary text-[10px] font-bold">
                                                             {story.user?.full_name ? story.user.full_name.charAt(0).toUpperCase() : 'A'}
                                                         </span>
                                                     </div>
-                                                    <p className="text-[13px] font-medium text-stone-400 truncate">
+                                                    <p className="text-[13px] font-medium text-muted-foreground truncate">
                                                         {story.user?.full_name || 'Anonymous'}
                                                     </p>
                                                 </div>
@@ -409,7 +436,7 @@ export default function StoryDetailPage() {
                                 <Button 
                                     variant="outline" 
                                     onClick={() => router.push('/community/stories')}
-                                    className="w-full mt-6 border-white/10 text-stone-300 hover:text-white hover:bg-white/10 hover:border-white/20 rounded-xl"
+                                    className="w-full mt-6 border-border text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl bg-transparent"
                                 >
                                     Browse All Stories
                                 </Button>

@@ -89,20 +89,20 @@ export default function ForumPage() {
                 
                 {/* Breadcrumb / Status area */}
                 <div className="mb-8 flex items-center justify-between">
-                    <div className="flex items-center text-sm font-medium tracking-wide text-stone-400 uppercase">
+                    <div className="flex items-center text-sm font-medium tracking-wide text-muted-foreground uppercase">
                         <Link href="/community" className="hover:text-primary transition-colors">Forum</Link>
                         {selectedCategoryId && (
                             <>
-                                <span className="mx-2 text-stone-600">/</span>
-                                <span className="text-white">
+                                <span className="mx-2 text-border">/</span>
+                                <span className="text-foreground">
                                     {categories.find(c => c.id === selectedCategoryId)?.name || 'Category'}
                                 </span>
                             </>
                         )}
                         {!selectedCategoryId && activeTab && (
                             <>
-                                <span className="mx-2 text-stone-600">/</span>
-                                <span className="text-white">{activeTab}</span>
+                                <span className="mx-2 text-border">/</span>
+                                <span className="text-foreground">{activeTab}</span>
                             </>
                         )}
                     </div>
@@ -121,30 +121,30 @@ export default function ForumPage() {
                                 placeholder="Search for topics..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-5 pr-12 py-3.5 bg-card/60 border border-white/5 rounded-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm shadow-sm transition-all text-white placeholder:text-stone-500"
+                                className="w-full pl-5 pr-12 py-3.5 bg-card border border-border rounded-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
                             />
-                            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-primary hover:text-white bg-primary/10 rounded-full transition-colors">
+                            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-primary hover:text-primary-foreground hover:bg-primary bg-primary/10 rounded-full transition-colors">
                                 <Search className="w-4 h-4" />
                             </button>
                         </form>
 
                         {/* Navigation Tabs */}
-                        <div className="bg-card/40 border border-white/5 rounded-[2rem] p-2 flex flex-col">
+                        <div className="bg-card border border-border rounded-[2rem] p-2 flex flex-col">
                             <button
                                 onClick={() => { setActiveTab('latest'); setSelectedCategoryId(null); }}
-                                className={`flex items-center gap-3 px-5 py-3.5 rounded-3xl text-[14px] font-medium transition-all ${activeTab === 'latest' && !selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold shadow-[0_4px_14px_0_rgba(249,115,22,0.39)]' : 'text-stone-400 hover:text-stone-200'}`}
+                                className={`flex items-center gap-3 px-5 py-3.5 rounded-3xl text-[14px] font-medium transition-all ${activeTab === 'latest' && !selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                             >
                                 Latest
                             </button>
                             <button
                                 onClick={() => { setActiveTab('popular'); setSelectedCategoryId(null); }}
-                                className={`flex items-center gap-3 px-5 py-3.5 rounded-3xl text-[14px] font-medium transition-all ${activeTab === 'popular' && !selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold shadow-[0_4px_14px_0_rgba(249,115,22,0.39)]' : 'text-stone-400 hover:text-stone-200'}`}
+                                className={`flex items-center gap-3 px-5 py-3.5 rounded-3xl text-[14px] font-medium transition-all ${activeTab === 'popular' && !selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                             >
                                 Popular
                             </button>
                             <button
                                 onClick={() => { setActiveTab('older'); setSelectedCategoryId(null); }}
-                                className={`flex items-center gap-3 px-5 py-3.5 rounded-3xl text-[14px] font-medium transition-all ${activeTab === 'older' && !selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold shadow-[0_4px_14px_0_rgba(249,115,22,0.39)]' : 'text-stone-400 hover:text-stone-200'}`}
+                                className={`flex items-center gap-3 px-5 py-3.5 rounded-3xl text-[14px] font-medium transition-all ${activeTab === 'older' && !selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                             >
                                 Older
                             </button>
@@ -153,15 +153,15 @@ export default function ForumPage() {
                         {/* Categories List */}
                         <div className="bg-transparent pt-4">
                             <div className="flex items-center justify-between mb-4 px-2">
-                                <h3 className="font-semibold text-base text-white">Categories ({categories.length})</h3>
-                                <ChevronDown className="w-4 h-4 text-stone-500" />
+                                <h3 className="font-semibold text-base text-foreground">Categories ({categories.length})</h3>
+                                <ChevronDown className="w-4 h-4 text-muted-foreground" />
                             </div>
-                            <div className="space-y-1 bg-card/40 border border-white/5 p-2 rounded-[2rem]">
+                            <div className="space-y-1 bg-card border border-border p-2 rounded-[2rem]">
                                 {categories.map(category => (
                                     <button
                                         key={category.id}
                                         onClick={() => setSelectedCategoryId(category.id)}
-                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-3xl text-[14px] font-medium transition-all text-left group ${selectedCategoryId === category.id ? 'bg-white/10 text-white font-semibold' : 'text-stone-400 hover:text-stone-200 hover:bg-white/5'}`}
+                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-3xl text-[14px] font-medium transition-all text-left group ${selectedCategoryId === category.id ? 'bg-muted text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: category.color || '#f97316' }} />
@@ -189,44 +189,44 @@ export default function ForumPage() {
                                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
                             </div>
                         ) : threads.length === 0 ? (
-                            <div className="bg-card/50 border border-white/5 rounded-[2rem] p-12 text-center">
-                                <MessageSquare className="w-12 h-12 mx-auto text-stone-600 mb-4 opacity-50" />
-                                <h3 className="text-lg font-semibold text-white mb-2">No discussions found</h3>
-                                <p className="text-stone-400 text-[14px]">Be the first to start a conversation in this area.</p>
+                            <div className="bg-card border border-border rounded-[2rem] p-12 text-center">
+                                <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground mb-4 opacity-50" />
+                                <h3 className="text-lg font-semibold text-foreground mb-2">No discussions found</h3>
+                                <p className="text-muted-foreground text-[14px]">Be the first to start a conversation in this area.</p>
                             </div>
                         ) : (
                             <div className="space-y-5">
                                 {threads.map(thread => (
                                     <Link href={`/community/forum/thread/${thread.id}`} key={thread.id} className="block group">
-                                        <div className="bg-card border border-white/5 rounded-[2rem] p-6 lg:p-7 transition-all duration-300 hover:bg-card/80 hover:border-white/15 relative overflow-hidden group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                                        <div className="bg-card border border-border rounded-[2rem] p-6 lg:p-7 transition-all duration-300 hover:border-primary/20 relative overflow-hidden group-hover:shadow-lg">
                                             
                                             {/* Top info */}
                                             <div className="flex items-start justify-between mb-5">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-11 h-11 rounded-full bg-stone-900 flex items-center justify-center overflow-hidden border border-white/10 shrink-0">
+                                                    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-border shrink-0">
                                                         {thread.author?.avatar ? (
                                                             <img src={thread.author.avatar} alt={thread.author?.full_name} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <User className="w-5 h-5 text-stone-400" />
+                                                            <User className="w-5 h-5 text-muted-foreground" />
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <p className="text-[13px] font-medium text-stone-400">
-                                                            Posted by <span className="text-stone-100 font-semibold">{thread.author?.full_name || 'Anonymous'}</span>
+                                                        <p className="text-[13px] font-medium text-muted-foreground">
+                                                            Posted by <span className="text-foreground font-semibold">{thread.author?.full_name || 'Anonymous'}</span>
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs text-stone-500 font-medium whitespace-nowrap">
+                                                <div className="text-xs text-muted-foreground font-medium whitespace-nowrap">
                                                     {formatDistanceToNow(new Date(thread.created_at), { addSuffix: true })}
                                                 </div>
                                             </div>
 
                                             {/* Content Area */}
                                             <div className="mb-6">
-                                                <h3 className="text-lg md:text-[19px] font-semibold text-stone-100 mb-2.5 group-hover:text-primary transition-colors leading-snug">
+                                                <h3 className="text-lg md:text-[19px] font-semibold text-foreground mb-2.5 group-hover:text-primary transition-colors leading-snug">
                                                     {thread.title}
                                                 </h3>
-                                                <p className="text-[14px] text-stone-400 line-clamp-2 leading-relaxed font-normal">
+                                                <p className="text-[14px] text-muted-foreground line-clamp-2 leading-relaxed font-normal">
                                                     {thread.content}
                                                 </p>
                                                 {/* Thread Tags Display */}
@@ -242,23 +242,23 @@ export default function ForumPage() {
                                             </div>
 
                                             {/* Bottom interaction bar */}
-                                            <div className="flex items-center justify-between border-t border-white/5 pt-5">
+                                            <div className="flex items-center justify-between border-t border-border pt-5">
                                                 <div className="flex items-center gap-6">
                                                     <div className="flex items-center gap-2 text-[#059669] font-bold text-[14px]">
                                                         <ChevronUp className="w-4 h-4 stroke-[3]" />
                                                         <span>11</span>
                                                     </div>
-                                                    <div className="flex items-center gap-1.5 text-stone-400 text-[13px] font-medium">
+                                                    <div className="flex items-center gap-1.5 text-muted-foreground text-[13px] font-medium">
                                                         <Eye className="w-4 h-4" />
                                                         <span>{thread.view_count || 0}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-1.5 text-stone-400 text-[13px] font-medium">
+                                                    <div className="flex items-center gap-1.5 text-muted-foreground text-[13px] font-medium">
                                                         <MessageSquare className="w-4 h-4" />
                                                         <span>{thread.reply_count || 0}</span>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center text-stone-400 group-hover:text-primary transition-all">
+                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted group-hover:bg-primary/20 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-all">
                                                         <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                                     </div>
                                                 </div>
@@ -270,7 +270,7 @@ export default function ForumPage() {
                                 
                                 {threads.length > 0 && (
                                     <div className="pt-6 flex justify-center">
-                                        <Button variant="secondary" className="rounded-full px-8 py-6 font-semibold bg-white/5 hover:bg-white/10 text-white border-0 text-[15px]">
+                                        <Button variant="secondary" className="rounded-full px-8 py-6 font-semibold bg-card hover:bg-muted text-foreground border border-border text-[15px]">
                                             See more
                                         </Button>
                                     </div>
@@ -295,14 +295,14 @@ export default function ForumPage() {
 
                         {/* Popular Tags */}
                         <div className="space-y-5">
-                            <h3 className="font-semibold text-[17px] text-white">Popular tags</h3>
+                            <h3 className="font-semibold text-[17px] text-foreground">Popular tags</h3>
                             <div className="flex flex-wrap gap-2.5">
                                 {POPULAR_TAGS.map(tag => (
                                     <span 
                                         key={tag} 
-                                        className="px-4 py-1.5 bg-card border border-white/5 rounded-xl text-[13px] font-medium text-stone-300 hover:bg-white/10 hover:border-white/20 hover:text-white cursor-pointer transition-all"
+                                        className="px-4 py-1.5 bg-card border border-border rounded-xl text-[13px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer transition-all"
                                     >
-                                        {tag}
+                                        #{tag}
                                     </span>
                                 ))}
                             </div>
