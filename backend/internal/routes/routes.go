@@ -53,6 +53,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	availabilityHandler := InitializeAvailabilityHandler(db)
 	favoriteHandler := InitializeFavoriteHandler(db)
 	templateHandler := InitializeTemplateHandler(db)
+	voteHandler := InitializeVoteHandler(db)
 
 	// Initialize repository for IDOR middleware
 	sessionRepo := repository.NewSessionRepository(db)
@@ -248,15 +249,17 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			publicForum.GET("/categories/:category_id/threads", forumHandler.GetThreadsByCategory)       // GET /api/v1/forum/categories/:category_id/threads
 			publicForum.GET("/threads/:id/replies", forumHandler.GetReplies)                    // GET /api/v1/forum/threads/:id/replies
 			publicForum.GET("/search", forumHandler.SearchThreads)                              // GET /api/v1/forum/search
+			publicForum.GET("/threads/:id/upvote", voteHandler.GetThreadVoteStatus)            // GET /api/v1/forum/threads/:id/upvote (guest-safe)
 		}
 
 		// Public Stories
 		publicStories := v1.Group("/stories")
 		{
-			publicStories.GET("/published", storyHandler.GetPublishedStories)                   // GET /api/v1/stories/published (specific routes first)
+			publicStories.GET("/published", storyHandler.GetPublishedStories)                   // GET /api/v1/stories/published
 			publicStories.GET("/user/:user_id", storyHandler.GetUserStories)                    // GET /api/v1/stories/user/:user_id
-			publicStories.GET("/:id", storyHandler.GetStory)                                    // GET /api/v1/stories/:id (generic routes last)
+			publicStories.GET("/:id", storyHandler.GetStory)                                    // GET /api/v1/stories/:id
 			publicStories.GET("/:id/comments", storyHandler.GetComments)                        // GET /api/v1/stories/:id/comments
+			publicStories.GET("/:id/like", voteHandler.GetStoryLikeStatus)                     // GET /api/v1/stories/:id/like (guest-safe)
 		}
 
 		// Public Leaderboards
@@ -499,6 +502,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				forum.DELETE("/replies/:id", forumHandler.DeleteReply)                        // DELETE /api/v1/forum/replies/:id
 				forum.POST("/threads/:id/pin", forumHandler.PinThread)                        // POST /api/v1/forum/threads/:id/pin
 				forum.POST("/threads/:id/lock", forumHandler.LockThread)                      // POST /api/v1/forum/threads/:id/lock
+				forum.POST("/threads/:id/upvote", voteHandler.ToggleThreadUpvote)             // POST /api/v1/forum/threads/:id/upvote (toggle)
 			}
 
 			// Stories routes
@@ -509,8 +513,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				stories.DELETE("/comments/:id", storyHandler.DeleteComment)                   // DELETE /api/v1/stories/comments/:id
 				stories.PUT("/:id", storyHandler.UpdateStory)                                 // PUT /api/v1/stories/:id
 				stories.DELETE("/:id", storyHandler.DeleteStory)                              // DELETE /api/v1/stories/:id
-				stories.POST("/:id/like", storyHandler.LikeStory)                             // POST /api/v1/stories/:id/like
-				stories.POST("/:id/unlike", storyHandler.UnlikeStory)                         // POST /api/v1/stories/:id/unlike
+				stories.POST("/:id/like", voteHandler.ToggleStoryLike)                        // POST /api/v1/stories/:id/like (toggle with tracking)
 			}
 
 			// Endorsements routes
