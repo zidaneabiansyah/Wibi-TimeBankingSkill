@@ -79,16 +79,28 @@ export const communityService = {
      */
     async getAllThreads(
         limit: number = 10,
-        offset: number = 0
+        offset: number = 0,
+        search?: string
     ): Promise<{ threads: ForumThread[]; total: number }> {
         try {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
+            // Gunakan /forum/search hanya jika ada keyword, selain itu pakai /forum/threads
+            if (search && search.trim() !== '') {
+                const response = await axios.get<
+                    ApiResponse<{ threads: ForumThread[]; total: number }>
+                >(`${API_BASE}/forum/search`, {
+                    params: { q: search.trim(), limit, offset },
+                    headers,
+                });
+                return response.data.data || { threads: [], total: 0 };
+            }
+
             const response = await axios.get<
                 ApiResponse<{ threads: ForumThread[]; total: number }>
-            >(`${API_BASE}/forum/search`, {
-                params: { q: '', limit, offset },
+            >(`${API_BASE}/forum/threads`, {
+                params: { limit, offset },
                 headers,
             });
             return response.data.data || { threads: [], total: 0 };
