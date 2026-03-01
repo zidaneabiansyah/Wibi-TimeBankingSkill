@@ -237,3 +237,14 @@ func (s *ForumService) SearchThreads(query string, limit, offset int) ([]models.
 
 	return s.forumRepo.SearchThreads(query, limit, offset)
 }
+
+// GetAllThreads gets all forum threads without filter
+func (s *ForumService) GetAllThreads(limit, offset int) ([]models.ForumThread, int64, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	return s.forumRepo.GetAllThreads(limit, offset, "")
+}

@@ -243,6 +243,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 		publicForum := v1.Group("/forum")
 		{
 			publicForum.GET("/categories", forumHandler.GetCategories)                          // GET /api/v1/forum/categories
+			publicForum.GET("/threads", forumHandler.GetAllThreads)                              // GET /api/v1/forum/threads
 			publicForum.GET("/threads/:id", forumHandler.GetThread)                             // GET /api/v1/forum/threads/:id
 			publicForum.GET("/categories/:category_id/threads", forumHandler.GetThreadsByCategory)       // GET /api/v1/forum/categories/:category_id/threads
 			publicForum.GET("/threads/:id/replies", forumHandler.GetReplies)                    // GET /api/v1/forum/threads/:id/replies

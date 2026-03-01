@@ -248,6 +248,41 @@ func (h *ForumHandler) SearchThreads(c *gin.Context) {
 	})
 }
 
+// GetAllThreads gets all forum threads (public listing, no search query needed)
+func (h *ForumHandler) GetAllThreads(c *gin.Context) {
+	limit := 20
+	offset := 0
+
+	if l := c.Query("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
+			limit = parsed
+		}
+	}
+	if o := c.Query("offset"); o != "" {
+		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
+			offset = parsed
+		}
+	}
+
+	// Reuse SearchThreads with a wildcard-ish broad query
+	threads, total, err := h.forumService.GetAllThreads(limit, offset)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch threads", err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Threads fetched successfully",
+		"data": gin.H{
+			"threads": threads,
+			"total":   total,
+			"limit":   limit,
+			"offset":  offset,
+		},
+	})
+}
+
 // ===== REPLY ENDPOINTS =====
 
 // CreateReply creates a new forum reply

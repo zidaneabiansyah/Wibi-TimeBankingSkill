@@ -157,3 +157,4 @@ func (r *ForumRepository) SearchThreads(query string, limit, offset int) ([]mode
 
 	return threads, total, err
 }
+
