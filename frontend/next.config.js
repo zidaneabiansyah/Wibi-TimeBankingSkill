@@ -133,6 +133,12 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'mzzfxduavmjyiyaflyok.supabase.co',
+                port: '',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
                 hostname: 'avatars.githubusercontent.com',
                 port: '',
                 pathname: '/**',

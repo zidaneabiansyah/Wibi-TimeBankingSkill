@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 const stats = [
   { value: 12000, suffix: "+", desc: "Pelajar aktif yang telah merasakan manfaat belajar di Wibi" },
-  { value: 0, prefix: "Rp ", desc: "Biaya pendaftaran — belajar gratis untuk semua kalangan" },
+  { value: 0, prefix: "Rp ", desc: "Biaya pendaftaran, belajar gratis untuk semua kalangan" },
   { value: 100, suffix: "+", desc: "Mentor berpengalaman dari berbagai industri siap membimbing" },
   { value: 15, suffix: "+", desc: "Bidang ilmu tersedia mulai dari teknologi hingga seni budaya" },
 ];

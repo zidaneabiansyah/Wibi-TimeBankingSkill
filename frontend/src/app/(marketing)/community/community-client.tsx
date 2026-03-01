@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
@@ -83,7 +84,7 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
     }, []);
 
     return (
-        <main ref={containerRef} className={`flex-1 relative overflow-x-hidden ${plusJakartaSans.className}`}>
+        <main ref={containerRef} className={`dark flex-1 relative overflow-x-clip ${plusJakartaSans.className}`}>
             {/* ── Section 1: Hero with Frosted Overlay ────────────────── */}
             <section className="relative w-full h-dvh min-h-[600px] overflow-hidden">
                 {/* Background Image */}
@@ -117,9 +118,9 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                         </p>
 
                         <div className="mt-6">
-                            <button className="bg-primary text-primary-foreground font-bold px-6 py-3 rounded-xl hover:bg-primary/90 transition-all inline-block shadow-lg hover:shadow-primary/20">
+                            <Link href="/community/forum" className="bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:bg-stone-100 transition-all inline-block">
                                 Gabung Sekarang
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

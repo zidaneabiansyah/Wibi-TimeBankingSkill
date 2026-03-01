@@ -75,6 +75,30 @@ export const communityService = {
     },
 
     /**
+     * Get all forum threads
+     */
+    async getAllThreads(
+        limit: number = 10,
+        offset: number = 0
+    ): Promise<{ threads: ForumThread[]; total: number }> {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+            const response = await axios.get<
+                ApiResponse<{ threads: ForumThread[]; total: number }>
+            >(`${API_BASE}/forum/search`, {
+                params: { q: '', limit, offset },
+                headers,
+            });
+            return response.data.data || { threads: [], total: 0 };
+        } catch (error) {
+            console.error('Failed to fetch threads:', error);
+            throw error;
+        }
+    },
+
+    /**
      * Get threads by category
      */
     async getThreadsByCategory(

@@ -31,7 +31,7 @@ const VALUES = [
   },
   {
     title: "Inklusif & Bermakna",
-    desc: "Wibi terbuka untuk semua—tanpa batas geografis atau ekonomi, dengan materi yang relevan untuk kehidupan nyata.",
+    desc: "Wibi terbuka untuk semua tanpa batas geografis atau ekonomi, dengan materi yang relevan untuk kehidupan nyata.",
     icon: <Globe className="h-5 w-5" />,
     gradient: "from-rose-500/30 via-pink-400/10 to-transparent",
     pattern: "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))]"
@@ -280,7 +280,7 @@ export default function AboutPage() {
                       Kami memulai Wibi dari satu ide sederhana: bagaimana kalau siswa bisa saling membantu belajar tanpa terhalang uang? Time Banking mewujudkannya dengan menghargai waktu setiap orang secara setara.
                     </p>
                     <p>
-                      Entah kamu jago matematika, bisa banyak bahasa, atau bisa ngajarin gitar—skill kamu tetap punya nilai. Dan selalu ada orang lain yang bisa ngajarin kamu hal baru sebagai gantinya.
+                      Entah kamu jago matematika, bisa banyak bahasa, atau bisa ngajarin gitar, skill kamu tetap punya nilai. Dan selalu ada orang lain yang bisa ngajarin kamu hal baru sebagai gantinya.
                     </p>
                   </div>
                 </div>

@@ -52,9 +52,6 @@ export default function AccordionTeam() {
             Digerakkan oleh passion, dipandu oleh misi yang sama — membuat ilmu bisa diakses oleh
             siapapun tanpa terhalang biaya. Bergabunglah dengan kami untuk menciptakan dampak nyata.
           </p>
-          <button className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors">
-            Bergabung dengan Tim <ArrowRight className="w-4 h-4" />
-          </button>
         </div>
 
         {/* Right Side: Accordion Cards */}
