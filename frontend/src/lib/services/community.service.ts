@@ -265,6 +265,42 @@ export const communityService = {
         }
     },
 
+    /**
+     * Check if current user has upvoted a thread
+     */
+    async checkThreadUpvote(threadId: number): Promise<{ voted: boolean; count: number }> {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const response = await axios.get(
+                `${API_BASE}/forum/threads/${threadId}/upvote`,
+                { headers }
+            );
+            return response.data.data;
+        } catch (error) {
+            console.error('Failed to check thread upvote:', error);
+            return { voted: false, count: 0 };
+        }
+    },
+
+    /**
+     * Toggle upvote for a forum thread
+     */
+    async toggleThreadUpvote(threadId: number): Promise<{ voted: boolean; count: number }> {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${API_BASE}/forum/threads/${threadId}/upvote`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return response.data.data;
+        } catch (error) {
+            console.error('Failed to toggle thread upvote:', error);
+            throw error;
+        }
+    },
+
     // ===== STORY ENDPOINTS =====
 
     /**
@@ -452,33 +488,37 @@ export const communityService = {
     },
 
     /**
-     * Like a story
+     * Check if current user has liked a story
      */
-    async likeStory(storyId: number): Promise<void> {
+    async checkStoryLike(storyId: number): Promise<{ liked: boolean; count: number }> {
         try {
-            await axios.post(
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const response = await axios.get(
                 `${API_BASE}/stories/${storyId}/like`,
-                {},
-                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+                { headers }
             );
+            return response.data.data;
         } catch (error) {
-            console.error('Failed to like story:', error);
-            throw error;
+            console.error('Failed to check story like:', error);
+            return { liked: false, count: 0 };
         }
     },
 
     /**
-     * Unlike a story
+     * Toggle like for a story
      */
-    async unlikeStory(storyId: number): Promise<void> {
+    async toggleStoryLike(storyId: number): Promise<{ liked: boolean; count: number }> {
         try {
-            await axios.post(
-                `${API_BASE}/stories/${storyId}/unlike`,
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${API_BASE}/stories/${storyId}/like`,
                 {},
-                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
+            return response.data.data;
         } catch (error) {
-            console.error('Failed to unlike story:', error);
+            console.error('Failed to toggle story like:', error);
             throw error;
         }
     },
