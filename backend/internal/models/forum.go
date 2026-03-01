@@ -85,18 +85,16 @@ type StoryComment struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Endorsement represents a peer endorsement for a skill
+// Endorsement represents a donation to support the Wibi platform
 type Endorsement struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
-	UserID    uint      `gorm:"index" json:"user_id"`
-	User      *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	SkillID   uint      `gorm:"index" json:"skill_id"`
-	Skill     *Skill    `gorm:"foreignKey:SkillID" json:"skill,omitempty"`
-	EndorserID uint     `gorm:"index" json:"endorser_id"`
-	Endorser  *User     `gorm:"foreignKey:EndorserID" json:"endorser,omitempty"`
-	Message   string    `json:"message"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	DonorID     *uint     `gorm:"index" json:"donor_id"`
+	Donor       *User     `gorm:"foreignKey:DonorID" json:"donor,omitempty"`
+	Amount      float64   `gorm:"default:0" json:"amount"`
+	Message     string    `json:"message"`
+	IsAnonymous bool      `gorm:"default:false" json:"is_anonymous"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // JSONArray is a custom type for JSONB arrays

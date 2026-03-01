@@ -20,11 +20,11 @@ const features = [
         about: "Temukan inspirasi dari pelajar Wibi yang telah berhasil meraih tujuan mereka melalui komunitas."
     },
     {
-        title: "Endorsements",
+        title: "Donasi & Dukungan",
         href: "/community/endorsements",
         icon: <Award />,
-        actions: ["Lihat Endorsement", "Minta Endorsement"],
-        about: "Dapatkan pengakuan atas skill dan kontribusimu dari sesama anggota komunitas dan mentor."
+        actions: ["Lihat Donatur", "Donasi Sekarang"],
+        about: "Dukung perkembangan platform Wibi dengan donasi. Setiap kontribusi membantu kami terus berinovasi untuk komunitas."
     },
 ];
 

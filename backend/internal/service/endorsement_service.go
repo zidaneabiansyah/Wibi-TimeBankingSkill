@@ -9,12 +9,12 @@ import (
 	"github.com/timebankingskill/backend/internal/repository"
 )
 
-// EndorsementService handles endorsement business logic
+// EndorsementService handles donation business logic
 type EndorsementService struct {
-	endorsementRepo      *repository.EndorsementRepository
-	userRepo             *repository.UserRepository
-	skillRepo            *repository.SkillRepository
-	notificationService  *NotificationService
+	endorsementRepo     *repository.EndorsementRepository
+	userRepo            *repository.UserRepository
+	skillRepo           *repository.SkillRepository
+	notificationService *NotificationService
 }
 
 // NewEndorsementService creates a new endorsement service
@@ -46,124 +46,89 @@ func NewEndorsementServiceWithNotification(
 	}
 }
 
-// CreateEndorsement creates a new endorsement
-func (s *EndorsementService) CreateEndorsement(endorserID uint, req *dto.CreateEndorsementRequest) (*models.Endorsement, error) {
-	// Validate endorser exists
-	_, err := s.userRepo.GetByID(endorserID)
+// CreateDonation creates a new donation from a user
+func (s *EndorsementService) CreateEndorsement(donorID uint, req *dto.CreateEndorsementRequest) (*models.Endorsement, error) {
+	// Validate donor exists
+	_, err := s.userRepo.GetByID(donorID)
 	if err != nil {
-		return nil, errors.New("endorser not found")
+		return nil, errors.New("donor not found")
 	}
 
-	// Validate user exists
-	_, err = s.userRepo.GetByID(req.UserID)
-	if err != nil {
-		return nil, errors.New("user not found")
+	if req.Amount <= 0 {
+		return nil, errors.New("donation amount must be greater than 0")
 	}
 
-	// Validate skill exists
-	_, err = s.skillRepo.GetByID(req.SkillID)
-	if err != nil {
-		return nil, errors.New("skill not found")
+	dID := donorID
+	donation := &models.Endorsement{
+		DonorID:     &dID,
+		Amount:      req.Amount,
+		Message:     req.Message,
+		IsAnonymous: req.IsAnonymous,
 	}
 
-	// Check if already endorsed
-	hasEndorsed, err := s.endorsementRepo.HasEndorsed(endorserID, req.UserID, req.SkillID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to check endorsement: %w", err)
-	}
-	if hasEndorsed {
-		return nil, errors.New("already endorsed this skill")
+	if err := s.endorsementRepo.CreateEndorsement(donation); err != nil {
+		return nil, fmt.Errorf("failed to create donation: %w", err)
 	}
 
-	endorsement := &models.Endorsement{
-		UserID:    req.UserID,
-		SkillID:   req.SkillID,
-		EndorserID: endorserID,
-		Message:   req.Message,
-	}
-
-	if err := s.endorsementRepo.CreateEndorsement(endorsement); err != nil {
-		return nil, fmt.Errorf("failed to create endorsement: %w", err)
-	}
-
-	// Trigger Notification
-	if s.notificationService != nil {
-		endorser, _ := s.userRepo.GetByID(endorserID)
-		skill, _ := s.skillRepo.GetByID(req.SkillID)
-		
-		notificationData := map[string]interface{}{
-			"endorsement_id": endorsement.ID,
-			"endorser_name": endorser.FullName,
-			"skill_name": skill.Name,
-		}
-
-		_, _ = s.notificationService.CreateNotification(
-			req.UserID,
-			models.NotificationTypeSocial,
-			"New Endorsement",
-			fmt.Sprintf("%s endorsed your skill in %s!", endorser.FullName, skill.Name),
-			notificationData,
-		)
-	}
-
-	return s.endorsementRepo.GetEndorsementByID(endorsement.ID)
+	return s.endorsementRepo.GetEndorsementByID(donation.ID)
 }
 
-// GetEndorsementsForUser gets all endorsements for a user
+// GetAllDonations gets all donations (public, paginated)
+func (s *EndorsementService) GetAllDonations(limit, offset int) ([]models.Endorsement, int64, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 10
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	return s.endorsementRepo.GetAllDonations(limit, offset)
+}
+
+// GetEndorsementsForUser - kept for backward compat, now returns all donations
 func (s *EndorsementService) GetEndorsementsForUser(userID uint, limit, offset int) ([]models.Endorsement, int64, error) {
-	if limit <= 0 || limit > 100 {
-		limit = 10
-	}
-	if offset < 0 {
-		offset = 0
-	}
-
-	return s.endorsementRepo.GetEndorsementsForUser(userID, limit, offset)
+	return s.GetAllDonations(limit, offset)
 }
 
-// GetEndorsementsForSkill gets endorsements for a specific skill
+// GetEndorsementsForSkill - kept for backward compat, redirects to all donations
 func (s *EndorsementService) GetEndorsementsForSkill(userID, skillID uint, limit, offset int) ([]models.Endorsement, int64, error) {
-	if limit <= 0 || limit > 100 {
-		limit = 10
-	}
-	if offset < 0 {
-		offset = 0
-	}
-
-	return s.endorsementRepo.GetEndorsementsForSkill(userID, skillID, limit, offset)
+	return s.GetAllDonations(limit, offset)
 }
 
-// GetEndorsementCount gets count of endorsements for a skill
+// GetEndorsementCount - kept for backward compat
 func (s *EndorsementService) GetEndorsementCount(userID, skillID uint) (int64, error) {
-	return s.endorsementRepo.GetEndorsementCount(userID, skillID)
+	_, total, err := s.GetAllDonations(1000, 0)
+	return total, err
 }
 
-// DeleteEndorsement deletes an endorsement
-func (s *EndorsementService) DeleteEndorsement(endorsementID, endorserID uint) error {
-	// Get endorsement to check authorization
-	endorsement, err := s.endorsementRepo.GetEndorsementByID(endorsementID)
+// DeleteEndorsement deletes a donation by ID (admin or self only)
+func (s *EndorsementService) DeleteEndorsement(endorsementID, donorID uint) error {
+	donation, err := s.endorsementRepo.GetEndorsementByID(endorsementID)
 	if err != nil {
-		return errors.New("endorsement not found")
+		return errors.New("donation not found")
 	}
 
-	// Check authorization
-	if endorsement.EndorserID != endorserID {
-		return errors.New("unauthorized")
+	if donation.DonorID == nil || *donation.DonorID != donorID {
+		return errors.New("unauthorized to delete this donation")
 	}
 
 	return s.endorsementRepo.DeleteEndorsement(endorsementID)
 }
 
-// GetTopEndorsedSkills gets the most endorsed skills
+// GetTopEndorsedSkills - kept for backward compat, now returns top donors
 func (s *EndorsementService) GetTopEndorsedSkills(limit int) ([]map[string]interface{}, error) {
 	if limit <= 0 || limit > 100 {
 		limit = 10
 	}
-
-	return s.endorsementRepo.GetTopEndorsedSkills(limit)
+	return s.endorsementRepo.GetTopDonors(limit)
 }
 
-// GetUserReputation gets the total reputation score (total endorsements)
+// GetUserReputation - returns total donation amount for platform
 func (s *EndorsementService) GetUserReputation(userID uint) (int64, error) {
-	return s.endorsementRepo.GetTotalEndorsements(userID)
+	_, total, err := s.GetAllDonations(1000, 0)
+	return total, err
+}
+
+// GetTotalAmount returns total donation amount in Rupiah
+func (s *EndorsementService) GetTotalAmount() (float64, error) {
+	return s.endorsementRepo.GetTotalDonationAmount()
 }

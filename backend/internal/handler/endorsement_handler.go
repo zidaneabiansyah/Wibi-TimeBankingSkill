@@ -10,7 +10,7 @@ import (
 	"github.com/timebankingskill/backend/internal/utils"
 )
 
-// EndorsementHandler handles endorsement HTTP requests
+// EndorsementHandler handles donation HTTP requests
 type EndorsementHandler struct {
 	endorsementService *service.EndorsementService
 }
@@ -20,9 +20,85 @@ func NewEndorsementHandler(endorsementService *service.EndorsementService) *Endo
 	return &EndorsementHandler{endorsementService: endorsementService}
 }
 
-// CreateEndorsement creates a new endorsement
+// GetAllDonations returns all donations (public, no auth required)
+func (h *EndorsementHandler) GetAllDonations(c *gin.Context) {
+	limit := 10
+	offset := 0
+
+	if l := c.Query("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
+			limit = parsed
+		}
+	}
+	if o := c.Query("offset"); o != "" {
+		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
+			offset = parsed
+		}
+	}
+
+	donations, total, err := h.endorsementService.GetAllDonations(limit, offset)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch donations", err)
+		return
+	}
+
+	// Mask donor info for anonymous donations
+	type DonationResponse struct {
+		ID          uint        `json:"id"`
+		DonorID     interface{} `json:"donor_id"`
+		Donor       interface{} `json:"donor"`
+		Amount      float64     `json:"amount"`
+		Message     string      `json:"message"`
+		IsAnonymous bool        `json:"is_anonymous"`
+		CreatedAt   interface{} `json:"created_at"`
+	}
+
+	resp := make([]DonationResponse, 0, len(donations))
+	for _, d := range donations {
+		entry := DonationResponse{
+			ID:          d.ID,
+			Amount:      d.Amount,
+			Message:     d.Message,
+			IsAnonymous: d.IsAnonymous,
+			CreatedAt:   d.CreatedAt,
+		}
+		if d.IsAnonymous {
+			entry.DonorID = nil
+			entry.Donor = nil
+		} else {
+			entry.DonorID = d.DonorID
+			entry.Donor = d.Donor
+		}
+		resp = append(resp, entry)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donations fetched successfully",
+		"data": gin.H{
+			"endorsements": resp,
+			"total":        total,
+			"limit":        limit,
+			"offset":       offset,
+		},
+	})
+}
+
+// GetTotalDonationAmount returns the total donation amount in Rupiah
+func (h *EndorsementHandler) GetTotalDonationAmount(c *gin.Context) {
+	total, err := h.endorsementService.GetTotalAmount()
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to get total", err)
+		return
+	}
+	utils.SendSuccess(c, http.StatusOK, "Total fetched", gin.H{
+		"total_amount": total,
+	})
+}
+
+// CreateEndorsement creates a new donation (requires auth)
 func (h *EndorsementHandler) CreateEndorsement(c *gin.Context) {
-	endorserID, exists := c.Get("user_id")
+	donorID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
@@ -34,184 +110,76 @@ func (h *EndorsementHandler) CreateEndorsement(c *gin.Context) {
 		return
 	}
 
-	endorsement, err := h.endorsementService.CreateEndorsement(endorserID.(uint), &req)
+	donation, err := h.endorsementService.CreateEndorsement(donorID.(uint), &req)
 	if err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusCreated, "Endorsement created successfully", endorsement)
+	utils.SendSuccess(c, http.StatusCreated, "Donation created successfully", donation)
 }
 
-// GetEndorsementsForUser gets all endorsements for a user
-func (h *EndorsementHandler) GetEndorsementsForUser(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
-		return
-	}
-
-	limit := 10
-	offset := 0
-
-	if l := c.Query("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
-			limit = parsed
-		}
-	}
-
-	if o := c.Query("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	endorsements, total, err := h.endorsementService.GetEndorsementsForUser(uint(userID), limit, offset)
-	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch endorsements", err)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Endorsements fetched successfully",
-		"data": gin.H{
-			"endorsements": endorsements,
-			"total":        total,
-			"limit":        limit,
-			"offset":       offset,
-		},
-	})
-}
-
-// GetEndorsementsForSkill gets endorsements for a specific skill
-func (h *EndorsementHandler) GetEndorsementsForSkill(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
-		return
-	}
-
-	skillID, err := strconv.ParseUint(c.Param("skill_id"), 10, 32)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid skill ID", err)
-		return
-	}
-
-	limit := 10
-	offset := 0
-
-	if l := c.Query("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
-			limit = parsed
-		}
-	}
-
-	if o := c.Query("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	endorsements, total, err := h.endorsementService.GetEndorsementsForSkill(uint(userID), uint(skillID), limit, offset)
-	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch endorsements", err)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Endorsements fetched successfully",
-		"data": gin.H{
-			"endorsements": endorsements,
-			"total":        total,
-			"limit":        limit,
-			"offset":       offset,
-		},
-	})
-}
-
-// GetEndorsementCount gets count of endorsements for a skill
-func (h *EndorsementHandler) GetEndorsementCount(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
-		return
-	}
-
-	skillID, err := strconv.ParseUint(c.Param("skill_id"), 10, 32)
-	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid skill ID", err)
-		return
-	}
-
-	count, err := h.endorsementService.GetEndorsementCount(uint(userID), uint(skillID))
-	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch count", err)
-		return
-	}
-
-	utils.SendSuccess(c, http.StatusOK, "Count fetched successfully", gin.H{
-		"count": count,
-	})
-}
-
-// DeleteEndorsement deletes an endorsement
+// DeleteEndorsement deletes a donation (requires auth, self only)
 func (h *EndorsementHandler) DeleteEndorsement(c *gin.Context) {
-	endorserID, exists := c.Get("user_id")
+	donorID, exists := c.Get("user_id")
 	if !exists {
 		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
 		return
 	}
 
-	endorsementID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	donationID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid endorsement ID", err)
+		utils.SendError(c, http.StatusBadRequest, "Invalid donation ID", err)
 		return
 	}
 
-	if err := h.endorsementService.DeleteEndorsement(uint(endorsementID), endorserID.(uint)); err != nil {
+	if err := h.endorsementService.DeleteEndorsement(uint(donationID), donorID.(uint)); err != nil {
 		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Endorsement deleted successfully", nil)
+	utils.SendSuccess(c, http.StatusOK, "Donation deleted successfully", nil)
 }
 
-// GetTopEndorsedSkills gets the most endorsed skills
-func (h *EndorsementHandler) GetTopEndorsedSkills(c *gin.Context) {
-	limit := 10
+// GetEndorsementsForUser - kept for backward compat, returns all donations
+func (h *EndorsementHandler) GetEndorsementsForUser(c *gin.Context) {
+	h.GetAllDonations(c)
+}
 
+// GetEndorsementsForSkill - kept for backward compat
+func (h *EndorsementHandler) GetEndorsementsForSkill(c *gin.Context) {
+	h.GetAllDonations(c)
+}
+
+// GetEndorsementCount - kept for backward compat
+func (h *EndorsementHandler) GetEndorsementCount(c *gin.Context) {
+	h.GetAllDonations(c)
+}
+
+// GetTopEndorsedSkills - returns top donors by total amount
+func (h *EndorsementHandler) GetTopEndorsedSkills(c *gin.Context) {
+	limit := 5
 	if l := c.Query("limit"); l != "" {
 		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
 			limit = parsed
 		}
 	}
 
-	skills, err := h.endorsementService.GetTopEndorsedSkills(limit)
+	donors, err := h.endorsementService.GetTopEndorsedSkills(limit)
 	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch skills", err)
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch top donors", err)
 		return
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Top endorsed skills fetched successfully", skills)
+	utils.SendSuccess(c, http.StatusOK, "Top donors fetched successfully", donors)
 }
 
-// GetUserReputation gets the total reputation score of a user
+// GetUserReputation - kept for backward compat
 func (h *EndorsementHandler) GetUserReputation(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
+	total, err := h.endorsementService.GetTotalAmount()
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid user ID", err)
+		utils.SendError(c, http.StatusInternalServerError, "Failed", err)
 		return
 	}
-
-	reputation, err := h.endorsementService.GetUserReputation(uint(userID))
-	if err != nil {
-		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch reputation", err)
-		return
-	}
-
-	utils.SendSuccess(c, http.StatusOK, "Reputation fetched successfully", gin.H{
-		"reputation": reputation,
-	})
+	utils.SendSuccess(c, http.StatusOK, "Total fetched", gin.H{"total_amount": total})
 }
