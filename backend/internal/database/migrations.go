@@ -77,6 +77,23 @@ func addMissingColumns(db *gorm.DB) error {
 		fmt.Println("  ✓ token_version column added")
 	}
 
+	// Add screen sharing columns to video_sessions table if they don't exist
+	if !db.Migrator().HasColumn("video_sessions", "screen_sharing_user_id") {
+		fmt.Println("  Adding screen_sharing_user_id column to video_sessions table...")
+		if err := db.Exec("ALTER TABLE video_sessions ADD COLUMN screen_sharing_user_id INTEGER REFERENCES users(id)").Error; err != nil {
+			return fmt.Errorf("failed to add screen_sharing_user_id column: %w", err)
+		}
+		fmt.Println("  ✓ screen_sharing_user_id column added")
+	}
+
+	if !db.Migrator().HasColumn("video_sessions", "is_screen_sharing") {
+		fmt.Println("  Adding is_screen_sharing column to video_sessions table...")
+		if err := db.Exec("ALTER TABLE video_sessions ADD COLUMN is_screen_sharing BOOLEAN DEFAULT FALSE").Error; err != nil {
+			return fmt.Errorf("failed to add is_screen_sharing column: %w", err)
+		}
+		fmt.Println("  ✓ is_screen_sharing column added")
+	}
+
 	return nil
 }
 
@@ -196,6 +213,12 @@ func createPerformanceIndexes(db *gorm.DB) error {
 		// ===== AVAILABILITY INDEXES (Scheduling) =====
 		// Teacher availability by day
 		"CREATE INDEX IF NOT EXISTS idx_availability_user_day ON availabilities(user_id, day_of_week, is_active) WHERE is_active = true",
+		
+		// ===== VIDEO SESSIONS INDEXES (Screen Sharing) =====
+		// Screen sharing status queries
+		"CREATE INDEX IF NOT EXISTS idx_video_sessions_screen_sharing ON video_sessions(session_id, is_screen_sharing) WHERE is_screen_sharing = true",
+		// Screen sharing user lookup
+		"CREATE INDEX IF NOT EXISTS idx_video_sessions_screen_user ON video_sessions(screen_sharing_user_id) WHERE screen_sharing_user_id IS NOT NULL",
 		
 		// ===== CREDIT ESCROW INDEXES (Audit Recommendation) =====
 		// Users with held credits (for escrow queries)

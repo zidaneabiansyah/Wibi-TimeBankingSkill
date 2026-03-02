@@ -157,3 +157,69 @@ func (h *VideoSessionHandler) GetVideoStats(c *gin.Context) {
 
 	utils.SendSuccess(c, http.StatusOK, "Video statistics retrieved successfully", stats)
 }
+
+// StartScreenSharing starts screen sharing for a user
+// POST /api/v1/sessions/:id/video/screen-share/start
+func (h *VideoSessionHandler) StartScreenSharing(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
+
+	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
+		return
+	}
+
+	err = h.videoSessionService.StartScreenSharing(uint(sessionID), userID.(uint))
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Screen sharing started successfully", nil)
+}
+
+// StopScreenSharing stops screen sharing for a user
+// POST /api/v1/sessions/:id/video/screen-share/stop
+func (h *VideoSessionHandler) StopScreenSharing(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		utils.SendError(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return
+	}
+
+	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
+		return
+	}
+
+	err = h.videoSessionService.StopScreenSharing(uint(sessionID), userID.(uint))
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Screen sharing stopped successfully", nil)
+}
+
+// GetScreenSharingStatus gets the current screen sharing status
+// GET /api/v1/sessions/:id/video/screen-share/status
+func (h *VideoSessionHandler) GetScreenSharingStatus(c *gin.Context) {
+	sessionID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid session ID", err)
+		return
+	}
+
+	response, err := h.videoSessionService.GetScreenSharingStatus(uint(sessionID))
+	if err != nil {
+		utils.SendError(c, http.StatusBadRequest, err.Error(), err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Screen sharing status retrieved successfully", response)
+}

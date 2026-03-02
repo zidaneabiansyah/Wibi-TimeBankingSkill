@@ -11,7 +11,7 @@ import (
 
 // WebRTCMessage represents a signaling message
 type WebRTCMessage struct {
-	Type      string      `json:"type"`       // "offer", "answer", "candidate", "user_join", "user_leave"
+	Type      string      `json:"type"`       // "offer", "answer", "candidate", "user_join", "user_leave", "screen_share_start", "screen_share_stop"
 	SessionID uint        `json:"session_id"`
 	UserID    uint        `json:"user_id"`
 	UserName  string      `json:"user_name"`

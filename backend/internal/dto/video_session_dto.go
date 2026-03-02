@@ -45,3 +45,11 @@ type VideoHistoryResponse struct {
 	ParticipantCount int        `json:"participant_count"`
 	Status           string     `json:"status"`
 }
+
+// ScreenSharingStatusResponse is the response for screen sharing status
+type ScreenSharingStatusResponse struct {
+	IsScreenSharing        bool       `json:"is_screen_sharing"`
+	ScreenSharingUserID    *uint      `json:"screen_sharing_user_id"`
+	ScreenSharingUserName  string     `json:"screen_sharing_user_name,omitempty"`
+	StartedAt              *time.Time `json:"started_at,omitempty"`
+}
