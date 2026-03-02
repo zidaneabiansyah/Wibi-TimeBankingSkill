@@ -1,16 +1,23 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+interface UseWebRTCProps {
+    sessionId: number;
+    userId: number;
+    enabled?: boolean;
+}
+
+interface ConnectionQuality {
+    bandwidth: number; // Kbps
+    packetLoss: number; // percentage
+    latency: number; // ms
+    quality: 'excellent' | 'good' | 'fair' | 'poor';
+}
+
 interface WebRTCMessage {
     type: 'offer' | 'answer' | 'candidate' | 'user_join' | 'user_leave' | 'screen_share_start' | 'screen_share_stop';
     payload: any;
     user_id: number;
     user_name: string;
-}
-
-interface UseWebRTCProps {
-    sessionId: number;
-    userId: number;
-    enabled?: boolean;
 }
 
 export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps) {
@@ -20,12 +27,23 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
     const [error, setError] = useState<string | null>(null);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [screenSharingUserId, setScreenSharingUserId] = useState<number | null>(null);
+    const [connectionQuality, setConnectionQuality] = useState<ConnectionQuality>({
+        bandwidth: 0,
+        packetLoss: 0,
+        latency: 0,
+        quality: 'good'
+    });
 
     const pcRef = useRef<RTCPeerConnection | null>(null);
     const wsRef = useRef<WebSocket | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const screenStreamRef = useRef<MediaStream | null>(null);
     const mountedRef = useRef(true);
+    const statsIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const iceCandidateBufferRef = useRef<RTCIceCandidate[]>([]);
+    const reconnectAttemptsRef = useRef(0);
+    const maxReconnectAttempts = 5;
     
     // Perfect negotiation pattern refs
     const politeRef = useRef(false); // Will be set based on user IDs
