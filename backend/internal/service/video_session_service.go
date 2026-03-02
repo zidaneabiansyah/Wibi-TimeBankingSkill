@@ -181,3 +181,121 @@ func (s *VideoSessionService) GetVideoHistory(userID uint, limit int, offset int
 func (s *VideoSessionService) GetVideoStats(userID uint) (map[string]interface{}, error) {
 	return s.videoSessionRepo.GetVideoSessionStats(userID)
 }
+
+// StartScreenSharing marks a user as sharing their screen
+func (s *VideoSessionService) StartScreenSharing(sessionID uint, userID uint) error {
+	// Get the session to verify user is a participant
+	session, err := s.sessionRepo.GetByID(sessionID)
+	if err != nil {
+		return err
+	}
+
+	// Verify user is part of session
+	if session.TeacherID != userID && session.StudentID != userID {
+		return errors.New("you are not authorized to share screen in this session")
+	}
+
+	// Get active video session
+	videoSession, err := s.videoSessionRepo.GetActiveVideoSession(sessionID)
+	if err != nil {
+		return errors.New("no active video session found")
+	}
+
+	// Check if someone else is already sharing screen
+	if videoSession.IsScreenSharing && videoSession.ScreenSharingUserID != nil && *videoSession.ScreenSharingUserID != userID {
+		return errors.New("another user is already sharing their screen")
+	}
+
+	// Update video session
+	videoSession.IsScreenSharing = true
+	videoSession.ScreenSharingUserID = &userID
+
+	// Update metadata to track screen sharing history
+	if videoSession.Metadata == nil {
+		videoSession.Metadata = make(map[string]interface{})
+	}
+
+	// Track screen sharing start time in metadata
+	now := time.Now()
+	screenSharingData := map[string]interface{}{
+		"user_id":    userID,
+		"started_at": now,
+	}
+
+	// Append to screen sharing sessions array
+	if sessions, ok := videoSession.Metadata["screen_sharing_sessions"].([]interface{}); ok {
+		videoSession.Metadata["screen_sharing_sessions"] = append(sessions, screenSharingData)
+	} else {
+		videoSession.Metadata["screen_sharing_sessions"] = []interface{}{screenSharingData}
+	}
+
+	_, err = s.videoSessionRepo.UpdateVideoSession(videoSession.ID, videoSession)
+	return err
+}
+
+// StopScreenSharing stops screen sharing for a user
+func (s *VideoSessionService) StopScreenSharing(sessionID uint, userID uint) error {
+	// Get active video session
+	videoSession, err := s.videoSessionRepo.GetActiveVideoSession(sessionID)
+	if err != nil {
+		return errors.New("no active video session found")
+	}
+
+	// Verify this user is the one sharing screen
+	if !videoSession.IsScreenSharing || videoSession.ScreenSharingUserID == nil || *videoSession.ScreenSharingUserID != userID {
+		return errors.New("you are not currently sharing your screen")
+	}
+
+	// Update metadata to record screen sharing duration
+	if videoSession.Metadata != nil {
+		if sessions, ok := videoSession.Metadata["screen_sharing_sessions"].([]interface{}); ok && len(sessions) > 0 {
+			// Update the last session with end time
+			lastSession := sessions[len(sessions)-1].(map[string]interface{})
+			if startedAt, ok := lastSession["started_at"].(time.Time); ok {
+				duration := int(time.Since(startedAt).Seconds())
+				lastSession["ended_at"] = time.Now()
+				lastSession["duration"] = duration
+			}
+		}
+	}
+
+	// Clear screen sharing status
+	videoSession.IsScreenSharing = false
+	videoSession.ScreenSharingUserID = nil
+
+	_, err = s.videoSessionRepo.UpdateVideoSession(videoSession.ID, videoSession)
+	return err
+}
+
+// GetScreenSharingStatus returns current screen sharing status
+func (s *VideoSessionService) GetScreenSharingStatus(sessionID uint) (*dto.ScreenSharingStatusResponse, error) {
+	videoSession, err := s.videoSessionRepo.GetActiveVideoSession(sessionID)
+	if err != nil {
+		return nil, errors.New("no active video session found")
+	}
+
+	response := &dto.ScreenSharingStatusResponse{
+		IsScreenSharing:     videoSession.IsScreenSharing,
+		ScreenSharingUserID: videoSession.ScreenSharingUserID,
+	}
+
+	// Get user name if someone is sharing
+	if videoSession.IsScreenSharing && videoSession.ScreenSharingUserID != nil {
+		user, err := s.userRepo.GetByID(*videoSession.ScreenSharingUserID)
+		if err == nil && user != nil {
+			response.ScreenSharingUserName = user.FullName
+		}
+
+		// Get start time from metadata
+		if videoSession.Metadata != nil {
+			if sessions, ok := videoSession.Metadata["screen_sharing_sessions"].([]interface{}); ok && len(sessions) > 0 {
+				lastSession := sessions[len(sessions)-1].(map[string]interface{})
+				if startedAt, ok := lastSession["started_at"].(time.Time); ok {
+					response.StartedAt = &startedAt
+				}
+			}
+		}
+	}
+
+	return response, nil
+}

@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import {
     Video, VideoOff, Mic, MicOff, PhoneOff,
     PenTool, Users, MessageSquare, Settings,
-    Maximize2, Minimize2, X
+    Maximize2, Minimize2, X, Monitor, MonitorOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -36,7 +36,16 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
 
     // WebRTC hook - always enabled when classroom is open for voice/video communication
     // The hook internally manages its own connection lifecycle
-    const { localStream, remoteStream, isJoined, error } = useWebRTC({
+    const { 
+        localStream, 
+        remoteStream, 
+        isJoined, 
+        error,
+        isScreenSharing,
+        screenSharingUserId,
+        startScreenShare,
+        stopScreenShare
+    } = useWebRTC({
         sessionId,
         userId: user?.id || 0,
         enabled: true, // Always enabled for video/voice, regardless of view mode
@@ -55,6 +64,19 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
         if (localStream) {
             localStream.getAudioTracks().forEach(track => (track.enabled = !isAudioEnabled));
             setIsAudioEnabled(!isAudioEnabled);
+        }
+    };
+
+    // Toggle screen sharing
+    const toggleScreenShare = async () => {
+        if (isScreenSharing) {
+            await stopScreenShare();
+        } else {
+            await startScreenShare();
+            // Auto-switch to video mode for better visibility
+            if (viewMode === 'whiteboard') {
+                setViewMode('video');
+            }
         }
     };
 
@@ -94,6 +116,9 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
                         remoteStream={remoteStream}
                         isVideoEnabled={isVideoEnabled}
                         userName={user?.full_name || 'You'}
+                        isScreenSharing={isScreenSharing}
+                        screenSharingUserId={screenSharingUserId}
+                        currentUserId={user?.id || 0}
                     />
                 </div>
 
@@ -105,7 +130,17 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
                         remoteStream={remoteStream}
                         isVideoEnabled={isVideoEnabled}
                         userName={user?.full_name || 'You'}
+                        screenSharingUserId={screenSharingUserId}
+                        currentUserId={user?.id || 0}
                     />
+                )}
+
+                {/* Screen Sharing Indicator */}
+                {screenSharingUserId && (
+                    <div className="absolute top-4 left-4 bg-blue-500/90 backdrop-blur px-4 py-2 rounded-full text-sm text-white flex items-center gap-2 z-20 shadow-lg">
+                        <Monitor className="w-4 h-4" />
+                        {screenSharingUserId === user?.id ? 'You are sharing your screen' : 'Partner is sharing screen'}
+                    </div>
                 )}
 
                 {/* Connection Status */}
@@ -148,6 +183,16 @@ export function ClassroomLayout({ sessionId, onLeave }: ClassroomLayoutProps) {
 
                     <div className="w-px h-8 bg-zinc-600 mx-2" />
 
+                    {/* Screen Share Toggle */}
+                    <ControlButton
+                        onClick={toggleScreenShare}
+                        isActive={isScreenSharing}
+                        activeIcon={<MonitorOff className="w-5 h-5" />}
+                        inactiveIcon={<Monitor className="w-5 h-5" />}
+                        tooltip={isScreenSharing ? 'Stop sharing' : 'Share screen'}
+                        variant="feature"
+                    />
+
                     {/* View Mode Toggle */}
                     <ControlButton
                         onClick={() => setViewMode(viewMode === 'video' ? 'whiteboard' : 'video')}
@@ -187,19 +232,39 @@ function VideoModeLayout({
     localStream,
     remoteStream,
     isVideoEnabled,
-    userName
+    userName,
+    isScreenSharing,
+    screenSharingUserId,
+    currentUserId
 }: {
     localStream: MediaStream | null;
     remoteStream: MediaStream | null;
     isVideoEnabled: boolean;
     userName: string;
+    isScreenSharing: boolean;
+    screenSharingUserId: number | null;
+    currentUserId: number;
 }) {
+    // Determine which stream to show in large view
+    // Priority: screen share > remote camera > local camera
+    const isLocalSharing = screenSharingUserId === currentUserId;
+    const isRemoteSharing = screenSharingUserId && screenSharingUserId !== currentUserId;
+
+    const primaryStream = isRemoteSharing ? remoteStream : (isLocalSharing ? localStream : remoteStream);
+    const secondaryStream = isRemoteSharing ? localStream : (isLocalSharing ? remoteStream : localStream);
+    
+    const primaryLabel = isRemoteSharing ? 'Partner (Screen)' : (isLocalSharing ? `${userName} (Screen)` : 'Partner');
+    const secondaryLabel = isRemoteSharing ? userName : (isLocalSharing ? 'Partner' : userName);
+    
+    const showPrimaryVideo = isRemoteSharing || (isLocalSharing && isScreenSharing) || (!isScreenSharing && remoteStream);
+    const showSecondaryVideo = isRemoteSharing ? (localStream && isVideoEnabled) : (isLocalSharing ? remoteStream : (localStream && isVideoEnabled));
+
     return (
         <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center p-4 gap-4">
-            {/* Partner Video - Large */}
+            {/* Primary Video - Large (Partner or Screen Share) */}
             <div className="relative flex-1 max-w-[50%] aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
-                {remoteStream ? (
-                    <VideoRenderer stream={remoteStream} muted={false} />
+                {showPrimaryVideo ? (
+                    <VideoRenderer stream={primaryStream!} muted={false} mirrored={isLocalSharing} />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-zinc-400">
                         <div className="w-20 h-20 rounded-full bg-zinc-700 flex items-center justify-center mb-3">
@@ -209,25 +274,30 @@ function VideoModeLayout({
                         <span className="text-sm text-zinc-500 mt-1">They'll appear here when they join</span>
                     </div>
                 )}
-                {/* Partner Name Badge */}
-                <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg text-white text-sm font-medium">
-                    Partner
+                {/* Label Badge */}
+                <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg text-white text-sm font-medium flex items-center gap-1.5">
+                    {(isLocalSharing || isRemoteSharing) && <Monitor className="w-3.5 h-3.5" />}
+                    {primaryLabel}
                 </div>
             </div>
 
-            {/* Self Video - Large */}
+            {/* Secondary Video - Large (Self or Partner) */}
             <div className="relative flex-1 max-w-[50%] aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
-                {localStream && isVideoEnabled ? (
-                    <VideoRenderer stream={localStream} muted={true} mirrored={true} />
+                {showSecondaryVideo ? (
+                    <VideoRenderer 
+                        stream={secondaryStream!} 
+                        muted={!isRemoteSharing && !isLocalSharing} 
+                        mirrored={!isRemoteSharing && !isLocalSharing} 
+                    />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-zinc-500 bg-zinc-800">
                         <VideoOff className="w-10 h-10 mb-2" />
                         <span className="text-sm">Camera Off</span>
                     </div>
                 )}
-                {/* Self Name Badge */}
+                {/* Label Badge */}
                 <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg text-white text-sm font-medium">
-                    {userName}
+                    {secondaryLabel}
                 </div>
             </div>
         </div>
@@ -240,14 +310,23 @@ function WhiteboardModeLayout({
     localStream,
     remoteStream,
     isVideoEnabled,
-    userName
+    userName,
+    screenSharingUserId,
+    currentUserId
 }: {
     sessionId: number;
     localStream: MediaStream | null;
     remoteStream: MediaStream | null;
     isVideoEnabled: boolean;
     userName: string;
+    screenSharingUserId: number | null;
+    currentUserId: number;
 }) {
+    // Show screen share if available, otherwise show remote/local video
+    const isRemoteSharing = screenSharingUserId && screenSharingUserId !== currentUserId;
+    const displayStream = isRemoteSharing ? remoteStream : (remoteStream || (localStream && isVideoEnabled ? localStream : null));
+    const displayLabel = isRemoteSharing ? 'Partner (Screen)' : (remoteStream ? 'Partner' : userName.split(' ')[0]);
+
     return (
         <div className="relative w-full h-full">
             {/* Whiteboard Area - Full screen */}
@@ -258,11 +337,12 @@ function WhiteboardModeLayout({
             {/* Video Overlay - Small, bottom center like Discord */}
             <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden bg-zinc-800 shadow-2xl border border-zinc-600 hover:scale-105 transition-transform cursor-pointer">
-                    {/* Show remote stream if available, otherwise local */}
-                    {remoteStream ? (
-                        <VideoRenderer stream={remoteStream} muted={false} />
-                    ) : localStream && isVideoEnabled ? (
-                        <VideoRenderer stream={localStream} muted={true} mirrored={true} />
+                    {displayStream ? (
+                        <VideoRenderer 
+                            stream={displayStream} 
+                            muted={!isRemoteSharing} 
+                            mirrored={!remoteStream && !isRemoteSharing}
+                        />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-zinc-500">
                             <Users className="w-6 h-6 mb-1" />
@@ -272,7 +352,8 @@ function WhiteboardModeLayout({
 
                     {/* Name badge */}
                     <div className="absolute bottom-1.5 left-1.5 bg-black/70 px-2 py-0.5 rounded text-white text-[10px] font-medium flex items-center gap-1">
-                        {remoteStream ? 'Partner' : userName.split(' ')[0]}
+                        {isRemoteSharing && <Monitor className="w-2.5 h-2.5" />}
+                        {displayLabel}
                     </div>
 
                     {/* More options hint - like Discord */}

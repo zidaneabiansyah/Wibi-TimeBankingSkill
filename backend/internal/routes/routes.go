@@ -409,7 +409,21 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				
 				sessions.POST("/:id/video/end", 
 					middleware.RequireSessionParticipant(sessionRepo),
-					videoSessionHandler.EndVideoSession)         
+					videoSessionHandler.EndVideoSession)
+
+				// Screen sharing routes (participants only)
+				sessions.POST("/:id/video/screen-share/start",
+					middleware.RequireSessionParticipant(sessionRepo),
+					videoSessionHandler.StartScreenSharing)
+
+				sessions.POST("/:id/video/screen-share/stop",
+					middleware.RequireSessionParticipant(sessionRepo),
+					videoSessionHandler.StopScreenSharing)
+
+				sessions.GET("/:id/video/screen-share/status",
+					middleware.RequireSessionParticipant(sessionRepo),
+					videoSessionHandler.GetScreenSharingStatus)
+         
 
 				// File sharing routes (participants only)
 				sessions.POST("/:id/files/upload", 
