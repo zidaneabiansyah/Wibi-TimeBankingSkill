@@ -85,7 +85,7 @@ export default function SkillDetailPage() {
                         </div>
                         <p className="text-xl font-bold text-foreground mb-8">{error || 'Skill not found'}</p>
                         <Link href="/marketplace">
-                            <Button className="bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-widest rounded-xl px-8 h-12">
+                            <Button className="bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest rounded-xl px-8 h-12">
                                 Back to Marketplace
                             </Button>
                         </Link>
@@ -96,12 +96,12 @@ export default function SkillDetailPage() {
     }
 
     return (
-        <div className="min-h-screen pt-12 pb-24">
+        <div className="min-h-screen pt-12 pb-24 font-['Plus_Jakarta_Sans']">
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
                 {/* Breadcrumb & Navigation */}
                 <div className="flex items-center justify-between mb-12">
-                    <nav className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                    <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         <Link href="/marketplace" className="hover:text-orange-500 transition-colors flex items-center gap-2 group">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform">
                                 <path d="m15 18-6-6 6-6" />
@@ -133,13 +133,13 @@ export default function SkillDetailPage() {
                         {/* Content */}
                         <div className="flex-1 pt-4">
                             <div className="flex items-center justify-center md:justify-start gap-3 mb-8">
-                                <Badge className="bg-muted text-muted-foreground border border-border font-black text-[9px] uppercase tracking-[0.2em] rounded-md px-3 py-1 pointer-events-none shadow-none">
+                                <Badge className="bg-muted text-muted-foreground border border-border font-bold text-[9px] uppercase tracking-[0.2em] rounded-md px-3 py-1 pointer-events-none shadow-none">
                                     {skill.category}
                                 </Badge>
                                 <div className="h-px w-8 bg-border" />
                             </div>
 
-                            <h1 className="text-6xl md:text-8xl font-black text-foreground tracking-[calc(-0.06em)] leading-[0.85] mb-8 uppercase">
+                            <h1 className="text-6xl md:text-8xl font-bold text-foreground tracking-[calc(-0.06em)] leading-[0.85] mb-8 uppercase">
                                 {skill.name}
                             </h1>
 
@@ -176,8 +176,8 @@ export default function SkillDetailPage() {
                                             </svg>
                                         </div>
                                         <div className="flex flex-col">
-                                            <div className="text-3xl font-black text-foreground leading-none tracking-tighter mb-1">{stat.value}</div>
-                                            <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">{stat.label}</div>
+                                            <div className="text-3xl font-bold text-foreground leading-none tracking-tighter mb-1">{stat.value}</div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em]">{stat.label}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -189,7 +189,7 @@ export default function SkillDetailPage() {
                 {/* Section Separator — Sharp Detail */}
                 <div className="relative flex items-center gap-4 mb-20 overflow-hidden">
                     <div className="h-px flex-1 bg-border/50" />
-                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] px-4">Direct Access</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.4em] px-4">Direct Access</span>
                     <div className="h-px flex-1 bg-border/50" />
                 </div>
 
@@ -200,7 +200,7 @@ export default function SkillDetailPage() {
                     <div className="lg:col-span-2 space-y-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h2 className="text-2xl font-black text-foreground tracking-tight">Available Teachers</h2>
+                                <h2 className="text-2xl font-bold text-foreground tracking-tight">Available Teachers</h2>
                                 <p className="text-muted-foreground text-sm font-medium mt-1">
                                     {teachers.length > 0
                                         ? `${teachers.length} teacher${teachers.length > 1 ? 's' : ''} ready to help you learn`
@@ -230,7 +230,7 @@ export default function SkillDetailPage() {
                                     Be the first to share your knowledge! Add this skill to your profile and start teaching others.
                                 </p>
                                 <Link href="/profile/skills">
-                                    <Button className="h-12 px-8 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-widest rounded-xl transition-transform hover:scale-105">
+                                    <Button className="h-12 px-8 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest rounded-xl transition-transform hover:scale-105">
                                         Add This Skill
                                     </Button>
                                 </Link>
@@ -243,7 +243,7 @@ export default function SkillDetailPage() {
                                         <div className="flex items-center gap-4 mb-4">
                                             {/* Avatar */}
                                             <div className="relative shrink-0">
-                                                <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center text-foreground text-base font-black ring-1 ring-border group-hover:ring-orange-500/40 transition-all">
+                                                <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center text-foreground text-base font-bold ring-1 ring-border group-hover:ring-orange-500/40 transition-all">
                                                     {teacher.user?.full_name?.charAt(0).toUpperCase() || 'T'}
                                                 </div>
                                                 {teacher.is_available && (
@@ -265,7 +265,7 @@ export default function SkillDetailPage() {
 
                                             {/* Level badge + Fav */}
                                             <div className="flex items-center gap-2 shrink-0">
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground bg-muted px-2 py-0.5 rounded-md border border-border shadow-sm">{teacher.level}</span>
+                                                <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground bg-muted px-2 py-0.5 rounded-md border border-border shadow-sm">{teacher.level}</span>
                                                 <FavoriteButton teacherId={teacher.user?.id ?? teacher.user_id} size="sm" />
                                             </div>
                                         </div>
@@ -285,7 +285,7 @@ export default function SkillDetailPage() {
                                                         <circle cx="12" cy="12" r="10" />
                                                         <polyline points="12 6 12 12 16 14" />
                                                     </svg>
-                                                    <span className="font-black text-foreground">{teacher.hourly_rate || 1}</span>
+                                                    <span className="font-bold text-foreground">{teacher.hourly_rate || 1}</span>
                                                     <span className="text-muted-foreground">cr/hr</span>
                                                 </div>
                                             </div>
@@ -315,11 +315,11 @@ export default function SkillDetailPage() {
                                 <div className="absolute -top-12 -right-12 w-48 h-48 bg-orange-600/5 rounded-full blur-3xl group-hover:bg-orange-600/10 transition-colors duration-1000" />
 
                                 <div className="flex items-center justify-between mb-6">
-                                    <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                    <p className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.3em] flex items-center gap-3">
                                         <span className="h-px w-4 bg-orange-500/40" />
                                         Opportunities
                                     </p>
-                                    <Badge className="bg-orange-600 text-white font-black text-[9px] uppercase tracking-tighter rounded-full px-2 py-0 border-none shadow-sm">
+                                    <Badge className="bg-orange-600 text-white font-bold text-[9px] uppercase tracking-tighter rounded-full px-2 py-0 border-none shadow-sm">
                                         High Demand
                                     </Badge>
                                 </div>
@@ -357,7 +357,7 @@ export default function SkillDetailPage() {
                             {/* Similar Skills — Editorial List */}
                             <div className="bg-card border-2 border-border rounded-[2.5rem] p-10">
                                 <div className="mb-10 flex items-center justify-between">
-                                    <h3 className="text-xs font-black text-muted-foreground uppercase tracking-[0.3em]">Complementary</h3>
+                                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em]">Complementary</h3>
                                     <div className="h-1.5 w-1.5 bg-border rounded-full" />
                                 </div>
 
@@ -371,8 +371,8 @@ export default function SkillDetailPage() {
                                                     {rec.icon || '🎓'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-black text-foreground uppercase tracking-tighter truncate group-hover:text-orange-500 transition-colors">{rec.name}</p>
-                                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{rec.category}</p>
+                                                    <p className="text-sm font-bold text-foreground uppercase tracking-tighter truncate group-hover:text-orange-500 transition-colors">{rec.name}</p>
+                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{rec.category}</p>
                                                 </div>
                                                 <div className="flex items-center overflow-hidden w-4 group-hover:w-6 transition-all duration-300">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground group-hover:text-orange-500 -translate-x-full group-hover:translate-x-0 transition-transform duration-300">
@@ -384,7 +384,7 @@ export default function SkillDetailPage() {
                                 </div>
 
                                 <Link href="/marketplace" className="block w-full">
-                                    <Button variant="ghost" className="w-full h-12 text-muted-foreground hover:text-foreground font-black text-[10px] uppercase tracking-[0.2em] rounded-xl hover:bg-muted transition-all">
+                                    <Button variant="ghost" className="w-full h-12 text-muted-foreground hover:text-foreground font-bold text-[10px] uppercase tracking-[0.2em] rounded-xl hover:bg-muted transition-all">
                                         Network Inventory
                                     </Button>
                                 </Link>
@@ -392,7 +392,7 @@ export default function SkillDetailPage() {
 
                             {/* Trust Banner — Sharp & Typographic */}
                             <div className="px-6 py-4 border-l border-border flex flex-col gap-2">
-                                <h4 className="text-[10px] font-black text-foreground uppercase tracking-[0.5em]">Consensus Verified</h4>
+                                <h4 className="text-[10px] font-bold text-foreground uppercase tracking-[0.5em]">Consensus Verified</h4>
                                 <p className="text-[10px] font-bold text-muted-foreground leading-tight uppercase tracking-wider">
                                     Transactional integrity maintained via time-banking protocol.
                                 </p>

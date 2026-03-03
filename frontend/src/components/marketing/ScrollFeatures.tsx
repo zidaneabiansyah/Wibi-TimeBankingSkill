@@ -98,7 +98,7 @@ export default function ScrollFeatures() {
     const textY = useTransform(scrollYProgress, [0.9, 1], [50, 0]);
 
     return (
-        <div ref={containerRef} className="relative bg-transparent font-sans w-full">
+        <div ref={containerRef} className="relative bg-transparent font-['Plus_Jakarta_Sans'] w-full">
             {/* Height set to accommodate length of scrolling content while image is pinned */}
             <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-20">
@@ -149,7 +149,7 @@ export default function ScrollFeatures() {
                                             {/* Tag in Image */}
                                             <div className="absolute top-12 left-12 px-6 py-2 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-2xl flex items-center gap-3">
                                                 <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                                                <span className="text-[10px] font-black tracking-widest text-white/90">Step {step.number}</span>
+                                                <span className="text-[10px] font-bold tracking-widest text-white/90">Step {step.number}</span>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -182,7 +182,7 @@ function FeatureText({ step, index, setActiveCard }: { step: any, index: number,
                 viewport={{ once: false, margin: "-30%" }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-                <h3 className="text-4xl md:text-6xl font-black text-white mb-8 bg-linear-to-r from-white to-zinc-500 bg-clip-text tracking-tighter leading-none">
+                <h3 className="text-4xl md:text-6xl font-bold text-white mb-8 bg-linear-to-r from-white to-zinc-500 bg-clip-text tracking-tighter leading-none">
                     {step.title.split(". ")[1]}
                 </h3>
 
@@ -192,7 +192,7 @@ function FeatureText({ step, index, setActiveCard }: { step: any, index: number,
 
                 <div className="flex flex-wrap gap-3 mb-10">
                     {step.tags.map((tag: string) => (
-                        <span key={tag} className="px-6 py-2.5 rounded-2xl bg-zinc-900/50 backdrop-blur-md border border-zinc-800 text-[10px] font-black tracking-[0.2em] text-zinc-400 hover:text-orange-500 hover:border-orange-500/30 transition-all cursor-default">
+                        <span key={tag} className="px-6 py-2.5 rounded-2xl bg-zinc-900/50 backdrop-blur-md border border-zinc-800 text-[10px] font-bold tracking-[0.2em] text-zinc-400 hover:text-orange-500 hover:border-orange-500/30 transition-all cursor-default">
                             #{tag}
                         </span>
                     ))}

@@ -9,7 +9,7 @@ import { PrinciplesSection } from "@/components/marketing/landing";
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 font-sans overflow-x-clip">
+    <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 font-['Plus_Jakarta_Sans'] overflow-x-clip">
       {/* Very Subtle Mesh linear Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#ff5500]/5 rounded-full blur-[120px]" />
@@ -106,7 +106,7 @@ export default function HowItWorksPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 text-foreground">Step-by-Step <span className="text-orange-500">Guide</span></h2>
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 text-foreground">Step-by-Step <span className="text-orange-500">Guide</span></h2>
               <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Getting started with Time Banking is easy. Follow these simple steps to begin exchanging skills.</p>
             </motion.div>
           </div>
@@ -123,7 +123,7 @@ export default function HowItWorksPage() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-foreground mb-6">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground mb-6">
                 Frequently Asked <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Questions.</span>
               </h2>
               <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
@@ -163,14 +163,14 @@ export default function HowItWorksPage() {
         {/* --- Modern Cinematic CTA --- */}
         <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-background overflow-hidden flex items-center justify-center min-h-[60vh]">
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-8 drop-shadow-2xl">
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground mb-8 drop-shadow-2xl">
               Ready to Start<br />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Time Banking?</span>
             </h2>
             <p className="text-zinc-500 text-lg md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
               Bergabunglah dengan komunitas kami hari ini dan mulailah bertukar keterampilan dengan orang lain.
             </p>
-            <Button size="lg" className="group h-16 w-full sm:w-auto px-12 bg-foreground hover:bg-orange-600 text-background hover:text-white font-black text-[15px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3 mx-auto shadow-[0_0_40px_rgba(0,0,0,0.15)] hover:shadow-[0_0_60px_rgba(255,112,32,0.3)] hover:-translate-y-1">
+            <Button size="lg" className="group h-16 w-full sm:w-auto px-12 bg-foreground hover:bg-orange-600 text-background hover:text-white font-bold text-[15px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3 mx-auto shadow-[0_0_40px_rgba(0,0,0,0.15)] hover:shadow-[0_0_60px_rgba(255,112,32,0.3)] hover:-translate-y-1">
               Sign Up Now!
               <span className="w-8 h-8 rounded-full bg-background text-foreground flex items-center justify-center group-hover:bg-white transition-colors">
                 <ArrowUpRight className="w-4 h-4 group-hover:rotate-45 transition-transform" />

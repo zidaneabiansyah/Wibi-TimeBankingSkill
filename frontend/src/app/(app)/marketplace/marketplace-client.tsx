@@ -237,7 +237,7 @@ export function MarketplaceClient() {
 
                         {/* Category badge — top left */}
                         <div className="absolute top-4 left-4">
-                            <span className="px-3 py-1 bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                            <span className="px-3 py-1 bg-orange-600 text-white text-[10px] font-semibold uppercase tracking-widest rounded-full shadow-lg">
                                 {skill.category}
                             </span>
                         </div>
@@ -255,7 +255,7 @@ export function MarketplaceClient() {
                     {/* Bottom: Content Section */}
                     <div className="flex flex-col flex-1 px-5 pt-8 pb-5">
                         {/* Title */}
-                        <h3 className="text-lg font-black text-foreground leading-tight tracking-tight mb-1 group-hover:text-orange-400 transition-colors line-clamp-1">
+                        <h3 className="text-lg font-bold text-foreground leading-tight tracking-tight mb-1 group-hover:text-orange-400 transition-colors line-clamp-1">
                             {skill.name}
                         </h3>
 
@@ -276,14 +276,14 @@ export function MarketplaceClient() {
                             </div>
                             <div className="ml-auto flex items-center gap-1 px-2.5 py-1 bg-muted rounded-lg border border-border/20">
                                 <Zap className="w-3 h-3 text-orange-500" />
-                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">Popular</span>
+                                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Popular</span>
                             </div>
                         </div>
 
                         {/* CTA */}
                         <Button
                             variant="outline"
-                            className="mt-3 w-full h-10 bg-transparent border-border text-muted-foreground font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:bg-orange-600 hover:text-white hover:border-orange-600 group-hover:border-border"
+                            className="mt-3 w-full h-10 bg-transparent border-border text-muted-foreground font-medium text-xs uppercase tracking-widest rounded-xl transition-all hover:bg-orange-600 hover:text-white hover:border-orange-600 group-hover:border-border"
                         >
                             Explore Teachers
                         </Button>
@@ -295,7 +295,7 @@ export function MarketplaceClient() {
 
 
     return (
-        <div ref={topRef} className="text-foreground selection:bg-orange-500/30">
+        <div ref={topRef} className="text-foreground selection:bg-orange-500/30 font-['Plus_Jakarta_Sans']">
             <div className="container mx-auto px-4 pt-6 pb-16 max-w-7xl">
 
                 {error && (
@@ -305,7 +305,7 @@ export function MarketplaceClient() {
                         <p className="text-muted-foreground mb-6">{error}</p>
                         <Button
                             onClick={() => fetchSkills()}
-                            className="bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl px-10"
+                            className="bg-red-500 hover:bg-red-400 text-white font-medium rounded-xl px-10"
                         >
                             Retry Connection
                         </Button>
@@ -332,7 +332,7 @@ export function MarketplaceClient() {
                                         <div className="h-px w-12 bg-border" />
                                     </div>
 
-                                    <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 text-foreground leading-[0.95]">
+                                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 text-foreground leading-[0.95]">
                                         EXCHANGE TIME.<br />
                                         <span className="text-orange-500">MASTER SKILLS.</span>
                                     </h1>
@@ -368,8 +368,8 @@ export function MarketplaceClient() {
                                 <div className="flex-1 bg-card border border-border/80 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-muted-foreground/30 transition-colors cursor-default">
                                     <div className="flex justify-between items-start mb-10">
                                         <div className="flex flex-col">
-                                            <span className="text-muted-foreground text-[10px] uppercase font-mono tracking-widest mb-1 font-bold">Global Ledger</span>
-                                            <span className="text-3xl font-black text-foreground"><AnimatedCounter value={skillsTotal} /> Skills</span>
+                                            <span className="text-muted-foreground text-[10px] uppercase font-mono tracking-widest mb-1 font-semibold">Global Ledger</span>
+                                            <span className="text-3xl font-bold text-foreground"><AnimatedCounter value={skillsTotal} /> Skills</span>
                                         </div>
                                         <Activity className="w-5 h-5 text-orange-500 animate-pulse" />
                                     </div>
@@ -377,15 +377,15 @@ export function MarketplaceClient() {
                                     <div className="space-y-6">
                                         <div className="flex justify-between items-end border-b border-border pb-4">
                                             <div className="flex flex-col">
-                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-bold">Total Members</span>
+                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-semibold">Total Members</span>
                                                 <span className="text-xl font-bold text-foreground"><AnimatedCounter value={8294} /></span>
                                             </div>
                                             <div className="flex flex-col text-right">
-                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-bold">Avg Rating</span>
+                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-semibold">Avg Rating</span>
                                                 <span className="text-xl font-bold text-orange-500"><AnimatedCounter value={4.9} decimals={1} />/5</span>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" className="w-full justify-between text-muted-foreground hover:text-foreground px-0 font-mono text-[10px] uppercase tracking-widest group font-bold">
+                                        <Button variant="ghost" className="w-full justify-between text-muted-foreground hover:text-foreground px-0 font-mono text-[10px] uppercase tracking-widest group font-medium">
                                             View Full Analytics <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </div>
@@ -398,7 +398,7 @@ export function MarketplaceClient() {
                                     <h3 className="font-mono text-muted-foreground text-[10px] uppercase tracking-widest mb-4 font-bold">Trending Now</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {['Python', 'Design', 'Yoga'].map(tag => (
-                                            <span key={tag} className="px-4 py-1.5 rounded-xl bg-orange-600/5 border border-orange-600/10 text-orange-500 text-xs font-bold hover:bg-orange-600 hover:text-white transition-colors" onClick={() => setSearchQuery(tag)}>
+                                            <span key={tag} className="px-4 py-1.5 rounded-xl bg-orange-600/5 border border-orange-600/10 text-orange-500 text-xs font-medium hover:bg-orange-600 hover:text-white transition-colors" onClick={() => setSearchQuery(tag)}>
                                                 #{tag}
                                             </span>
                                         ))}
@@ -413,7 +413,7 @@ export function MarketplaceClient() {
                                 <div className="flex gap-1 overflow-x-auto scrollbar-hide flex-1 pl-1">
                                     <button
                                         onClick={() => setSelectedCategory('all')}
-                                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${selectedCategory === 'all' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted font-bold'}`}
+                                        className={`px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all ${selectedCategory === 'all' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted font-medium'}`}
                                     >
                                         All Systems
                                     </button>
@@ -421,7 +421,7 @@ export function MarketplaceClient() {
                                         <button
                                             key={cat.value}
                                             onClick={() => setSelectedCategory(cat.value)}
-                                            className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${selectedCategory === cat.value ? 'bg-muted text-orange-500 border border-border' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                                            className={`px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all ${selectedCategory === cat.value ? 'bg-muted text-orange-500 border border-border' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                                         >
                                             {cat.label}
                                         </button>
@@ -436,7 +436,7 @@ export function MarketplaceClient() {
                                         className="text-muted-foreground hover:text-orange-500 hover:bg-muted flex gap-3 px-5 py-5 rounded-xl transition-all"
                                     >
                                         <SlidersHorizontal className="w-4 h-4" />
-                                        <span className="hidden sm:inline text-xs font-black uppercase tracking-widest">Filters</span>
+                                        <span className="hidden sm:inline text-xs font-semibold uppercase tracking-widest">Filters</span>
                                     </Button>
                                 </div>
                             </div>
@@ -451,9 +451,9 @@ export function MarketplaceClient() {
                                         className="mt-4 bg-card border border-border rounded-3xl p-8 grid grid-cols-1 md:grid-cols-3 gap-10 overflow-hidden"
                                     >
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] font-black">Expertise Level</label>
+                                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] font-semibold">Expertise Level</label>
                                             <Select defaultValue="all">
-                                                <SelectTrigger className="bg-background border-border rounded-2xl h-12 text-xs font-bold font-mono text-muted-foreground"><SelectValue /></SelectTrigger>
+                                                <SelectTrigger className="bg-background border-border rounded-2xl h-12 text-xs font-medium font-mono text-muted-foreground"><SelectValue /></SelectTrigger>
                                                 <SelectContent className="bg-card border-border">
                                                     <SelectItem value="all">ALL LEVELS</SelectItem>
                                                     <SelectItem value="beginner">BEGINNER</SelectItem>
@@ -462,9 +462,9 @@ export function MarketplaceClient() {
                                             </Select>
                                         </div>
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] font-black">Sort Protocol</label>
+                                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] font-semibold">Sort Protocol</label>
                                             <Select defaultValue="popular">
-                                                <SelectTrigger className="bg-background border-border rounded-2xl h-12 text-xs font-bold font-mono text-muted-foreground"><SelectValue /></SelectTrigger>
+                                                <SelectTrigger className="bg-background border-border rounded-2xl h-12 text-xs font-medium font-mono text-muted-foreground"><SelectValue /></SelectTrigger>
                                                 <SelectContent className="bg-card border-border">
                                                     <SelectItem value="popular">MOST POPULAR</SelectItem>
                                                     <SelectItem value="newest">LATEST ARRIVALS</SelectItem>
@@ -512,11 +512,11 @@ export function MarketplaceClient() {
                                         className="absolute inset-0 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-[3rem] bg-muted/10"
                                     >
                                         <Activity className="w-12 h-12 text-muted-foreground mb-6" />
-                                        <h3 className="text-3xl font-black text-foreground mb-2 uppercase tracking-tighter italic">No Nodes Detected</h3>
-                                        <p className="text-muted-foreground text-sm font-mono tracking-wide max-w-sm text-center mb-10 font-bold">Searching the grid... No matches for your current parameters.</p>
+                                        <h3 className="text-3xl font-bold text-foreground mb-2 uppercase tracking-tighter italic">No Nodes Detected</h3>
+                                        <p className="text-muted-foreground text-sm font-mono tracking-wide max-w-sm text-center mb-10 font-semibold">Searching the grid... No matches for your current parameters.</p>
                                         <Button
                                             variant="outline"
-                                            className="h-14 px-12 border-orange-600/50 text-orange-500 hover:bg-orange-600 hover:text-black font-black uppercase text-xs tracking-widest rounded-2xl transition-all"
+                                            className="h-14 px-12 border-orange-600/50 text-orange-500 hover:bg-orange-600 hover:text-black font-semibold uppercase text-xs tracking-widest rounded-2xl transition-all"
                                             onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
                                         >
                                             Reset Grid
@@ -541,7 +541,7 @@ export function MarketplaceClient() {
                             <ChevronLeft className="w-6 h-6" />
                         </Button>
 
-                        <div className="px-8 font-black tabular-nums text-foreground text-lg tracking-tighter">
+                        <div className="px-8 font-semibold tabular-nums text-foreground text-lg tracking-tighter">
                             {currentPage} <span className="text-muted-foreground text-sm font-normal mx-1">/</span> {totalPages || 1}
                         </div>
 

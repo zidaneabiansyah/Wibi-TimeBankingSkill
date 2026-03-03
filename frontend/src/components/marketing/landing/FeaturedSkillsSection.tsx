@@ -48,7 +48,7 @@ const itemVariants = {
 export function FeaturedSkillsSection() {
     return (
         <section className="relative w-full py-24 md:py-32 bg-background border-t border-border overflow-hidden">
-            <div className="mx-auto max-w-screen-xl px-4 sm:px-8 lg:px-12">
+            <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-12">
 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-16 md:mb-20">
@@ -64,7 +64,7 @@ export function FeaturedSkillsSection() {
                             Popular Skills
                         </div>
 
-                        <h2 className="text-4xl md:text-[2.75rem] font-extrabold text-foreground tracking-tight">
+                        <h2 className="text-4xl md:text-[2.75rem] font-bold text-foreground tracking-tight">
                             Explore What's Popular
                         </h2>
                     </m.div>
@@ -115,10 +115,10 @@ export function FeaturedSkillsSection() {
                                 {/* Main Content */}
                                 <div className="flex-1">
                                     <div className="inline-flex items-center gap-2 mb-4">
-                                        <div className="h-[1px] w-6 bg-border group-hover:w-10 group-hover:bg-orange-500/50 transition-all duration-500" />
+                                        <div className="h-px w-6 bg-border group-hover:w-10 group-hover:bg-orange-500/50 transition-all duration-500" />
                                     </div>
 
-                                    <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-orange-500 transition-colors duration-300">
+                                    <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-orange-500 transition-colors duration-300">
                                         {skill.title}
                                     </h3>
                                     <p className="text-muted-foreground text-base leading-relaxed mb-4 group-hover:text-foreground transition-colors duration-300">
@@ -139,7 +139,7 @@ export function FeaturedSkillsSection() {
                                 </div>
 
                                 {/* Subtle internal hover glow */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#FF7020]/0 via-[#FF7020]/[0.015] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-3xl" />
+                                <div className="absolute inset-0 bg-linear-to-br from-[#FF7020]/0 via-[#FF7020]/1.5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-3xl" />
                             </m.div>
                         );
                     })}
