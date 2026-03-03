@@ -39,7 +39,7 @@ export default function CreateThreadPage() {
             setLoading(true);
             const data = await communityService.getCategories();
             setCategories(data);
-            
+
             // If only one category exists or none selected, select first
             if (data.length > 0 && !formData.categoryId) {
                 // setFormData(prev => ({ ...prev, categoryId: data[0].id }));
@@ -54,7 +54,7 @@ export default function CreateThreadPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!formData.categoryId) {
             toast.error('Please select a category');
             return;
@@ -77,7 +77,7 @@ export default function CreateThreadPage() {
                 formData.content,
                 tagArray
             );
-            
+
             if (!thread) {
                 throw new Error('Failed to create thread: No data returned');
             }
@@ -101,29 +101,29 @@ export default function CreateThreadPage() {
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
+        <div className="min-h-screen bg-background pt-24 md:pt-32 pb-12 px-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             <div className="w-full max-w-3xl mx-auto">
-                <Button variant="ghost" onClick={() => router.back()} className="mb-6">
+                <Button variant="ghost" onClick={() => router.back()} className="mb-6 text-foreground hover:bg-muted">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
                 </Button>
 
-                <div className="bg-card rounded-xl border border-border p-6 md:p-8 shadow-sm">
-                    <h1 className="text-2xl font-bold mb-6">Start New Discussion</h1>
+                <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
+                    <h1 className="text-2xl font-bold mb-6 text-foreground">Start New Discussion</h1>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Category Selection */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Category</label>
+                            <label className="text-sm font-semibold text-foreground">Category</label>
                             <select
                                 value={formData.categoryId}
                                 onChange={(e) => setFormData({ ...formData, categoryId: parseInt(e.target.value) })}
-                                className="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                                 required
                             >
-                                <option value={0} disabled>Select a category</option>
+                                <option value={0} disabled className="text-muted-foreground">Select a category</option>
                                 {categories.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>
+                                    <option key={cat.id} value={cat.id} className="text-foreground">
                                         {cat.name}
                                     </option>
                                 ))}
@@ -132,47 +132,51 @@ export default function CreateThreadPage() {
 
                         {/* Title */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Title</label>
+                            <label className="text-sm font-semibold text-foreground">Title</label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                 placeholder="What's on your mind?"
-                                className="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                                 required
                             />
                         </div>
 
                         {/* Content */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Content</label>
+                            <label className="text-sm font-semibold text-foreground">Content</label>
                             <textarea
                                 value={formData.content}
                                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                                 placeholder="Describe your topic in detail..."
                                 rows={8}
-                                className="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                                 required
                             />
                         </div>
 
                         {/* Tags */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Tags (comma-separated)</label>
+                            <label className="text-sm font-semibold text-foreground">Tags (comma-separated)</label>
                             <input
                                 type="text"
                                 value={formData.tags}
                                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                                 placeholder="e.g. question, help, announcement"
-                                className="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                             />
                         </div>
 
-                        <div className="flex justify-end pt-4">
-                            <Button type="button" variant="outline" onClick={() => router.back()} className="mr-4">
+                        <div className="flex justify-end items-center gap-3 pt-4">
+                            <Button type="button" variant="outline" onClick={() => router.back()} className="rounded-xl px-6">
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={submitting || !formData.categoryId}>
+                            <Button
+                                type="submit"
+                                disabled={submitting || !formData.categoryId}
+                                className="rounded-xl px-8 shadow-lg shadow-primary/20"
+                            >
                                 {submitting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

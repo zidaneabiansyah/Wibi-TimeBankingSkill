@@ -51,65 +51,65 @@ export function CreateStoryForm({ onSuccess }: CreateStoryFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-                <label className="block text-sm font-medium mb-2">Title</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">Title</label>
                 <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter story title..."
-                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">Description</label>
                 <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Tell your success story..."
                     rows={6}
-                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-2">Featured Image URL (Optional)</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">Featured Image URL (Optional)</label>
                 <input
                     type="url"
                     value={featuredImageURL}
                     onChange={(e) => setFeaturedImageURL(e.target.value)}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-2">Tags (comma-separated)</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">Tags (comma-separated)</label>
                 <input
                     type="text"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                     placeholder="e.g. achievement, learning, success"
-                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full p-3.5 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 py-2">
                 <input
                     type="checkbox"
                     id="published"
                     checked={isPublished}
                     onChange={(e) => setIsPublished(e.target.checked)}
-                    className="rounded border-border"
+                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary/50 bg-background"
                 />
-                <label htmlFor="published" className="text-sm font-medium">
+                <label htmlFor="published" className="text-sm font-medium text-foreground cursor-pointer select-none">
                     Publish immediately
                 </label>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button type="submit" disabled={loading} className="w-full py-6 rounded-xl font-semibold shadow-lg shadow-primary/20">
                 {loading ? 'Creating...' : 'Create Story'}
             </Button>
         </form>
