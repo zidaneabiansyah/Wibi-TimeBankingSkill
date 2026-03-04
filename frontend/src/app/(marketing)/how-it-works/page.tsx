@@ -114,51 +114,6 @@ export default function HowItWorksPage() {
           <ScrollFeatures />
         </section>
 
-        {/* --- Minimalist Flat FAQ --- */}
-        <section id="faq" className="py-24 md:py-32 px-6 sm:px-12 relative border-t border-zinc-900 bg-zinc-950">
-          <div className="max-w-4xl mx-auto relative z-10 w-full">
-            <motion.div
-              className="text-center mb-16 md:mb-24"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground mb-6">
-                Frequently Asked <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Questions.</span>
-              </h2>
-              <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
-                Punya pertanyaan tentang Time Banking? Berikut beberapa jawabannya.
-              </p>
-            </motion.div>
-
-            <div className="flex flex-col gap-4">
-              {[
-                { q: "How do I earn initial credits?", a: "New accounts are pre-loaded with 3 Genesis Credits. After depletion, services must be rendered to earn more." },
-                { q: "What if I have no skills?", a: "Value is subjective. From language practice to project feedback, everyone possesses tradable wisdom." },
-                { q: "Do credits expire?", a: "No. Credits are stored perpetually in your secure ledger until utilized for learning." },
-                { q: "Is the system virtual?", a: "Exchanges can be physical (in-person) or digital (video-link), defined during the booking protocol." },
-                { q: "Are ratings verified?", a: "Yes. All ratings are tied to completed sessions, ensuring a 100% authentic reputation index." }
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  className="group flex flex-col sm:flex-row gap-6 p-8 md:p-10 rounded-3xl bg-zinc-900 border border-white/3 hover:border-white/10 transition-all duration-300"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <span className="text-zinc-600 font-bold text-xl md:text-2xl font-mono pt-1 shrink-0 group-hover:text-orange-500 transition-colors">
-                    0{i + 1}.
-                  </span>
-                  <div>
-                    <h3 className="text-foreground font-bold text-xl md:text-2xl mb-4 leading-tight group-hover:text-orange-500">{item.q}</h3>
-                    <p className="text-zinc-500 text-lg leading-relaxed">{item.a}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* --- Modern Cinematic CTA --- */}
         <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-background overflow-hidden flex items-center justify-center min-h-[60vh]">
