@@ -89,7 +89,7 @@ export default function MySkillsPage() {
                             <span className="h-1 w-8 bg-primary rounded-full" />
                             <span className="text-xs font-bold uppercase tracking-widest text-primary/80">Teaching Profile</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
+                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
                             My Skills
                         </h1>
                         <p className="text-muted-foreground mt-3 text-lg max-w-2xl leading-relaxed">
@@ -97,8 +97,8 @@ export default function MySkillsPage() {
                         </p>
                     </div>
                     <Link href="/profile/skills/new">
-                        <Button size="lg" className="rounded-2xl px-8 h-14 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] font-bold text-lg gap-2">
-                            <Plus className="h-5 w-5 stroke-[3]" />
+                        <Button className="rounded-2xl px-6 h-12 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] font-semibold gap-2">
+                            <Plus className="h-4 w-4 stroke-3" />
                             Add New Skill
                         </Button>
                     </Link>
@@ -123,7 +123,7 @@ export default function MySkillsPage() {
                                     <TabsTrigger
                                         key={cat}
                                         value={cat}
-                                        className="flex-1 min-w-[120px] rounded-full text-[11px] font-black uppercase tracking-[0.25em] transition-all duration-500 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] data-[state=inactive]:hover:bg-muted/30"
+                                        className="flex-1 min-w-[120px] rounded-full text-[11px] font-bold uppercase tracking-[0.25em] transition-all duration-500 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] data-[state=inactive]:hover:bg-muted/30"
                                     >
                                         {cat}
                                     </TabsTrigger>
@@ -176,7 +176,7 @@ export default function MySkillsPage() {
                                                             Active Skill
                                                         </span>
                                                     </div>
-                                                    <CardTitle className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-primary transition-colors truncate">
+                                                    <CardTitle className="text-lg font-semibold tracking-tight text-foreground/90 group-hover:text-primary transition-colors truncate">
                                                         {skill.skill?.name || (skill as any).name}
                                                     </CardTitle>
                                                     <CardDescription className="text-xs font-semibold text-muted-foreground/80 mt-1 flex items-center gap-1.5">
@@ -184,11 +184,6 @@ export default function MySkillsPage() {
                                                         {skill.skill?.category || (skill as any).category}
                                                     </CardDescription>
                                                 </div>
-                                                {skill.skill?.icon && (
-                                                    <span className="text-3xl drop-shadow-sm group-hover:scale-110 transition-transform duration-500 pt-1">
-                                                        {skill.skill.icon}
-                                                    </span>
-                                                )}
                                             </div>
                                         </CardHeader>
 
@@ -210,7 +205,7 @@ export default function MySkillsPage() {
                                                         <span className="text-[9px] font-bold uppercase tracking-wider">Hourly Rate</span>
                                                     </div>
                                                     <div className="flex items-baseline gap-1 mt-0.5">
-                                                        <span className="text-lg font-black text-secondary">{skill.hourly_rate || 1}</span>
+                                                        <span className="text-lg font-bold text-secondary">{skill.hourly_rate || 1}</span>
                                                         <span className="text-[10px] font-bold opacity-70 tracking-tighter">CRS</span>
                                                     </div>
                                                 </div>
@@ -233,7 +228,7 @@ export default function MySkillsPage() {
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/30 border border-border/10">
                                                     <Users className="h-3.5 w-3.5 text-muted-foreground" />
                                                     <span className="text-xs font-bold text-foreground">
-                                                        {skill.total_sessions || 0} <span className="text-[8px] opacity-60 font-black">SESS</span>
+                                                        {skill.total_sessions || 0} <span className="text-[8px] opacity-60 font-bold">SESS</span>
                                                     </span>
                                                 </div>
                                                 <Badge className="ml-auto bg-background/80 backdrop-blur-sm text-foreground border-border/50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full shadow-sm">
@@ -247,7 +242,7 @@ export default function MySkillsPage() {
                                                 <Link href={`/profile/skills/${skill.skill_id}/edit`} className="w-full">
                                                     <Button
                                                         variant="secondary"
-                                                        className="w-full h-11 rounded-xl bg-muted/40 hover:bg-muted text-foreground text-xs font-black gap-2 transition-all"
+                                                        className="w-full h-11 rounded-xl bg-muted/40 hover:bg-muted text-foreground text-xs font-bold gap-2 transition-all"
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                         Edit Skill Details
@@ -255,7 +250,7 @@ export default function MySkillsPage() {
                                                 </Link>
                                                 <Button
                                                     variant="ghost"
-                                                    className="w-full h-10 rounded-xl text-muted-foreground hover:text-rose-500 hover:bg-rose-500/5 transition-all text-[9px] font-black uppercase tracking-widest"
+                                                    className="w-full h-10 rounded-xl text-muted-foreground hover:text-rose-500 hover:bg-rose-500/5 transition-all text-[9px] font-bold uppercase tracking-widest"
                                                     onClick={() => handleDelete(skill.skill_id)}
                                                     disabled={deletingId === skill.skill_id}
                                                 >

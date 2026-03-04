@@ -54,7 +54,7 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
                                 {status.label}
                             </span>
                         </div>
-                        <CardTitle className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-primary transition-colors truncate">
+                        <CardTitle className="text-lg font-semibold tracking-tight text-foreground/90 group-hover:text-primary transition-colors truncate">
                             {session.title}
                         </CardTitle>
                         <CardDescription className="text-xs font-semibold text-muted-foreground/80 mt-1 flex items-center gap-1.5">
@@ -91,7 +91,7 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
                         </div>
                         <div className="flex items-center gap-1">
                             <span className="text-[11px] font-bold text-foreground/80">{session.duration}h</span>
-                            <span className="text-sm font-black text-secondary">{session.credit_amount} <span className="text-[9px] opacity-70">CRS</span></span>
+                            <span className="text-sm font-bold text-secondary">{session.credit_amount} <span className="text-[9px] opacity-70">CRS</span></span>
                         </div>
                     </div>
                 </div>
@@ -115,7 +115,7 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
                 <div className="flex flex-col w-full gap-3">
                     {canJoin && (
                         <Link href={`/dashboard/sessions/${session.id}/room`} className="w-full">
-                            <Button className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-lg shadow-emerald-600/10 gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                            <Button className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-lg shadow-emerald-600/10 gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]">
                                 <Video className="h-4 w-4" />
                                 Join Virtual Room
                             </Button>
@@ -125,14 +125,14 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
                     {canApprove && (
                         <div className="flex flex-col gap-2 w-full">
                             <Button
-                                className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-lg shadow-indigo-600/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-600/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                 onClick={() => onAction('approve', session.id)}
                             >
                                 Approve Session
                             </Button>
                             <Button
                                 variant="outline"
-                                className="w-full h-11 rounded-xl border-rose-500/10 text-rose-600 hover:bg-rose-500/5 text-xs font-black transition-all"
+                                className="w-full h-11 rounded-xl border-rose-500/10 text-rose-600 hover:bg-rose-500/5 text-xs font-bold transition-all"
                                 onClick={() => onAction('reject', session.id)}
                             >
                                 Reject Session Request
@@ -142,14 +142,14 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
 
                     <div className="flex flex-col gap-2 w-full">
                         <Link href={`/dashboard/sessions/${session.id}`} className="w-full">
-                            <Button variant="secondary" className="w-full h-11 rounded-xl bg-muted/40 hover:bg-muted text-foreground text-xs font-black transition-all">
+                            <Button variant="secondary" className="w-full h-11 rounded-xl bg-muted/40 hover:bg-muted text-foreground text-xs font-bold transition-all">
                                 View Session Details
                             </Button>
                         </Link>
 
                         {session.status === 'completed' && !session.review && (
                             <Link href={`/dashboard/sessions/${session.id}/review`} className="w-full">
-                                <Button className="w-full h-11 rounded-xl border-secondary/20 text-secondary hover:bg-secondary/5 text-xs font-black transition-all" variant="outline">
+                                <Button className="w-full h-11 rounded-xl border-secondary/20 text-secondary hover:bg-secondary/5 text-xs font-bold transition-all" variant="outline">
                                     Write a Review
                                 </Button>
                             </Link>
@@ -158,7 +158,7 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
                         {canCancel && !canApprove && (
                             <Button
                                 variant="ghost"
-                                className="h-10 w-full rounded-xl text-muted-foreground hover:text-rose-500 hover:bg-rose-500/5 transition-all text-[10px] font-black uppercase tracking-widest"
+                                className="h-10 w-full rounded-xl text-muted-foreground hover:text-rose-500 hover:bg-rose-500/5 transition-all text-[10px] font-bold uppercase tracking-widest"
                                 onClick={() => onAction('cancel', session.id)}
                             >
                                 Cancel Session

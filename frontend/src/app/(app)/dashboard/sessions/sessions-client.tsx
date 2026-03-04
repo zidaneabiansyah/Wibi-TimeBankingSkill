@@ -85,7 +85,7 @@ export function SessionsClient() {
                             <span className="h-1 w-8 bg-primary rounded-full" />
                             <span className="text-xs font-bold uppercase tracking-widest text-primary/80">Schedule Manager</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
+                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
                             My Sessions
                         </h1>
                         <p className="text-muted-foreground mt-3 text-lg max-w-2xl leading-relaxed">
@@ -94,12 +94,12 @@ export function SessionsClient() {
                     </div>
                     <div className="flex gap-3">
                         <Link href="/marketplace">
-                            <Button variant="outline" className="rounded-2xl px-6 h-12 font-bold border-border/60 hover:bg-muted/50 transition-all">
+                            <Button variant="outline" className="rounded-2xl px-6 h-12 font-semibold border-border/60 hover:bg-muted/50 transition-all">
                                 Explore Skills
                             </Button>
                         </Link>
                         <Link href="/dashboard">
-                            <Button className="rounded-2xl px-6 h-12 bg-card hover:bg-muted border border-border/40 text-foreground font-bold shadow-sm transition-all">
+                            <Button className="rounded-2xl px-6 h-12 bg-card hover:bg-muted border border-border/40 text-foreground font-semibold shadow-sm transition-all">
                                 Dashboard
                             </Button>
                         </Link>
@@ -119,7 +119,7 @@ export function SessionsClient() {
                                 <TabsTrigger
                                     key={tab}
                                     value={tab}
-                                    className="flex-1 min-w-[120px] rounded-full text-[11px] font-black uppercase tracking-[0.25em] transition-all duration-500 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] data-[state=inactive]:hover:bg-muted/30"
+                                    className="flex-1 min-w-[120px] rounded-full text-[11px] font-bold uppercase tracking-[0.25em] transition-all duration-500 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] data-[state=inactive]:hover:bg-muted/30"
                                 >
                                     {tab.replace('_', ' ')}
                                 </TabsTrigger>
