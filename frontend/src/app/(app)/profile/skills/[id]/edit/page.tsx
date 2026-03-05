@@ -23,7 +23,8 @@ function EditSkillContent() {
     const params = useParams();
     const skillId = Number(params.id);
     const { user } = useAuthStore();
-    const { userSkills, fetchUserSkills, updateUserSkill, isLoading } = useSkillStore();
+    const { fetchUserSkills, updateUserSkill, isLoading } = useSkillStore();
+
     
     const [formData, setFormData] = useState({
         level: '' as SkillLevel,
@@ -43,11 +44,14 @@ function EditSkillContent() {
             
             try {
                 setIsFetching(true);
-                // Ensure skills are loaded in store
+                // Fetch fresh data from API
                 await fetchUserSkills();
                 
-                // Find this specific skill in user's skills
-                const skillToEdit = userSkills.find((s: UserSkill) => s.id === skillId);
+                // userSkills in closure is stale — use getState() to get updated state
+                const freshSkills = useSkillStore.getState().userSkills;
+                
+                // URL sends skill.skill_id (the master skill ID), not user_skills.id
+                const skillToEdit = freshSkills.find((s: UserSkill) => s.skill_id === skillId);
                 
                 if (skillToEdit) {
                     setSkillName(skillToEdit.skill?.name || 'Skill');
@@ -62,7 +66,7 @@ function EditSkillContent() {
                     });
                 } else {
                     toast.error('Skill not found');
-                    router.push('/profile');
+                    router.push('/profile/skills');
                 }
             } catch (error) {
                 console.error('Failed to load skill:', error);
@@ -73,7 +77,8 @@ function EditSkillContent() {
         };
 
         loadSkill();
-    }, [user?.id, skillId, fetchUserSkills, router]);
+    }, [user?.id, skillId]); // remove fetchUserSkills and router from deps — they cause re-trigger loops
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -117,7 +122,7 @@ function EditSkillContent() {
             });
 
             toast.success('Skill updated successfully');
-            router.push('/profile');
+            router.push('/profile/skills');
         } catch (error: any) {
             toast.error(error.message || 'Failed to update skill');
             console.error(error);
@@ -265,7 +270,7 @@ function EditSkillContent() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => router.push('/profile')}
+                                        onClick={() => router.push('/profile/skills')}
                                         disabled={isLoading}
                                     >
                                         Cancel
