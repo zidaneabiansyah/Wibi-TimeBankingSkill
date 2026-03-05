@@ -222,7 +222,7 @@ export default function TermsPage() {
                                     By using Wibi, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                    Last updated: December 2025
+                                    Last updated: Januari 2026
                                 </p>
                             </div>
                         </div>

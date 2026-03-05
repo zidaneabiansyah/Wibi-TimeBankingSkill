@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 export function ContactForm() {
     const [formData, setFormData] = useState({
@@ -26,8 +26,8 @@ export function ContactForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-            toast.error('Please fill in all fields');
+        if (!formData.name || !formData.email || !formData.message) {
+            toast.error('Please fill in required fields');
             return;
         }
 
@@ -52,72 +52,54 @@ export function ContactForm() {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name */}
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                    Full Name
-                </label>
-                <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Your full name"
-                    className="bg-muted/50"
-                    disabled={isSubmitting}
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Name */}
+                <div className="space-y-1.5">
+                    <label className="block text-sm font-semibold text-foreground">
+                        Your Name
+                    </label>
+                    <Input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Your name"
+                        className="bg-muted/30 border-none rounded-xl h-12 focus-visible:ring-1 focus-visible:ring-primary shadow-none px-4"
+                        disabled={isSubmitting}
+                    />
+                </div>
+
+                {/* Email */}
+                <div className="space-y-1.5">
+                    <label className="block text-sm font-semibold text-foreground">
+                        Email address
+                    </label>
+                    <Input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Your email address"
+                        className="bg-muted/30 border-none rounded-xl h-12 focus-visible:ring-1 focus-visible:ring-primary shadow-none px-4"
+                        disabled={isSubmitting}
+                    />
+                </div>
             </div>
 
-            {/* Email */}
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                    Email Address
-                </label>
-                <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="your@email.com"
-                    className="bg-muted/50"
-                    disabled={isSubmitting}
-                />
-            </div>
-
-            {/* Subject */}
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                    Subject
-                </label>
-                <select
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-border rounded-lg bg-muted/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
-                    disabled={isSubmitting}
-                >
-                    <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="bug">Report a Bug</option>
-                    <option value="feature">Feature Request</option>
-                    <option value="support">Technical Support</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
+            {/* Subject - Optional but keeping it to match previous functionality if needed, or hide it to strictly match image? The image just had Name, Email, Message. I'll change it to match the image precisely. */}
 
             {/* Message */}
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+            <div className="space-y-1.5">
+                <label className="block text-sm font-semibold text-foreground">
                     Message
                 </label>
                 <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Tell us what's on your mind..."
-                    rows={6}
-                    className="w-full px-3 py-2 border border-border rounded-lg bg-muted/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 resize-none"
+                    placeholder="Write something..."
+                    rows={8}
+                    className="w-full px-4 py-3 bg-muted/30 border-none rounded-2xl text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 resize-none shadow-none"
                     disabled={isSubmitting}
                 />
             </div>
@@ -125,19 +107,16 @@ export function ContactForm() {
             {/* Submit Button */}
             <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 rounded-full mt-2 transition-transform hover:scale-[1.02]"
                 disabled={isSubmitting}
             >
                 {isSubmitting ? (
                     <>
-                        <span className="animate-spin mr-2">⏳</span>
+                        <Loader2 className="animate-spin h-5 w-5 mr-2" />
                         Sending...
                     </>
                 ) : (
-                    <>
-                        <Send className="h-4 w-4 mr-2" />
-                        Send Message
-                    </>
+                    'Send Message'
                 )}
             </Button>
         </form>

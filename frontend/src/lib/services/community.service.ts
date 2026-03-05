@@ -25,7 +25,7 @@ export const communityService = {
         try {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get<ApiResponse<ForumCategory[]>>(
                 `${API_BASE}/forum/categories`,
                 { headers }
@@ -106,7 +106,8 @@ export const communityService = {
             return response.data.data || { threads: [], total: 0 };
         } catch (error) {
             console.error('Failed to fetch threads:', error);
-            throw error;
+            // Return empty result instead of throwing to allow view-only access
+            return { threads: [], total: 0 };
         }
     },
 
@@ -334,7 +335,7 @@ export const communityService = {
         try {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get<ApiResponse<SuccessStory>>(
                 `${API_BASE}/stories/${storyId}`,
                 { headers }
@@ -356,7 +357,7 @@ export const communityService = {
         try {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get<
                 ApiResponse<{ stories: SuccessStory[]; total: number }>
             >(`${API_BASE}/stories/published`, {
@@ -557,7 +558,7 @@ export const communityService = {
         try {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get<
                 ApiResponse<{ endorsements: Endorsement[]; total: number }>
             >(`${API_BASE}/endorsements/user/${userId}`, {
@@ -630,7 +631,7 @@ export const communityService = {
         try {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get<ApiResponse<any[]>>(
                 `${API_BASE}/endorsements/top-skills`,
                 { params: { limit }, headers }

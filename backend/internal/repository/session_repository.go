@@ -48,7 +48,7 @@ func (r *SessionRepository) Create(session *models.Session) error {
 // GetByID retrieves a session by ID with related data
 func (r *SessionRepository) GetByID(id uint) (*models.Session, error) {
 	var session models.Session
-	err := r.db.Preload("Teacher").Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").
+	err := r.db.Preload("Teacher").Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").Preload("Review").
 		First(&session, id).Error
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (r *SessionRepository) GetUserSessionsAsTeacher(userID uint, status string,
 		return nil, 0, err
 	}
 
-	err := query.Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").
+	err := query.Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").Preload("Review").
 		Order("created_at DESC").
 		Limit(limit).Offset(offset).
 		Find(&sessions).Error
@@ -104,7 +104,7 @@ func (r *SessionRepository) GetUserSessionsAsStudent(userID uint, status string,
 		return nil, 0, err
 	}
 
-	err := query.Preload("Teacher").Preload("UserSkill").Preload("UserSkill.Skill").
+	err := query.Preload("Teacher").Preload("UserSkill").Preload("UserSkill.Skill").Preload("Review").
 		Order("created_at DESC").
 		Limit(limit).Offset(offset).
 		Find(&sessions).Error
@@ -127,7 +127,7 @@ func (r *SessionRepository) GetAllUserSessions(userID uint, status string, limit
 		return nil, 0, err
 	}
 
-	err := query.Preload("Teacher").Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").
+	err := query.Preload("Teacher").Preload("Student").Preload("UserSkill").Preload("UserSkill.Skill").Preload("Review").
 		Order("created_at DESC").
 		Limit(limit).Offset(offset).
 		Find(&sessions).Error
@@ -220,9 +220,9 @@ func (r *SessionRepository) ExistsActiveSession(teacherID, studentID, userSkillI
 func (r *SessionRepository) GetSessionsStartingSoon(minutes int) ([]models.Session, error) {
 	var sessions []models.Session
 	limitTime := time.Now().Add(time.Duration(minutes) * time.Minute)
-	
+
 	err := r.db.Preload("Teacher").Preload("Student").
-		Where("status = ? AND scheduled_at > ? AND scheduled_at <= ?", 
+		Where("status = ? AND scheduled_at > ? AND scheduled_at <= ?",
 			models.StatusApproved, time.Now(), limitTime).
 		Find(&sessions).Error
 	return sessions, err

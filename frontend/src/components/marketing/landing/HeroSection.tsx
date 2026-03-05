@@ -51,13 +51,13 @@ export function HeroSection() {
         <section ref={containerRef} className="relative w-full min-h-[85vh] md:min-h-[80vh] pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden bg-background flex items-center">
 
             {/* Subtle dynamic dot grid background */}
-            <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-size-[24px_24px] opacity-30 pointer-events-none" />
 
             {/* Glowing Accent behind the visual */}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF7020]/5 rounded-full blur-[120px] pointer-events-none opacity-50" />
 
             <m.div
-                className="relative z-10 mx-auto w-full max-w-screen-xl px-4 sm:px-8 lg:px-12"
+                className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-12"
                 initial="initial"
                 animate="animate"
                 variants={containerVariants}
@@ -69,7 +69,7 @@ export function HeroSection() {
 
                         <div className="space-y-4 md:space-y-6">
                             <m.h1
-                                className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-black tracking-tighter leading-[1.02] text-foreground"
+                                className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-bold tracking-tighter leading-[1.02] text-foreground"
                                 variants={itemVariants}
                             >
                                 Stop Paying. <br />
@@ -95,7 +95,7 @@ export function HeroSection() {
                                     whileTap={{ scale: 0.98 }}
                                     className="relative z-10"
                                 >
-                                    <Button className="h-16 px-12 rounded-[1.25rem] bg-foreground hover:bg-orange-600 text-background hover:text-white font-black text-xs sm:text-sm uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-4 border-none shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(255,112,32,0.4)]">
+                                    <Button className="h-16 px-12 rounded-[1.25rem] bg-foreground hover:bg-orange-600 text-background hover:text-white font-bold text-xs sm:text-sm uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-4 border-none shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(255,112,32,0.4)]">
                                         <span className="relative z-10">{isAuthenticated ? "Go to Dashboard" : "Start Journey"}</span>
                                         <div className="w-8 h-8 rounded-full bg-background/10 flex items-center justify-center group-hover/cta:bg-white/20 transition-colors duration-500">
                                             <ArrowRight className="w-4 h-4" strokeWidth={3} />
@@ -119,7 +119,7 @@ export function HeroSection() {
                                     <Users className="h-4 w-4 text-foreground" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-foreground font-bold text-base">
+                                    <span className="text-foreground font-semibold text-base">
                                         <AnimatedCounter value={1200} />+
                                     </span>
                                     <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Active Peers</span>
@@ -131,7 +131,7 @@ export function HeroSection() {
                                     <Zap className="h-4 w-4 text-orange-500" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-foreground font-bold text-base">
+                                    <span className="text-foreground font-semibold text-base">
                                         <AnimatedCounter value={15000} />+
                                     </span>
                                     <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Hours Exchanged</span>
@@ -141,7 +141,7 @@ export function HeroSection() {
                     </div>
 
                     {/* Right Content Area: Learning Lottie Animation (5 columns) */}
-                    <div className="lg:col-span-5 relative w-full h-[350px] lg:h-[550px] flex items-center justify-center mt-8 lg:mt-0 z-10 hidden sm:flex">
+                    <div className="lg:col-span-5 relative w-full h-[350px] lg:h-[550px] items-center justify-center mt-8 lg:mt-0 z-10 hidden sm:flex">
                         <m.div
                             className="w-full h-full relative group flex items-center justify-center transform lg:-translate-x-12"
                             variants={itemVariants}
