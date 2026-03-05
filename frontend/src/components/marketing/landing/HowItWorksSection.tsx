@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export function HowItWorksSection() {
     return (
-        <section className="relative w-full py-24 md:py-32 bg-background overflow-hidden font-sans border-t border-border">
+        <section className="relative w-full py-24 md: py-32 bg-background overflow-hidden font-sans border-t border-border">
             <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-12">
 
                 {/* Header Section */}

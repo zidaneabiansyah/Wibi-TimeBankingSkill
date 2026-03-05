@@ -74,6 +74,7 @@ type SessionResponse struct {
 	Teacher            *UserPublicProfile `json:"teacher,omitempty"`
 	Student            *UserPublicProfile `json:"student,omitempty"`
 	UserSkill          *UserSkillResponse `json:"user_skill,omitempty"`
+	Review             *ReviewResponse    `json:"review,omitempty"`
 	CreatedAt          time.Time          `json:"created_at"`
 	UpdatedAt          time.Time          `json:"updated_at"`
 }
@@ -148,6 +149,11 @@ func MapSessionToResponse(session *models.Session) *SessionResponse {
 	if session.UserSkill.ID != 0 {
 		userSkillResp := ToUserSkillResponse(&session.UserSkill)
 		resp.UserSkill = &userSkillResp
+	}
+
+	// Map review if loaded
+	if session.Review != nil && session.Review.ID != 0 {
+		resp.Review = MapReviewToResponse(session.Review)
 	}
 
 	return resp

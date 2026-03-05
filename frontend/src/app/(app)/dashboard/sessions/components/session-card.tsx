@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Info, Video, MapPin, Calendar, Clock } from 'lucide-react';
 import type { Session, SessionStatus } from '@/types';
+import ReviewDialog from '@/components/features/review/ReviewDialog';
 
 interface SessionCardProps {
     session: Session;
@@ -37,7 +37,6 @@ const statusConfig: Record<SessionStatus, { color: string; bg: string; border: s
 
 export function SessionCard({ session, currentUserId, onAction }: SessionCardProps) {
     const isTeacher = session.teacher_id === currentUserId;
-    const isStudent = session.student_id === currentUserId;
     const otherParty = isTeacher ? session.student : session.teacher;
     const canApprove = isTeacher && session.status === 'pending';
     const canCancel = ['pending', 'approved'].includes(session.status);
@@ -147,12 +146,23 @@ export function SessionCard({ session, currentUserId, onAction }: SessionCardPro
                             </Button>
                         </Link>
 
-                        {session.status === 'completed' && !session.review && (
-                            <Link href={`/dashboard/sessions/${session.id}/review`} className="w-full">
-                                <Button className="w-full h-11 rounded-xl border-secondary/20 text-secondary hover:bg-secondary/5 text-xs font-bold transition-all" variant="outline">
-                                    Write a Review
-                                </Button>
-                            </Link>
+                        {session.status === 'completed' && (
+                            <ReviewDialog 
+                                session={session}
+                                existingReview={session.review}
+                                trigger={
+                                    <Button 
+                                        className={`w-full h-11 rounded-xl text-xs font-bold transition-all ${
+                                            session.review 
+                                                ? 'border-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/5 bg-indigo-50 dark:bg-indigo-950/20' 
+                                                : 'border-secondary/20 text-secondary hover:bg-secondary/5'
+                                        }`} 
+                                        variant="outline"
+                                    >
+                                        {session.review ? 'Edit Your Review' : 'Write a Review'}
+                                    </Button>
+                                }
+                            />
                         )}
 
                         {canCancel && !canApprove && (
