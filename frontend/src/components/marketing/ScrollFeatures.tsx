@@ -18,7 +18,7 @@ const steps = [
         number: "01",
         title: "1. Buat Profilmu",
         description: "Daftar dan lengkapi profil kamu—isi data diri, info sekolah, dan bio singkat biar orang lain lebih kenal kamu.",
-        image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=800&auto=format&fit=crop",
+        image: "https://mzzfxduavmjyiyaflyok.supabase.co/storage/v1/object/public/wibi/2.png",
         color: "from-orange-500/20 to-transparent",
         icon: UserCircle2,
         tags: ["Onboarding", "Profile"]
@@ -28,7 +28,7 @@ const steps = [
         number: "02",
         title: "2. Tambahkan Skill",
         description: "Masukkan skill yang bisa kamu ajarkan. Tulis level kemampuan, deskripsi singkat, dan jadwal tersedia. Makin spesifik, makin bagus.",
-        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+        image: "https://mzzfxduavmjyiyaflyok.supabase.co/storage/v1/object/public/wibi/3.png",
         color: "from-blue-500/20 to-transparent",
         icon: Zap,
         tags: ["Marketplace", "Skills"]
@@ -38,7 +38,7 @@ const steps = [
         number: "03",
         title: "3. Jelajahi Marketplace",
         description: "Cari skill dari siswa lain. Bisa difilter berdasarkan kategori, level, atau topik tertentu. Temukan tutor yang cocok buat kamu.",
-        image: "https://images.unsplash.com/photo-1552581234-2612b793393b?q=80&w=800&auto=format&fit=crop",
+        image: "https://mzzfxduavmjyiyaflyok.supabase.co/storage/v1/object/public/wibi/4.png",
         color: "from-purple-500/20 to-transparent",
         icon: Search,
         tags: ["Search", "Filters"]
@@ -48,7 +48,7 @@ const steps = [
         number: "04",
         title: "4. Booking Sesi",
         description: "Ajukan sesi ke tutor dengan pilih tanggal, waktu, durasi, serta mau online atau offline. Tutor akan approve, lalu sesi dijadwalkan.",
-        image: "https://images.unsplash.com/photo-1506784919156-50b3e6486043?q=80&w=800&auto=format&fit=crop",
+        image: "https://mzzfxduavmjyiyaflyok.supabase.co/storage/v1/object/public/wibi/5.png",
         color: "from-green-500/20 to-transparent",
         icon: Calendar,
         tags: ["Scheduling", "Sessions"]
@@ -58,7 +58,7 @@ const steps = [
         number: "05",
         title: "5. Tukar Kredit Waktu",
         description: "Saat kamu mengajar, kamu dapat kredit. Saat belajar, kamu pakai kredit. Saldo tercatat otomatis. User baru mulai dengan 3 kredit gratis.",
-        image: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=800&auto=format&fit=crop",
+        image: "https://mzzfxduavmjyiyaflyok.supabase.co/storage/v1/object/public/wibi/6.png",
         color: "from-yellow-500/20 to-transparent",
         icon: Coins,
         tags: ["Ledger", "Exchange"]
@@ -68,7 +68,7 @@ const steps = [
         number: "06",
         title: "6. Beri Rating & Review",
         description: "Setelah sesi selesai, tutor dan siswa saling kasih rating dan review. Ini bantu bangun kepercayaan di komunitas.",
-        image: "https://images.unsplash.com/photo-1519389950473-47ba027788c0?q=80&w=800&auto=format&fit=crop",
+        image: "https://mzzfxduavmjyiyaflyok.supabase.co/storage/v1/object/public/wibi/7.png",
         color: "from-red-500/20 to-transparent",
         icon: CheckCircle2,
         tags: ["Ratings", "Trust"]
