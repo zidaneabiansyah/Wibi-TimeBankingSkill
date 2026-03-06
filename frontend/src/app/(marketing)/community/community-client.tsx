@@ -118,7 +118,7 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                         </p>
 
                         <div className="mt-6">
-                            <Link href="/community/forum" className="bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:bg-stone-100 transition-all inline-block">
+                            <Link href="/community/forum" className="bg-foreground text-background font-bold px-6 py-3 rounded-xl hover:bg-foreground/90 transition-all inline-block shadow-md">
                                 Gabung Sekarang
                             </Link>
                         </div>
