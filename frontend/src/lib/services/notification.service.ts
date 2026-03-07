@@ -15,6 +15,20 @@ interface UnreadCountResponse {
     unread_count: number;
 }
 
+export interface NotificationPreferences {
+    id?: number;
+    user_id?: number;
+    sessionNotifications: boolean;
+    creditNotifications: boolean;
+    achievementNotifications: boolean;
+    reviewNotifications: boolean;
+    emailNotifications: boolean;
+    pushNotifications: boolean;
+    quietHours: boolean;
+    quietHoursStart: string;
+    quietHoursEnd: string;
+}
+
 /**
  * Notification Service
  * Handles all notification-related API calls
@@ -111,11 +125,26 @@ export const notificationService = {
     },
 
     /**
+     * Get current user's notification preferences
+     * Returns saved preferences, or defaults if not set
+     */
+    async getPreferences(): Promise<NotificationPreferences> {
+        const response = await api.get<ApiResponse<{ preferences: NotificationPreferences }>>(
+            '/notifications/preferences'
+        );
+        return response.data.data!.preferences;
+    },
+
+    /**
      * Update notification preferences
      * @param preferences - New preferences object
      */
-    async updatePreferences(preferences: any): Promise<void> {
-        await api.put('/notifications/preferences', preferences);
+    async updatePreferences(preferences: Partial<NotificationPreferences>): Promise<NotificationPreferences> {
+        const response = await api.put<ApiResponse<{ preferences: NotificationPreferences }>>(
+            '/notifications/preferences',
+            preferences
+        );
+        return response.data.data!.preferences;
     },
 };
 

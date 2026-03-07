@@ -19,7 +19,7 @@ import type { UserSkill } from '@/types';
 export default function MySkillsPage() {
     const router = useRouter();
     const { user } = useAuthStore();
-    const { userSkills, isLoadingUserSkills, fetchUserSkills } = useSkillStore();
+    const { userSkills, isLoadingUserSkills, fetchUserSkills, deleteUserSkill } = useSkillStore();
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -62,11 +62,11 @@ export default function MySkillsPage() {
     }, [userSkills, searchQuery, activeCategory]);
 
     const handleDelete = async (skillId: number) => {
-        if (!confirm('Are you sure you want to delete this skill?')) return;
+        if (!confirm('Apakah kamu yakin ingin menghapus skill ini?')) return;
 
         setDeletingId(skillId);
         try {
-            // TODO: Implement delete skill API call
+            await deleteUserSkill(skillId);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to delete skill');
         } finally {

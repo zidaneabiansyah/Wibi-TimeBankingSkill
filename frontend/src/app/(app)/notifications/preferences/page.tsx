@@ -1,28 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, Mail, Smartphone, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { notificationService } from '@/lib/services/notification.service';
+import type { NotificationPreferences } from '@/lib/services/notification.service';
+
+const defaultPreferences: NotificationPreferences = {
+    sessionNotifications: true,
+    creditNotifications: true,
+    achievementNotifications: true,
+    reviewNotifications: true,
+    emailNotifications: false,
+    pushNotifications: false,
+    quietHours: false,
+    quietHoursStart: '22:00',
+    quietHoursEnd: '07:00',
+};
 
 /**
  * NotificationPreferences Page
  * Allows users to customize notification settings
  */
 export default function NotificationPreferencesPage() {
-    const [preferences, setPreferences] = useState({
-        sessionNotifications: true,
-        creditNotifications: true,
-        achievementNotifications: true,
-        reviewNotifications: true,
-        emailNotifications: false,
-        pushNotifications: true,
-        quietHours: false,
-        quietHoursStart: '22:00',
-        quietHoursEnd: '08:00',
-    });
-
+    const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
     const [isSaving, setIsSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Load saved preferences from server on mount
+    useEffect(() => {
+        const loadPreferences = async () => {
+            try {
+                const saved = await notificationService.getPreferences();
+                setPreferences(saved);
+            } catch {
+                // If fetch fails, keep defaults
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadPreferences();
+    }, []);
 
     /**
      * Handle preference change
@@ -40,15 +58,26 @@ export default function NotificationPreferencesPage() {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            // Call API to save preferences
-            await notificationService.updatePreferences(preferences);
+            const saved = await notificationService.updatePreferences(preferences);
+            setPreferences(saved);
             toast.success('Preferences saved successfully');
-        } catch (error) {
+        } catch {
             toast.error('Failed to save preferences');
         } finally {
             setIsSaving(false);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+                <div className="flex items-center gap-3 text-gray-500">
+                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <span>Loading preferences...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
