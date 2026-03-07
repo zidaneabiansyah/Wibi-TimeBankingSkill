@@ -12,7 +12,6 @@ export function usePWA() {
 
         // Check if service workers are supported
         if (!('serviceWorker' in navigator)) {
-            console.log('[PWA] Service Workers not supported');
             return;
         }
 
@@ -23,7 +22,6 @@ export function usePWA() {
                     scope: '/',
                 });
 
-                console.log('[PWA] Service Worker registered successfully:', registration);
 
                 // Handle service worker updates
                 registration.addEventListener('updatefound', () => {
@@ -31,8 +29,6 @@ export function usePWA() {
 
                     newWorker?.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('[PWA] New service worker available');
-
                             // Show update notification to user
                             if (window.confirm('A new version of Wibi is available. Update now?')) {
                                 newWorker.postMessage({ type: 'SKIP_WAITING' });
@@ -41,8 +37,8 @@ export function usePWA() {
                         }
                     });
                 });
-            } catch (error) {
-                console.error('[PWA] Service Worker registration failed:', error);
+            } catch {
+                // Registration failed silently
             }
         };
 
@@ -55,7 +51,7 @@ export function usePWA() {
 
         // Handle when service worker takes control
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('[PWA] Service Worker controller changed');
+            // Silent update
         });
 
         // Detect when app is installed
@@ -63,14 +59,10 @@ export function usePWA() {
         const onBeforeInstallPrompt = (e: Event) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log('[PWA] Install prompt ready');
-
-            // You could trigger install UI here
             window.dispatchEvent(new CustomEvent('pwa-installable', { detail: deferredPrompt }));
         };
 
         const onAppInstalled = () => {
-            console.log('[PWA] App installed');
             deferredPrompt = null;
         };
 

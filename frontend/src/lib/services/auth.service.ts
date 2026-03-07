@@ -83,7 +83,6 @@ export const authService = {
   saveToken: (token: string): void => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', token);
-      console.log('✅ Token saved:', token.substring(0, 20) + '...');
     }
   },
 
@@ -93,9 +92,6 @@ export const authService = {
       return null;
     }
     const token = localStorage.getItem('token');
-    if (token) {
-      console.log('✅ Token retrieved:', token.substring(0, 20) + '...');
-    }
     return token;
   },
 
@@ -104,7 +100,6 @@ export const authService = {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      console.log('✅ Token removed');
     }
   },
 
@@ -112,7 +107,6 @@ export const authService = {
   saveUser: (user: UserProfile): void => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('user', JSON.stringify(user));
-      console.log('✅ User saved:', user.username);
     }
   },
 
@@ -123,7 +117,6 @@ export const authService = {
     }
     const user = localStorage.getItem('user');
     if (user) {
-      console.log('✅ User retrieved');
       return JSON.parse(user);
     }
     return null;

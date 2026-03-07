@@ -32,7 +32,6 @@ export const communityService = {
             );
             return response.data.data || [];
         } catch (error) {
-            console.error('Failed to fetch categories:', error);
             // Return empty array instead of throwing to allow view-only access
             return [];
         }
@@ -50,7 +49,6 @@ export const communityService = {
             );
             return response.data.data;
         } catch (error) {
-            console.error('Failed to create thread:', error);
             throw error;
         }
     },
@@ -69,7 +67,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to fetch thread:', error);
             throw error;
         }
     },
@@ -105,7 +102,6 @@ export const communityService = {
             });
             return response.data.data || { threads: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch threads:', error);
             // Return empty result instead of throwing to allow view-only access
             return { threads: [], total: 0 };
         }
@@ -131,7 +127,6 @@ export const communityService = {
             });
             return response.data.data || { threads: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch threads:', error);
             throw error;
         }
     },
@@ -148,7 +143,6 @@ export const communityService = {
             );
             return response.data.data;
         } catch (error) {
-            console.error('Failed to update thread:', error);
             throw error;
         }
     },
@@ -165,7 +159,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to create reply:', error);
             throw error;
         }
     },
@@ -190,7 +183,6 @@ export const communityService = {
             });
             return response.data.data || { replies: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch replies:', error);
             throw error;
         }
     },
@@ -204,7 +196,6 @@ export const communityService = {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
         } catch (error) {
-            console.error('Failed to delete reply:', error);
             throw error;
         }
     },
@@ -220,7 +211,6 @@ export const communityService = {
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
         } catch (error) {
-            console.error('Failed to pin thread:', error);
             throw error;
         }
     },
@@ -236,7 +226,6 @@ export const communityService = {
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
         } catch (error) {
-            console.error('Failed to lock thread:', error);
             throw error;
         }
     },
@@ -261,7 +250,6 @@ export const communityService = {
             });
             return response.data.data || { threads: [], total: 0 };
         } catch (error) {
-            console.error('Failed to search threads:', error);
             throw error;
         }
     },
@@ -279,7 +267,6 @@ export const communityService = {
             );
             return response.data.data;
         } catch (error) {
-            console.error('Failed to check thread upvote:', error);
             return { voted: false, count: 0 };
         }
     },
@@ -297,7 +284,6 @@ export const communityService = {
             );
             return response.data.data;
         } catch (error) {
-            console.error('Failed to toggle thread upvote:', error);
             throw error;
         }
     },
@@ -323,7 +309,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to create story:', error);
             throw error;
         }
     },
@@ -342,7 +327,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to fetch story:', error);
             throw error;
         }
     },
@@ -366,7 +350,6 @@ export const communityService = {
             });
             return response.data.data || { stories: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch stories:', error);
             // Return empty array instead of throwing to allow view-only access
             return { stories: [], total: 0 };
         }
@@ -388,7 +371,6 @@ export const communityService = {
             });
             return response.data.data || { stories: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch user stories:', error);
             throw error;
         }
     },
@@ -413,7 +395,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to update story:', error);
             throw error;
         }
     },
@@ -427,7 +408,6 @@ export const communityService = {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
         } catch (error) {
-            console.error('Failed to delete story:', error);
             throw error;
         }
     },
@@ -444,7 +424,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to create comment:', error);
             throw error;
         }
     },
@@ -469,7 +448,6 @@ export const communityService = {
             });
             return response.data.data || { comments: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch comments:', error);
             throw error;
         }
     },
@@ -483,7 +461,6 @@ export const communityService = {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
         } catch (error) {
-            console.error('Failed to delete comment:', error);
             throw error;
         }
     },
@@ -501,7 +478,6 @@ export const communityService = {
             );
             return response.data.data;
         } catch (error) {
-            console.error('Failed to check story like:', error);
             return { liked: false, count: 0 };
         }
     },
@@ -519,7 +495,6 @@ export const communityService = {
             );
             return response.data.data;
         } catch (error) {
-            console.error('Failed to toggle story like:', error);
             throw error;
         }
     },
@@ -542,7 +517,6 @@ export const communityService = {
             );
             return response.data.data!;
         } catch (error) {
-            console.error('Failed to create endorsement:', error);
             throw error;
         }
     },
@@ -567,7 +541,6 @@ export const communityService = {
             });
             return response.data.data || { endorsements: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch endorsements:', error);
             // Return empty array instead of throwing to allow view-only access
             return { endorsements: [], total: 0 };
         }
@@ -590,7 +563,6 @@ export const communityService = {
             });
             return response.data.data || { endorsements: [], total: 0 };
         } catch (error) {
-            console.error('Failed to fetch skill endorsements:', error);
             throw error;
         }
     },
@@ -605,7 +577,6 @@ export const communityService = {
             );
             return response.data.data?.count || 0;
         } catch (error) {
-            console.error('Failed to fetch endorsement count:', error);
             throw error;
         }
     },
@@ -619,7 +590,6 @@ export const communityService = {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
         } catch (error) {
-            console.error('Failed to delete endorsement:', error);
             throw error;
         }
     },
@@ -638,7 +608,6 @@ export const communityService = {
             );
             return response.data.data || [];
         } catch (error) {
-            console.error('Failed to fetch top endorsed skills:', error);
             // Return empty array instead of throwing to allow view-only access
             return [];
         }
@@ -654,7 +623,6 @@ export const communityService = {
             );
             return response.data.data?.reputation || 0;
         } catch (error) {
-            console.error('Failed to fetch user reputation:', error);
             return 0;
         }
     },

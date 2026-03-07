@@ -70,7 +70,6 @@ export const analyticsService = {
             link.remove();
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Failed to export analytics:', error);
             throw error;
         }
     },

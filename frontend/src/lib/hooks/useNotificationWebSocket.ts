@@ -51,7 +51,6 @@ export function useNotificationWebSocket() {
         // Get token from localStorage
         const token = localStorage.getItem('token');
         if (!token) {
-            console.warn('⚠️ No token found for WebSocket connection');
             return;
         }
 
@@ -75,7 +74,6 @@ export function useNotificationWebSocket() {
             .then(response => {
                 clearTimeout(timeoutId);
                 if (!response.ok) {
-                    console.warn('⚠️ Backend health check failed, skipping WebSocket connection');
                     return;
                 }
                 
@@ -85,7 +83,6 @@ export function useNotificationWebSocket() {
                 wsRef.current.onopen = () => {
                     setConnected(true);
                     reconnectAttemptsRef.current = 0;
-                    console.log('✅ WebSocket connected');
                 };
 
                 wsRef.current.onmessage = (event) => {
@@ -97,13 +94,12 @@ export function useNotificationWebSocket() {
                         toast.success(notification.title, {
                             description: notification.message,
                         });
-                    } catch (error) {
-                        console.error('❌ Failed to parse notification:', error);
+                    } catch {
+                        // Ignore malformed messages
                     }
                 };
 
-                wsRef.current.onerror = (error) => {
-                    console.warn('⚠️ WebSocket error (backend may be offline)');
+                wsRef.current.onerror = () => {
                     setConnected(false);
                 };
 
@@ -114,28 +110,18 @@ export function useNotificationWebSocket() {
                     // Only attempt to reconnect if not intentional disconnect
                     if (!isIntentionalDisconnectRef.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
                         const delay = getReconnectDelay();
-                        console.log(`🔄 WebSocket reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current + 1}/${maxReconnectAttempts})`);
-
                         reconnectTimeoutRef.current = setTimeout(() => {
                             reconnectAttemptsRef.current += 1;
                             connect();
                         }, delay);
-                    } else if (!isIntentionalDisconnectRef.current && reconnectAttemptsRef.current >= maxReconnectAttempts) {
-                        console.warn('⚠️ Max WebSocket reconnection attempts reached. Backend may be offline.');
                     }
                 };
             })
             .catch((error) => {
                 clearTimeout(timeoutId);
-                // Backend is not reachable, skip WebSocket connection silently
-                // Don't log error if it's just a timeout/network error
-                if (error.name !== 'AbortError') {
-                    console.warn('⚠️ Backend not reachable, WebSocket connection skipped');
-                }
                 setConnected(false);
             });
-        } catch (error) {
-            console.warn('⚠️ Failed to initialize WebSocket connection');
+        } catch {
             setConnected(false);
         }
     };

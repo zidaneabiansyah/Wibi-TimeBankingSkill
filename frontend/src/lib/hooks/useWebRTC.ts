@@ -65,10 +65,6 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
         let ws: WebSocket | null = null;
         let stream: MediaStream | null = null;
 
-        const log = (msg: string, ...args: any[]) => {
-            console.log(`[WebRTC ${userId}]`, msg, ...args);
-        };
-
         const send = (type: string, payload?: any) => {
             if (ws?.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type, payload, session_id: sessionId }));
@@ -85,14 +81,13 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                 } catch {
                     try {
                         stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-                    } catch (e) {
-                        log('❌ No media access');
+                    } catch {
+                        // No media access available
                     }
                 }
             }
 
             if (stream && mountedRef.current) {
-                log('🎥 Got media stream');
                 streamRef.current = stream;
                 setLocalStream(stream);
             }
@@ -104,16 +99,13 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
             // Add local tracks
             if (stream) {
                 stream.getTracks().forEach(track => {
-                    log('➕ Adding local track:', track.kind);
                     pc!.addTrack(track, stream!);
                 });
             }
 
             // Remote track handler
             pc.ontrack = (event) => {
-                log('📹 Remote track received:', event.track.kind);
                 if (mountedRef.current && event.streams[0]) {
-                    log('✅ Setting remote stream');
                     setRemoteStream(event.streams[0]);
                 }
             };
@@ -121,29 +113,21 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
             // ICE candidate handler
             pc.onicecandidate = (event) => {
                 if (event.candidate) {
-                    log('🧊 Sending ICE candidate');
                     send('candidate', event.candidate);
                 }
             };
 
-            pc.oniceconnectionstatechange = () => {
-                log('🔗 ICE state:', pc?.iceConnectionState);
-            };
-
-            pc.onconnectionstatechange = () => {
-                log('📡 Connection state:', pc?.connectionState);
-            };
+            pc.oniceconnectionstatechange = () => {};
+            pc.onconnectionstatechange = () => {};
 
             // Perfect negotiation: negotiation needed handler
             pc.onnegotiationneeded = async () => {
-                log('🔄 Negotiation needed, polite:', politeRef.current);
                 try {
                     makingOfferRef.current = true;
                     await pc!.setLocalDescription();
-                    log('📤 Sending offer');
                     send('offer', pc!.localDescription);
-                } catch (err) {
-                    log('❌ Offer error:', err);
+                } catch {
+                    // Offer creation failed silently
                 } finally {
                     makingOfferRef.current = false;
                 }
@@ -159,21 +143,16 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
             const wsUrl = apiUrl.replace(/^http/, 'ws') + `/ws/video/${sessionId}?token=${encodeURIComponent(token)}`;
 
-            log('🔌 Connecting to WebSocket');
             ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
             ws.onopen = () => {
-                log('✅ WebSocket connected');
                 if (mountedRef.current) setIsJoined(true);
             };
 
-            ws.onerror = () => {
-                log('❌ WebSocket error');
-            };
+            ws.onerror = () => {};
 
             ws.onclose = () => {
-                log('⚠️ WebSocket closed');
                 if (mountedRef.current) setIsJoined(false);
             };
 
@@ -181,53 +160,35 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                 if (!mountedRef.current || !pc) return;
 
                 const msg: WebRTCMessage = JSON.parse(event.data);
-                log('📨', msg.type, 'from user:', msg.user_id);
-
                 switch (msg.type) {
                     case 'user_join':
-                        // Set polite based on user IDs - lower ID is polite
                         politeRef.current = userId < msg.user_id;
-                        log('👤 User joined, I am', politeRef.current ? 'polite' : 'impolite');
-                        
-                        // Only impolite peer (higher ID) initiates
                         if (!politeRef.current) {
-                            log('📤 Initiating call as impolite peer');
-                            // Trigger negotiation by adding tracks or renegotiating
                             try {
                                 const offer = await pc.createOffer();
                                 await pc.setLocalDescription(offer);
                                 send('offer', offer);
-                                log('📤 Sent initial offer');
-                            } catch (err) {
-                                log('❌ Init offer error:', err);
+                            } catch {
+                                // Init offer failed silently
                             }
                         }
                         break;
 
                     case 'offer':
-                        // Perfect negotiation offer handling
                         const readyForOffer = !makingOfferRef.current && 
                             (pc.signalingState === 'stable' || pc.signalingState === 'have-remote-offer');
                         const offerCollision = !readyForOffer;
 
-                        log('📥 Offer collision?', offerCollision, 'polite?', politeRef.current);
-
                         ignoreOfferRef.current = !politeRef.current && offerCollision;
-                        if (ignoreOfferRef.current) {
-                            log('🚫 Ignoring offer (impolite + collision)');
-                            return;
-                        }
+                        if (ignoreOfferRef.current) return;
 
                         try {
                             await pc.setRemoteDescription(msg.payload);
-                            log('✅ Set remote offer');
-                            
                             const answer = await pc.createAnswer();
                             await pc.setLocalDescription(answer);
                             send('answer', answer);
-                            log('📤 Sent answer');
-                        } catch (err) {
-                            log('❌ Offer handling error:', err);
+                        } catch {
+                            // Offer handling failed silently
                         }
                         break;
 
@@ -235,12 +196,9 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                         try {
                             if (pc.signalingState === 'have-local-offer') {
                                 await pc.setRemoteDescription(msg.payload);
-                                log('✅ Set remote answer');
-                            } else {
-                                log('⚠️ Ignoring answer, state:', pc.signalingState);
                             }
-                        } catch (err) {
-                            log('❌ Answer error:', err);
+                        } catch {
+                            // Answer handling failed silently
                         }
                         break;
 
@@ -248,17 +206,13 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                         try {
                             if (msg.payload) {
                                 await pc.addIceCandidate(msg.payload);
-                                log('🧊 Added ICE candidate');
                             }
-                        } catch (err) {
-                            if (!ignoreOfferRef.current) {
-                                log('⚠️ ICE candidate error:', err);
-                            }
+                        } catch {
+                            // ICE candidate error ignored silently
                         }
                         break;
 
                     case 'user_leave':
-                        log('👋 User left');
                         setRemoteStream(null);
                         // Reset screen sharing if the user who left was sharing
                         if (screenSharingUserId === msg.user_id) {
@@ -267,12 +221,10 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                         break;
 
                     case 'screen_share_start':
-                        log('🖥️ User started screen sharing:', msg.user_id);
                         setScreenSharingUserId(msg.user_id);
                         break;
 
                     case 'screen_share_stop':
-                        log('🖥️ User stopped screen sharing:', msg.user_id);
                         setScreenSharingUserId(null);
                         break;
                 }
@@ -282,7 +234,6 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
         init();
 
         return () => {
-            log('🧹 Cleanup');
             mountedRef.current = false;
             
             if (pc) {
@@ -327,7 +278,6 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                         await sender.setParameters(params);
                     }
                 } catch (bitrateErr) {
-                    console.warn('Could not reset bitrate:', bitrateErr);
                 }
             }
 
@@ -342,7 +292,6 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                     try {
                         pc.removeTrack(screenAudioSender);
                     } catch (removeErr) {
-                        console.warn('Could not remove audio track:', removeErr);
                     }
                 }
             }
@@ -361,10 +310,8 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                 }));
             }
 
-            console.log('✅ Screen sharing stopped successfully');
-        } catch (err) {
-            console.error('❌ Stop screen share error:', err);
-            // Force cleanup even if error
+            // Screen sharing stopped successfully
+        } catch {
             screenStream.getTracks().forEach(track => track.stop());
             screenStreamRef.current = null;
             setIsScreenSharing(false);
@@ -397,9 +344,7 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                     frameRate: { ideal: 15, max: 30 } // Lower FPS for screen share
                 } as MediaTrackConstraints,
                 audio: true // Include system audio
-            }).catch(async (err) => {
-                // Fallback without audio if permission denied
-                console.log('System audio not available, trying without audio:', err);
+            }).catch(async () => {
                 return navigator.mediaDevices.getDisplayMedia({
                     video: {
                         displaySurface: 'monitor',
@@ -419,7 +364,6 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
             
             // Handle user stopping screen share via browser button
             screenTrack.onended = () => {
-                console.log('Screen share stopped by user via browser button');
                 stopScreenShare();
             };
 
@@ -441,8 +385,8 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                     params.encodings[0].maxBitrate = 2500000; // 2.5 Mbps
                     await sender.setParameters(params);
                 }
-            } catch (bitrateErr) {
-                console.warn('Could not set bitrate:', bitrateErr);
+            } catch {
+                // Could not set bitrate, continue without it
             }
 
             // Add audio track if available
@@ -450,8 +394,8 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
             if (audioTrack) {
                 try {
                     pc.addTrack(audioTrack, screenStream);
-                } catch (addTrackErr) {
-                    console.warn('Could not add audio track:', addTrackErr);
+                } catch {
+                    // Could not add audio track
                 }
             }
 
@@ -466,10 +410,8 @@ export function useWebRTC({ sessionId, userId, enabled = true }: UseWebRTCProps)
                 user_id: userId 
             }));
 
-            console.log('✅ Screen sharing started successfully');
+            // Screen sharing started successfully
         } catch (err: any) {
-            console.error('❌ Screen share error:', err);
-            
             // Cleanup screen stream if error occurred
             if (screenStreamRef.current) {
                 screenStreamRef.current.getTracks().forEach(t => t.stop());

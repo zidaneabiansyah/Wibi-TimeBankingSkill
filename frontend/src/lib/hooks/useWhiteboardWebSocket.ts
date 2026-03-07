@@ -55,12 +55,10 @@ export function useWhiteboardWebSocket({
         
         // Prevent multiple connections - stronger guard for Strict Mode
         if (isConnectingRef.current) {
-            console.log('⚠️ Whiteboard already connecting, skipping...');
             return;
         }
         
         if (wsRef.current?.readyState === WebSocket.OPEN) {
-            console.log('⚠️ Whiteboard already connected, skipping...');
             return;
         }
         
@@ -73,7 +71,6 @@ export function useWhiteboardWebSocket({
             try {
                 const token = localStorage.getItem('token');
                 if (!token) {
-                    console.error('❌ No token found for whiteboard WebSocket');
                     isConnectingRef.current = false;
                     return;
                 }
@@ -87,11 +84,9 @@ export function useWhiteboardWebSocket({
                 
                 const wsUrl = `${baseWsUrl}/ws/whiteboard/${sessionId}?token=${encodeURIComponent(token)}`;
 
-                console.log('🔌 Connecting to Whiteboard WS:', wsUrl.split('?')[0]);
                 const ws = new WebSocket(wsUrl);
 
                 ws.onopen = () => {
-                    console.log('✅ Whiteboard WebSocket connected to session', sessionId);
                     reconnectAttemptsRef.current = 0;
                     isConnectingRef.current = false;
                 };
@@ -112,55 +107,37 @@ export function useWhiteboardWebSocket({
                                 if (onClearRef.current) onClearRef.current();
                                 break;
                             case 'user_join':
-                                console.log(`👤 ${message.user_name} joined the whiteboard`);
                                 break;
                             case 'user_leave':
-                                console.log(`👤 ${message.user_name} left the whiteboard`);
                                 break;
                             case 'cursor':
-                                // Handle cursor position (for future implementation)
                                 break;
                             default:
-                                console.warn('Unknown message type:', message.type);
+                                break;
                         }
-                    } catch (error) {
-                        console.error('Error parsing WebSocket message:', error);
+                    } catch {
+                        // Ignore malformed messages
                     }
                 };
 
                 ws.onerror = () => {
-                    // Only log as warning since this often happens during navigation or React Strict Mode remount
-                    if (!isCleanedUpRef.current) {
-                        console.warn('⚠️ Whiteboard WebSocket error - ReadyState:', ws.readyState);
-                    }
                     isConnectingRef.current = false;
                 };
 
-                ws.onclose = (event) => {
-                    console.log('⚠️ Whiteboard WebSocket disconnected:', {
-                        code: event.code,
-                        reason: event.reason || 'No reason provided',
-                        wasClean: event.wasClean
-                    });
-                    
+                ws.onclose = () => {
                     wsRef.current = null;
                     isConnectingRef.current = false;
 
-                    // Only attempt to reconnect if not cleaned up
                     if (!isCleanedUpRef.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
                         reconnectAttemptsRef.current++;
-                        console.log(`Reconnecting... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`);
                         reconnectTimeoutRef.current = setTimeout(() => {
                             connect();
                         }, reconnectDelay);
-                    } else if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
-                        console.error('Max reconnection attempts reached');
                     }
                 };
 
                 wsRef.current = ws;
-            } catch (error) {
-                console.error('Failed to create WebSocket connection:', error);
+            } catch {
                 isConnectingRef.current = false;
             }
         };
@@ -169,7 +146,6 @@ export function useWhiteboardWebSocket({
 
         // Cleanup function
         return () => {
-            console.log('🧹 Cleaning up Whiteboard WebSocket');
             isCleanedUpRef.current = true;
             isConnectingRef.current = false;
             

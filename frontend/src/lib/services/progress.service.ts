@@ -18,7 +18,6 @@ export const progressService = {
             );
             return response.data.data || ({} as SkillProgress);
         } catch (error) {
-            console.error('Failed to fetch progress:', error);
             throw error;
         }
     },
@@ -34,7 +33,6 @@ export const progressService = {
             );
             return response.data.data || ({} as ProgressSummary);
         } catch (error) {
-            console.error('Failed to fetch user progress:', error);
             throw error;
         }
     },
@@ -58,7 +56,6 @@ export const progressService = {
             );
             return response.data.data || ({} as SkillProgress);
         } catch (error) {
-            console.error('Failed to update progress:', error);
             throw error;
         }
     },

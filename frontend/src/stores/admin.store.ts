@@ -42,8 +42,6 @@ export const useAdminStore = create<AdminState>((set) => ({
     login: async (data: AdminLoginRequest) => {
         set({ isLoading: true, error: null });
         try {
-            console.log('🔐 Admin logging in with email:', data.email);
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/login`, {
                 method: 'POST',
                 headers: {
@@ -58,13 +56,11 @@ export const useAdminStore = create<AdminState>((set) => ({
             }
 
             const result = await response.json();
-            console.log('✅ Admin login response received:', result);
 
             // Save token and admin
             if (typeof window !== 'undefined') {
                 localStorage.setItem('admin_token', result.data.token);
                 localStorage.setItem('admin', JSON.stringify(result.data.admin));
-                console.log('✅ Admin token and profile saved to localStorage');
             }
 
             set({
@@ -74,9 +70,7 @@ export const useAdminStore = create<AdminState>((set) => ({
                 isLoading: false,
                 error: null,
             });
-            console.log('✅ Admin auth state updated');
         } catch (error: any) {
-            console.error('❌ Admin login error:', error);
             set({
                 isLoading: false,
                 error: error.message || 'Login failed',
@@ -137,9 +131,7 @@ export const useAdminStore = create<AdminState>((set) => ({
                     isAuthenticated: true,
                     isHydrated: true,
                 });
-                console.log('✅ Admin loaded from localStorage');
-            } catch (error) {
-                console.error('Failed to parse admin data:', error);
+            } catch {
                 set({ isHydrated: true });
             }
         } else {
