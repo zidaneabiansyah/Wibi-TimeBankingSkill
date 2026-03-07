@@ -118,7 +118,6 @@ function SessionDetailContent() {
                 const sessionData = await sessionService.getSession(parseInt(sessionId))
                 setSession(sessionData)
             } catch (error) {
-                console.error('Failed to load session:', error)
                 toast.error('Failed to load session')
             } finally {
                 setIsLoading(false)

@@ -62,7 +62,6 @@ export default function TransactionsPage() {
             const result = await adminService.getAllTransactions();
             setTransactions(result.data as any || []);
         } catch (error) {
-            console.error('Failed to fetch transactions:', error);
             toast.error('Failed to load transactions');
         } finally {
             setIsLoading(false);

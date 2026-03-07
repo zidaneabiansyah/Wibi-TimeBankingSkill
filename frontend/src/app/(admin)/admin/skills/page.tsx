@@ -60,7 +60,6 @@ export default function SkillsPage() {
             const result = await adminService.getAllSkills();
             setSkills(result.data as any || []);
         } catch (error) {
-            console.error('Failed to fetch skills:', error);
             toast.error('Failed to load skills');
         } finally {
             setIsLoading(false);

@@ -33,7 +33,6 @@ export function FavoriteButton({ teacherId, className, size = 'icon' }: Favorite
                 setIsFavorited(response.data.is_favorite);
             }
         } catch (error) {
-            console.error('Failed to check favorite status:', error);
         }
     };
 

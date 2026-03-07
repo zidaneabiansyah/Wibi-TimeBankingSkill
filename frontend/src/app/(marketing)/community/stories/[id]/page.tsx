@@ -52,7 +52,6 @@ export default function StoryDetailPage() {
             setIsLiked(data.liked);
             setLikeCount(data.count);
         } catch (err) {
-            console.error('Failed to check like status:', err);
         }
     };
 
@@ -74,7 +73,6 @@ export default function StoryDetailPage() {
             const data = await communityService.getComments(storyId);
             setStoryComments(data.comments);
         } catch (err) {
-            console.error('Failed to fetch comments:', err);
         }
     };
 
@@ -85,7 +83,6 @@ export default function StoryDetailPage() {
             // Filter out current story if present
             setRecommendedStories(data.stories.filter(s => s.id !== storyId));
         } catch (err) {
-            console.error('Failed to fetch recommended stories:', err);
         } finally {
             setLoadingRecommended(false);
         }

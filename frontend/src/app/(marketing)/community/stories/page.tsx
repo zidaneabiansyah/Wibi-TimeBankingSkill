@@ -35,7 +35,6 @@ export default function StoriesPage() {
             setStories(data.stories);
             setTotal(data.total);
         } catch (error) {
-            console.error('Failed to fetch stories:', error);
             toast.error('Failed to load success stories');
         } finally {
             setLoading(false);

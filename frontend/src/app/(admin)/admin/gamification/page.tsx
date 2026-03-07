@@ -65,7 +65,6 @@ export default function GamificationPage() {
             const data = await adminService.getAllBadges();
             setBadges(data.badges as any || []);
         } catch (error) {
-            console.error('Failed to fetch badges:', error);
             toast.error('Failed to load badges');
         } finally {
             setIsLoading(false);

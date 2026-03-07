@@ -76,7 +76,6 @@ function EditSkillContent() {
                     router.push('/profile/skills');
                 }
             } catch (error) {
-                console.error('Failed to load skill:', error);
                 toast.error('Failed to load skill details');
             } finally {
                 setIsFetching(false);
@@ -167,7 +166,6 @@ function EditSkillContent() {
             router.push('/profile/skills');
         } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             toast.error(error.message || 'Failed to update skill');
-            console.error(error);
         }
     };
 

@@ -44,7 +44,6 @@ export default function NotificationPreferencesPage() {
             await notificationService.updatePreferences(preferences);
             toast.success('Preferences saved successfully');
         } catch (error) {
-            console.error('Failed to save preferences:', error);
             toast.error('Failed to save preferences');
         } finally {
             setIsSaving(false);

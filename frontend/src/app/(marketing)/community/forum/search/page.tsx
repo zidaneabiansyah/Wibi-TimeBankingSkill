@@ -30,7 +30,6 @@ export default function ForumSearchPage() {
             setThreads(data.threads);
             setTotal(data.total);
         } catch (error) {
-            console.error('Failed to search threads:', error);
             toast.error('Failed to search discussions');
         } finally {
             setLoading(false);

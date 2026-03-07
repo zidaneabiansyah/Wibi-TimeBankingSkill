@@ -74,7 +74,6 @@ export default function CommunityPage() {
             setThreads(threadsResult.data as any || []);
             setReports(reportsResult.data || []);
         } catch (error) {
-            console.error('Failed to fetch data:', error);
             toast.error('Failed to load community data');
         } finally {
             setIsLoading(false);

@@ -43,7 +43,6 @@ export default function CategoryThreadsPage() {
             const category = categoriesData.find(c => c.id === categoryId);
             setCurrentCategory(category || null);
         } catch (error) {
-            console.error('Failed to fetch data:', error);
             toast.error('Failed to load threads');
         } finally {
             setLoading(false);

@@ -67,7 +67,6 @@ export default function MySkillsPage() {
         setDeletingId(skillId);
         try {
             // TODO: Implement delete skill API call
-            console.log('Deleting skill:', skillId);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to delete skill');
         } finally {

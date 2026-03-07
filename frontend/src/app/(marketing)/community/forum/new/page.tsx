@@ -46,7 +46,6 @@ export default function CreateThreadPage() {
             const data = await communityService.getCategories();
             setCategories(data);
         } catch (error) {
-            console.error('Failed to fetch categories:', error);
             toast.error('Failed to load categories');
         } finally {
             setLoading(false);
@@ -103,7 +102,6 @@ export default function CreateThreadPage() {
             toast.success('Thread created successfully!');
             router.push(`/community/forum/thread/${thread.id}`);
         } catch (error) {
-            console.error('Failed to create thread:', error);
             toast.error('Failed to create thread');
         } finally {
             setSubmitting(false);

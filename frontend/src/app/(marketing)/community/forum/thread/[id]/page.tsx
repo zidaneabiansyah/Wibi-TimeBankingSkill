@@ -55,7 +55,6 @@ export default function ForumThreadPage() {
             setHasVoted(data.voted);
             setUpvoteCount(data.count);
         } catch (err) {
-            console.error('Failed to check vote status:', err);
         }
     };
 
@@ -110,7 +109,6 @@ export default function ForumThreadPage() {
             const data = await communityService.getReplies(threadId);
             setReplies(data.replies);
         } catch (err) {
-            console.error('Failed to fetch replies:', err);
         }
     };
 

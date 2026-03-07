@@ -53,7 +53,6 @@ export default function EndorsementsPage() {
             const sum = list.reduce((acc: number, d: Donation) => acc + (d.amount || 0), 0);
             setTotalAmount(prev => offset === 0 ? sum : prev + sum);
         } catch (err) {
-            console.error('Failed to fetch donations:', err);
             toast.error('Gagal memuat data donasi');
         } finally {
             setLoading(false);

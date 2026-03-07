@@ -50,7 +50,6 @@ export default function NotificationsPage() {
             }
             setNotifications(data.notifications);
         } catch (error) {
-            console.error('Failed to fetch notifications:', error);
             toast.error('Failed to load notifications');
         } finally {
             setIsLoading(false);
@@ -65,7 +64,6 @@ export default function NotificationsPage() {
             await notificationService.markAsRead(id);
             markAsRead(id);
         } catch (error) {
-            console.error('Failed to mark as read:', error);
             toast.error('Failed to update notification');
         }
     };
@@ -79,7 +77,6 @@ export default function NotificationsPage() {
             removeNotification(id);
             toast.success('Notification deleted');
         } catch (error) {
-            console.error('Failed to delete:', error);
             toast.error('Failed to delete notification');
         }
     };
@@ -93,7 +90,6 @@ export default function NotificationsPage() {
             markAllAsRead();
             toast.success('All notifications marked as read');
         } catch (error) {
-            console.error('Failed to mark all as read:', error);
             toast.error('Failed to update notifications');
         }
     };

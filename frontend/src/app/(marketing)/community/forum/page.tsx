@@ -35,7 +35,6 @@ export default function ForumPage() {
             const cats = await communityService.getCategories();
             setCategories(cats);
         } catch (error) {
-            console.error('Failed to fetch categories:', error);
             toast.error('Failed to load categories');
         }
     };
@@ -67,7 +66,6 @@ export default function ForumPage() {
             setThreads(fetchedThreads);
             setTotalThreads(data.total || fetchedThreads.length);
         } catch (error) {
-            console.error('Failed to fetch threads:', error);
             toast.error('Failed to load discussions');
         } finally {
             setLoading(false);

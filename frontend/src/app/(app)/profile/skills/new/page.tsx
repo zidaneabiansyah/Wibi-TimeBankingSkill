@@ -69,7 +69,7 @@ function AddSkillContent() {
         }
 
         fetchSkills({ limit: 100, offset: 0 })
-            .catch(console.error)
+            .catch(() => {})
             .finally(() => setSkillsLoading(false));
     }, [user?.id, router, fetchSkills]);
 
@@ -175,7 +175,6 @@ function AddSkillContent() {
             router.push('/profile');
         } catch (error: any) {
             toast.error(error.message || 'Failed to add skill');
-            console.error(error);
         }
     };
 

@@ -80,7 +80,6 @@ export default function CreateStoryPage() {
             toast.success('Story created successfully!');
             router.push('/community/stories');
         } catch (err) {
-            console.error('Failed to create story:', err);
             toast.error('Failed to create story');
         } finally {
             setLoading(false);
