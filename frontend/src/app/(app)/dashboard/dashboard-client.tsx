@@ -49,7 +49,6 @@ export function DashboardClient() {
                     fetchLeaderboard('sessions', 5),
                 ]);
             } catch (error) {
-                console.error('Error fetching dashboard data:', error);
             }
         };
 
@@ -72,7 +71,7 @@ export function DashboardClient() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedSession(null);
-        fetchPendingRequests().catch(console.error);
+        fetchPendingRequests().catch(() => {});
     };
 
     const firstName = user?.full_name?.split(' ')[0] || 'User';

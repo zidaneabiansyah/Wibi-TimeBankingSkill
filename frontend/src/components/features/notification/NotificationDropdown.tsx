@@ -37,7 +37,6 @@ export function NotificationDropdown({
             const data = await notificationService.getNotifications(10, 0);
             setNotifications(data.notifications);
         } catch (error) {
-            console.error('Failed to fetch notifications:', error);
             // Non-critical error, don't toast in dropdown for cleaner UI
         } finally {
             setIsLoading(false);
@@ -49,7 +48,6 @@ export function NotificationDropdown({
             await notificationService.markAsRead(id);
             markAsRead(id);
         } catch (error) {
-            console.error('Failed to mark notification as read:', error);
             toast.error('Gagal memperbarui notifikasi');
         }
     };
@@ -60,7 +58,6 @@ export function NotificationDropdown({
             removeNotification(id);
             toast.success('Notifikasi dihapus');
         } catch (error) {
-            console.error('Failed to delete notification:', error);
             toast.error('Gagal menghapus notifikasi');
         }
     };

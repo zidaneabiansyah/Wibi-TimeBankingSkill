@@ -29,7 +29,6 @@ export function TeacherAvailability({ userId, compact = false }: TeacherAvailabi
                 const data = await availabilityService.getUserAvailability(userId);
                 setAvailability(data.availability);
             } catch (error) {
-                console.error("Failed to fetch teacher availability", error);
             } finally {
                 setIsLoading(false);
             }

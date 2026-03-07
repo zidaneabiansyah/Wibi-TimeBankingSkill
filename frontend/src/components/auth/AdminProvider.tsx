@@ -11,8 +11,6 @@ export function AdminProvider({ children }: AdminProviderProps) {
   const { loadAdmin } = useAdminStore();
 
   useEffect(() => {
-    // Load admin from localStorage on mount
-    console.log('🔐 AdminProvider: Loading admin from localStorage...');
     loadAdmin();
   }, []);
 

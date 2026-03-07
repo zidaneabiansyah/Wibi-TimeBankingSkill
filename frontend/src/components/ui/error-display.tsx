@@ -20,7 +20,6 @@ export function ErrorDisplay({
 }: ErrorDisplayProps) {
     useEffect(() => {
         // Log error to error reporting service
-        console.error('Error:', error);
     }, [error]);
 
     return (

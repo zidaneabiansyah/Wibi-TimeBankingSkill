@@ -30,7 +30,6 @@ export function StoryCard({ story, onLike, isLiked: externalIsLiked = false }: S
                 setHasLiked(data.liked);
                 setLikeCount(data.count);
             } catch (err) {
-                console.error("Failed to check story like:", err);
             }
         };
         checkLike();

@@ -75,7 +75,6 @@ export default function UsersPage() {
             const result = await adminService.getAllUsers();
             setUsers(result.data || []);
         } catch (error) {
-            console.error('Failed to fetch users:', error);
             toast.error('Failed to load users');
         } finally {
             setIsLoading(false);

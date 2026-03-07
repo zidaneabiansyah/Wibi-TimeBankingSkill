@@ -58,7 +58,6 @@ export default function SessionApprovalModal({
             onClose()
         } catch (error) {
             toast.error('Failed to approve session')
-            console.error(error)
         } finally {
             setIsSubmitting(false)
         }
@@ -78,7 +77,6 @@ export default function SessionApprovalModal({
             onClose()
         } catch (error) {
             toast.error('Failed to reject session')
-            console.error(error)
         } finally {
             setIsSubmitting(false)
         }

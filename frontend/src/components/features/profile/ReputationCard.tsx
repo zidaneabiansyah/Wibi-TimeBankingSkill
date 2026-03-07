@@ -38,7 +38,6 @@ export function ReputationCard({ userId, userName, compact = false }: Reputation
                 setReputation(rep);
                 setEndorsements(endResult.endorsements);
             } catch (error) {
-                console.error('Failed to fetch reputation:', error);
             } finally {
                 setLoading(false);
             }

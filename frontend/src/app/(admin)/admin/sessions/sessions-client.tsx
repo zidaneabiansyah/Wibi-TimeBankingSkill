@@ -53,7 +53,6 @@ export default function SessionsPage() {
             const result = await adminService.getAllSessions();
             setSessions(result.data || []);
         } catch (error) {
-            console.error('Failed to fetch sessions:', error);
             toast.error('Failed to load sessions');
         } finally {
             setIsLoading(false);

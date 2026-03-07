@@ -24,7 +24,6 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
 
         // Only redirect after hydration is complete
         if (isHydrated && !isAuthenticated) {
-            console.log('🔐 Admin not authenticated, redirecting to admin login');
             router.push('/admin/login');
         }
     }, [isAuthenticated, isHydrated, isLoginPage, router]);

@@ -158,7 +158,6 @@ export function TldrawWhiteboard({ sessionId, isReadOnly = false }: TldrawWhiteb
                     setInitialSnapshot(whiteboard.drawing_data as StoreSnapshot<TLRecord>);
                 }
             } catch (error) {
-                console.error('Failed to load whiteboard:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -173,7 +172,6 @@ export function TldrawWhiteboard({ sessionId, isReadOnly = false }: TldrawWhiteb
             try {
                 loadSnapshot(editor.store, initialSnapshot);
             } catch (error) {
-                console.error('Failed to restore whiteboard state:', error);
             }
         }
     }, [editor, initialSnapshot]);
@@ -188,7 +186,6 @@ export function TldrawWhiteboard({ sessionId, isReadOnly = false }: TldrawWhiteb
             toast.success('Whiteboard saved');
         } catch (error) {
             toast.error('Failed to save whiteboard');
-            console.error('Save error:', error);
         } finally {
             setIsSaving(false);
         }
@@ -249,7 +246,6 @@ export function TldrawWhiteboard({ sessionId, isReadOnly = false }: TldrawWhiteb
         } catch (error) {
             toast.dismiss();
             toast.error('Failed to download whiteboard');
-            console.error('Download error:', error);
         }
     }, [editor, sessionId]);
 

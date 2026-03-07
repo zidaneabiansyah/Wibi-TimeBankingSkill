@@ -143,7 +143,6 @@ export default function ReviewDialog({ session, existingReview, onSuccess, trigg
 
         } catch (error) {
             toast.error('Failed to submit review')
-            console.error(error)
         } finally {
             setIsSubmitting(false)
         }

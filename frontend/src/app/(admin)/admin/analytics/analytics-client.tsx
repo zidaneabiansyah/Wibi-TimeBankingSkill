@@ -35,7 +35,6 @@ export default function AnalyticsPage() {
             const data = await analyticsService.getPlatformAnalytics();
             setAnalytics(data);
         } catch (error) {
-            console.error('Failed to fetch analytics:', error);
         } finally {
             setIsLoading(false);
         }
