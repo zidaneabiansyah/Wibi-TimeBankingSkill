@@ -208,3 +208,28 @@ func (r *NotificationRepository) GetByType(userID uint, notificationType models.
 
 	return notifications, total, nil
 }
+
+// GetPreferences retrieves notification preferences for a user.
+// If no record exists, creates one with default values (all notifications enabled).
+// Parameters:
+//   - userID: User ID
+// Returns:
+//   - *NotificationPreference: User preferences
+//   - error: If database error
+func (r *NotificationRepository) GetPreferences(userID uint) (*models.NotificationPreference, error) {
+	var pref models.NotificationPreference
+	result := r.db.Where(models.NotificationPreference{UserID: userID}).FirstOrCreate(&pref)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &pref, nil
+}
+
+// UpdatePreferences saves user notification preferences to the database.
+// Parameters:
+//   - pref: NotificationPreference object with updated values
+// Returns:
+//   - error: If update fails
+func (r *NotificationRepository) UpdatePreferences(pref *models.NotificationPreference) error {
+	return r.db.Save(pref).Error
+}

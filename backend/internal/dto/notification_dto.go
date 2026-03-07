@@ -48,13 +48,45 @@ func MapNotificationsToResponse(notifications []models.Notification) []Notificat
 
 // UpdateNotificationPreferencesRequest represents request to update notification preferences
 type UpdateNotificationPreferencesRequest struct {
-	SessionNotifications    bool   `json:"sessionNotifications"`
-	CreditNotifications     bool   `json:"creditNotifications"`
+	SessionNotifications     bool   `json:"sessionNotifications"`
+	CreditNotifications      bool   `json:"creditNotifications"`
 	AchievementNotifications bool   `json:"achievementNotifications"`
-	ReviewNotifications     bool   `json:"reviewNotifications"`
-	EmailNotifications      bool   `json:"emailNotifications"`
-	PushNotifications       bool   `json:"pushNotifications"`
-	QuietHours             bool   `json:"quietHours"`
-	QuietHoursStart        string `json:"quietHoursStart"`
-	QuietHoursEnd          string `json:"quietHoursEnd"`
+	ReviewNotifications      bool   `json:"reviewNotifications"`
+	EmailNotifications       bool   `json:"emailNotifications"`
+	PushNotifications        bool   `json:"pushNotifications"`
+	QuietHours               bool   `json:"quietHours"`
+	QuietHoursStart          string `json:"quietHoursStart"`
+	QuietHoursEnd            string `json:"quietHoursEnd"`
+}
+
+// NotificationPreferencesResponse represents notification preferences in API responses
+type NotificationPreferencesResponse struct {
+	ID                       uint   `json:"id"`
+	UserID                   uint   `json:"user_id"`
+	SessionNotifications     bool   `json:"sessionNotifications"`
+	CreditNotifications      bool   `json:"creditNotifications"`
+	AchievementNotifications bool   `json:"achievementNotifications"`
+	ReviewNotifications      bool   `json:"reviewNotifications"`
+	EmailNotifications       bool   `json:"emailNotifications"`
+	PushNotifications        bool   `json:"pushNotifications"`
+	QuietHours               bool   `json:"quietHours"`
+	QuietHoursStart          string `json:"quietHoursStart"`
+	QuietHoursEnd            string `json:"quietHoursEnd"`
+}
+
+// MapPreferencesToResponse converts a NotificationPreference model to response DTO
+func MapPreferencesToResponse(pref *models.NotificationPreference) NotificationPreferencesResponse {
+	return NotificationPreferencesResponse{
+		ID:                       pref.ID,
+		UserID:                   pref.UserID,
+		SessionNotifications:     pref.SessionNotifications,
+		CreditNotifications:      pref.CreditNotifications,
+		AchievementNotifications: pref.AchievementNotifications,
+		ReviewNotifications:      pref.ReviewNotifications,
+		EmailNotifications:       pref.EmailNotifications,
+		PushNotifications:        pref.PushNotifications,
+		QuietHours:               pref.QuietHours,
+		QuietHoursStart:          pref.QuietHoursStart,
+		QuietHoursEnd:            pref.QuietHoursEnd,
+	}
 }

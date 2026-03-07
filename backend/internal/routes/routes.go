@@ -501,6 +501,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 				notifications.GET("/unread", notificationHandler.GetUnreadNotifications)      // GET /api/v1/notifications/unread
 				notifications.GET("/unread/count", notificationHandler.GetUnreadCount)        // GET /api/v1/notifications/unread/count
 				notifications.GET("/type/:type", notificationHandler.GetNotificationsByType)  // GET /api/v1/notifications/type/session
+				notifications.GET("/preferences", notificationHandler.GetPreferences)         // GET /api/v1/notifications/preferences
 				notifications.PUT("/:id/read", notificationHandler.MarkAsRead)                // PUT /api/v1/notifications/1/read
 				notifications.PUT("/preferences", notificationHandler.UpdatePreferences)      // PUT /api/v1/notifications/preferences
 				notifications.PUT("/read-all", notificationHandler.MarkAllAsRead)             // PUT /api/v1/notifications/read-all

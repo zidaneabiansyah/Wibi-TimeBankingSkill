@@ -36,7 +36,8 @@ func AutoMigrate(db *gorm.DB) error {
 		&Report{},
 		&Favorite{},
 		&SessionTemplate{},
-		&UsedToken{}, // For one-time use token tracking
+		&UsedToken{},
+		&NotificationPreference{},
 	}
 	
 	successCount := 0

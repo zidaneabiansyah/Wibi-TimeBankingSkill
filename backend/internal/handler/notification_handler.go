@@ -274,7 +274,28 @@ func (h *NotificationHandler) GetNotificationsByType(c *gin.Context) {
 	})
 }
 
-// UpdatePreferences updates user notification preferences (stub)
+// GetPreferences retrieves notification preferences for the current user
+// GET /api/v1/notifications/preferences
+// Returns current preferences, creating defaults if none exist
+func (h *NotificationHandler) GetPreferences(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		utils.SendError(c, http.StatusUnauthorized, "User not authenticated", nil)
+		return
+	}
+
+	pref, err := h.notificationService.GetPreferences(userID)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to fetch preferences", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Preferences retrieved successfully", gin.H{
+		"preferences": dto.MapPreferencesToResponse(pref),
+	})
+}
+
+// UpdatePreferences updates user notification preferences
 // PUT /api/v1/notifications/preferences
 func (h *NotificationHandler) UpdatePreferences(c *gin.Context) {
 	userID := c.GetUint("user_id")
@@ -283,14 +304,19 @@ func (h *NotificationHandler) UpdatePreferences(c *gin.Context) {
 		return
 	}
 
-	// For now, this is a stub that just returns success
-	// Actual implementation would save preferences to DB
 	var req dto.UpdateNotificationPreferencesRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.SendError(c, http.StatusBadRequest, "Invalid request", err)
 		return
 	}
 
-	// TODO: Implement actual preference saving when model is ready
-	utils.SendSuccess(c, http.StatusOK, "Preferences saved successfully", nil)
+	pref, err := h.notificationService.UpdatePreferences(userID, req)
+	if err != nil {
+		utils.SendError(c, http.StatusInternalServerError, "Failed to save preferences", err)
+		return
+	}
+
+	utils.SendSuccess(c, http.StatusOK, "Preferences saved successfully", gin.H{
+		"preferences": dto.MapPreferencesToResponse(pref),
+	})
 }

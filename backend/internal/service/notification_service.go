@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/timebankingskill/backend/internal/dto"
 	"github.com/timebankingskill/backend/internal/models"
 	"github.com/timebankingskill/backend/internal/repository"
 )
@@ -312,4 +313,56 @@ func (s *NotificationService) GetNotificationsByType(
 	}
 
 	return s.notificationRepo.GetByType(userID, notificationType, limit, offset)
+}
+
+// GetPreferences retrieves notification preferences for a user.
+// If no record exists, returns defaults (all notifications enabled).
+// Parameters:
+//   - userID: User ID
+// Returns:
+//   - *NotificationPreference: User preferences (created with defaults if not found)
+//   - error: If database error
+func (s *NotificationService) GetPreferences(userID uint) (*models.NotificationPreference, error) {
+	return s.notificationRepo.GetPreferences(userID)
+}
+
+// UpdatePreferences saves user notification preferences.
+// Uses upsert pattern: creates record if not exists, updates if exists.
+// Parameters:
+//   - userID: User ID
+//   - req: Preference values from request DTO
+// Returns:
+//   - *NotificationPreference: Saved preferences
+//   - error: If database error
+func (s *NotificationService) UpdatePreferences(userID uint, req dto.UpdateNotificationPreferencesRequest) (*models.NotificationPreference, error) {
+	// Get existing or create default preferences
+	pref, err := s.notificationRepo.GetPreferences(userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get preferences: %w", err)
+	}
+
+	// Apply updates
+	pref.SessionNotifications = req.SessionNotifications
+	pref.CreditNotifications = req.CreditNotifications
+	pref.AchievementNotifications = req.AchievementNotifications
+	pref.ReviewNotifications = req.ReviewNotifications
+	pref.EmailNotifications = req.EmailNotifications
+	pref.PushNotifications = req.PushNotifications
+	pref.QuietHours = req.QuietHours
+	pref.QuietHoursStart = req.QuietHoursStart
+	pref.QuietHoursEnd = req.QuietHoursEnd
+
+	// Validate quiet hours format (HH:MM)
+	if pref.QuietHoursStart == "" {
+		pref.QuietHoursStart = "22:00"
+	}
+	if pref.QuietHoursEnd == "" {
+		pref.QuietHoursEnd = "07:00"
+	}
+
+	if err := s.notificationRepo.UpdatePreferences(pref); err != nil {
+		return nil, fmt.Errorf("failed to save preferences: %w", err)
+	}
+
+	return pref, nil
 }
