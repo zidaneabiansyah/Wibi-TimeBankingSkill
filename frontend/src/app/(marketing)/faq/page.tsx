@@ -192,8 +192,7 @@ export default function FAQPage() {
                             Frequently Asked <span className="text-primary">Questions</span>
                         </h1>
                         <p className="max-w-175 text-muted-foreground text-lg md:text-xl">
-                            Find answers to common questions about Wibi, Time Banking, and how to get started.
-                        </p>
+                            Cari tahu segala hal tentang Wibi, Time Banking, dan langkah awal untuk bergabung</p>
                     </div>
                 </div>
             </section>
@@ -222,10 +221,10 @@ export default function FAQPage() {
                 <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
                     <div className="flex flex-col items-center space-y-6 text-center">
                         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                            Still Have <span className="text-primary">Questions</span>?
+                            Masih Memiliki <span className="text-primary">Pertanyaan</span>?
                         </h2>
                         <p className="mx-auto max-w-150 text-muted-foreground text-lg">
-                            Can't find the answer you're looking for? Our support team is here to help.
+                            Tim kami disini untuk menolongmu menemukan jawaban.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Link href="/contact">
@@ -235,7 +234,7 @@ export default function FAQPage() {
                             </Link>
                             <Link href="/community/forum">
                                 <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 border-border hover:bg-muted">
-                                    Join Community Forum
+                                    Gabung Forum Komunitas
                                 </Button>
                             </Link>
                         </div>

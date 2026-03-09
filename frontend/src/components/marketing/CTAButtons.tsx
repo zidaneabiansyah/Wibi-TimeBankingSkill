@@ -16,7 +16,7 @@ export function CTAButtons() {
             </Link>
             <Link href="/marketplace">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 border-border hover:bg-muted">
-                    Explore Skills
+                    Jelajahi Keahlian
                 </Button>
             </Link>
         </div>
