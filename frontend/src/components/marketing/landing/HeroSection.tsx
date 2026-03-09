@@ -72,15 +72,15 @@ export function HeroSection() {
                                 className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-bold tracking-tighter leading-[1.02] text-foreground"
                                 variants={itemVariants}
                             >
-                                Stop Paying. <br />
-                                Start <span className="text-[#FF7020]">Exchanging.</span>
+                                Stop Bayar. <br />
+                                Mulai <span className="text-[#FF7020]">Bertukar.</span>
                             </m.h1>
 
                             <m.p
                                 className="max-w-xl text-lg sm:text-xl text-muted-foreground leading-relaxed font-medium"
                                 variants={itemVariants}
                             >
-                                Your time is the new currency. Teach what you know to earn temporal credits, and spend them to learn absolutely anything from experts.
+                                Waktumu adalah mata uang baru. Ajarkan apa yang kau tahu, dapatkan kredit dan habiskan dengan belajar apapun dari ahlinya.
                             </m.p>
                         </div>
 
