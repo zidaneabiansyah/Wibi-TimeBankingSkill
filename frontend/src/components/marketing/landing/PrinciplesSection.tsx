@@ -47,11 +47,11 @@ export function PrinciplesSection() {
                     transition={{ duration: 0.6 }}
                 >
                     <h2 className="text-4xl md:text-[3.25rem] font-bold tracking-tighter text-foreground leading-[0.9] mb-6">
-                        Core<br />
-                        <span className="text-[#ff5500]">Principles</span>
+                        Poin<br />
+                        <span className="text-[#ff5500]">Utama</span>
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-xl font-medium leading-relaxed">
-                        Time Banking is built on these core values that make it a unique and powerful system.
+                        Time Banking dibangun di atas nilai-nilai inti yang menjadikannya sistem yang unik dan berdaya.
                     </p>
                 </m.div>
 

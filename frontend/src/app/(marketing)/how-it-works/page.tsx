@@ -107,7 +107,7 @@ export default function HowItWorksPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 text-foreground">Step-by-Step <span className="text-orange-500">Guide</span></h2>
-              <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Getting started with Time Banking is easy. Follow these simple steps to begin exchanging skills.</p>
+              <p className="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Memulai Time Banking itu mudah. Ikuti langkah-langkah sederhana ini untuk mulai bertukar keahlian.</p>
             </motion.div>
           </div>
 
@@ -119,14 +119,14 @@ export default function HowItWorksPage() {
         <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-background overflow-hidden flex items-center justify-center min-h-[60vh]">
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
             <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground mb-8 drop-shadow-2xl">
-              Ready to Start<br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Time Banking?</span>
+              Siap Bertukar<br />
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">Waktu?</span>
             </h2>
             <p className="text-zinc-500 text-lg md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
               Bergabunglah dengan komunitas kami hari ini dan mulailah bertukar keterampilan dengan orang lain.
             </p>
             <Button size="lg" className="group h-16 w-full sm:w-auto px-12 bg-foreground hover:bg-orange-600 text-background hover:text-white font-bold text-[15px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3 mx-auto shadow-[0_0_40px_rgba(0,0,0,0.15)] hover:shadow-[0_0_60px_rgba(255,112,32,0.3)] hover:-translate-y-1">
-              Sign Up Now!
+              Daftar Sekarang!
               <span className="w-8 h-8 rounded-full bg-background text-foreground flex items-center justify-center group-hover:bg-white transition-colors">
                 <ArrowUpRight className="w-4 h-4 group-hover:rotate-45 transition-transform" />
               </span>
