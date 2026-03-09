@@ -111,7 +111,7 @@ export default function SkillMarketplace() {
                 </div>
                 
                 <Button className="w-full mt-4" variant="outline">
-                    Explore Teachers
+                    Cari Pengajar
                 </Button>
             </CardContent>
         </Card>
@@ -135,7 +135,7 @@ export default function SkillMarketplace() {
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                             <Input
-                                placeholder="Search skills, topics, or keywords..."
+                                placeholder="Cari keahlian, topik, atau pakar..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="pl-10"
