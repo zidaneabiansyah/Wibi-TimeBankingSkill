@@ -92,14 +92,14 @@ export function SessionsClient() {
                             Organize your teaching commitments and learning journey in one place.
                         </p>
                     </div>
-                    <div className="flex gap-3">
-                        <Link href="/marketplace">
-                            <Button variant="outline" className="rounded-2xl px-6 h-12 font-semibold border-border/60 hover:bg-muted/50 transition-all">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <Link href="/marketplace" className="w-full sm:w-auto">
+                            <Button variant="outline" className="w-full rounded-2xl px-6 h-12 font-semibold border-border/60 hover:bg-muted/50 transition-all">
                                 Explore Skills
                             </Button>
                         </Link>
-                        <Link href="/dashboard">
-                            <Button className="rounded-2xl px-6 h-12 bg-card hover:bg-muted border border-border/40 text-foreground font-semibold shadow-sm transition-all">
+                        <Link href="/dashboard" className="w-full sm:w-auto">
+                            <Button className="w-full rounded-2xl px-6 h-12 bg-card hover:bg-muted border border-border/40 text-foreground font-semibold shadow-sm transition-all">
                                 Dashboard
                             </Button>
                         </Link>

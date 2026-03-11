@@ -100,57 +100,30 @@ export function SettingsClient() {
 
     return (
         <main
-            style={{
-                height: 'calc(100vh - 80px)', // Account for general layout header/navbar if any, or just 100vh for fullscreen
-                background: 'var(--background)',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-            }}
+            className="min-h-screen bg-background font-['Plus_Jakarta_Sans'] flex flex-col pb-12 pt-24"
         >
             <div
-                style={{
-                    maxWidth: '1200px',
-                    margin: '0 auto',
-                    padding: '1.5rem 1rem 0',
-                    width: '100%',
-                    flexShrink: 0,
-                }}
+                className="max-w-[1200px] mx-auto px-6 w-full shrink-0 pb-4 md:pb-6"
             >
                 {/* Back Button */}
-                <Link href="/profile" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors font-medium mb-4">
+                <Link href="/profile" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors font-medium">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Profile
                 </Link>
             </div>
 
             <div
-                style={{
-                    display: 'flex',
-                    gap: '2rem',
-                    flex: 1,
-                    maxWidth: '1200px',
-                    margin: '0 auto',
-                    padding: '0 1rem 2rem',
-                    width: '100%',
-                    overflow: 'hidden', // Contain scrolling within sections
-                    minHeight: 0,
-                }}
+                className="flex flex-col md:flex-row gap-6 md:gap-8 flex-1 max-w-[1200px] mx-auto px-6 w-full"
             >
-                {/* LEFT SIDEBAR NAVIGATION */}
+                {/* SIDEBAR NAVIGATION */}
                 <aside
-                    className="hidden md:flex bg-card rounded-3xl p-6 border border-border flex-col"
-                    style={{
-                        width: '280px',
-                        flexShrink: 0,
-                    }}
+                    className="bg-card rounded-3xl p-4 md:p-6 border border-border flex flex-col w-full md:w-[280px] shrink-0"
                 >
-                    <h1 className="text-2xl font-bold tracking-tight mb-6">
+                    <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-4 md:mb-6">
                         Settings
                     </h1>
 
-                    <nav className="space-y-2 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto pb-2 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -159,7 +132,7 @@ export function SettingsClient() {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as TabType)}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all duration-200
+                                    className={`shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all duration-200
                                         ${isActive 
                                             ? tab.isDestructive 
                                                 ? 'bg-destructive/10 text-destructive font-semibold' 
@@ -169,8 +142,8 @@ export function SettingsClient() {
                                                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground font-medium'
                                         }`}
                                 >
-                                    <Icon className="w-5 h-5 shrink-0" />
-                                    <span>{tab.label}</span>
+                                    <Icon className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
+                                    <span className="whitespace-nowrap text-sm md:text-base">{tab.label}</span>
                                 </button>
                             );
                         })}
@@ -179,25 +152,20 @@ export function SettingsClient() {
 
                 {/* RIGHT CONTENT AREA */}
                 <div
-                    className="bg-card rounded-3xl border border-border flex flex-col relative"
-                    style={{
-                        flex: 1,
-                        minWidth: 0,
-                        overflow: 'hidden',
-                    }}
+                    className="bg-card rounded-3xl border border-border flex flex-col relative w-full overflow-hidden"
                 >
                     {/* Header of Content Area */}
-                    <div className="p-6 md:p-10 border-b border-border bg-card/50 sticky top-0 z-10 backdrop-blur-sm">
-                        <h2 className="text-2xl font-bold text-foreground">
+                    <div className="p-5 md:p-10 border-b border-border bg-card/50 sticky top-0 z-10 backdrop-blur-sm">
+                        <h2 className="text-xl md:text-2xl font-bold text-foreground">
                             {currentTabInfo?.label}
                         </h2>
-                        <p className="text-muted-foreground mt-1">
+                        <p className="text-sm md:text-base text-muted-foreground mt-1">
                             {currentTabInfo?.desc}
                         </p>
                     </div>
 
                     {/* Scrollable Form Area */}
-                    <div className="flex-1 overflow-y-auto p-6 md:p-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="flex-1 p-5 md:p-10">
                         <div className="max-w-2xl space-y-8">
 
                             {/* --- Security Tab --- */}

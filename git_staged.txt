@@ -1,0 +1,10 @@
+M	backend/internal/dto/session_dto.go
+M	backend/internal/repository/session_repository.go
+D	frontend/src/app/(app)/dashboard/sessions/[id]/review/page.tsx
+M	frontend/src/app/(app)/dashboard/sessions/[id]/room/page.tsx
+M	frontend/src/app/(app)/dashboard/sessions/components/session-card.tsx
+M	frontend/src/app/(app)/profile/skills/[id]/edit/page.tsx
+A	frontend/src/components/features/review/ReviewDialog.tsx
+D	frontend/src/components/features/review/ReviewForm.tsx
+M	frontend/src/components/features/review/index.ts
+M	frontend/src/components/marketing/landing/HowItWorksSection.tsx

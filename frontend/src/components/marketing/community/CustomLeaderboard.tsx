@@ -163,7 +163,7 @@ export function CustomLeaderboard() {
                         return (
                             <div
                                 key={user.user_id + '_' + user.rank}
-                                className={`flex flex-col items-center px-2 w-full md:auto ${isRank1 ? 'order-1 md:order-2 z-10 md:w-[35%]' : idx === 0 ? 'order-2 md:order-1 md:w-[30%] -mb-2 md:mb-0' : 'order-3 md:order-3 md:w-[30%] -mb-2 md:mb-0'
+                                className={`flex flex-col items-center px-2 w-full md:w-auto ${isRank1 ? 'order-1 md:order-2 z-10 md:w-[35%]' : idx === 0 ? 'order-2 md:order-1 md:w-[30%] mt-4 md:mt-0' : 'order-3 md:order-3 md:w-[30%] mt-4 md:mt-0'
                                     }`}
                             >
                                 <div
@@ -180,7 +180,7 @@ export function CustomLeaderboard() {
                                     {/* Avatar with squircle shape */}
                                     <div className="relative mb-6">
                                         <div
-                                            className={`relative overflow-hidden ring-4 ring-offset-4 ring-offset-card shadow-lg ${isRank1 ? 'w-28 h-28 ring-yellow-500 shadow-yellow-500/30' : 'w-20 h-20 ring-border'
+                                            className={`relative overflow-hidden ring-4 ring-offset-4 ring-offset-card shadow-lg ${isRank1 ? 'w-20 h-20 md:w-28 md:h-28 ring-yellow-500 shadow-yellow-500/30' : 'w-16 h-16 md:w-20 md:h-20 ring-border'
                                                 }`}
                                             style={{ borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }}
                                         >

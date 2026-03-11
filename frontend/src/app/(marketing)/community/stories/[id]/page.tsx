@@ -387,7 +387,7 @@ export default function StoryDetailPage() {
                     </div>
 
                     {/* ===== RIGHT COLUMN: Recommended Sidebar (span 4) ===== */}
-                    <aside className="hidden lg:block lg:col-span-4 shrink-0">
+                    <aside className="lg:col-span-4 shrink-0">
                         <div className="sticky top-28 flex flex-col space-y-6 pb-4">
                             <div className="bg-card border border-border rounded-[24px] p-6 shadow-sm">
                                 <h3 className="font-bold text-[18px] text-foreground mb-6 flex items-center gap-2">

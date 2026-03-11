@@ -265,12 +265,12 @@ export function MarketplaceClient() {
                         </p>
 
                         {/* Stats Row */}
-                        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/60">
-                            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+                        <div className="flex items-center flex-wrap gap-2 sm:gap-4 mt-4 pt-4 border-t border-border/60">
+                            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold text-muted-foreground">
                                 <Users className="w-3.5 h-3.5 text-orange-500/80" />
                                 <span>{skill.total_teachers} teachers</span>
                             </div>
-                            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+                            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold text-muted-foreground">
                                 <Star className="w-3.5 h-3.5 text-orange-500/80" />
                                 <span>0 learners</span>
                             </div>
@@ -448,7 +448,7 @@ export function MarketplaceClient() {
                                         initial={{ opacity: 0, height: 0, y: -20 }}
                                         animate={{ opacity: 1, height: 'auto', y: 0 }}
                                         exit={{ opacity: 0, height: 0, y: -20 }}
-                                        className="mt-4 bg-card border border-border rounded-3xl p-8 grid grid-cols-1 md:grid-cols-3 gap-10 overflow-hidden"
+                                        className="mt-4 bg-card border border-border rounded-3xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 overflow-hidden"
                                     >
                                         <div className="space-y-4">
                                             <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] font-semibold">Expertise Level</label>
@@ -541,7 +541,7 @@ export function MarketplaceClient() {
                             <ChevronLeft className="w-6 h-6" />
                         </Button>
 
-                        <div className="px-8 font-semibold tabular-nums text-foreground text-lg tracking-tighter">
+                        <div className="px-4 sm:px-8 font-semibold tabular-nums text-foreground text-lg tracking-tighter shrink-0">
                             {currentPage} <span className="text-muted-foreground text-sm font-normal mx-1">/</span> {totalPages || 1}
                         </div>
 

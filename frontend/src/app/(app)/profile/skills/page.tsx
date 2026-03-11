@@ -95,8 +95,8 @@ export default function MySkillsPage() {
                             Curate and manage the expertise you're sharing with the Wibi community.
                         </p>
                     </div>
-                    <Link href="/profile/skills/new">
-                        <Button className="rounded-2xl px-6 h-12 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] font-semibold gap-2">
+                    <Link href="/profile/skills/new" className="w-full md:w-auto">
+                        <Button className="w-full rounded-2xl px-6 h-12 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] font-semibold gap-2">
                             <Plus className="h-4 w-4 stroke-3" />
                             Add New Skill
                         </Button>

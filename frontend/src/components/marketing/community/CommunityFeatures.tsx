@@ -58,11 +58,11 @@ export function CommunityFeatures() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="bg-background py-24 px-6 md:px-12 w-full">
+        <section ref={sectionRef} className="bg-background py-16 md:py-24 px-6 md:px-12 w-full">
             <div className="max-w-7xl mx-auto">
                 {/* Part 1: Heading */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
-                    <h2 className="text-5xl md:text-6xl font-medium text-foreground leading-tight tracking-tight">
+                    <h2 className="text-4xl md:text-6xl font-medium text-foreground leading-tight tracking-tight">
                         {headingText}
                         <span className="animate-pulse">|</span>
                     </h2>

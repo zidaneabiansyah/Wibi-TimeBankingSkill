@@ -192,7 +192,7 @@ export default function AboutPage() {
             className="relative z-10 text-center px-6 max-w-5xl mx-auto"
             style={{ transform: `scale(${heroScale})`, opacity: heroOpacity }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-foreground mb-3 leading-none tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-8xl font-black text-foreground mb-3 leading-none tracking-tight">
               Waktu{" "}
               <span
                 className="relative inline-block"
@@ -232,7 +232,7 @@ export default function AboutPage() {
           </div>
 
           {/* ── VISI & MISI ────────────────────────────────────────────── */}
-          <section className="bg-background py-32 px-6">
+          <section className="bg-background py-16 md:py-32 px-6">
             <div
               ref={visiRef}
               className={`max-w-6xl mx-auto transition-all duration-700 ${visiVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -271,7 +271,7 @@ export default function AboutPage() {
 
                 {/* Right: Text */}
                 <div>
-                  <h2 className="text-4xl md:text-5xl font-black text-foreground mb-8 leading-tight">
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground mb-8 leading-tight">
                     Membuat Pendidikan Lebih Terjangkau untuk <span className="text-primary">Semua</span>
                   </h2>
 
@@ -292,11 +292,11 @@ export default function AboutPage() {
           <ImpactStats />
 
           {/* ── VALUES ────────────────────────────────────────────────── */}
-          <section className="bg-background py-32 px-6">
+          <section className="bg-background py-16 md:py-32 px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-16">
                 <span className="text-primary text-sm font-bold uppercase tracking-widest">Core Values</span>
-                <h2 className="text-5xl font-black text-foreground mt-3">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground mt-3">
                   Nilai yang Kami<br />
                   <span className="text-primary">Junjung Tinggi</span>
                 </h2>

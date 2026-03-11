@@ -18,7 +18,7 @@ const CustomLeaderboard = dynamic(
     { ssr: false, loading: () => <div className="h-96 w-full animate-pulse bg-stone-900 rounded-3xl" /> }
 );
 
-import { MessageSquare, BookOpen, Award, ArrowUpRight, ArrowRight, Bookmark } from 'lucide-react';
+import { MessageSquare, BookOpen, Award, ArrowUpRight, ArrowRight, Bookmark, Zap } from 'lucide-react';
 import { CommunityFeatures } from '@/components/marketing/community/CommunityFeatures';
 
 const iconMap = {
@@ -84,10 +84,10 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
     }, []);
 
     return (
-        <main ref={containerRef} className={`dark flex-1 relative overflow-x-clip ${plusJakartaSans.className}`}>
-            {/* ── Section 1: Hero with Frosted Overlay ────────────────── */}
-            <section className="relative w-full h-dvh min-h-[600px] overflow-hidden">
-                {/* Background Image */}
+        <main ref={containerRef} className={`flex-1 relative overflow-x-clip ${plusJakartaSans.className}`}>
+            {/* ── Section 1: Hero with Full Image & Glassmorphism ────────────────── */}
+            <section className="relative w-full h-dvh min-h-[700px] overflow-hidden flex flex-col items-center justify-center text-center">
+                {/* Full Background Image */}
                 <Image
                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000&auto=format&fit=crop"
                     alt="Community Wibi"
@@ -96,18 +96,41 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                     priority
                 />
 
-                {/* Left Side Overlay with Fade to Transparent */}
-                <div
-                    className="absolute top-0 left-0 h-full w-[55%] bg-background z-10"
-                    style={{
-                        maskImage: 'linear-gradient(to right, black 55%, transparent 100%)',
-                        WebkitMaskImage: 'linear-gradient(to right, black 55%, transparent 100%)',
-                    }}
-                >
-                    <div className="p-10 md:p-16 flex flex-col justify-center h-full max-w-xl">
-                        <span className="text-xs text-orange-300 uppercase tracking-widest font-semibold mb-4 inline-block">
-                            Komunitas Wibi
+                {/* Universal Subtle Dark Overlay to ensure text readability */}
+                <div className="absolute inset-0 bg-white/40 dark:bg-black/50 z-10 transition-colors duration-500" />
+
+                {/* Center Content */}
+                <div className="relative z-20 px-6 max-w-4xl flex flex-col items-center mt-18 md:mt-10">
+                    {/* Top small transparent badge */}
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 dark:bg-black/20 backdrop-blur-md border border-stone-200 dark:border-white/10 text-xs font-semibold text-stone-800 dark:text-white/90 mb-6 backdrop-saturate-150 transition-colors duration-500 shadow-sm dark:shadow-none">
+                        <Trophy className="w-3.5 h-3.5" />
+                        <span>Komunitas Berbagi Ilmu #1 di Indonesia</span>
+                    </div>
+
+                    <h1 
+                        className="text-4xl md:text-5xl lg:text-7xl font-medium text-stone-900 dark:text-white leading-[1.15] tracking-tight transition-colors duration-500"
+                        style={{ 
+                            filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.9)) drop-shadow(0 0 30px rgba(0,0,0,0.6))' 
+                        }}
+                    >
+                        Tempat terbaik untuk menemukan<br /> <span className="font-light italic text-primary">Komunitasmu</span>
+                    </h1>
+
+                    <p 
+                        className="mt-8 text-base md:text-xl text-stone-900 font-medium dark:text-zinc-200 max-w-2xl leading-relaxed transition-colors duration-500"
+                        style={{ 
+                            filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(0,0,0,0.5))' 
+                        }}
+                    >
+                        Sudah siap untuk berkembang? Temukan ribuan pelajar dan mentor untuk saling mendukung dalam perjalanan belajarmu.
+                    </p>
+
+                    {/* Search-like CTA Button */}
+                    <div className="mt-10 inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-0 bg-white/90 dark:bg-white/10 backdrop-blur-xl border border-stone-200 dark:border-white/20 sm:rounded-full rounded-3xl p-1.5 shadow-2xl w-full sm:w-auto transition-colors duration-500">
+                        <span className="text-stone-500 dark:text-zinc-300 font-medium text-sm flex-1 px-4 py-3 sm:py-0 w-full sm:w-auto text-center sm:text-left truncate">
+                            Bergabung dengan wibi...
                         </span>
+<<<<<<< Updated upstream
 
                         <h1 className="text-4xl md:text-5xl font-black text-foreground leading-tight">
                             Komunitas Belajar yang Saling <span className="text-primary">Menguatkan</span>
@@ -122,6 +145,14 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                                 Gabung Sekarang
                             </Link>
                         </div>
+=======
+                        <Link 
+                            href="/community/forum"
+                            className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 font-semibold text-sm px-8 py-3 rounded-full hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors w-full sm:w-auto text-center whitespace-nowrap shadow-md"
+                        >
+                            Gabung Sekarang
+                        </Link>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </section>
@@ -149,7 +180,7 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                         {/* Translucent background box with border */}
                         <div className="absolute inset-0 bg-card/30 backdrop-blur-xl border border-border rounded-[3rem] -z-10 shadow-2xl ring-1 ring-inset ring-border/5" />
 
-                        <div className="py-12 px-4 sm:px-8">
+                        <div className="py-8 md:py-12 px-2 sm:px-8">
                             <CustomLeaderboard />
                         </div>
                     </div>
