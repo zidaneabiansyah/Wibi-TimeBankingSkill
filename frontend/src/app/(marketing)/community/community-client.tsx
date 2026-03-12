@@ -130,29 +130,12 @@ export function CommunityClient({ sections, stats }: CommunityClientProps) {
                         <span className="text-stone-500 dark:text-zinc-300 font-medium text-sm flex-1 px-4 py-3 sm:py-0 w-full sm:w-auto text-center sm:text-left truncate">
                             Bergabung dengan wibi...
                         </span>
-<<<<<<< Updated upstream
-
-                        <h1 className="text-4xl md:text-5xl font-black text-foreground leading-tight">
-                            Komunitas Belajar yang Saling <span className="text-primary">Menguatkan</span>
-                        </h1>
-
-                        <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
-                            Bergabunglah dengan ribuan pelajar dan mentor yang saling mendukung dalam perjalanan belajar mereka.
-                        </p>
-
-                        <div className="mt-6">
-                            <Link href="/community/forum" className="bg-foreground text-background font-bold px-6 py-3 rounded-xl hover:bg-foreground/90 transition-all inline-block shadow-md">
-                                Gabung Sekarang
-                            </Link>
-                        </div>
-=======
                         <Link 
                             href="/community/forum"
                             className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 font-semibold text-sm px-8 py-3 rounded-full hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors w-full sm:w-auto text-center whitespace-nowrap shadow-md"
                         >
                             Gabung Sekarang
                         </Link>
->>>>>>> Stashed changes
                     </div>
                 </div>
             </section>
