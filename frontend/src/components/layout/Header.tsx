@@ -65,8 +65,8 @@ export function Header() {
                     pointer-events-auto transition-all duration-500 ease-in-out
                     flex items-center justify-between
                     ${isScrolled
-                        ? 'h-14 sm:h-16 max-w-5xl bg-background/80 backdrop-blur-3xl border border-border shadow-xl rounded-full px-6 sm:px-8'
-                        : 'h-18 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-4xl sm:rounded-[3rem] px-6 sm:px-10'}
+                        ? 'h-14 sm:h-16 max-w-5xl bg-background/80 backdrop-blur-3xl border border-border shadow-xl rounded-full px-4 sm:px-8'
+                        : 'h-16 sm:h-20 max-w-7xl bg-transparent backdrop-blur-none border-transparent shadow-none border rounded-[2rem] sm:rounded-[3rem] px-4 sm:px-10'}
                     w-full
                 `}
             >
@@ -136,49 +136,11 @@ export function Header() {
                                 <UserDropdownMenu />
                             </div>
 
-                            {/* Mobile Menu for Auth */}
-                            <MobileMenuDrawer
-                                side="right"
-                                className="md:hidden"
-                                trigger={
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="md:hidden bg-muted/50 border border-border rounded-2xl h-11 w-11"
-                                        aria-label="Open menu"
-                                    >
-                                        <Menu className="h-5 w-5 text-muted-foreground" />
-                                    </Button>
-                                }
-                            >
-                                <div className="space-y-1 p-4">
-                                    <h3 className="text-[10px] font-black text-muted-foreground px-4 py-2 uppercase tracking-[0.2em] mb-2">Navigation</h3>
-                                    <MobileMenuItem label="DASHBOARD" href="/dashboard" />
-                                    <MobileMenuItem label="MARKETPLACE" href="/marketplace" />
-                                    <MobileMenuItem label="MY SESSIONS" href="/dashboard/sessions" />
-                                    <MobileMenuItem label="COMMUNITY" href="/community" />
-
-                                    <div className="h-px bg-border/50 my-4" />
-
-                                    <h3 className="text-[10px] font-black text-muted-foreground px-4 py-2 uppercase tracking-[0.2em] mb-2">Account</h3>
-                                    <MobileMenuItem label="MY PROFILE" href="/profile" />
-                                    <MobileMenuItem label="MY SKILLS" href="/profile/skills" />
-                                    <MobileMenuItem label="SETTINGS" href="/profile/settings" />
-
-                                    <div className="h-px bg-border/50 my-4" />
-
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full flex items-center gap-3 px-5 py-3.5 text-xs font-black text-red-500 hover:bg-red-500/1 rounded-2xl transition-all uppercase tracking-widest"
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            </MobileMenuDrawer>
+                            {/* Hamburger Menu removed - Navigation is now in User Dropdown */}
                         </>
                     ) : (
                         <>
-                            <div className="flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 bg-background/50 backdrop-blur rounded-full border border-border">
+                            <div className="hidden sm:flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 bg-background/50 backdrop-blur rounded-full border border-border">
                                 <Link href="/login">
                                     <Button variant="ghost" size="sm" className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-foreground hover:bg-transparent">
                                         Login
@@ -201,7 +163,7 @@ export function Header() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="md:hidden bg-muted/50 border border-border rounded-2xl h-11 w-11"
+                                        className="md:hidden bg-muted/50 border border-border rounded-xl sm:rounded-2xl h-10 w-10 sm:h-11 sm:w-11"
                                         aria-label="Open menu"
                                     >
                                         <Menu className="h-5 w-5 text-muted-foreground" />

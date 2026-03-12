@@ -69,10 +69,10 @@ export default function ImpactStats() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 px-6 border-y border-border"
+      className="py-16 md:py-24 px-6 border-y border-border"
       style={{ background: "linear-gradient(135deg, var(--background), var(--card))" }}
     >
-      <div className="max-w-5xl mx-auto flex flex-col gap-16">
+      <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-16">
 
         {/* Top: Editorial Paragraph */}
         <div

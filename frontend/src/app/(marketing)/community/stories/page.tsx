@@ -128,6 +128,46 @@ export default function StoriesPage() {
 
                     {/* ===== MAIN CONTENT (span 6) ===== */}
                     <main className="lg:col-span-6 min-w-0">
+                        
+                        {/* --- MOBILE ONLY CONTROLS --- */}
+                        <div className="lg:hidden flex flex-col space-y-4 mb-2">
+                            {/* Search */}
+                            <form onSubmit={handleSearchSubmit} className="relative w-full">
+                                <input
+                                    type="text"
+                                    placeholder="Search for stories..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-5 pr-12 py-3 bg-card border border-border rounded-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
+                                />
+                                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-primary hover:text-primary-foreground hover:bg-primary bg-primary/10 rounded-full transition-colors">
+                                    <Search className="w-4 h-4" />
+                                </button>
+                            </form>
+
+                            {/* Tabs & New CTA row */}
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-1 bg-card border border-border p-1 rounded-full overflow-x-auto scrollbar-hide">
+                                    {['latest', 'popular', 'older'].map((tab) => (
+                                        <button
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab as typeof activeTab)}
+                                            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all capitalize whitespace-nowrap ${activeTab === tab ? 'bg-primary text-primary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+                                <Button 
+                                    onClick={() => router.push(isAuthenticated ? '/community/stories/new' : '/login')}
+                                    size="sm"
+                                    className="shrink-0 rounded-full font-semibold shadow-md bg-primary hover:bg-primary/90 text-white"
+                                >
+                                    <Plus className="w-4 h-4 mr-1 stroke-[2.5]" /> Write
+                                </Button>
+                            </div>
+                        </div>
+
                         {/* Feed Header */}
                         <div className="mb-6 flex items-center justify-between">
                             <h2 className="text-foreground font-bold text-[18px]">

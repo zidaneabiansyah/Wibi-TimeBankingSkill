@@ -98,7 +98,7 @@ export default function HowItWorksPage() {
         <PrinciplesSection />
 
         {/* --- Interactive Scroll Workflow Section (Retained untouched as requested) --- */}
-        <section id="workflow" className="relative z-10 py-32 bg-zinc-950/50">
+        <section id="workflow" className="relative z-10 py-20 md:py-32 bg-zinc-950/50">
           <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-8">
             <motion.div
               className="text-center mb-32"
@@ -116,7 +116,7 @@ export default function HowItWorksPage() {
 
 
         {/* --- Modern Cinematic CTA --- */}
-        <section className="py-32 md:py-48 px-6 relative border-t border-zinc-900 bg-background overflow-hidden flex items-center justify-center min-h-[60vh]">
+        <section className="py-24 md:py-32 lg:py-48 px-6 relative border-t border-zinc-900 bg-background overflow-hidden flex items-center justify-center min-h-[60vh]">
           <div className="max-w-4xl mx-auto text-center relative z-10 w-full flex flex-col items-center">
             <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground mb-8 drop-shadow-2xl">
               Siap Bertukar<br />

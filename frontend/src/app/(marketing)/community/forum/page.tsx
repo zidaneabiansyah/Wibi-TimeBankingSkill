@@ -175,6 +175,65 @@ export default function ForumPage() {
                     {/* ===== MIDDLE FEED (span 6) ===== */}
                     <main className="col-span-1 lg:col-span-6 flex flex-col min-w-0 space-y-4 min-h-[40vh]">
                         
+                        {/* --- MOBILE ONLY CONTROLS --- */}
+                        <div className="lg:hidden flex flex-col space-y-4 mb-2">
+                            {/* Search */}
+                            <form onSubmit={handleSearchSubmit} className="relative w-full">
+                                <input
+                                    type="text"
+                                    placeholder="Search for topics..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-5 pr-12 py-3 bg-card border border-border rounded-full focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
+                                />
+                                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-primary hover:text-primary-foreground hover:bg-primary bg-primary/10 rounded-full transition-colors">
+                                    <Search className="w-4 h-4" />
+                                </button>
+                            </form>
+
+                            {/* Categories (Horizontal Scroll) */}
+                            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                                <button
+                                    onClick={() => setSelectedCategoryId(null)}
+                                    className={`shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-all ${!selectedCategoryId ? 'bg-primary text-primary-foreground font-semibold' : 'bg-card text-muted-foreground border border-border hover:bg-muted'}`}
+                                >
+                                    All Categories
+                                </button>
+                                {categories.map(category => (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => setSelectedCategoryId(category.id)}
+                                        className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all ${selectedCategoryId === category.id ? 'bg-muted text-foreground font-semibold border border-transparent' : 'bg-card text-muted-foreground border border-border hover:bg-muted'}`}
+                                    >
+                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: category.color || '#f97316' }} />
+                                        <span>{category.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Tabs & New CTA row */}
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-1 bg-card border border-border p-1 rounded-full overflow-x-auto scrollbar-hide">
+                                    {['latest', 'popular', 'older'].map((tab) => (
+                                        <button
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab as typeof activeTab)}
+                                            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all capitalize whitespace-nowrap ${activeTab === tab ? 'bg-primary text-primary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+                                <Button 
+                                    onClick={() => router.push(selectedCategoryId ? `/community/forum/new?category=${selectedCategoryId}` : '/community/forum/new')}
+                                    size="sm"
+                                    className="shrink-0 rounded-full font-semibold shadow-md bg-primary hover:bg-primary/90 text-white"
+                                >
+                                    <Plus className="w-4 h-4 mr-1" /> Post
+                                </Button>
+                            </div>
+                        </div>
+                        
                         {/* Feed Info */}
                         <div className="flex justify-center mb-2">
                             <span className="text-[13px] font-semibold text-primary">

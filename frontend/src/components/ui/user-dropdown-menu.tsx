@@ -16,6 +16,10 @@ import {
     Calendar,
     Heart,
     FileText,
+    Store,
+    Info,
+    Lightbulb,
+    Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -65,6 +69,30 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
     };
 
     const menuItems = [
+        {
+            icon: Store,
+            label: 'Marketplace',
+            href: '/marketplace',
+            group: 'navigation',
+        },
+        {
+            icon: Lightbulb,
+            label: 'How It Works',
+            href: '/how-it-works',
+            group: 'navigation',
+        },
+        {
+            icon: Info,
+            label: 'About Us',
+            href: '/about',
+            group: 'navigation',
+        },
+        {
+            icon: Users,
+            label: 'Community',
+            href: '/community',
+            group: 'navigation',
+        },
         {
             icon: LayoutDashboard,
             label: 'Dashboard',
@@ -192,10 +220,10 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="absolute right-0 mt-2 w-72 bg-card border border-border rounded-lg shadow-lg shadow-black/20 z-50 overflow-hidden"
+                        className="absolute right-[-10px] sm:right-0 origin-top-right mt-2 w-64 sm:w-72 max-h-[80vh] overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-card border border-border rounded-lg shadow-xl shadow-black/20 z-50"
                     >
                         {/* User Info Section */}
-                        <div className="px-4 py-4 border-b border-border/40 bg-muted/30">
+                        <div className="sticky top-0 z-10 px-4 py-4 border-b border-border/40 bg-card/95 backdrop-blur-md supports-backdrop-filter:bg-card/80">
                             <div className="flex items-center gap-3">
                                 {user?.avatar ? (
                                     <img
@@ -238,8 +266,29 @@ export function UserDropdownMenu({ trigger, className }: UserDropdownMenuProps) 
                             )}
                         </div>
 
+                        {/* Navigation Menu Items - Hidden on Desktop (md+) because they are already in the Header */}
+                        <div className="py-2 md:hidden">
+                            <div className="px-4 py-1 mb-1">
+                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Navigation</span>
+                            </div>
+                            {menuItems
+                                .filter((item) => item.group === 'navigation')
+                                .map((item) => (
+                                    <MenuItem
+                                        key={item.href}
+                                        icon={item.icon}
+                                        label={item.label}
+                                        href={item.href}
+                                        onClick={() => setIsOpen(false)}
+                                    />
+                                ))}
+                        </div>
+
                         {/* Main Menu Items */}
-                        <div className="py-2">
+                        <div className="py-2 border-t border-border/40">
+                            <div className="px-4 py-1 mb-1">
+                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Account</span>
+                            </div>
                             {menuItems
                                 .filter((item) => item.group === 'main')
                                 .map((item) => (

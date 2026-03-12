@@ -22,9 +22,9 @@ const StarRating = ({ rating, onChange, label, tooltip }: { rating: number | nul
     const [hoverRating, setHoverRating] = useState<number | null>(null);
 
     return (
-        <div className="flex items-center justify-between w-full px-4 py-2.5 rounded-2xl bg-muted/20 border border-border/10">
-            <Label className="text-sm font-bold text-foreground/80">{label}</Label>
-            <div className="flex gap-1">
+        <div className="flex items-center justify-between w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-muted/20 border border-border/10">
+            <Label className="text-[13px] sm:text-sm font-bold text-foreground/80">{label}</Label>
+            <div className="flex gap-0.5 sm:gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                     <button
                         key={star}
@@ -34,12 +34,12 @@ const StarRating = ({ rating, onChange, label, tooltip }: { rating: number | nul
                         onMouseLeave={() => setHoverRating(null)}
                         className={`transition-all duration-200 ${
                             star <= (hoverRating || rating || 0)
-                                ? 'text-amber-400 scale-110 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'
+                                ? 'text-amber-400 scale-105 sm:scale-110 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'
                                 : 'text-muted-foreground/30 hover:scale-110 hover:text-amber-200'
                         }`}
                         title={tooltip || `Rate ${star} stars`}
                     >
-                        <Star className="w-7 h-7 fill-current stroke-current" />
+                        <Star className="w-6 h-6 sm:w-7 sm:h-7 fill-current stroke-current" />
                     </button>
                 ))}
             </div>
@@ -160,7 +160,7 @@ export default function ReviewDialog({ session, existingReview, onSuccess, trigg
                 )}
             </DialogTrigger>
             
-            <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden bg-background/95 backdrop-blur-2xl border-border/40 rounded-[2rem] shadow-2xl" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <DialogContent className="w-[95vw] sm:max-w-[550px] p-0 overflow-hidden bg-background/95 backdrop-blur-2xl border-border/40 rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
                 <AnimatePresence mode="wait">
                     {isSuccess ? (
                         <motion.div
@@ -195,15 +195,15 @@ export default function ReviewDialog({ session, existingReview, onSuccess, trigg
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0, y: 20 }}
                         >
-                            <div className="p-8 pb-6 bg-muted/10 border-b border-border/5">
+                            <div className="p-5 sm:p-8 sm:pb-6 bg-muted/10 border-b border-border/5">
                                 <DialogHeader>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <Star className="w-5 h-5 text-primary" strokeWidth={2.5} />
+                                    <div className="flex items-center gap-3 mb-1 sm:mb-2">
+                                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-primary" strokeWidth={2.5} />
                                         </div>
                                         <div>
-                                            <DialogTitle className="text-2xl font-bold tracking-tight">Rate Your Session</DialogTitle>
-                                            <DialogDescription className="font-medium text-muted-foreground/80">
+                                            <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">Rate Your Session</DialogTitle>
+                                            <DialogDescription className="text-xs sm:text-[13px] font-medium text-muted-foreground/80">
                                                 How was your experience with <span className="text-foreground font-semibold">{revieweeName}</span>?
                                             </DialogDescription>
                                         </div>
@@ -211,20 +211,20 @@ export default function ReviewDialog({ session, existingReview, onSuccess, trigg
                                 </DialogHeader>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="px-8 py-6 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                            <form onSubmit={handleSubmit} className="px-5 sm:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
                                 
                                 {/* Overall Rating - Prominent */}
-                                <div className="space-y-4 text-center pb-6 border-b border-border/10">
-                                    <Label className="text-base font-bold text-foreground">Overall Rating</Label>
-                                    <div className="flex justify-center gap-2">
+                                <div className="space-y-3 sm:space-y-4 text-center pb-5 sm:pb-6 border-b border-border/10">
+                                    <Label className="text-sm sm:text-base font-bold text-foreground">Overall Rating</Label>
+                                    <div className="flex justify-center gap-1 sm:gap-2">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <button
                                                 key={star}
                                                 type="button"
                                                 onClick={() => setRating(star)}
-                                                className={`text-5xl transition-all duration-300 hover:scale-110 active:scale-90 ${
+                                                className={`text-3xl sm:text-5xl transition-all duration-300 hover:scale-110 active:scale-90 ${
                                                     star <= (rating || 0) 
-                                                        ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]' 
+                                                        ? 'text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]' 
                                                         : 'text-muted-foreground/20 hover:text-amber-200'
                                                 }`}
                                             >
@@ -262,21 +262,21 @@ export default function ReviewDialog({ session, existingReview, onSuccess, trigg
                                 </div>
 
                                 {/* Tags Selection */}
-                                <div className="space-y-4 pt-4 border-t border-border/10">
+                                <div className="space-y-3 sm:space-y-4 pt-4 border-t border-border/10">
                                     <Label className="text-sm font-bold text-foreground">Highlight Strengths</Label>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                         {availableTags.map((tag) => (
                                             <button
                                                 key={tag}
                                                 type="button"
                                                 onClick={() => toggleTag(tag)}
-                                                className={`px-4 py-2.5 rounded-full text-[13px] font-bold tracking-wide transition-all duration-300 ${
+                                                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-[13px] font-bold tracking-wide transition-all duration-300 ${
                                                     selectedTags.includes(tag)
                                                         ? 'bg-primary text-primary-foreground shadow-[0_8px_20px_-6px_rgba(255,85,0,0.4)] scale-[1.02]'
                                                         : 'bg-muted/50 text-muted-foreground hover:bg-muted border border-border/40 hover:border-border/80'
                                                 }`}
                                             >
-                                                {selectedTags.includes(tag) && <CheckCircle className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />}
+                                                {selectedTags.includes(tag) && <CheckCircle className="inline-block w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5 -mt-0.5" />}
                                                 {tag}
                                             </button>
                                         ))}

@@ -41,7 +41,7 @@ export default function CtaFaqSection() {
 
   return (
     <section
-      className="relative w-full py-28 px-6 overflow-hidden"
+      className="relative w-full py-16 md:py-28 px-6 overflow-hidden"
       style={{ background: "linear-gradient(135deg, var(--background), var(--card))" }}
     >
       {/* Background Dot Pattern */}
@@ -62,10 +62,10 @@ export default function CtaFaqSection() {
             Wibi
           </div>
 
-          <h2 className="text-5xl font-black text-foreground leading-tight mb-2 tracking-tight">
+          <h2 className="text-4xl lg:text-5xl font-black text-foreground leading-tight mb-2 tracking-tight">
             Punya pertanyaan?
           </h2>
-          <p className="text-muted-foreground text-2xl font-light">
+          <p className="text-muted-foreground text-xl lg:text-2xl font-light">
             Kami siap membantu.
           </p>
 

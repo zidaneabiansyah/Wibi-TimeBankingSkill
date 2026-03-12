@@ -109,7 +109,7 @@ export function UpcomingSessions({ sessions, isLoading }: UpcomingSessionsProps)
                                                     {session.scheduled_at ? formatDate(session.scheduled_at) : 'Not scheduled'}
                                                 </CardDescription>
                                             </div>
-                                            <Badge variant={session.status === 'approved' ? 'default' : 'secondary'} className="text-xs shrink-0">
+                                            <Badge variant={session.status === 'approved' ? 'default' : 'secondary'} className="text-[10px] sm:text-xs shrink-0">
                                                 {session.status}
                                             </Badge>
                                         </div>

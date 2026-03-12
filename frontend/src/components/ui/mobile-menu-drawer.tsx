@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { m, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import Link from 'next/link';
 
 interface MobileMenuDrawerProps {
     children: React.ReactNode;
@@ -27,6 +29,11 @@ export function MobileMenuDrawer({
     onOpenChange,
 }: MobileMenuDrawerProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open);
@@ -57,6 +64,56 @@ export function MobileMenuDrawer({
         },
     };
 
+    // Use portal to break out of any transform stacking contexts (like the animated Header)
+    const portalContent = isMounted ? createPortal(
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    {/* Backdrop */}
+                    <m.div
+                        variants={overlayVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className="fixed inset-0 bg-black/50 z-9999 md:hidden"
+                        onClick={() => handleOpenChange(false)}
+                        aria-hidden="true"
+                    />
+
+                    {/* Drawer */}
+                    <m.div
+                        variants={drawerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className={cn(
+                            'fixed top-0 bottom-0 z-10000 w-80 max-w-[90vw] bg-background border-border md:hidden overflow-y-auto',
+                            side === 'left' ? 'left-0 border-r' : 'right-0 border-l',
+                            className
+                        )}
+                    >
+                        {/* Close Button */}
+                        <div className="sticky top-0 flex items-center justify-between p-4 border-b border-border/40 bg-background/95 backdrop-blur z-10">
+                            <h2 className="font-semibold">Menu</h2>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleOpenChange(false)}
+                                aria-label="Close menu"
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 relative z-0">{children}</div>
+                    </m.div>
+                </>
+            )}
+        </AnimatePresence>,
+        document.body
+    ) : null;
+
     return (
         <>
             {/* Trigger Button */}
@@ -76,53 +133,8 @@ export function MobileMenuDrawer({
                 </Button>
             )}
 
-            {/* Backdrop */}
-            <AnimatePresence>
-                {isOpen && (
-                    <m.div
-                        variants={overlayVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                        className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                        onClick={() => handleOpenChange(false)}
-                        aria-hidden="true"
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* Drawer */}
-            <AnimatePresence>
-                {isOpen && (
-                    <m.div
-                        variants={drawerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                        className={cn(
-                            'fixed top-0 bottom-0 z-50 w-80 max-w-[90vw] bg-background border-border md:hidden overflow-y-auto',
-                            side === 'left' ? 'left-0 border-r' : 'right-0 border-l',
-                            className
-                        )}
-                    >
-                        {/* Close Button */}
-                        <div className="sticky top-0 flex items-center justify-between p-4 border-b border-border/40 bg-background/95 backdrop-blur">
-                            <h2 className="font-semibold">Menu</h2>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleOpenChange(false)}
-                                aria-label="Close menu"
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-4">{children}</div>
-                    </m.div>
-                )}
-            </AnimatePresence>
+            {/* Portaled Drawer Content */}
+            {portalContent}
         </>
     );
 }
@@ -147,19 +159,15 @@ export function MobileMenuItem({
     className,
     badge,
 }: MobileMenuItemProps) {
-    const Component = href ? 'a' : 'button';
+    const baseClasses = cn(
+        'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200',
+        'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+        'active:bg-muted active:text-foreground',
+        className
+    );
 
-    return (
-        <Component
-            href={href}
-            onClick={onClick}
-            className={cn(
-                'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200',
-                'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-                'active:bg-muted active:text-foreground',
-                className
-            )}
-        >
+    const content = (
+        <>
             {icon && <span className="shrink-0">{icon}</span>}
             <span className="flex-1 text-left font-medium">{label}</span>
             {badge && (
@@ -167,6 +175,20 @@ export function MobileMenuItem({
                     {badge}
                 </span>
             )}
-        </Component>
+        </>
+    );
+
+    if (href) {
+        return (
+            <Link href={href} onClick={onClick} className={baseClasses}>
+                {content}
+            </Link>
+        );
+    }
+
+    return (
+        <button onClick={onClick} className={baseClasses}>
+            {content}
+        </button>
     );
 }

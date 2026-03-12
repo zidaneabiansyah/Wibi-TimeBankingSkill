@@ -164,7 +164,7 @@ export default function ContactPage() {
                         </div>
 
                         {/* Right Content - Mockup Cards */}
-                        <div className="w-full md:w-1/2 flex justify-center md:justify-end relative min-h-[300px] md:min-h-full mr-0 md:mr-10">
+                        <div className="hidden md:flex w-full md:w-1/2 justify-center md:justify-end relative min-h-[300px] md:min-h-full mr-0 md:mr-10">
                             {/* Card 1 (Back, Rotated) */}
                             <div className="absolute top-4 right-12 md:-right-8 shadow-2xl rounded-3xl bg-background w-[260px] h-[380px] p-6 flex flex-col justify-between transform -rotate-12 translate-y-10 scale-90 md:scale-100 transition-transform duration-500 hover:-rotate-6 hover:translate-y-8 opacity-90 border border-border">
                                 <div className="flex justify-between items-start">

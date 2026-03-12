@@ -52,6 +52,7 @@ export interface UserProfile {
     total_sessions_as_student: number;
     average_rating_as_teacher: number;
     average_rating_as_student: number;
+    total_teaching_hours?: number;
     created_at: string;
     updated_at: string;
 }

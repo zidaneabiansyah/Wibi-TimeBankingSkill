@@ -175,7 +175,7 @@ function FeatureText({ step, index, setActiveCard }: { step: any, index: number,
     }, [isInView, index, setActiveCard]);
 
     return (
-        <div ref={ref} className="min-h-screen flex flex-col justify-center py-20 pr-0 lg:pr-16">
+        <div ref={ref} className="min-h-[80vh] md:min-h-screen flex flex-col justify-center py-16 md:py-20 pr-0 lg:pr-16">
             <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}

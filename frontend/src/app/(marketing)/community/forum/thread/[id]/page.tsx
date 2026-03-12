@@ -426,7 +426,7 @@ export default function ForumThreadPage() {
                     </main>
 
                     {/* ===== RIGHT SIDEBAR (span 4) ===== */}
-                    <aside className="hidden lg:block lg:col-span-4 shrink-0">
+                    <aside className="lg:col-span-4 shrink-0">
                         <div className="sticky top-28 flex flex-col space-y-8 pb-10">
                             
                             {/* Category, Tags, Top Contributors Combo Card */}

@@ -100,6 +100,11 @@ export function FeaturedSkillsSection() {
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                                 className="group relative flex flex-col p-8 sm:p-10 rounded-3xl bg-card border border-border hover:border-border/80 shadow-md hover:shadow-2xl transition-all duration-400"
                             >
+                                {/* Make entire card clickable */}
+                                <Link href="/marketplace" className="absolute inset-0 z-20 rounded-3xl">
+                                    <span className="sr-only">Explore {skill.title}</span>
+                                </Link>
+
                                 {/* Top Layout: Icon & Category badge */}
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center group-hover:border-orange-500/50 group-hover:bg-muted transition-all duration-500 shadow-lg">
@@ -132,10 +137,10 @@ export function FeaturedSkillsSection() {
                                         Jelajahi Keahlian
                                     </span>
 
-                                    {/* Animated Arrow */}
-                                    <Link href="/marketplace" className="w-10 h-10 rounded-full border border-border bg-muted flex items-center justify-center group-hover:bg-orange-600 group-hover:border-orange-600 transition-all duration-300 cursor-pointer">
+                                    {/* Animated Arrow (visual only now) */}
+                                    <div className="w-10 h-10 rounded-full border border-border bg-muted flex items-center justify-center group-hover:bg-orange-600 group-hover:border-orange-600 transition-all duration-300">
                                         <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300" strokeWidth={2.5} />
-                                    </Link>
+                                    </div>
                                 </div>
 
                                 {/* Subtle internal hover glow */}

@@ -65,10 +65,10 @@ export function PrinciplesSection() {
                 >
                     {/* Item 1: Large Span */}
                     <m.div
-                        className="md:col-span-12 lg:col-span-8 group relative p-10 md:p-16 rounded-[40px] bg-card/50 backdrop-blur-xl border border-border overflow-hidden transition-all duration-700 hover:bg-card shadow-2xl"
+                        className="md:col-span-12 lg:col-span-8 group relative p-8 md:p-10 lg:p-16 rounded-[40px] bg-card/50 backdrop-blur-xl border border-border overflow-hidden transition-all duration-700 hover:bg-card shadow-2xl"
                         variants={itemVariants}
                     >
-                        <div className="absolute top-0 right-0 p-8 text-[12rem] font-bold leading-none text-foreground/2 group-hover:text-foreground/4 transition-colors duration-700 pointer-events-none select-none -mr-8 -mt-12">
+                        <div className="absolute top-0 right-0 p-8 text-[8rem] md:text-[12rem] font-bold leading-none text-foreground/2 group-hover:text-foreground/4 transition-colors duration-700 pointer-events-none select-none -mr-4 md:-mr-8 -mt-6 md:-mt-12">
                             01
                         </div>
                         <div className="relative z-10 w-full h-full flex flex-col justify-end">
@@ -89,10 +89,10 @@ export function PrinciplesSection() {
                     {/* Item 2: Vertical Stack */}
                     <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
                         <m.div
-                            className="flex-1 group relative p-10 rounded-[32px] bg-card/50 backdrop-blur-xl border border-border overflow-hidden transition-all duration-700 hover:bg-card shadow-xl"
+                            className="flex-1 group relative p-8 md:p-10 rounded-[32px] bg-card/50 backdrop-blur-xl border border-border overflow-hidden transition-all duration-700 hover:bg-card shadow-xl"
                             variants={sideItemVariants}
                         >
-                            <div className="absolute top-0 right-0 p-6 text-[8rem] font-bold leading-none text-foreground/2 group-hover:text-foreground/4 transition-colors duration-700 pointer-events-none select-none -mr-4 -mt-6">
+                            <div className="absolute top-0 right-0 p-6 text-[6rem] md:text-[8rem] font-bold leading-none text-foreground/2 group-hover:text-foreground/4 transition-colors duration-700 pointer-events-none select-none -mr-2 md:-mr-4 -mt-4 md:-mt-6">
                                 02
                             </div>
                             <div className="relative z-10 h-full flex flex-col justify-between">
@@ -109,10 +109,10 @@ export function PrinciplesSection() {
                         </m.div>
 
                         <m.div
-                            className="flex-1 group relative p-10 rounded-[32px] bg-card/50 backdrop-blur-xl border border-border overflow-hidden transition-all duration-700 hover:bg-card shadow-xl"
+                            className="flex-1 group relative p-8 md:p-10 rounded-[32px] bg-card/50 backdrop-blur-xl border border-border overflow-hidden transition-all duration-700 hover:bg-card shadow-xl"
                             variants={sideItemVariants}
                         >
-                            <div className="absolute top-0 right-0 p-6 text-[8rem] font-bold leading-none text-foreground/2 group-hover:text-foreground/4 transition-colors duration-700 pointer-events-none select-none -mr-4 -mt-6">
+                            <div className="absolute top-0 right-0 p-6 text-[6rem] md:text-[8rem] font-bold leading-none text-foreground/2 group-hover:text-foreground/4 transition-colors duration-700 pointer-events-none select-none -mr-2 md:-mr-4 -mt-4 md:-mt-6">
                                 03
                             </div>
                             <div className="relative z-10 h-full flex flex-col justify-between">

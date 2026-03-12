@@ -37,7 +37,7 @@ export default function AccordionTeam() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   return (
-    <section className="bg-background py-24 px-6 border-y border-border">
+    <section className="bg-background py-16 md:py-24 px-6 border-y border-border">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-center">
 
         {/* Left Side: Text Content */}
@@ -56,7 +56,7 @@ export default function AccordionTeam() {
 
         {/* Right Side: Accordion Cards */}
         <div
-          className="flex-1 w-full flex h-[480px] gap-4"
+          className="flex-1 w-full flex flex-col lg:flex-row h-[700px] lg:h-[480px] gap-4"
           onMouseLeave={() => setActiveIndex(0)}
         >
           {team.map((member, idx) => {
@@ -102,8 +102,13 @@ export default function AccordionTeam() {
                       }`}
                   >
                     <span
-                      className="text-white font-bold whitespace-nowrap tracking-wider text-lg"
+                      className="text-white font-bold whitespace-nowrap tracking-wider text-base lg:text-lg hidden lg:block"
                       style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                    >
+                      {member.name}
+                    </span>
+                    <span
+                      className="text-white font-bold whitespace-nowrap tracking-wider text-base lg:hidden"
                     >
                       {member.name}
                     </span>

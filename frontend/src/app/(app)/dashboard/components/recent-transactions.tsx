@@ -128,12 +128,12 @@ export function RecentTransactions({ transactions, isLoading }: RecentTransactio
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2 shrink-0">
+                                    <div className="flex items-center gap-2 py-1 shrink-0">
                                         <span className={`text-sm font-bold ${getTransactionTypeColor(transaction.type)}`}>
                                             {transaction.type === 'spent' || transaction.type === 'hold' ? '-' : '+'}
                                             {transaction.amount.toFixed(1)}
                                         </span>
-                                        <Badge variant="outline" className="text-xs">
+                                        <Badge variant="outline" className="text-[10px] hidden sm:inline-flex">
                                             {transaction.type}
                                         </Badge>
                                     </div>
