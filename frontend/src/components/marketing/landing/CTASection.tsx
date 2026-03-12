@@ -49,21 +49,21 @@ export function CTASection() {
                         className="inline-flex items-center rounded-full border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary bg-primary/5 mb-2 shadow-sm"
                         variants={itemVariants}
                     >
-                        Get Started Today
+                        Mulai Sekarang
                     </m.div>
 
                     <m.h2
                         className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-foreground"
                         variants={itemVariants}
                     >
-                        Ready to Exchange Skills?
+                        Siap Bertukar Keahlian?
                     </m.h2>
 
                     <m.p
                         className="mx-auto max-w-[40rem] text-muted-foreground text-lg sm:text-xl font-medium leading-relaxed"
                         variants={itemVariants}
                     >
-                        Join 1,200+ students who are already learning and teaching without spending money.
+                        Gabung bersama 1.200+ pelajar lainnya. Mulai belajar dan berbagi ilmu, tanpa perlu bayar sepeser pun.
                     </m.p>
 
                     <m.div
@@ -81,7 +81,7 @@ export function CTASection() {
                         <Link href="/how-it-works" className="w-full sm:w-auto">
                             <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button size="lg" variant="outline" className="w-full sm:w-auto px-10 h-14 rounded-full font-bold text-base hover:bg-muted/50 border-border/50">
-                                    Learn More
+                                    Pelajari Selengkapnya
                                 </Button>
                             </m.div>
                         </Link>

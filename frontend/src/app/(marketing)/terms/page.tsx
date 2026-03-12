@@ -235,10 +235,10 @@ export default function TermsPage() {
                 <div className="mx-auto max-w-screen-2xl px-6 sm:px-12 lg:px-16">
                     <div className="flex flex-col items-center space-y-6 text-center">
                         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                            Ready to Join <span className="text-primary">Wibi</span>?
+                            Siap Bergabung Dengan <span className="text-primary">Wibi</span>?
                         </h2>
                         <p className="mx-auto max-w-150 text-muted-foreground text-lg">
-                            By signing up, you agree to our Terms of Service and Privacy Policy.
+                            Dengan mendaftar, kamu setuju dengan Terms of Service dan Privacy Policy kami.
                         </p>
                         <CTAButtons />
                     </div>

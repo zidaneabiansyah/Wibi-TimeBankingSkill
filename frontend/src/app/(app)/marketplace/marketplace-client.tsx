@@ -285,7 +285,7 @@ export function MarketplaceClient() {
                             variant="outline"
                             className="mt-3 w-full h-10 bg-transparent border-border text-muted-foreground font-medium text-xs uppercase tracking-widest rounded-xl transition-all hover:bg-orange-600 hover:text-white hover:border-orange-600 group-hover:border-border"
                         >
-                            Explore Teachers
+                            Cari Pengajar
                         </Button>
                     </div>
                 </div>
@@ -333,19 +333,19 @@ export function MarketplaceClient() {
                                     </div>
 
                                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 text-foreground leading-[0.95]">
-                                        EXCHANGE TIME.<br />
-                                        <span className="text-orange-500">MASTER SKILLS.</span>
+                                        TUKAR WAKTU.<br />
+                                        <span className="text-orange-500">KUASAI ILMU.</span>
                                     </h1>
 
                                     <p className="text-muted-foreground text-lg md:text-xl font-medium max-w-xl mb-12 leading-relaxed">
-                                        Join the decentralized marketplace where <span className="text-foreground">knowledge thrives.</span> Teach what you love to earn credits, then spend them to learn from others.
+                                        Jadilah bagian dari komunitas di mana <span className="text-foreground">ilmu pengetahuan terus tumbuh.</span> Bagikan keahlianmu, kumpulkan kredit, dan pelajari hal baru dari siapa pun.
                                     </p>
 
                                     <div className="w-full max-w-2xl">
                                         <div className="relative group/search">
                                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within/search:text-orange-500 transition-colors duration-300" />
                                             <Input
-                                                placeholder="Search skills, topics, or experts..."
+                                                placeholder="Cari keahlian, topik, atau pakar..."
                                                 className="h-16 bg-background/70 border-border hover:border-muted-foreground/30 focus-visible:ring-2 focus-visible:ring-orange-600/30 focus-visible:border-orange-600/50 text-base pl-14 pr-14 rounded-2xl transition-all duration-300 font-medium text-foreground placeholder:text-muted-foreground shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -368,7 +368,7 @@ export function MarketplaceClient() {
                                 <div className="flex-1 bg-card border border-border/80 rounded-[2.5rem] p-10 relative overflow-hidden group hover:border-muted-foreground/30 transition-colors cursor-default">
                                     <div className="flex justify-between items-start mb-10">
                                         <div className="flex flex-col">
-                                            <span className="text-muted-foreground text-[10px] uppercase font-mono tracking-widest mb-1 font-semibold">Global Ledger</span>
+                                            <span className="text-muted-foreground text-[10px] uppercase font-mono tracking-widest mb-1 font-semibold">Data Global</span>
                                             <span className="text-3xl font-bold text-foreground"><AnimatedCounter value={skillsTotal} /> Skills</span>
                                         </div>
                                         <Activity className="w-5 h-5 text-orange-500 animate-pulse" />
@@ -377,16 +377,16 @@ export function MarketplaceClient() {
                                     <div className="space-y-6">
                                         <div className="flex justify-between items-end border-b border-border pb-4">
                                             <div className="flex flex-col">
-                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-semibold">Total Members</span>
+                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-semibold">Total Anggota</span>
                                                 <span className="text-xl font-bold text-foreground"><AnimatedCounter value={8294} /></span>
                                             </div>
                                             <div className="flex flex-col text-right">
-                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-semibold">Avg Rating</span>
+                                                <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-tighter font-semibold">Rata-Rata Rating</span>
                                                 <span className="text-xl font-bold text-orange-500"><AnimatedCounter value={4.9} decimals={1} />/5</span>
                                             </div>
                                         </div>
                                         <Button variant="ghost" className="w-full justify-between text-muted-foreground hover:text-foreground px-0 font-mono text-[10px] uppercase tracking-widest group font-medium">
-                                            View Full Analytics <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                            Lihat Analitik Lengkap <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </div>
                                 </div>
@@ -395,7 +395,7 @@ export function MarketplaceClient() {
                                     <div className="absolute top-0 right-0 p-6 opacity-5">
                                         <TrendingUp className="w-24 h-24 text-foreground" />
                                     </div>
-                                    <h3 className="font-mono text-muted-foreground text-[10px] uppercase tracking-widest mb-4 font-bold">Trending Now</h3>
+                                    <h3 className="font-mono text-muted-foreground text-[10px] uppercase tracking-widest mb-4 font-bold">Sedang Tren</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {['Python', 'Design', 'Yoga'].map(tag => (
                                             <span key={tag} className="px-4 py-1.5 rounded-xl bg-orange-600/5 border border-orange-600/10 text-orange-500 text-xs font-medium hover:bg-orange-600 hover:text-white transition-colors" onClick={() => setSearchQuery(tag)}>
@@ -415,7 +415,7 @@ export function MarketplaceClient() {
                                         onClick={() => setSelectedCategory('all')}
                                         className={`px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all ${selectedCategory === 'all' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted font-medium'}`}
                                     >
-                                        All Systems
+                                        Semua Kategori
                                     </button>
                                     {categories.map((cat) => (
                                         <button

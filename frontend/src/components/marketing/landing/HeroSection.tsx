@@ -72,15 +72,15 @@ export function HeroSection() {
                                 className="text-4xl sm:text-6xl md:text-7xl lg:text-[4.5rem] font-bold tracking-tighter leading-[1.05] text-foreground"
                                 variants={itemVariants}
                             >
-                                Stop Paying. <br className="hidden lg:block" />
-                                Start <span className="text-[#FF7020]">Exchanging.</span>
+                                Stop Bayar. <br />
+                                Mulai <span className="text-[#FF7020]">Bertukar.</span>
                             </m.h1>
 
                             <m.p
                                 className="mx-auto lg:mx-0 max-w-xl text-lg sm:text-xl text-muted-foreground leading-relaxed font-medium"
                                 variants={itemVariants}
                             >
-                                Waktunya berbagi ilmu tanpa batas. Gunakan waktu sebagai alat tukar untuk belajar apa pun dari para ahli di komunitas kami.
+                                Waktumu adalah mata uang baru. Ajarkan apa yang kau tahu, dapatkan kredit dan habiskan dengan belajar apapun dari ahlinya.
                             </m.p>
                         </div>
 

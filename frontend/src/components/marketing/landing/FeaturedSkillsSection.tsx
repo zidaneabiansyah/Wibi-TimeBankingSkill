@@ -65,7 +65,7 @@ export function FeaturedSkillsSection() {
                         </div>
 
                         <h2 className="text-4xl md:text-[2.75rem] font-bold text-foreground tracking-tight">
-                            Explore What's Popular
+                            Jelajahi yang Populer
                         </h2>
                     </m.div>
 
@@ -77,7 +77,7 @@ export function FeaturedSkillsSection() {
                         className="md:text-right"
                     >
                         <p className="text-muted-foreground text-lg md:text-xl max-w-md leading-relaxed md:ml-auto">
-                            Browse the most sought-after skills taught by our community members.
+                            Telusuri keahlian yang paling banyak dicari dari anggota komunitas kami.
                         </p>
                     </m.div>
                 </div>
@@ -134,7 +134,7 @@ export function FeaturedSkillsSection() {
                                 {/* Explore Link Area */}
                                 <div className="mt-10 pt-6 border-t border-border flex justify-between items-center group-hover:border-border/80 transition-colors duration-300">
                                     <span className="text-sm font-semibold text-muted-foreground group-hover:text-orange-500 transition-colors duration-300">
-                                        Explore Skills
+                                        Jelajahi Keahlian
                                     </span>
 
                                     {/* Animated Arrow (visual only now) */}
@@ -159,7 +159,7 @@ export function FeaturedSkillsSection() {
                     className="mt-16 flex justify-center"
                 >
                     <Link href="/marketplace" className="group inline-flex items-center gap-3 px-8 h-14 rounded-full bg-foreground text-background font-semibold text-base hover:bg-foreground/90 transition-colors duration-300">
-                        View All Categories
+                        Lihat Semua Kategori
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </m.div>

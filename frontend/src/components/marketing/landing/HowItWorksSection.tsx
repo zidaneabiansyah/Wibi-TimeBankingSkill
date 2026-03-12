@@ -26,8 +26,8 @@ export function HowItWorksSection() {
                         </div>
 
                         <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight leading-[1.1]">
-                            Knowledge exchange, <br />
-                            <span className="text-[#FF7020]">simplified.</span>
+                            Bertukar Pengetahuan, <br />
+                            <span className="text-[#FF7020]">Disederhanakan.</span>
                         </h2>
                     </m.div>
 
@@ -39,7 +39,7 @@ export function HowItWorksSection() {
                         className="md:text-right"
                     >
                         <p className="text-muted-foreground text-lg sm:text-xl max-w-md leading-relaxed md:ml-auto">
-                            No money involved. Just pure exchange of value. Teach what you know, learn what you don't.
+                            Tidak butuh uang. Murni bertukar keahlian. Ajarkan yang kau tahu, Belajar apa yang tak kau tahu.
                         </p>
                     </m.div>
                 </div>
@@ -60,9 +60,9 @@ export function HowItWorksSection() {
                             <div className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center mb-8 text-muted-foreground group-hover:text-foreground group-hover:border-[#FF7020]/50 transition-all duration-300">
                                 <BookOpen className="w-5 h-5" />
                             </div>
-                            <h3 className="text-3xl font-semibold text-foreground mb-4">Create Your Profile</h3>
+                            <h3 className="text-3xl font-semibold text-foreground mb-4">Buat Profilemu</h3>
                             <p className="text-muted-foreground leading-relaxed text-base sm:text-lg">
-                                Set up in minutes. Highlight your expertise, set your availability, and let the community know what skills you bring to the table.
+                                Siapkan dalam hitungan menit. Tunjukkan keahlian mu, atur ketersediaan mu, dan beri tahu komunitas tentang keterampilan apa yang kamu miliki.
                             </p>
                         </div>
 
@@ -113,7 +113,7 @@ export function HowItWorksSection() {
                                 </div>
                                 <h3 className="text-2xl font-semibold text-foreground mb-3">Book Sessions</h3>
                                 <p className="text-muted-foreground leading-relaxed text-base">
-                                    Browse the marketplace and lock in 1-on-1 sessions instantly using a seamless calendar.
+                                    Jelajahi marketplace dan jadwalkan sesi 1 on 1 secara instan menggunakan kalender yang mudah digunakan.
                                 </p>
                             </div>
 
@@ -152,9 +152,9 @@ export function HowItWorksSection() {
                                 <div className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center mb-6 text-muted-foreground group-hover:text-foreground group-hover:border-orange-500/50 transition-all duration-300">
                                     <RefreshCcw className="w-5 h-5" />
                                 </div>
-                                <h3 className="text-2xl font-semibold text-foreground mb-3">Earn & Learn</h3>
+                                <h3 className="text-2xl font-semibold text-foreground mb-3">Berbagi & Belajar</h3>
                                 <p className="text-muted-foreground leading-relaxed text-base">
-                                    Teach a skill to earn credits. Spend those identical credits to learn from anyone else.
+                                    Ajarkan keahlianmu untuk mendapatkan kredit. Gunakan kredit yang sama untuk belajar dari siapa pun.
                                 </p>
                             </div>
 
@@ -189,7 +189,7 @@ export function HowItWorksSection() {
                 >
                     <Link href="/register">
                         <Button className="group rounded-full bg-foreground hover:bg-muted-foreground/10 text-background px-8 h-14 font-semibold text-base transition-all duration-300">
-                            Start Exchanging Value
+                            Mulai Bertukar Keahlian
                             <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </Link>

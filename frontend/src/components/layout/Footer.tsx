@@ -22,7 +22,7 @@ export function Footer() {
                             <span className="text-lg font-bold text-primary">Waktu Indonesia Berbagi Ilmu   </span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                            Peer-to-peer skill exchange platform using Time Banking system.
+                            Platform pertukaran keahlian antar-pengguna dengan sistem Time Banking (Bank Waktu).
                         </p>
                     </div>
                     <div className="space-y-4">
