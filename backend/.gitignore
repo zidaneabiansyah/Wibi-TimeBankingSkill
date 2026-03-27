@@ -26,3 +26,5 @@ backend/tmp/
 # --- Others ---
 *.out
 *.test
+# Local runner scripts (contains secrets)
+run-wibi.sh
