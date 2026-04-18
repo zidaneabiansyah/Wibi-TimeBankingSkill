@@ -191,56 +191,6 @@ http://localhost:8080/api/v1
 For API documentation, visit `/api/v1/swagger` when the server is running.
 ```
 
-## Database Schema
-
-The application uses PostgreSQL with 19 tables organized into the following domains:
-
-### Core Tables
-- **users**: User accounts and profiles
-- **admins**: Administrative accounts
-- **used_tokens**: JWT token blacklist
-
-### Skills and Learning
-- **skills**: Master skill catalog
-- **user_skills**: Skills users can teach
-- **learning_skills**: Skills users want to learn
-- **skill_progress**: Learning progress tracking
-
-### Sessions and Transactions
-- **sessions**: Teaching/learning sessions
-- **transactions**: Credit transaction history
-- **video_sessions**: Video call metadata
-
-### Social Features
-- **reviews**: Ratings and feedback
-- **favorites**: Favorite teachers
-- **notifications**: Real-time notifications
-- **endorsements**: Peer endorsements
-
-### Community
-- **forum_threads**: Discussion threads
-- **forum_comments**: Thread comments
-- **stories**: Success stories
-- **story_comments**: Story comments
-
-### Gamification
-- **badges**: Achievement badges
-- **user_badges**: Badges earned by users
-
-### Content Management
-- **shared_files**: Session materials
-- **whiteboards**: Collaborative whiteboard data
-- **templates**: Session templates
-- **reports**: User reports
-- **availabilities**: Teacher availability schedules
-
-## Deployment
-
-### Production Stack
-- **Frontend**: Vercel (Free tier)
-- **Backend**: Render (Free tier)
-- **Database**: Supabase PostgreSQL (Free tier)
-
 ### Environment Variables
 
 Backend (.env):
