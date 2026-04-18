@@ -359,22 +359,6 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain.com
 
 For detailed deployment instructions, see DEPLOYMENT.md.
 
-## Testing
-
-### Backend Tests
-```bash
-cd backend
-go test ./...
-go test -cover ./...
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm run test
-npm run test:coverage
-```
-
 ## Performance Optimizations
 
 ### Backend
