@@ -264,7 +264,3 @@ This project is licensed under the MIT License. See LICENSE file for details.
 ## Author
 
 Zidane Abiansyah
-
-## Acknowledgments
-
-Built with modern web technologies and best practices in software architecture.
