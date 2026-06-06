@@ -43,53 +43,6 @@ The platform operates on a fundamental principle where time serves as the univer
 - **API Documentation**: Swagger/OpenAPI
 - **Security**: Bcrypt, Rate Limiting, CORS, Input Sanitization
 
-## Installation and Setup
-
-### Prerequisites
-- Node.js 18 or higher
-- Go 1.21 or higher
-- PostgreSQL 14 or higher
-- Git
-
-### Backend Configuration
-
-```bash
-# Navigate to backend directory
-cd backend
-
-# Install dependencies
-go mod download
-
-# Configure environment variables
-cp .env.example .env
-# Edit .env with your database credentials and JWT secret
-
-# Run database migrations
-go run cmd/server/main.go
-
-# Start development server
-go run cmd/server/main.go
-# Server available at http://localhost:8080
-```
-
-### Frontend Configuration
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Configure environment variables
-cp .env.example .env.local
-# Set NEXT_PUBLIC_API_URL to your backend URL
-
-# Start development server
-npm run dev
-# Application available at http://localhost:3000
-```
-
 ## Core Features
 
 ### Authentication and User Management
@@ -181,39 +134,6 @@ npm run dev
 6. Confirm session completion
 7. Rate and review teacher
 8. Spend earned credits on learning new skills
-
-## API Documentation
-
-### Base URL
-```
-http://localhost:8080/api/v1
-
-For API documentation, visit `/api/v1/swagger` when the server is running.
-```
-
-### Environment Variables
-
-Backend (.env):
-```
-PORT=8080
-GIN_MODE=release
-DB_HOST=your-database-host
-DB_PORT=5432
-DB_USER=your-database-user
-DB_PASSWORD=your-database-password
-DB_NAME=your-database-name
-DB_SSLMODE=require
-JWT_SECRET=your-jwt-secret-min-32-chars
-JWT_EXPIRY=168h
-ALLOWED_ORIGINS=https://your-frontend-domain.com
-```
-
-Frontend (.env.local):
-```
-NEXT_PUBLIC_API_URL=https://your-backend-domain.com
-```
-
-For detailed deployment instructions, see DEPLOYMENT.md.
 
 ## Performance Optimizations
 
